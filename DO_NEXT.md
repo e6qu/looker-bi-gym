@@ -11,6 +11,7 @@ Before continuing:
 - Review `PLAN.md`.
 - Review `BUGS.md`.
 - Review the Task 008 file.
+- Use `make check` for the full local gate.
 
 Task 008 implementation steps:
 

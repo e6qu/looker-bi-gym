@@ -4,7 +4,7 @@ Last updated: 2026-05-06
 
 ## Current State
 
-Planning, documentation, task tracking, continuity protocol, the static app skeleton, Markdown content navigation, challenge manifest validation/catalog generation, the first synthetic deposits dataset, the quiz challenge runtime implementation, and the browser SQL runtime implementation are in place. Tasks 001, 002, 003, 004, and 005 are complete. Tasks 006 and 007 implementation and automated checks are complete, with manual browser refresh verification still pending. Git discipline now requires `.gitignore` maintenance and a commit after each completed task.
+Planning, documentation, task tracking, continuity protocol, the static app skeleton, Markdown content navigation, challenge manifest validation/catalog generation, the first synthetic deposits dataset, the quiz challenge runtime implementation, and the browser SQL runtime implementation are in place. Tasks 001, 002, 003, 004, and 005 are complete. Tasks 006 and 007 implementation and automated checks are complete, with manual browser refresh verification still pending. Git discipline now requires `.gitignore` maintenance and a commit after each completed task. A root `Makefile` now exposes the repository checks and tests through `make` targets.
 
 ## Active Task
 
@@ -30,6 +30,7 @@ Active task: [008 - Validators, Flags, And Progress](tasks/008-validators-flags-
 - The first dataset lives at `datasets/deposits-seed/v0.1.0/` and is synthetic CSV only.
 - `pnpm validate:datasets` validates dataset row counts, primary keys, expected missing mappings, control totals, known issue counts, and the owner-join fanout negative test.
 - The Vite build runs both manifest and dataset validation before compiling the app.
+- `make check` runs lint, typecheck, manifest validation, dataset validation, quiz tests, SQL tests, and the production build.
 - Quiz challenge details render from generated manifests at `#/challenges/{challenge-id}`.
 - The quiz runtime grades multiple-choice, select-all, and numeric answers deterministically in the browser.
 - Quiz completion state is stored in browser `localStorage` under `looker-bi-gym.quiz-progress.v1`.
@@ -49,4 +50,4 @@ Active task: [008 - Validators, Flags, And Progress](tasks/008-validators-flags-
 
 ## Confidence
 
-High for planning direction, task structure, the initial app skeleton, Markdown content loading, challenge manifest validation, the initial deposits dataset, automated quiz grading, and the browser SQL runtime. Medium for browser persistence until the manual refresh verification is run.
+High for planning direction, task structure, the initial app skeleton, Markdown content loading, challenge manifest validation, the initial deposits dataset, automated quiz grading, the browser SQL runtime, and the Makefile check harness. Medium for browser persistence until the manual refresh verification is run.

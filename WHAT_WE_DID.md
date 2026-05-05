@@ -11,6 +11,23 @@
 - Added Git discipline to `AGENTS.md`: keep `.gitignore` current and commit after each completed task.
 - Expanded `.gitignore` with coverage and local environment file exclusions.
 - Updated continuity files so the active task is Task 008 and the commit-after-task rule is recorded.
+- Created baseline commit `0ff5263` with the existing verified project state.
+- Added a root `Makefile` with targets for:
+  - `install`
+  - `lint`
+  - `typecheck`
+  - `validate`
+  - `validate-manifests`
+  - `validate-datasets`
+  - `test`
+  - `test-quiz`
+  - `test-sql`
+  - `build`
+  - `check`
+  - `dev`
+  - `preview`
+- Ran `make check`; lint, typecheck, manifest validation, dataset validation, quiz tests, SQL tests, and production build passed.
+- The build still reports Vite's non-failing large chunk warning for bundled DuckDB-WASM assets.
 
 ## 2026-05-05
 

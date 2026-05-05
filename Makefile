@@ -1,0 +1,56 @@
+PNPM ?= pnpm
+
+.PHONY: help install lint typecheck validate validate-manifests validate-datasets test test-quiz test-sql build check dev preview
+
+help:
+	@printf '%s\n' \
+		'Targets:' \
+		'  install             Install workspace dependencies with pnpm' \
+		'  lint                Run ESLint' \
+		'  typecheck           Run TypeScript checks' \
+		'  validate            Validate manifests and datasets' \
+		'  validate-manifests  Validate challenge manifests and regenerate catalog' \
+		'  validate-datasets   Validate synthetic datasets' \
+		'  test                Run all automated tests' \
+		'  test-quiz           Run quiz evaluator tests' \
+		'  test-sql            Run SQL runtime smoke tests' \
+		'  build               Build the static app' \
+		'  check               Run lint, typecheck, validation, tests, and build' \
+		'  dev                 Start Vite dev server' \
+		'  preview             Preview production build'
+
+install:
+	$(PNPM) install
+
+lint:
+	$(PNPM) lint
+
+typecheck:
+	$(PNPM) typecheck
+
+validate: validate-manifests validate-datasets
+
+validate-manifests:
+	$(PNPM) validate:manifests
+
+validate-datasets:
+	$(PNPM) validate:datasets
+
+test: test-quiz test-sql
+
+test-quiz:
+	$(PNPM) test:quiz
+
+test-sql:
+	$(PNPM) test:sql
+
+build:
+	$(PNPM) build
+
+check: lint typecheck validate test build
+
+dev:
+	$(PNPM) dev
+
+preview:
+	$(PNPM) preview
