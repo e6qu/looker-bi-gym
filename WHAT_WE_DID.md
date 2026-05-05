@@ -2,6 +2,51 @@
 
 ## 2026-05-06
 
+- Started and completed Task 009.
+- Added Challenge 020, `020 - Account Owner Fanout CTF`, in `challenges/manifests/account-owner-fanout.yaml`.
+- Updated Challenge 000 and 010 titles to match the numbered browser challenge sequence:
+  - `000 - Orientation Quiz`
+  - `010 - First Banking Dataset Inspection`
+  - `020 - Account Owner Fanout CTF`
+- Corrected the first dataset inspection challenge:
+  - The starter SQL now uses `currency_code` instead of a non-existent `currency` column.
+  - The scalar row-count check now expects the actual 18 seed balance rows instead of 12.
+  - The next challenge points to the fanout CTF.
+- Added manifest-backed learner instructions to quiz and SQL challenge detail pages:
+  - scenario
+  - inputs
+  - outputs
+  - required checks
+  - flag criteria
+  - hints
+- Added challenge-specific starter SQL for the fanout challenge.
+- Sorted the app challenge catalog by numbered title so the browser sequence appears as 000, 010, 020, then the later cloud-evidence challenge.
+- Expanded `app/scripts/test-sql.ts` so it runs manifest-backed known-good and known-bad SQL fixtures for:
+  - `first-banking-dataset`
+  - `account-owner-fanout`
+- Ran `pnpm validate:manifests`; it passed.
+- Ran `pnpm test:quiz`; it passed.
+- Ran `pnpm test:validators`; it passed.
+- Ran `pnpm test:sql`; the first attempt failed because DuckDB aggregate `SUM` values were not plain numeric values in the Node test runtime.
+- Updated the fanout starter and SQL fixtures to cast aggregate totals to `DOUBLE`.
+- Reran `pnpm test:sql`; it passed.
+- Ran `pnpm lint`; the first attempt failed while testing a broader validator numeric coercion change, then passed after removing that unnecessary validator change and casting fanout aggregates explicitly.
+- Ran `pnpm typecheck`; it passed.
+- Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL tests, validator tests, and production build passed.
+- The production build still reports Vite's non-failing large DuckDB-WASM chunk warning.
+- Tried `pnpm preview` in the sandbox; it failed with `listen EPERM: operation not permitted 127.0.0.1:4173`.
+- Reran `pnpm preview` with approval; Vite preview served the built app at `http://127.0.0.1:4173/`.
+- Launched headless Chrome with approval for built-site verification.
+- Ran a Chrome DevTools Protocol verification against the built preview:
+  - completed `000 - Orientation Quiz`
+  - completed `010 - First Banking Dataset Inspection`
+  - completed `020 - Account Owner Fanout CTF`
+  - verified all three browser challenge flags were stored in local progress
+  - verified the challenge index showed all three browser challenges as complete
+- Stopped the Vite preview and headless Chrome processes after verification.
+- Confirmed the preview server was no longer reachable on `127.0.0.1:4173`.
+- Updated Task 009 with completion and verification notes.
+
 - Started and completed Task 008.
 - Added reusable browser-side SQL/data validation in `app/src/validators.ts`.
 - Added validators for:

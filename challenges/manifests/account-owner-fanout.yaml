@@ -1,0 +1,132 @@
+id: account-owner-fanout
+title: 020 - Account Owner Fanout CTF
+area: warehouse-modeling-and-metrics
+mode: browser-sql
+difficulty: beginner
+estimated_minutes: 30
+prerequisites:
+  - first-banking-dataset
+business_scenario: Prove how a naive balance-to-owner join overstates latest deposit balances, then return a reconciled one-row result that keeps account-date grain intact.
+regulatory_context:
+  - BNR
+  - FGDB
+  - GDPR
+required_tools: none
+inputs:
+  - id: deposits_seed
+    type: dataset
+    description: Static deposits dataset with daily balance snapshots and many-to-many account ownership rows.
+    dataset_id: deposits-seed
+    dataset_version: v0.1.0
+    tables:
+      - accounts
+      - account_owners
+      - account_daily_balances
+    sensitive_fields:
+      - customer_id
+      - account_id
+      - synthetic_iban
+    date_semantics:
+      - business_date is a daily balance snapshot date.
+      - Use the latest available business_date for the fanout proof.
+    grain: The safe metric grain is one row per account on the latest business_date before joining or summarizing owner relationships.
+outputs:
+  - id: fanout_query
+    type: sql-text
+    description: SQL that compares correct account-grain balance totals with naive owner-joined totals.
+  - id: fanout_result
+    type: sql-result
+    description: One-row result showing the latest date, correct total, naive total, fanout delta, and percentage overstatement.
+checks:
+  - id: required_columns
+    type: required-column
+    description: Result includes the fanout proof columns.
+    target: fanout_result
+    expected:
+      - latest_balance_date
+      - correct_ledger_total
+      - naive_joined_total
+      - fanout_delta
+      - overstatement_pct
+  - id: no_sensitive_fields
+    type: sensitive-field-exclusion
+    description: Result must not expose sensitive serving-output fields.
+    target: fanout_result
+    expected:
+      - customer_id
+      - account_id
+      - synthetic_iban
+  - id: one_fanout_row
+    type: row-count
+    description: Result returns exactly one fanout proof row.
+    target: fanout_result
+    expected: 1
+  - id: unique_latest_date
+    type: unique-key
+    description: Result has one unique latest balance date.
+    target: fanout_result
+    expected:
+      - latest_balance_date
+  - id: correct_latest_total
+    type: scalar-aggregate
+    description: Correct latest-date ledger balance total stays at account grain.
+    target: fanout_result
+    expected:
+      column: correct_ledger_total
+      value: 95700
+      tolerance: 0
+  - id: naive_join_total
+    type: scalar-aggregate
+    description: Naive owner-joined total demonstrates the fanout overstatement.
+    target: fanout_result
+    expected:
+      column: naive_joined_total
+      value: 164800
+      tolerance: 0
+  - id: fanout_delta
+    type: scalar-aggregate
+    description: Fanout delta reconciles the naive total back to the correct total.
+    target: fanout_result
+    expected:
+      column: fanout_delta
+      value: 69100
+      tolerance: 0
+  - id: overstatement_pct
+    type: scalar-aggregate
+    description: Fanout percentage is rounded to two decimals.
+    target: fanout_result
+    expected:
+      column: overstatement_pct
+      value: 72.2
+      tolerance: 0.01
+questions:
+  - id: q_safe_grain
+    type: multiple-choice
+    prompt: Which grain should the correct latest balance total preserve before owner analysis?
+    options:
+      - id: account_latest_date
+        label: One row per account on the latest business date.
+      - id: owner_latest_date
+        label: One row per account owner on the latest business date.
+      - id: branch_all_dates
+        label: One row per branch across all dates.
+    answer: account_latest_date
+    explanation: Balance snapshots must be summarized at account-date grain before ownership joins are used for diagnostics.
+  - id: q_delta
+    type: numeric
+    prompt: How many RON/EUR ledger units does the naive owner join overstate on the latest date?
+    answer: 69100
+    tolerance: 0
+    explanation: The latest-date correct total is 95700, while the naive owner-joined total is 164800.
+flag:
+  id: flag-account-owner-fanout
+  criteria:
+    - SQL checks prove both the correct account-grain total and the naive owner-joined overstatement.
+    - Fanout questions are answered correctly.
+hints:
+  - level: 1
+    text: Filter account_daily_balances to the latest business_date before calculating either total.
+  - level: 2
+    text: Calculate the correct total without account_owners, then calculate the naive total with account_owners and compare them in one final row.
+next_challenges:
+  - looker-studio-evidence

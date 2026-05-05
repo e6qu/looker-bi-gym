@@ -4,11 +4,11 @@ Last updated: 2026-05-06
 
 ## Current State
 
-Planning, documentation, task tracking, continuity protocol, the static app skeleton, Markdown content navigation, challenge manifest validation/catalog generation, the first synthetic deposits dataset, the quiz challenge runtime, the browser SQL runtime, reusable browser validators, local flags, unified local progress storage, and reset controls are in place. Tasks 001 through 008 are complete. Git discipline requires `.gitignore` maintenance, no committed rebuildable artifacts, no committed WASM runtime artifacts, and a commit after each completed task. A root `Makefile` exposes the repository checks and tests through `make` targets.
+Planning, documentation, task tracking, continuity protocol, the static app skeleton, Markdown content navigation, challenge manifest validation/catalog generation, the first synthetic deposits dataset, the quiz challenge runtime, the browser SQL runtime, reusable browser validators, local flags, unified local progress storage, reset controls, and the first three browser-verifiable challenges are in place. Tasks 001 through 009 are complete. Git discipline requires `.gitignore` maintenance, no committed rebuildable artifacts, no committed WASM runtime artifacts, and a commit after each completed task. A root `Makefile` exposes the repository checks and tests through `make` targets.
 
 ## Active Task
 
-Active task: [009 - First Browser Challenges](tasks/009-first-browser-challenges.md).
+Active task: [010 - Cloud Evidence Challenge Pattern](tasks/010-cloud-evidence-challenge-pattern.md).
 
 ## Current Decisions
 
@@ -39,6 +39,12 @@ Active task: [009 - First Browser Challenges](tasks/009-first-browser-challenges
 - Browser SQL result validators support required columns, forbidden columns, row count, unique key, scalar aggregate, and sensitive-field exclusion checks.
 - Completing all required checks and questions generates the challenge flag locally.
 - Settings includes a reset progress control that clears local progress and legacy quiz progress.
+- The first browser challenge sequence is:
+  - 000 - Orientation Quiz.
+  - 010 - First Banking Dataset Inspection.
+  - 020 - Account Owner Fanout CTF.
+- Challenge detail pages render manifest-backed scenario, inputs, outputs, checks, flag criteria, and hints.
+- SQL fixture tests run known-good and known-bad manifest-backed solutions for the dataset inspection and fanout challenges.
 - DuckDB-WASM for browser SQL challenges.
 - Browser-first learner path.
 - Optional cloud-applied track through Google Cloud Console, BigQuery UI, and Looker Studio UI.
@@ -56,4 +62,4 @@ None known.
 
 ## Confidence
 
-High for planning direction, task structure, the app skeleton, Markdown content loading, challenge manifest validation, the initial deposits dataset, automated quiz grading, the browser SQL runtime, browser validators, local flags, unified progress storage, reset behavior, and the Makefile check harness.
+High for planning direction, task structure, the app skeleton, Markdown content loading, challenge manifest validation, the initial deposits dataset, automated quiz grading, the browser SQL runtime, browser validators, local flags, unified progress storage, reset behavior, the first browser challenges, and the Makefile check harness.

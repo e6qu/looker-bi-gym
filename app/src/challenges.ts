@@ -31,7 +31,9 @@ const difficultyLabels = new Map<ChallengeDifficulty, string>([
   ['capstone', 'Capstone'],
 ]);
 
-export const challengeCatalog = rawChallengeCatalog as readonly ChallengeManifest[];
+export const challengeCatalog = [...(rawChallengeCatalog as readonly ChallengeManifest[])].sort(
+  (left, right) => left.title.localeCompare(right.title),
+);
 
 export function formatChallengeArea(area: ChallengeArea): string {
   return areaLabels.get(area) ?? area;

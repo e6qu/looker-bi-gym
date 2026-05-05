@@ -1,12 +1,12 @@
 id: first-banking-dataset
-title: First Banking Dataset
+title: 010 - First Banking Dataset Inspection
 area: orientation-and-source-data
 mode: browser-sql
 difficulty: beginner
 estimated_minutes: 25
 prerequisites:
   - orientation-quiz
-business_scenario: Inspect a small deposits and account ownership dataset before building governed BI metrics.
+business_scenario: Inspect row counts, currencies, branch keys, and snapshot dates in the synthetic deposits seed before building governed BI metrics.
 regulatory_context:
   - BNR
   - FGDB
@@ -15,7 +15,7 @@ required_tools: none
 inputs:
   - id: deposits_seed
     type: dataset
-    description: Planned static deposits dataset with Romanian branch geography, RON and EUR balances, and ownership rows.
+    description: Static deposits dataset with Romanian branch geography, RON and EUR balances, and ownership rows.
     dataset_id: deposits-seed
     dataset_version: v0.1.0
     tables:
@@ -26,6 +26,7 @@ inputs:
     sensitive_fields:
       - customer_id
       - account_id
+      - synthetic_iban
     date_semantics:
       - balance_date is a daily snapshot date.
       - opened_date is an account lifecycle date.
@@ -36,7 +37,7 @@ outputs:
     description: SQL that profiles rows, currencies, branches, and snapshot dates.
   - id: profile_result
     type: sql-result
-    description: Query output with counts and basic balance totals for the synthetic dataset.
+    description: One-row profile result with row count, currency count, branch count, and latest balance date.
 checks:
   - id: required_columns
     type: required-column
@@ -78,12 +79,12 @@ checks:
     target: profile_result
     expected:
       column: row_count
-      value: 12
+      value: 18
       tolerance: 0
 questions:
   - id: q_balance_grain
     type: multiple-choice
-    prompt: What is the intended grain of the deposit_balances table?
+    prompt: What is the intended grain of the account_daily_balances table?
     options:
       - id: account_day
         label: One row per account per balance date.
@@ -100,6 +101,6 @@ flag:
     - Grain question is answered correctly.
 hints:
   - level: 1
-    text: Start by counting rows and distinct values before joining ownership rows.
+    text: Start by counting rows and distinct values without joining ownership rows.
 next_challenges:
-  - looker-studio-evidence
+  - account-owner-fanout

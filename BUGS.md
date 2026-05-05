@@ -1,6 +1,6 @@
 # Bugs
 
-No known app bugs after the Task 008 implementation, automated checks, and headless browser verification.
+No known app bugs after the Task 009 implementation, automated checks, and built-site browser verification.
 
 ## Follow-Up Verification Gaps
 
@@ -8,6 +8,7 @@ No known app bugs after the Task 008 implementation, automated checks, and headl
 - Add browser smoke coverage for the generated challenge index later, likely in Task 013.
 - Add browser smoke coverage for dataset-backed challenge loading after the SQL runtime exists.
 - Track Vite/DuckDB-WASM source-map noise during browser verification. It did not fail Task 008, but the dev server logged many DuckDB worker source-map warnings from package internals.
+- Add automated browser route/challenge completion smoke tests later, likely in Task 013, so the Task 009 headless browser verification does not remain only an ad hoc CDP run.
 
 ## Template
 

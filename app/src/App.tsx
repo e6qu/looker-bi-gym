@@ -185,6 +185,121 @@ function formatSqlCellValue(value: unknown): string {
   return Object.prototype.toString.call(value);
 }
 
+function getStarterSql(challenge: ChallengeManifest): string {
+  if (challenge.id === 'account-owner-fanout') {
+    return `WITH latest_balances AS (
+  SELECT account_id, business_date, ledger_balance
+  FROM account_daily_balances
+  WHERE business_date = (
+    SELECT MAX(business_date)
+    FROM account_daily_balances
+  )
+),
+correct_total AS (
+  SELECT CAST(SUM(ledger_balance) AS DOUBLE) AS correct_ledger_total
+  FROM latest_balances
+),
+naive_total AS (
+  SELECT CAST(SUM(lb.ledger_balance) AS DOUBLE) AS naive_joined_total
+  FROM latest_balances lb
+  INNER JOIN account_owners ao USING (account_id)
+),
+fanout_proof AS (
+  SELECT
+    correct_total.correct_ledger_total,
+    naive_total.naive_joined_total
+  FROM correct_total
+  CROSS JOIN naive_total
+)
+SELECT
+  (SELECT MAX(business_date) FROM latest_balances) AS latest_balance_date,
+  correct_ledger_total,
+  naive_joined_total,
+  naive_joined_total - correct_ledger_total AS fanout_delta,
+  ROUND(((naive_joined_total - correct_ledger_total) * 100.0) / correct_ledger_total, 2) AS overstatement_pct
+FROM fanout_proof;`;
+  }
+
+  return `SELECT
+  COUNT(*) AS row_count,
+  COUNT(DISTINCT adb.currency_code) AS currency_count,
+  COUNT(DISTINCT a.branch_id) AS branch_count,
+  MAX(adb.business_date) AS latest_balance_date
+FROM account_daily_balances adb
+INNER JOIN accounts a USING (account_id);`;
+}
+
+function ChallengeInstructions({
+  challenge,
+}: {
+  readonly challenge: ChallengeManifest;
+}): JSX.Element {
+  return (
+    <section className="challengeInstructions" aria-label="Challenge instructions">
+      <div>
+        <p className="eyebrow">Scenario</p>
+        <p>{challenge.business_scenario}</p>
+      </div>
+
+      <div className="instructionGrid">
+        <section>
+          <h2>Inputs</h2>
+          {challenge.inputs.map((input) => (
+            <div className="instructionBlock" key={input.id}>
+              <strong>{input.description}</strong>
+              {input.grain !== undefined ? <p>Grain: {input.grain}</p> : null}
+              {input.tables !== undefined ? (
+                <p>Tables: {input.tables.join(', ')}</p>
+              ) : null}
+              {input.sensitive_fields !== undefined ? (
+                <p>Sensitive fields: {input.sensitive_fields.join(', ')}</p>
+              ) : null}
+            </div>
+          ))}
+        </section>
+
+        <section>
+          <h2>Outputs</h2>
+          <ul>
+            {challenge.outputs.map((output) => (
+              <li key={output.id}>{output.description}</li>
+            ))}
+          </ul>
+        </section>
+
+        <section>
+          <h2>Flag Criteria</h2>
+          <ul>
+            {challenge.flag.criteria.map((criterion) => (
+              <li key={criterion}>{criterion}</li>
+            ))}
+          </ul>
+        </section>
+
+        <section>
+          <h2>Required Checks</h2>
+          <ul>
+            {challenge.checks.map((check) => (
+              <li key={check.id}>{check.description}</li>
+            ))}
+          </ul>
+        </section>
+      </div>
+
+      {challenge.hints !== undefined && challenge.hints.length > 0 ? (
+        <details>
+          <summary>Hints</summary>
+          <ul>
+            {challenge.hints.map((hint) => (
+              <li key={hint.level}>{hint.text}</li>
+            ))}
+          </ul>
+        </details>
+      ) : null}
+    </section>
+  );
+}
+
 function QuizChallengePage({
   challenge,
   isCompleted,
@@ -258,6 +373,8 @@ function QuizChallengePage({
           This quiz includes unsupported question types and cannot be completed yet.
         </div>
       ) : null}
+
+      <ChallengeInstructions challenge={challenge} />
 
       <div className="quizPanel">
         {challenge.questions.map((question, index) => {
@@ -504,13 +621,7 @@ function SqlChallengePage({
   readonly isCompleted: boolean;
   readonly onComplete: CompleteChallengeHandler;
 }): JSX.Element {
-  const [sql, setSql] = useState<string>(`SELECT
-  COUNT(*) AS row_count,
-  COUNT(DISTINCT adb.currency) AS currency_count,
-  COUNT(DISTINCT a.branch_id) AS branch_count,
-  MAX(adb.business_date) AS latest_balance_date
-FROM account_daily_balances adb
-INNER JOIN accounts a USING (account_id);`);
+  const [sql, setSql] = useState<string>(() => getStarterSql(challenge));
   const [answers, setAnswers] = useState<QuizAnswerState>({});
   const [runtimeState, setRuntimeState] = useState<
     | { readonly status: 'loading' }
@@ -649,6 +760,8 @@ INNER JOIN accounts a USING (account_id);`);
           </div>
         </div>
       </div>
+
+      <ChallengeInstructions challenge={challenge} />
 
       <div className="sqlChallengeLayout">
         {runtimeState.status === 'ready' ? (

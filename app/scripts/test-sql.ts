@@ -3,14 +3,27 @@ import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
+import { parse } from 'yaml';
+import { evaluateSqlResultChecks } from '../src/validators';
+import type { ChallengeManifest } from '../src/challengeTypes';
+import type { SqlValidationResult } from '../src/validators';
 
 type DuckDbRow = Readonly<Record<string, unknown>>;
+
+type ArrowFieldLike = {
+  readonly name: string;
+};
+
+type ArrowSchemaLike = {
+  readonly fields: readonly ArrowFieldLike[];
+};
 
 type ArrowRowLike = {
   readonly toJSON: () => DuckDbRow;
 };
 
 type ArrowTableLike = {
+  readonly schema: ArrowSchemaLike;
   readonly toArray: () => readonly ArrowRowLike[];
 };
 
@@ -63,6 +76,7 @@ const repoRoot = join(appRoot, '..');
 const packageRoot = dirname(require.resolve('@duckdb/duckdb-wasm'));
 const duckdbNode = require(join(packageRoot, 'duckdb-node-blocking.cjs')) as DuckDbNodeBlockingModule;
 const datasetRoot = join(repoRoot, 'datasets', 'deposits-seed', 'v0.1.0');
+const manifestsRoot = join(repoRoot, 'challenges', 'manifests');
 
 const seedTables: readonly SeedTable[] = [
   { fileName: 'branches.csv', tableName: 'branches' },
@@ -81,6 +95,56 @@ function readNumberField(row: DuckDbRow, field: string): number {
   }
 
   return numericValue;
+}
+
+async function readManifest(fileName: string): Promise<ChallengeManifest> {
+  const source = await readFile(join(manifestsRoot, fileName), 'utf8');
+  return parse(source) as ChallengeManifest;
+}
+
+async function runValidationQuery(
+  connection: DuckDbConnectionLike,
+  sql: string,
+): Promise<SqlValidationResult> {
+  const result = await connection.query(sql);
+
+  return {
+    columns: result.schema.fields.map((field) => field.name),
+    rows: result.toArray().map((row) => row.toJSON()),
+  };
+}
+
+async function assertQueryPasses(
+  connection: DuckDbConnectionLike,
+  challenge: ChallengeManifest,
+  sql: string,
+): Promise<void> {
+  const validationResult = await runValidationQuery(connection, sql);
+  const evaluation = evaluateSqlResultChecks(challenge, validationResult);
+
+  assert.equal(
+    evaluation.requiredPassed,
+    true,
+    `${challenge.id} expected known-good query to pass: ${evaluation.checks
+      .filter((check) => check.status !== 'pass')
+      .map((check) => `${check.checkId}: ${check.message}`)
+      .join('; ')}`,
+  );
+}
+
+async function assertQueryFails(
+  connection: DuckDbConnectionLike,
+  challenge: ChallengeManifest,
+  sql: string,
+): Promise<void> {
+  const validationResult = await runValidationQuery(connection, sql);
+  const evaluation = evaluateSqlResultChecks(challenge, validationResult);
+
+  assert.equal(
+    evaluation.requiredPassed,
+    false,
+    `${challenge.id} expected known-bad query to fail.`,
+  );
 }
 
 async function loadSeedTables(database: DuckDbBindingsLike, connection: DuckDbConnectionLike): Promise<void> {
@@ -126,6 +190,8 @@ async function main(): Promise<void> {
 
   try {
     await loadSeedTables(database, connection);
+    const firstDatasetChallenge = await readManifest('first-banking-dataset.yaml');
+    const fanoutChallenge = await readManifest('account-owner-fanout.yaml');
 
     for (const table of seedTables) {
       const result = await connection.query(`SELECT count(*) AS row_count FROM "${table.tableName}";`);
@@ -158,6 +224,99 @@ async function main(): Promise<void> {
     }
 
     assert.equal(invalidSqlFailed, true);
+
+    await assertQueryPasses(
+      connection,
+      firstDatasetChallenge,
+      `
+        SELECT
+          COUNT(*) AS row_count,
+          COUNT(DISTINCT adb.currency_code) AS currency_count,
+          COUNT(DISTINCT a.branch_id) AS branch_count,
+          MAX(adb.business_date) AS latest_balance_date
+        FROM account_daily_balances adb
+        INNER JOIN accounts a USING (account_id);
+      `,
+    );
+
+    await assertQueryFails(
+      connection,
+      firstDatasetChallenge,
+      `
+        SELECT
+          account_id,
+          COUNT(*) AS row_count,
+          COUNT(DISTINCT currency_code) AS currency_count,
+          MAX(business_date) AS latest_balance_date
+        FROM account_daily_balances
+        GROUP BY account_id;
+      `,
+    );
+
+    await assertQueryPasses(
+      connection,
+      fanoutChallenge,
+      `
+        WITH latest_balances AS (
+          SELECT account_id, business_date, ledger_balance
+          FROM account_daily_balances
+          WHERE business_date = (
+            SELECT MAX(business_date)
+            FROM account_daily_balances
+          )
+        ),
+        correct_total AS (
+          SELECT CAST(SUM(ledger_balance) AS DOUBLE) AS correct_ledger_total
+          FROM latest_balances
+        ),
+        naive_total AS (
+          SELECT CAST(SUM(lb.ledger_balance) AS DOUBLE) AS naive_joined_total
+          FROM latest_balances lb
+          INNER JOIN account_owners ao USING (account_id)
+        ),
+        fanout_proof AS (
+          SELECT
+            correct_total.correct_ledger_total,
+            naive_total.naive_joined_total
+          FROM correct_total
+          CROSS JOIN naive_total
+        )
+        SELECT
+          (SELECT MAX(business_date) FROM latest_balances) AS latest_balance_date,
+          correct_ledger_total,
+          naive_joined_total,
+          naive_joined_total - correct_ledger_total AS fanout_delta,
+          ROUND(((naive_joined_total - correct_ledger_total) * 100.0) / correct_ledger_total, 2) AS overstatement_pct
+        FROM fanout_proof;
+      `,
+    );
+
+    await assertQueryFails(
+      connection,
+      fanoutChallenge,
+      `
+        WITH latest_balances AS (
+          SELECT account_id, business_date, ledger_balance
+          FROM account_daily_balances
+          WHERE business_date = (
+            SELECT MAX(business_date)
+            FROM account_daily_balances
+          )
+        ),
+        naive_total AS (
+          SELECT CAST(SUM(lb.ledger_balance) AS DOUBLE) AS naive_joined_total
+          FROM latest_balances lb
+          INNER JOIN account_owners ao USING (account_id)
+        )
+        SELECT
+          (SELECT MAX(business_date) FROM latest_balances) AS latest_balance_date,
+          naive_joined_total AS correct_ledger_total,
+          naive_joined_total,
+          0 AS fanout_delta,
+          0 AS overstatement_pct
+        FROM naive_total;
+      `,
+    );
   } finally {
     await Promise.resolve(connection.close());
     const terminate = (database as { readonly terminate?: () => unknown }).terminate;
