@@ -146,6 +146,7 @@ Must:
 - Show useful SQL/runtime errors to the learner.
 - Keep datasets synthetic and bundled/static.
 - Load datasets from versioned static dataset metadata.
+- Keep generated catalogs, WASM runtime files, and build output reproducible from committed source/dependencies instead of committed as binary or generated artifacts.
 
 Should:
 

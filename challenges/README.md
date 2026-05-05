@@ -6,7 +6,7 @@ The static app does not read YAML directly. Run `pnpm validate:manifests` to:
 
 - validate every source manifest against `challenges/schema/challenge-manifest.schema.json`;
 - verify challenge IDs are unique;
-- generate `app/src/generated/challengeCatalog.json` for browser loading.
+- locally generate ignored `app/src/generated/challengeCatalog.json` for browser loading.
 
 Every challenge must declare `required_tools`. Use `none` for browser-only work.
 

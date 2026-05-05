@@ -55,7 +55,9 @@ Do not rely on chat history as the source of truth. Keep these files current so 
 - Before implementing a task, restate the task number and check the continuity files.
 - After implementing a task, update the continuity files before giving the final response.
 - After each completed task, commit the task changes to git.
-- Keep `.gitignore` current so dependency directories, build outputs, generated TypeScript artifacts, and local OS/editor noise are not committed.
+- Keep `.gitignore` current so dependency directories, build outputs, generated catalogs, generated TypeScript artifacts, and local OS/editor noise are not committed.
+- Do not commit bundled or generated artifacts that can be rebuilt locally from committed source files and repository scripts.
+- Do not commit WASM or other binary runtime artifacts when they can be supplied by package dependencies or produced by the local build.
 - After each task, reassess the plan and downstream tasks. If implementation uncovered a true blocker, wrong assumption, or better path, update `PLAN.md`, split plans, and affected `tasks/*.md` before continuing.
 
 ## Tooling Rules

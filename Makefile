@@ -22,10 +22,10 @@ help:
 install:
 	$(PNPM) install
 
-lint:
+lint: validate-manifests
 	$(PNPM) lint
 
-typecheck:
+typecheck: validate-manifests
 	$(PNPM) typecheck
 
 validate: validate-manifests validate-datasets
@@ -47,7 +47,7 @@ test-sql:
 build:
 	$(PNPM) build
 
-check: lint typecheck validate test build
+check: validate lint typecheck test build
 
 dev:
 	$(PNPM) dev

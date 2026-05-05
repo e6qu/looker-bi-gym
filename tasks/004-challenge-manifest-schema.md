@@ -55,5 +55,6 @@ Define the static challenge manifest format used by the app to render and valida
 - YAML examples: `challenges/manifests/`.
 - Invalid fixture: `challenges/fixtures/invalid-manifest.yaml`.
 - Generated app catalog: `app/src/generated/challengeCatalog.json`.
+- The generated app catalog is a local build artifact and is ignored by git; run `pnpm validate:manifests` or `make check` to regenerate it from YAML manifests.
 - Validation command: `pnpm validate:manifests`.
 - `pnpm validate:manifests`, `pnpm build`, and `pnpm check` passed on 2026-05-05.

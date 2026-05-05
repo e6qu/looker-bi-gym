@@ -12,6 +12,8 @@ Before continuing:
 - Review `BUGS.md`.
 - Review the Task 008 file.
 - Use `make check` for the full local gate.
+- Keep rebuildable generated outputs ignored; regenerate them from committed source instead of committing them.
+- Keep DuckDB-WASM runtime files supplied by dependencies/local build output, not committed binary artifacts.
 
 Task 008 implementation steps:
 

@@ -28,6 +28,15 @@
   - `preview`
 - Ran `make check`; lint, typecheck, manifest validation, dataset validation, quiz tests, SQL tests, and production build passed.
 - The build still reports Vite's non-failing large chunk warning for bundled DuckDB-WASM assets.
+- Applied the "do not bundle what can be built locally" rule:
+  - Added it to `AGENTS.md`.
+  - Ignored locally generated challenge catalog JSON.
+  - Changed the manifest validator to create `app/src/generated/` when needed.
+  - Updated lint, typecheck, check, and Makefile paths so the generated catalog is rebuilt locally before it is needed.
+  - Removed `app/src/generated/challengeCatalog.json` from git tracking.
+- Confirmed no `.wasm`, DuckDB worker, or `app/dist/` artifacts are tracked by git.
+- Added `*.wasm` to `.gitignore` and recorded that WASM runtime artifacts must come from package dependencies or local build output rather than committed binary files.
+- Reran `make check`; lint, typecheck, manifest validation, dataset validation, quiz tests, SQL tests, and production build passed with the generated catalog ignored.
 
 ## 2026-05-05
 

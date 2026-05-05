@@ -1,4 +1,4 @@
-import { readdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
@@ -110,6 +110,7 @@ async function main(): Promise<void> {
 
   assertUniqueChallengeIds(manifests);
 
+  await mkdir(dirname(generatedCatalogPath), { recursive: true });
   await writeFile(generatedCatalogPath, `${JSON.stringify(manifests, null, 2)}\n`, 'utf8');
 }
 

@@ -19,7 +19,7 @@ The default learner path should run in the browser. If a tutorial requires local
 - `pnpm` for repository development commands.
 - DuckDB-WASM for browser SQL challenges.
 - Markdown for long-form content.
-- YAML source manifests with generated JSON catalog for the app.
+- YAML source manifests with a locally generated JSON catalog for the app.
 - Static synthetic banking datasets only.
 - Local browser storage for progress and flags.
 - GitHub Actions for build, validation, and publishing.
