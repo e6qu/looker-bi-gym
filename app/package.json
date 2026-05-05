@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "pnpm validate:manifests && pnpm validate:datasets && pnpm typecheck && vite build",
-    "check": "pnpm validate:manifests && pnpm lint && pnpm typecheck && pnpm validate:datasets && pnpm test:quiz && pnpm test:sql && vite build",
+    "check": "pnpm validate:manifests && pnpm lint && pnpm typecheck && pnpm validate:datasets && pnpm test:quiz && pnpm test:sql && pnpm test:validators && vite build",
     "lint": "pnpm validate:manifests && eslint . --max-warnings 0",
     "test:quiz": "node --import tsx scripts/test-quiz.ts",
     "test:sql": "node --import tsx scripts/test-sql.ts",
+    "test:validators": "node --import tsx scripts/test-validators.ts",
     "validate:datasets": "node --import tsx scripts/validate-datasets.ts",
     "validate:manifests": "node --import tsx scripts/validate-challenge-manifests.ts",
     "typecheck": "pnpm validate:manifests && tsc -p tsconfig.json --noEmit --pretty false && tsc -p tsconfig.node.json --noEmit --pretty false",

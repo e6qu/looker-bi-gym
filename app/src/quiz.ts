@@ -99,6 +99,18 @@ export function evaluateQuiz(
   challenge: ChallengeManifest,
   answers: QuizAnswerState,
 ): QuizEvaluation {
+  const evaluation = evaluateChallengeQuestions(challenge, answers);
+
+  return {
+    questions: evaluation.questions,
+    isComplete: challenge.mode === 'quiz' && evaluation.isComplete,
+  };
+}
+
+export function evaluateChallengeQuestions(
+  challenge: ChallengeManifest,
+  answers: QuizAnswerState,
+): QuizEvaluation {
   const questions = challenge.questions.map((question) =>
     evaluateQuestion(question, answers[question.id]),
   );
@@ -106,7 +118,6 @@ export function evaluateQuiz(
   return {
     questions,
     isComplete:
-      challenge.mode === 'quiz' &&
       questions.length > 0 &&
       questions.every((question) => question.isAnswered && question.isCorrect),
   };

@@ -2,6 +2,48 @@
 
 ## 2026-05-06
 
+- Started and completed Task 008.
+- Added reusable browser-side SQL/data validation in `app/src/validators.ts`.
+- Added validators for:
+  - required columns
+  - forbidden columns
+  - row count
+  - unique key
+  - scalar aggregate / aggregate total
+  - sensitive-field exclusion
+- Added unified browser-local progress storage and local flag generation in `app/src/progress.ts`.
+- Migrated completion state away from the old quiz-only storage key, while still reading legacy quiz progress when present.
+- Updated quiz completion to write unified progress with local flags.
+- Updated the SQL challenge page to:
+  - run manifest-backed validators against the submitted result set
+  - show pass/fail explanations for every check
+  - require the challenge question and required SQL checks before generating a flag
+  - persist SQL challenge completion and flags in local storage
+- Added Settings reset controls that clear unified progress and legacy quiz progress.
+- Expanded the first SQL challenge manifest with row-count, unique-key, scalar-aggregate, and sensitive-field-exclusion checks.
+- Expanded the challenge manifest schema with `scalar-aggregate` and `sensitive-field-exclusion` check types.
+- Added validator and progress fixtures in `app/scripts/test-validators.ts`.
+- Added `test:validators` scripts and Makefile target.
+- Ran `pnpm test:validators`; it passed.
+- Ran `pnpm typecheck`; it passed after removing a node-test import path that pulled Vite browser-only types into the node TypeScript project.
+- Ran `pnpm lint`; it passed.
+- Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL tests, validator tests, and production build passed.
+- The production build still reports Vite's non-failing large DuckDB-WASM chunk warning.
+- Tried `pnpm dev` in the sandbox; it failed with `listen EPERM: operation not permitted 127.0.0.1:5173`.
+- Reran `pnpm dev` with approval; Vite started at `http://127.0.0.1:5173/`.
+- Confirmed the dev server returned HTTP 200 with an approved local `curl`.
+- Ran a headless Chrome verification through the Chrome DevTools protocol:
+  - completed the orientation quiz
+  - verified the orientation flag persisted after reload
+  - completed the SQL challenge
+  - verified the SQL flag persisted after reload
+  - reset progress in Settings
+  - verified local progress was cleared
+- The first headless Chrome verification attempt completed the app path but failed during temporary Chrome profile cleanup; fixed the cleanup race and reran successfully.
+- Stopped the Vite dev server after verification.
+- Updated Tasks 006 and 007 to close the prior manual refresh verification gaps.
+- Updated Task 008 with completion notes.
+
 - Retried `pnpm dev`; the sandboxed run still failed with `listen EPERM: operation not permitted 127.0.0.1:5173`.
 - Reran `pnpm dev` with approval; Vite started at `http://127.0.0.1:5173/`.
 - Checked for existing browser automation tooling:

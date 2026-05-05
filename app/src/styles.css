@@ -815,6 +815,72 @@ h3 {
   margin: 0;
 }
 
+.validationPanel,
+.settingsActionPanel {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.validationHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.validationHeader strong {
+  color: var(--accent-strong);
+}
+
+.validationPanel ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.validationPanel li {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  gap: 12px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.validationPanel li > span {
+  font-size: 0.76rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.validationPanel strong,
+.validationPanel p,
+.settingsActionPanel p {
+  margin: 0;
+}
+
+.validationPanel p,
+.settingsActionPanel p {
+  color: var(--muted);
+}
+
+.validationPass {
+  background: var(--ready-bg);
+  color: var(--ready-text);
+}
+
+.validationFail {
+  background: var(--planned-bg);
+  color: var(--planned-text);
+}
+
 .quizPanel {
   display: grid;
   gap: 18px;
@@ -963,6 +1029,26 @@ h3 {
   border-left: 1px solid var(--line);
 }
 
+.settingsActionPanel {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.settingsActionPanel .feedbackBox {
+  grid-column: 1 / -1;
+}
+
+.settingsActionPanel button {
+  min-height: 42px;
+  padding: 9px 14px;
+  border: 1px solid var(--warning);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--warning);
+  font: inherit;
+  font-weight: 800;
+}
+
 @media (max-width: 860px) {
   .topBar {
     position: static;
@@ -978,6 +1064,7 @@ h3 {
   .splitLayout,
   .itemGrid,
   .settingsPanel,
+  .settingsActionPanel,
   .contentOverview,
   .contentPage,
   .challengeDetailMeta,

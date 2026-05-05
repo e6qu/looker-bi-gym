@@ -11,6 +11,7 @@
     "lint": "pnpm --filter @looker-bi-gym/app lint",
     "test:quiz": "pnpm --filter @looker-bi-gym/app test:quiz",
     "test:sql": "pnpm --filter @looker-bi-gym/app test:sql",
+    "test:validators": "pnpm --filter @looker-bi-gym/app test:validators",
     "validate:datasets": "pnpm --filter @looker-bi-gym/app validate:datasets",
     "validate:manifests": "pnpm --filter @looker-bi-gym/app validate:manifests",
     "typecheck": "pnpm --filter @looker-bi-gym/app typecheck",

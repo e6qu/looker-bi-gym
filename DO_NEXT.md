@@ -2,7 +2,7 @@
 
 ## Immediate Next Step
 
-Continue [008 - Validators, Flags, And Progress](tasks/008-validators-flags-and-progress.md).
+Continue [009 - First Browser Challenges](tasks/009-first-browser-challenges.md).
 
 Before continuing:
 
@@ -10,31 +10,28 @@ Before continuing:
 - Review `STATUS.md`.
 - Review `PLAN.md`.
 - Review `BUGS.md`.
-- Review the Task 008 file.
+- Review the Task 009 file.
 - Use `make check` for the full local gate.
 - Keep rebuildable generated outputs ignored; regenerate them from committed source instead of committing them.
 - Keep DuckDB-WASM runtime files supplied by dependencies/local build output, not committed binary artifacts.
 
-Task 008 implementation steps:
+Task 009 implementation steps:
 
-- Add reusable browser-side validation types and evaluators.
-- Add SQL/data validators for required columns, forbidden columns, row count, unique key, scalar aggregate, and sensitive-field exclusion.
-- Add local flag generation and unified local progress storage.
-- Add reset progress controls.
-- Add focused unit/fixture tests.
+- Read the Task 009 deliverables and verification requirements.
+- Convert the first browser challenge content into learner-facing instructions.
+- Ensure the challenge uses the existing synthetic dataset, browser SQL runtime, validators, questions, and local flag path.
+- Add or update focused tests/fixtures required by the task.
 
-After Task 008:
+After Task 009:
 
 - Update `STATUS.md`.
 - Update `WHAT_WE_DID.md`.
 - Update `DO_NEXT.md`.
 - Update `BUGS.md` if any issues are found.
-- Mark Task 008 progress and verification notes.
+- Mark Task 009 progress and verification notes.
 - Commit the task changes to git.
 
 ## Upcoming Tasks
 
-- Complete manual browser verification for [006 - Quiz Challenge Runtime](tasks/006-quiz-challenge-runtime.md)
-- Complete manual browser verification for [007 - Browser SQL Runtime](tasks/007-browser-sql-runtime.md)
-- [008 - Validators, Flags, And Progress](tasks/008-validators-flags-and-progress.md)
 - [009 - First Browser Challenges](tasks/009-first-browser-challenges.md)
+- [010 - Cloud Evidence Challenge Pattern](tasks/010-cloud-evidence-challenge-pattern.md)

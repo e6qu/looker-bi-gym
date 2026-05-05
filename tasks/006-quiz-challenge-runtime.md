@@ -2,7 +2,7 @@
 
 ## Status
 
-Implementation complete on 2026-05-05. Manual browser refresh verification is still pending because the sandbox cannot bind the Vite dev server and the escalation request was rejected by the environment.
+Complete on 2026-05-06.
 
 ## Objective
 
@@ -28,7 +28,7 @@ Implement the first mechanically graded quiz challenge mode.
 - [x] Quiz answers are loaded from challenge manifests or validator config.
 - [x] Incorrect answers fail without completing the challenge.
 - [x] Correct answers complete the challenge.
-- [ ] Learner progress persists after page refresh.
+- [x] Learner progress persists after page refresh.
 
 ## Tests
 
@@ -37,7 +37,7 @@ Implement the first mechanically graded quiz challenge mode.
 - [x] Test select-all order-insensitive answers.
 - [x] Test numeric answer tolerance where configured.
 - [x] Run app build.
-- [ ] Manually complete the orientation quiz and verify completion persists after refresh.
+- [x] Manually complete the orientation quiz and verify completion persists after refresh.
 
 ## Notes
 
@@ -47,4 +47,5 @@ Implement the first mechanically graded quiz challenge mode.
 - Full check command: `pnpm check`.
 - `pnpm test:quiz`, `pnpm validate:manifests`, and `pnpm check` passed on 2026-05-05.
 - `pnpm dev` failed in the sandbox with `listen EPERM: operation not permitted 127.0.0.1:5173`.
-- The escalated `pnpm dev` request was rejected by the environment, so manual browser completion/refresh verification remains pending.
+- An approved `pnpm dev` run started Vite at `http://127.0.0.1:5173/` on 2026-05-06.
+- Headless Chrome completed the orientation quiz and verified completion persisted after reload on 2026-05-06.

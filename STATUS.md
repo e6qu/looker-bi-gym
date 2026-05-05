@@ -4,11 +4,11 @@ Last updated: 2026-05-06
 
 ## Current State
 
-Planning, documentation, task tracking, continuity protocol, the static app skeleton, Markdown content navigation, challenge manifest validation/catalog generation, the first synthetic deposits dataset, the quiz challenge runtime implementation, and the browser SQL runtime implementation are in place. Tasks 001, 002, 003, 004, and 005 are complete. Tasks 006 and 007 implementation and automated checks are complete, with manual browser refresh verification still pending. Git discipline now requires `.gitignore` maintenance, no committed rebuildable artifacts, no committed WASM runtime artifacts, and a commit after each completed task. A root `Makefile` exposes the repository checks and tests through `make` targets.
+Planning, documentation, task tracking, continuity protocol, the static app skeleton, Markdown content navigation, challenge manifest validation/catalog generation, the first synthetic deposits dataset, the quiz challenge runtime, the browser SQL runtime, reusable browser validators, local flags, unified local progress storage, and reset controls are in place. Tasks 001 through 008 are complete. Git discipline requires `.gitignore` maintenance, no committed rebuildable artifacts, no committed WASM runtime artifacts, and a commit after each completed task. A root `Makefile` exposes the repository checks and tests through `make` targets.
 
 ## Active Task
 
-Active task: [008 - Validators, Flags, And Progress](tasks/008-validators-flags-and-progress.md).
+Active task: [009 - First Browser Challenges](tasks/009-first-browser-challenges.md).
 
 ## Current Decisions
 
@@ -33,8 +33,12 @@ Active task: [008 - Validators, Flags, And Progress](tasks/008-validators-flags-
 - `make check` runs lint, typecheck, manifest validation, dataset validation, quiz tests, SQL tests, and the production build.
 - Quiz challenge details render from generated manifests at `#/challenges/{challenge-id}`.
 - The quiz runtime grades multiple-choice, select-all, and numeric answers deterministically in the browser.
-- Quiz completion state is stored in browser `localStorage` under `looker-bi-gym.quiz-progress.v1`.
+- Challenge completion state and local flags are stored in browser `localStorage` under `looker-bi-gym.progress.v1`.
+- Legacy quiz progress under `looker-bi-gym.quiz-progress.v1` is migrated when present.
 - The browser SQL runtime loads the synthetic deposits dataset into DuckDB-WASM, exposes table schemas, and caps preview output for safety.
+- Browser SQL result validators support required columns, forbidden columns, row count, unique key, scalar aggregate, and sensitive-field exclusion checks.
+- Completing all required checks and questions generates the challenge flag locally.
+- Settings includes a reset progress control that clears local progress and legacy quiz progress.
 - DuckDB-WASM for browser SQL challenges.
 - Browser-first learner path.
 - Optional cloud-applied track through Google Cloud Console, BigQuery UI, and Looker Studio UI.
@@ -48,8 +52,8 @@ Active task: [008 - Validators, Flags, And Progress](tasks/008-validators-flags-
 
 ## Blockers
 
-- Manual browser verification for Tasks 006 and 007 remains pending because `pnpm dev` cannot bind `127.0.0.1:5173` in the sandbox and the escalated server request was rejected by the environment.
+None known.
 
 ## Confidence
 
-High for planning direction, task structure, the initial app skeleton, Markdown content loading, challenge manifest validation, the initial deposits dataset, automated quiz grading, the browser SQL runtime, and the Makefile check harness. Medium for browser persistence until the manual refresh verification is run.
+High for planning direction, task structure, the app skeleton, Markdown content loading, challenge manifest validation, the initial deposits dataset, automated quiz grading, the browser SQL runtime, browser validators, local flags, unified progress storage, reset behavior, and the Makefile check harness.

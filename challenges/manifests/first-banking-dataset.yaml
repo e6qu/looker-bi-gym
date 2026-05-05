@@ -48,12 +48,38 @@ checks:
       - branch_count
       - latest_balance_date
   - id: no_sensitive_fields
-    type: forbidden-column
-    description: Result must not expose raw customer or account identifiers.
+    type: sensitive-field-exclusion
+    description: Result must not expose sensitive serving-output fields.
     target: profile_result
     expected:
       - customer_id
       - account_id
+      - synthetic_iban
+  - id: no_raw_identifiers
+    type: forbidden-column
+    description: Result must not expose raw account identifiers.
+    target: profile_result
+    expected:
+      - account_id
+  - id: one_profile_row
+    type: row-count
+    description: Result returns one profiling row.
+    target: profile_result
+    expected: 1
+  - id: unique_profile_date
+    type: unique-key
+    description: Result has one unique latest balance date.
+    target: profile_result
+    expected:
+      - latest_balance_date
+  - id: balance_row_total
+    type: scalar-aggregate
+    description: Result row count matches the seed daily balance rows.
+    target: profile_result
+    expected:
+      column: row_count
+      value: 12
+      tolerance: 0
 questions:
   - id: q_balance_grain
     type: multiple-choice

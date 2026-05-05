@@ -1,6 +1,6 @@
 PNPM ?= pnpm
 
-.PHONY: help install lint typecheck validate validate-manifests validate-datasets test test-quiz test-sql build check dev preview
+.PHONY: help install lint typecheck validate validate-manifests validate-datasets test test-quiz test-sql test-validators build check dev preview
 
 help:
 	@printf '%s\n' \
@@ -14,6 +14,7 @@ help:
 		'  test                Run all automated tests' \
 		'  test-quiz           Run quiz evaluator tests' \
 		'  test-sql            Run SQL runtime smoke tests' \
+		'  test-validators     Run browser validator tests' \
 		'  build               Build the static app' \
 		'  check               Run lint, typecheck, validation, tests, and build' \
 		'  dev                 Start Vite dev server' \
@@ -36,13 +37,16 @@ validate-manifests:
 validate-datasets:
 	$(PNPM) validate:datasets
 
-test: test-quiz test-sql
+test: test-quiz test-sql test-validators
 
 test-quiz:
 	$(PNPM) test:quiz
 
 test-sql:
 	$(PNPM) test:sql
+
+test-validators:
+	$(PNPM) test:validators
 
 build:
 	$(PNPM) build

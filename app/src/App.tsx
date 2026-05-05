@@ -13,13 +13,29 @@ import {
   formatRequiredTools,
 } from './challenges';
 import { renderMarkdown } from './markdown';
-import { evaluateQuiz, isSupportedQuizQuestion } from './quiz';
+import {
+  evaluateChallengeQuestions,
+  evaluateQuiz,
+  isSupportedQuizQuestion,
+} from './quiz';
+import {
+  completeChallenge,
+  getCompletedChallengeIds,
+  getPassedQuestionIds,
+  maybeCreateLocalFlag,
+  readLearnerProgress,
+  resetLearnerProgress,
+  writeLearnerProgress,
+} from './progress';
 import { getSqlRuntime, isSqlPreviewSupported, runSqlPreview } from './sqlRuntime';
+import { evaluateSqlResultChecks } from './validators';
 import type { JSX } from 'react';
 import type { ChallengeManifest } from './challengeTypes';
 import type { ContentDocument, ContentSectionId } from './content';
+import type { LearnerProgressState } from './progress';
 import type { QuizAnswerState, QuizResponse } from './quiz';
 import type { SqlQueryResult, SqlTableSchema } from './sqlRuntime';
+import type { ValidationEvaluation } from './validators';
 
 type RouteId = 'home' | ContentSectionId | 'challenges' | 'settings';
 
@@ -32,6 +48,13 @@ type Route = {
   readonly id: RouteId;
   readonly label: string;
 };
+
+type CompleteChallengeHandler = (
+  challengeId: string,
+  flag: string,
+  passedCheckIds: readonly string[],
+  passedQuestionIds: readonly string[],
+) => void;
 
 const routes: readonly Route[] = [
   { id: 'home', label: 'Home' },
@@ -56,10 +79,6 @@ const principles: readonly string[] = [
   'Optional tools are listed per tutorial',
 ];
 
-const quizProgressStorageKey = 'looker-bi-gym.quiz-progress.v1';
-
-type QuizProgressState = Readonly<Record<string, boolean>>;
-
 function isRouteId(value: string | undefined): value is RouteId {
   return value !== undefined && routes.some((route) => route.id === value);
 }
@@ -77,32 +96,6 @@ function routeFromHash(): AppRoute {
   return fileName.length > 0 ? { section, fileName } : { section };
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return value !== null && typeof value === 'object' && !Array.isArray(value);
-}
-
-function isQuizProgressState(value: unknown): value is QuizProgressState {
-  return isRecord(value) && Object.values(value).every((item) => typeof item === 'boolean');
-}
-
-function readQuizProgress(): QuizProgressState {
-  const storedValue = window.localStorage.getItem(quizProgressStorageKey);
-
-  if (storedValue === null) {
-    return {};
-  }
-
-  try {
-    const parsed = JSON.parse(storedValue) as unknown;
-    return isQuizProgressState(parsed) ? parsed : {};
-  } catch {
-    return {};
-  }
-}
-
-function writeQuizProgress(progress: QuizProgressState): void {
-  window.localStorage.setItem(quizProgressStorageKey, JSON.stringify(progress));
-}
 
 function ChallengeList({
   challenges,
@@ -199,7 +192,7 @@ function QuizChallengePage({
 }: {
   readonly challenge: ChallengeManifest;
   readonly isCompleted: boolean;
-  readonly onComplete: (challengeId: string) => void;
+  readonly onComplete: CompleteChallengeHandler;
 }): JSX.Element {
   const [answers, setAnswers] = useState<QuizAnswerState>({});
   const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
@@ -226,7 +219,12 @@ function QuizChallengePage({
     setHasSubmitted(true);
 
     if (evaluation.isComplete) {
-      onComplete(challenge.id);
+      onComplete(
+        challenge.id,
+        challenge.flag.id,
+        [],
+        getPassedQuestionIds(evaluation),
+      );
     }
   }
 
@@ -468,12 +466,52 @@ function SqlResultTable({
   );
 }
 
+function ValidationSummary({
+  evaluation,
+}: {
+  readonly evaluation: ValidationEvaluation;
+}): JSX.Element {
+  return (
+    <section className="validationPanel" aria-label="Challenge validation results">
+      <div className="validationHeader">
+        <p className="eyebrow">Checks</p>
+        <strong>{evaluation.requiredPassed ? 'Required checks passed' : 'Required checks pending'}</strong>
+      </div>
+      <ul>
+        {evaluation.checks.map((check) => (
+          <li
+            className={check.status === 'pass' ? 'validationPass' : 'validationFail'}
+            key={check.checkId}
+          >
+            <span>{check.status === 'pass' ? 'Pass' : check.status === 'fail' ? 'Fail' : 'Unsupported'}</span>
+            <div>
+              <strong>{check.description}</strong>
+              <p>{check.message}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 function SqlChallengePage({
   challenge,
+  isCompleted,
+  onComplete,
 }: {
   readonly challenge: ChallengeManifest;
+  readonly isCompleted: boolean;
+  readonly onComplete: CompleteChallengeHandler;
 }): JSX.Element {
-  const [sql, setSql] = useState<string>('SELECT * FROM branches LIMIT 10;');
+  const [sql, setSql] = useState<string>(`SELECT
+  COUNT(*) AS row_count,
+  COUNT(DISTINCT adb.currency) AS currency_count,
+  COUNT(DISTINCT a.branch_id) AS branch_count,
+  MAX(adb.business_date) AS latest_balance_date
+FROM account_daily_balances adb
+INNER JOIN accounts a USING (account_id);`);
+  const [answers, setAnswers] = useState<QuizAnswerState>({});
   const [runtimeState, setRuntimeState] = useState<
     | { readonly status: 'loading' }
     | {
@@ -489,6 +527,28 @@ function SqlChallengePage({
     | { readonly status: 'success'; readonly result: SqlQueryResult }
     | { readonly status: 'error'; readonly message: string }
   >({ status: 'idle' });
+  const checkEvaluation = useMemo(
+    () =>
+      queryState.status === 'success'
+        ? evaluateSqlResultChecks(challenge, queryState.result)
+        : undefined,
+    [challenge, queryState],
+  );
+  const questionEvaluation = useMemo(
+    () => evaluateChallengeQuestions(challenge, answers),
+    [answers, challenge],
+  );
+  const evaluationsByQuestion = useMemo(
+    () =>
+      new Map(
+        questionEvaluation.questions.map((question) => [question.questionId, question] as const),
+      ),
+    [questionEvaluation.questions],
+  );
+  const completion = useMemo(
+    () => maybeCreateLocalFlag(challenge, questionEvaluation, checkEvaluation),
+    [challenge, checkEvaluation, questionEvaluation],
+  );
 
   useEffect(() => {
     let isActive = true;
@@ -516,6 +576,24 @@ function SqlChallengePage({
       isActive = false;
     };
   }, [challenge.id]);
+
+  useEffect(() => {
+    if (completion !== undefined && !isCompleted) {
+      onComplete(
+        completion.challengeId,
+        completion.flag,
+        completion.passedCheckIds,
+        completion.passedQuestionIds,
+      );
+    }
+  }, [completion, isCompleted, onComplete]);
+
+  function setAnswer(questionId: string, answer: QuizResponse): void {
+    setAnswers((currentAnswers) => ({
+      ...currentAnswers,
+      [questionId]: answer,
+    }));
+  }
 
   async function runQuery(): Promise<void> {
     if (runtimeState.status !== 'ready') {
@@ -593,7 +671,7 @@ function SqlChallengePage({
           <div className="sqlEditorPanel">
             <div className="sqlEditorHeader">
               <p className="eyebrow">SQL editor</p>
-              <span>{challenge.flag.id}</span>
+              <span>{isCompleted ? `Flag: ${challenge.flag.id}` : 'Flag appears after required checks pass'}</span>
             </div>
             <textarea
               aria-label="SQL query editor"
@@ -611,6 +689,88 @@ function SqlChallengePage({
               </button>
               <p>Queries run fully in the browser against the loaded synthetic CSV tables.</p>
             </div>
+          </div>
+
+          <div className="quizPanel sqlQuestionPanel">
+            {challenge.questions.map((question, index) => {
+              const questionResult = evaluationsByQuestion.get(question.id);
+              const isCorrect = questionResult?.isCorrect ?? false;
+              const isAnswered = questionResult?.isAnswered ?? false;
+
+              return (
+                <fieldset className="quizQuestion" key={question.id}>
+                  <legend>
+                    <span>Question {index + 1}</span>
+                    {question.prompt}
+                  </legend>
+
+                  {question.type === 'multiple-choice' && question.options !== undefined ? (
+                    <div className="answerOptions">
+                      {question.options.map((option) => (
+                        <label key={option.id}>
+                          <input
+                            checked={getStringAnswer(answers, question.id) === option.id}
+                            name={question.id}
+                            onChange={() => setAnswer(question.id, option.id)}
+                            type="radio"
+                            value={option.id}
+                          />
+                          <span>{option.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  {question.type === 'select-all' && question.options !== undefined ? (
+                    <div className="answerOptions">
+                      {question.options.map((option) => {
+                        const selectedAnswers = getArrayAnswer(answers, question.id);
+                        const isSelected = selectedAnswers.includes(option.id);
+
+                        return (
+                          <label key={option.id}>
+                            <input
+                              checked={isSelected}
+                              onChange={() =>
+                                setAnswer(
+                                  question.id,
+                                  isSelected
+                                    ? selectedAnswers.filter((answer) => answer !== option.id)
+                                    : [...selectedAnswers, option.id],
+                                )
+                              }
+                              type="checkbox"
+                              value={option.id}
+                            />
+                            <span>{option.label}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  ) : null}
+
+                  {question.type === 'numeric' ? (
+                    <input
+                      className="numericAnswer"
+                      inputMode="decimal"
+                      onChange={(event) => setAnswer(question.id, event.currentTarget.value)}
+                      type="number"
+                      value={getStringAnswer(answers, question.id)}
+                    />
+                  ) : null}
+
+                  {isAnswered ? (
+                    <div
+                      className={isCorrect ? 'feedbackBox feedbackPass' : 'feedbackBox feedbackFail'}
+                      role="status"
+                    >
+                      {isCorrect ? 'Correct.' : 'Incorrect.'}
+                      {question.explanation !== undefined ? ` ${question.explanation}` : ''}
+                    </div>
+                  ) : null}
+                </fieldset>
+              );
+            })}
           </div>
 
           <div className="sqlExamples">
@@ -638,6 +798,12 @@ function SqlChallengePage({
           ) : null}
 
           {queryState.status === 'success' ? <SqlResultTable result={queryState.result} /> : null}
+          {checkEvaluation !== undefined ? <ValidationSummary evaluation={checkEvaluation} /> : null}
+          {completion !== undefined ? (
+            <div className="feedbackBox feedbackPass sqlFeedback" role="status">
+              Challenge complete. Flag: {completion.flag}
+            </div>
+          ) : null}
           {queryState.status === 'idle' ? (
             <div className="sqlEmptyState">Run a query to inspect the synthetic banking tables.</div>
           ) : null}
@@ -705,8 +871,8 @@ function HomePage(): JSX.Element {
           <h2 id="current-track">Current Track</h2>
           <p>
             The app shell now loads existing Markdown source material. Challenge manifests,
-            datasets, DuckDB-WASM SQL execution, validators, and progress flags follow in
-            the task backlog.
+            datasets, DuckDB-WASM SQL execution, browser validators, and local progress flags
+            are in place for the first browser challenges.
           </p>
         </section>
         <section aria-labelledby="safety-note">
@@ -793,25 +959,29 @@ function ChallengesPage({
 }: {
   readonly challengeId?: string;
 }): JSX.Element {
-  const [quizProgress, setQuizProgress] = useState<QuizProgressState>(readQuizProgress);
+  const [progress, setProgress] = useState<LearnerProgressState>(() =>
+    readLearnerProgress(window.localStorage),
+  );
   const completedChallengeIds = useMemo(
-    () =>
-      new Set(
-        Object.entries(quizProgress)
-          .filter((entry) => entry[1])
-          .map((entry) => entry[0]),
-      ),
-    [quizProgress],
+    () => getCompletedChallengeIds(progress),
+    [progress],
   );
   const selectedChallenge = getChallengeById(challengeId);
 
-  function completeQuiz(challengeIdToComplete: string): void {
-    setQuizProgress((currentProgress) => {
-      const nextProgress = {
-        ...currentProgress,
-        [challengeIdToComplete]: true,
-      };
-      writeQuizProgress(nextProgress);
+  function completeSelectedChallenge(
+    challengeIdToComplete: string,
+    flag: string,
+    passedCheckIds: readonly string[],
+    passedQuestionIds: readonly string[],
+  ): void {
+    setProgress((currentProgress) => {
+      const nextProgress = completeChallenge(currentProgress, {
+        challengeId: challengeIdToComplete,
+        flag,
+        passedCheckIds,
+        passedQuestionIds,
+      });
+      writeLearnerProgress(nextProgress, window.localStorage);
       return nextProgress;
     });
   }
@@ -835,13 +1005,20 @@ function ChallengesPage({
         key={selectedChallenge.id}
         challenge={selectedChallenge}
         isCompleted={completedChallengeIds.has(selectedChallenge.id)}
-        onComplete={completeQuiz}
+        onComplete={completeSelectedChallenge}
       />
     );
   }
 
   if (selectedChallenge?.mode === 'browser-sql') {
-    return <SqlChallengePage key={selectedChallenge.id} challenge={selectedChallenge} />;
+    return (
+      <SqlChallengePage
+        key={selectedChallenge.id}
+        challenge={selectedChallenge}
+        isCompleted={completedChallengeIds.has(selectedChallenge.id)}
+        onComplete={completeSelectedChallenge}
+      />
+    );
   }
 
   if (selectedChallenge !== undefined) {
@@ -861,11 +1038,18 @@ function ChallengesPage({
 }
 
 function SettingsPage(): JSX.Element {
+  const [resetMessage, setResetMessage] = useState<string>('');
+
+  function resetProgress(): void {
+    resetLearnerProgress(window.localStorage);
+    setResetMessage('Local progress has been reset in this browser.');
+  }
+
   return (
     <section className="page settingsPage" aria-labelledby="settings-title">
       <PageTitle
         title="Settings"
-        description="Learner state will remain browser-local. The reset and export controls arrive with the progress task."
+        description="Learner state remains browser-local. Reset clears challenge completion and local flags from this browser."
         id="settings-title"
       />
       <div className="settingsPanel">
@@ -884,6 +1068,20 @@ function SettingsPage(): JSX.Element {
           <h3>Credentials</h3>
           <p>No BigQuery, Looker Studio, Google Cloud, or banking credentials are requested or stored.</p>
         </div>
+      </div>
+      <div className="settingsActionPanel">
+        <div>
+          <h3>Progress</h3>
+          <p>Completion flags and challenge state are stored only in local browser storage.</p>
+        </div>
+        <button type="button" onClick={resetProgress}>
+          Reset Progress
+        </button>
+        {resetMessage.length > 0 ? (
+          <div className="feedbackBox feedbackPass" role="status">
+            {resetMessage}
+          </div>
+        ) : null}
       </div>
     </section>
   );

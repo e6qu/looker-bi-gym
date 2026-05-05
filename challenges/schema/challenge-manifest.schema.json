@@ -288,7 +288,9 @@
             "forbidden-column",
             "row-count",
             "aggregate-total",
+            "scalar-aggregate",
             "unique-key",
+            "sensitive-field-exclusion",
             "reconciliation",
             "evidence-format",
             "manual-review"

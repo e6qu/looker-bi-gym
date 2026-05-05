@@ -2,7 +2,7 @@
 
 ## Status
 
-Implementation complete on 2026-05-06. Manual browser refresh verification is still pending because the sandbox cannot bind the Vite dev server and the escalated server request was rejected by the environment.
+Complete on 2026-05-06.
 
 ## Objective
 
@@ -36,7 +36,7 @@ Add browser-side SQL execution over synthetic datasets.
 - [x] Run a smoke test query against each seed table.
 - [x] Run a join query across accounts and balances.
 - [x] Run an invalid SQL query and verify an error is shown.
-- [ ] Manually refresh the page and rerun a query.
+- [x] Manually refresh the page and rerun a query.
 
 ## Notes
 
@@ -46,4 +46,5 @@ Add browser-side SQL execution over synthetic datasets.
 - SQL smoke test command: `pnpm test:sql`.
 - `pnpm test:sql`, `pnpm test:quiz`, and `pnpm check` passed on 2026-05-06.
 - `pnpm dev` failed in the sandbox with `listen EPERM: operation not permitted 127.0.0.1:5173`.
-- The escalated `pnpm dev` request was rejected by the environment, so manual browser refresh verification remains pending.
+- An approved `pnpm dev` run started Vite at `http://127.0.0.1:5173/` on 2026-05-06.
+- Headless Chrome completed the SQL challenge, verified completion persisted after reload, and confirmed a query could run after refresh on 2026-05-06.
