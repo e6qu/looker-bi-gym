@@ -1,0 +1,21 @@
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
+
+function getBuildBase(): string {
+  const githubPagesBase = process.env['GITHUB_PAGES_BASE'];
+
+  if (githubPagesBase !== undefined && githubPagesBase.length > 0) {
+    return githubPagesBase;
+  }
+
+  return './';
+}
+
+export default defineConfig(({ command }) => ({
+  base: command === 'serve' ? '/' : getBuildBase(),
+  plugins: [react()],
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+  },
+}));

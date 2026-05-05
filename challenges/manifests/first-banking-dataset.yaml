@@ -1,0 +1,79 @@
+id: first-banking-dataset
+title: First Banking Dataset
+area: orientation-and-source-data
+mode: browser-sql
+difficulty: beginner
+estimated_minutes: 25
+prerequisites:
+  - orientation-quiz
+business_scenario: Inspect a small deposits and account ownership dataset before building governed BI metrics.
+regulatory_context:
+  - BNR
+  - FGDB
+  - GDPR
+required_tools: none
+inputs:
+  - id: deposits_seed
+    type: dataset
+    description: Planned static deposits dataset with Romanian branch geography, RON and EUR balances, and ownership rows.
+    dataset_id: deposits-seed
+    dataset_version: v0.1.0
+    tables:
+      - branches
+      - accounts
+      - account_owners
+      - account_daily_balances
+    sensitive_fields:
+      - customer_id
+      - account_id
+    date_semantics:
+      - balance_date is a daily snapshot date.
+      - opened_date is an account lifecycle date.
+    grain: One row per account per business_date in account_daily_balances.
+outputs:
+  - id: profile_query
+    type: sql-text
+    description: SQL that profiles rows, currencies, branches, and snapshot dates.
+  - id: profile_result
+    type: sql-result
+    description: Query output with counts and basic balance totals for the synthetic dataset.
+checks:
+  - id: required_columns
+    type: required-column
+    description: Result includes expected profiling columns.
+    target: profile_result
+    expected:
+      - row_count
+      - currency_count
+      - branch_count
+      - latest_balance_date
+  - id: no_sensitive_fields
+    type: forbidden-column
+    description: Result must not expose raw customer or account identifiers.
+    target: profile_result
+    expected:
+      - customer_id
+      - account_id
+questions:
+  - id: q_balance_grain
+    type: multiple-choice
+    prompt: What is the intended grain of the deposit_balances table?
+    options:
+      - id: account_day
+        label: One row per account per balance date.
+      - id: customer_day
+        label: One row per customer per balance date.
+      - id: branch_month
+        label: One row per branch per month.
+    answer: account_day
+    explanation: Daily balances are semi-additive snapshots at account-date grain.
+flag:
+  id: flag-first-banking-dataset
+  criteria:
+    - SQL checks pass for required columns and forbidden sensitive fields.
+    - Grain question is answered correctly.
+hints:
+  - level: 1
+    text: Start by counting rows and distinct values before joining ownership rows.
+next_challenges:
+  - looker-studio-evidence

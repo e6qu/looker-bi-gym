@@ -1,0 +1,389 @@
+[
+  {
+    "id": "first-banking-dataset",
+    "title": "First Banking Dataset",
+    "area": "orientation-and-source-data",
+    "mode": "browser-sql",
+    "difficulty": "beginner",
+    "estimated_minutes": 25,
+    "prerequisites": [
+      "orientation-quiz"
+    ],
+    "business_scenario": "Inspect a small deposits and account ownership dataset before building governed BI metrics.",
+    "regulatory_context": [
+      "BNR",
+      "FGDB",
+      "GDPR"
+    ],
+    "required_tools": "none",
+    "inputs": [
+      {
+        "id": "deposits_seed",
+        "type": "dataset",
+        "description": "Planned static deposits dataset with Romanian branch geography, RON and EUR balances, and ownership rows.",
+        "dataset_id": "deposits-seed",
+        "dataset_version": "v0.1.0",
+        "tables": [
+          "branches",
+          "accounts",
+          "account_owners",
+          "account_daily_balances"
+        ],
+        "sensitive_fields": [
+          "customer_id",
+          "account_id"
+        ],
+        "date_semantics": [
+          "balance_date is a daily snapshot date.",
+          "opened_date is an account lifecycle date."
+        ],
+        "grain": "One row per account per business_date in account_daily_balances."
+      }
+    ],
+    "outputs": [
+      {
+        "id": "profile_query",
+        "type": "sql-text",
+        "description": "SQL that profiles rows, currencies, branches, and snapshot dates."
+      },
+      {
+        "id": "profile_result",
+        "type": "sql-result",
+        "description": "Query output with counts and basic balance totals for the synthetic dataset."
+      }
+    ],
+    "checks": [
+      {
+        "id": "required_columns",
+        "type": "required-column",
+        "description": "Result includes expected profiling columns.",
+        "target": "profile_result",
+        "expected": [
+          "row_count",
+          "currency_count",
+          "branch_count",
+          "latest_balance_date"
+        ]
+      },
+      {
+        "id": "no_sensitive_fields",
+        "type": "forbidden-column",
+        "description": "Result must not expose raw customer or account identifiers.",
+        "target": "profile_result",
+        "expected": [
+          "customer_id",
+          "account_id"
+        ]
+      }
+    ],
+    "questions": [
+      {
+        "id": "q_balance_grain",
+        "type": "multiple-choice",
+        "prompt": "What is the intended grain of the deposit_balances table?",
+        "options": [
+          {
+            "id": "account_day",
+            "label": "One row per account per balance date."
+          },
+          {
+            "id": "customer_day",
+            "label": "One row per customer per balance date."
+          },
+          {
+            "id": "branch_month",
+            "label": "One row per branch per month."
+          }
+        ],
+        "answer": "account_day",
+        "explanation": "Daily balances are semi-additive snapshots at account-date grain."
+      }
+    ],
+    "flag": {
+      "id": "flag-first-banking-dataset",
+      "criteria": [
+        "SQL checks pass for required columns and forbidden sensitive fields.",
+        "Grain question is answered correctly."
+      ]
+    },
+    "hints": [
+      {
+        "level": 1,
+        "text": "Start by counting rows and distinct values before joining ownership rows."
+      }
+    ],
+    "next_challenges": [
+      "looker-studio-evidence"
+    ]
+  },
+  {
+    "id": "looker-studio-evidence",
+    "title": "Looker Studio Evidence Pattern",
+    "area": "looker-studio-and-dashboard-design",
+    "mode": "cloud-evidence",
+    "difficulty": "intermediate",
+    "estimated_minutes": 35,
+    "prerequisites": [
+      "first-banking-dataset"
+    ],
+    "business_scenario": "Practice collecting inspectable evidence from a browser-based BI workflow without storing credentials in the app.",
+    "regulatory_context": [
+      "BNR",
+      "GDPR"
+    ],
+    "required_tools": [
+      {
+        "name": "Google Cloud Console",
+        "purpose": "Optional cloud-applied track for BigQuery UI work in a browser.",
+        "required": false,
+        "platform_notes": "Browser UI only; no Google Cloud CLI."
+      },
+      {
+        "name": "Looker Studio",
+        "purpose": "Optional report-building evidence through the browser UI.",
+        "required": false,
+        "platform_notes": "Browser UI only; no service account keys or app-stored credentials."
+      }
+    ],
+    "inputs": [
+      {
+        "id": "serving_view_contract",
+        "type": "markdown",
+        "description": "Tutorial instructions for using a serving view as the dashboard source.",
+        "path": "tutorials/data-sources.md"
+      },
+      {
+        "id": "cloud_ui",
+        "type": "cloud-ui",
+        "description": "Optional browser UI workflow in BigQuery and Looker Studio."
+      }
+    ],
+    "outputs": [
+      {
+        "id": "evidence_note",
+        "type": "dashboard-evidence",
+        "description": "Pasted evidence that names the serving view, freshness label, and visible dashboard metric."
+      }
+    ],
+    "checks": [
+      {
+        "id": "serving_view_named",
+        "type": "evidence-format",
+        "description": "Evidence mentions the serving view instead of an ad hoc source table.",
+        "target": "evidence_note",
+        "expected": "serving_view"
+      },
+      {
+        "id": "freshness_present",
+        "type": "evidence-format",
+        "description": "Evidence includes a visible freshness or source cutoff label.",
+        "target": "evidence_note",
+        "expected": "freshness"
+      }
+    ],
+    "questions": [
+      {
+        "id": "q_credentials",
+        "type": "multiple-choice",
+        "prompt": "What should the static app store for this cloud evidence task?",
+        "options": [
+          {
+            "id": "no_credentials",
+            "label": "No cloud credentials or tokens."
+          },
+          {
+            "id": "service_key",
+            "label": "A service account key."
+          },
+          {
+            "id": "oauth_token",
+            "label": "A pasted OAuth access token."
+          }
+        ],
+        "answer": "no_credentials",
+        "explanation": "Cloud work happens outside the static app; credentials must not be collected or stored."
+      }
+    ],
+    "evidence": [
+      {
+        "id": "evidence_note",
+        "type": "manual-note",
+        "description": "Learner-provided note with serving view name, freshness label, and dashboard metric."
+      }
+    ],
+    "flag": {
+      "id": "flag-looker-studio-evidence",
+      "criteria": [
+        "Evidence format checks pass locally.",
+        "Credential storage question is answered correctly."
+      ]
+    },
+    "hints": [
+      {
+        "level": 1,
+        "text": "Evidence should describe what is visible without pasting secrets, tokens, or private URLs."
+      }
+    ]
+  },
+  {
+    "id": "orientation-quiz",
+    "title": "Orientation Quiz",
+    "area": "orientation-and-source-data",
+    "mode": "quiz",
+    "difficulty": "intro",
+    "estimated_minutes": 10,
+    "prerequisites": [],
+    "business_scenario": "Confirm the training boundary before working with synthetic Romanian banking BI examples.",
+    "regulatory_context": [
+      "BNR",
+      "FGDB",
+      "GDPR"
+    ],
+    "required_tools": "none",
+    "inputs": [
+      {
+        "id": "platform_notes",
+        "type": "markdown",
+        "description": "Existing docs, regulations, and tutorials rendered in the static app.",
+        "path": "docs/README.md"
+      }
+    ],
+    "outputs": [
+      {
+        "id": "quiz_answers",
+        "type": "answer-set",
+        "description": "Browser-local answers to orientation and synthetic-data questions."
+      }
+    ],
+    "checks": [
+      {
+        "id": "synthetic_only",
+        "type": "quiz-answer",
+        "description": "Learner confirms that only synthetic banking data belongs in this project.",
+        "target": "q_synthetic_data",
+        "expected": "synthetic_only"
+      },
+      {
+        "id": "browser_first",
+        "type": "quiz-answer",
+        "description": "Learner confirms the default challenge path requires no installed local tools.",
+        "target": "q_required_tools",
+        "expected": "none"
+      },
+      {
+        "id": "sensitive_fields",
+        "type": "quiz-answer",
+        "description": "Learner identifies sensitive fields that should not appear in BI serving outputs.",
+        "target": "q_sensitive_fields",
+        "expected": [
+          "account_id",
+          "customer_id",
+          "synthetic_iban"
+        ]
+      },
+      {
+        "id": "supported_quiz_types",
+        "type": "quiz-answer",
+        "description": "Learner confirms the number of quiz question types supported by this runtime.",
+        "target": "q_supported_types",
+        "expected": 3
+      }
+    ],
+    "questions": [
+      {
+        "id": "q_synthetic_data",
+        "type": "multiple-choice",
+        "prompt": "Which data is allowed in Looker BI Gym challenge files?",
+        "options": [
+          {
+            "id": "synthetic_only",
+            "label": "Small synthetic banking data created for training."
+          },
+          {
+            "id": "anonymized_real",
+            "label": "Real bank data after anonymization."
+          },
+          {
+            "id": "production_sample",
+            "label": "A masked production sample with credentials removed."
+          }
+        ],
+        "answer": "synthetic_only",
+        "explanation": "Challenge files must use synthetic data only."
+      },
+      {
+        "id": "q_required_tools",
+        "type": "multiple-choice",
+        "prompt": "What should a browser-only challenge declare for required tools?",
+        "options": [
+          {
+            "id": "none",
+            "label": "none"
+          },
+          {
+            "id": "docker",
+            "label": "Docker"
+          },
+          {
+            "id": "cloud_cli",
+            "label": "Google Cloud CLI"
+          }
+        ],
+        "answer": "none",
+        "explanation": "Browser-only tasks explicitly declare required_tools as none."
+      },
+      {
+        "id": "q_sensitive_fields",
+        "type": "select-all",
+        "prompt": "Which fields are sensitive serving-output fields in the seed deposits dataset?",
+        "options": [
+          {
+            "id": "account_id",
+            "label": "account_id"
+          },
+          {
+            "id": "branch_city",
+            "label": "branch_city"
+          },
+          {
+            "id": "customer_id",
+            "label": "customer_id"
+          },
+          {
+            "id": "synthetic_iban",
+            "label": "synthetic_iban"
+          }
+        ],
+        "answer": [
+          "account_id",
+          "customer_id",
+          "synthetic_iban"
+        ],
+        "explanation": "Account IDs, customer IDs, and synthetic IBANs are intentionally marked sensitive."
+      },
+      {
+        "id": "q_supported_types",
+        "type": "numeric",
+        "prompt": "How many quiz question types does the first quiz runtime support?",
+        "answer": 3,
+        "tolerance": 0,
+        "explanation": "The runtime supports multiple choice, select all, and numeric answers."
+      }
+    ],
+    "flag": {
+      "id": "flag-orientation-quiz",
+      "criteria": [
+        "Answer all orientation questions correctly."
+      ]
+    },
+    "hints": [
+      {
+        "level": 1,
+        "text": "Check the project constraints shown on the home page."
+      }
+    ],
+    "next_challenges": [
+      "first-banking-dataset"
+    ]
+  }
+]

@@ -1,0 +1,36 @@
+# 015 - Solution Fixtures And Golden Tests
+
+## Objective
+
+Create known-good and known-bad solution fixtures so challenge validators can be tested mechanically before release.
+
+## Dependencies
+
+- [008 - Validators, Flags, And Progress](008-validators-flags-and-progress.md)
+- [009 - First Browser Challenges](009-first-browser-challenges.md)
+- [014 - Dataset Expansion And Versioning](014-dataset-expansion-and-versioning.md)
+
+## Deliverables
+
+- Fixture directory structure.
+- At least one known-good fixture per released challenge.
+- At least one known-bad fixture for each CTF/trap challenge.
+- Fixture runner integrated with validator framework.
+- CI command to run all golden tests.
+- Documentation for adding fixtures with a new challenge.
+
+## Verification
+
+- Good fixtures pass.
+- Bad fixtures fail for the expected reason.
+- Challenge 020 includes a bad fixture for the naive account-owner fanout join.
+- Fixtures are deterministic and do not depend on browser storage.
+- A challenge cannot be marked release-ready without fixture coverage or a documented exception.
+
+## Tests
+
+- Run all fixture tests locally.
+- Temporarily alter a good fixture and verify the test fails.
+- Temporarily alter a bad fixture into a passing solution and verify the bad-fixture expectation fails.
+- Run app build after fixture integration.
+- Run CI validation command that includes fixture tests.

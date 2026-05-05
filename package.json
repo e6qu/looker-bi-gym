@@ -1,0 +1,19 @@
+{
+  "name": "looker-bi-gym",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.33.3",
+  "scripts": {
+    "dev": "pnpm --filter @looker-bi-gym/app dev",
+    "build": "pnpm --filter @looker-bi-gym/app build",
+    "check": "pnpm --filter @looker-bi-gym/app check",
+    "lint": "pnpm --filter @looker-bi-gym/app lint",
+    "test:quiz": "pnpm --filter @looker-bi-gym/app test:quiz",
+    "test:sql": "pnpm --filter @looker-bi-gym/app test:sql",
+    "validate:datasets": "pnpm --filter @looker-bi-gym/app validate:datasets",
+    "validate:manifests": "pnpm --filter @looker-bi-gym/app validate:manifests",
+    "typecheck": "pnpm --filter @looker-bi-gym/app typecheck",
+    "preview": "pnpm --filter @looker-bi-gym/app preview"
+  }
+}

@@ -1,0 +1,103 @@
+id: orientation-quiz
+title: Orientation Quiz
+area: orientation-and-source-data
+mode: quiz
+difficulty: intro
+estimated_minutes: 10
+prerequisites: []
+business_scenario: Confirm the training boundary before working with synthetic Romanian banking BI examples.
+regulatory_context:
+  - BNR
+  - FGDB
+  - GDPR
+required_tools: none
+inputs:
+  - id: platform_notes
+    type: markdown
+    description: Existing docs, regulations, and tutorials rendered in the static app.
+    path: docs/README.md
+outputs:
+  - id: quiz_answers
+    type: answer-set
+    description: Browser-local answers to orientation and synthetic-data questions.
+checks:
+  - id: synthetic_only
+    type: quiz-answer
+    description: Learner confirms that only synthetic banking data belongs in this project.
+    target: q_synthetic_data
+    expected: synthetic_only
+  - id: browser_first
+    type: quiz-answer
+    description: Learner confirms the default challenge path requires no installed local tools.
+    target: q_required_tools
+    expected: none
+  - id: sensitive_fields
+    type: quiz-answer
+    description: Learner identifies sensitive fields that should not appear in BI serving outputs.
+    target: q_sensitive_fields
+    expected:
+      - account_id
+      - customer_id
+      - synthetic_iban
+  - id: supported_quiz_types
+    type: quiz-answer
+    description: Learner confirms the number of quiz question types supported by this runtime.
+    target: q_supported_types
+    expected: 3
+questions:
+  - id: q_synthetic_data
+    type: multiple-choice
+    prompt: Which data is allowed in Looker BI Gym challenge files?
+    options:
+      - id: synthetic_only
+        label: Small synthetic banking data created for training.
+      - id: anonymized_real
+        label: Real bank data after anonymization.
+      - id: production_sample
+        label: A masked production sample with credentials removed.
+    answer: synthetic_only
+    explanation: Challenge files must use synthetic data only.
+  - id: q_required_tools
+    type: multiple-choice
+    prompt: What should a browser-only challenge declare for required tools?
+    options:
+      - id: none
+        label: none
+      - id: docker
+        label: Docker
+      - id: cloud_cli
+        label: Google Cloud CLI
+    answer: none
+    explanation: Browser-only tasks explicitly declare required_tools as none.
+  - id: q_sensitive_fields
+    type: select-all
+    prompt: Which fields are sensitive serving-output fields in the seed deposits dataset?
+    options:
+      - id: account_id
+        label: account_id
+      - id: branch_city
+        label: branch_city
+      - id: customer_id
+        label: customer_id
+      - id: synthetic_iban
+        label: synthetic_iban
+    answer:
+      - account_id
+      - customer_id
+      - synthetic_iban
+    explanation: Account IDs, customer IDs, and synthetic IBANs are intentionally marked sensitive.
+  - id: q_supported_types
+    type: numeric
+    prompt: How many quiz question types does the first quiz runtime support?
+    answer: 3
+    tolerance: 0
+    explanation: The runtime supports multiple choice, select all, and numeric answers.
+flag:
+  id: flag-orientation-quiz
+  criteria:
+    - Answer all orientation questions correctly.
+hints:
+  - level: 1
+    text: Check the project constraints shown on the home page.
+next_challenges:
+  - first-banking-dataset

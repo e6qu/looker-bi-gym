@@ -1,0 +1,41 @@
+{
+  "name": "@looker-bi-gym/app",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "pnpm validate:manifests && pnpm validate:datasets && pnpm typecheck && vite build",
+    "check": "pnpm lint && pnpm typecheck && pnpm build",
+    "lint": "eslint . --max-warnings 0",
+    "test:quiz": "node --import tsx scripts/test-quiz.ts",
+    "test:sql": "node --import tsx scripts/test-sql.ts",
+    "validate:datasets": "node --import tsx scripts/validate-datasets.ts",
+    "validate:manifests": "node --import tsx scripts/validate-challenge-manifests.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit --pretty false && tsc -p tsconfig.node.json --noEmit --pretty false",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "dependencies": {
+    "@duckdb/duckdb-wasm": "1.29.1-dev132.0",
+    "marked": "18.0.3",
+    "react": "19.2.5",
+    "react-dom": "19.2.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "25.6.0",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.1",
+    "ajv": "8.20.0",
+    "eslint": "10.3.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "eslint-plugin-react-refresh": "0.5.2",
+    "globals": "17.6.0",
+    "tsx": "4.21.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.59.2",
+    "vite": "8.0.10",
+    "yaml": "2.8.4"
+  }
+}

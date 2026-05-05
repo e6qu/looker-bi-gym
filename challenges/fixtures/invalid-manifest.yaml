@@ -1,0 +1,32 @@
+id: invalid-manifest
+title: Invalid Manifest
+area: orientation-and-source-data
+mode: quiz
+difficulty: intro
+estimated_minutes: 5
+prerequisites: []
+business_scenario: This fixture is intentionally missing required fields so validation proves failures are clear.
+regulatory_context:
+  - BNR
+inputs:
+  - id: notes
+    type: markdown
+    description: Fixture input used only for validation testing.
+outputs:
+  - id: answers
+    type: answer-set
+    description: Fixture answer output.
+checks:
+  - id: fixture_check
+    type: quiz-answer
+    description: Fixture check.
+questions:
+  - id: fixture_question
+    type: multiple-choice
+    prompt: This invalid fixture omits required_tools and flag.
+    options:
+      - id: a
+        label: A
+      - id: b
+        label: B
+    answer: a

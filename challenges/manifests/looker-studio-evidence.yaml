@@ -1,0 +1,69 @@
+id: looker-studio-evidence
+title: Looker Studio Evidence Pattern
+area: looker-studio-and-dashboard-design
+mode: cloud-evidence
+difficulty: intermediate
+estimated_minutes: 35
+prerequisites:
+  - first-banking-dataset
+business_scenario: Practice collecting inspectable evidence from a browser-based BI workflow without storing credentials in the app.
+regulatory_context:
+  - BNR
+  - GDPR
+required_tools:
+  - name: Google Cloud Console
+    purpose: Optional cloud-applied track for BigQuery UI work in a browser.
+    required: false
+    platform_notes: Browser UI only; no Google Cloud CLI.
+  - name: Looker Studio
+    purpose: Optional report-building evidence through the browser UI.
+    required: false
+    platform_notes: Browser UI only; no service account keys or app-stored credentials.
+inputs:
+  - id: serving_view_contract
+    type: markdown
+    description: Tutorial instructions for using a serving view as the dashboard source.
+    path: tutorials/data-sources.md
+  - id: cloud_ui
+    type: cloud-ui
+    description: Optional browser UI workflow in BigQuery and Looker Studio.
+outputs:
+  - id: evidence_note
+    type: dashboard-evidence
+    description: Pasted evidence that names the serving view, freshness label, and visible dashboard metric.
+checks:
+  - id: serving_view_named
+    type: evidence-format
+    description: Evidence mentions the serving view instead of an ad hoc source table.
+    target: evidence_note
+    expected: serving_view
+  - id: freshness_present
+    type: evidence-format
+    description: Evidence includes a visible freshness or source cutoff label.
+    target: evidence_note
+    expected: freshness
+questions:
+  - id: q_credentials
+    type: multiple-choice
+    prompt: What should the static app store for this cloud evidence task?
+    options:
+      - id: no_credentials
+        label: No cloud credentials or tokens.
+      - id: service_key
+        label: A service account key.
+      - id: oauth_token
+        label: A pasted OAuth access token.
+    answer: no_credentials
+    explanation: Cloud work happens outside the static app; credentials must not be collected or stored.
+evidence:
+  - id: evidence_note
+    type: manual-note
+    description: Learner-provided note with serving view name, freshness label, and dashboard metric.
+flag:
+  id: flag-looker-studio-evidence
+  criteria:
+    - Evidence format checks pass locally.
+    - Credential storage question is answered correctly.
+hints:
+  - level: 1
+    text: Evidence should describe what is visible without pasting secrets, tokens, or private URLs.
