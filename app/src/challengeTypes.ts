@@ -86,6 +86,10 @@ export type ChallengeEvidence = {
   readonly id: string;
   readonly type: string;
   readonly description: string;
+  readonly label?: string;
+  readonly placeholder?: string;
+  readonly required?: boolean;
+  readonly self_attested?: boolean;
 };
 
 export type ChallengeRubricItem = {

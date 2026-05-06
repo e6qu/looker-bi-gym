@@ -291,6 +291,11 @@
             "scalar-aggregate",
             "unique-key",
             "sensitive-field-exclusion",
+            "sql-text-contains",
+            "tabular-required-columns",
+            "numeric-range",
+            "report-url-format",
+            "checklist-confirmed",
             "reconciliation",
             "evidence-format",
             "manual-review"
@@ -487,6 +492,9 @@
             "url",
             "pasted-sql",
             "pasted-result",
+            "numeric-value",
+            "report-url",
+            "checklist-confirmation",
             "screenshot-description",
             "manual-note"
           ]
@@ -494,6 +502,20 @@
         "description": {
           "type": "string",
           "minLength": 8
+        },
+        "label": {
+          "type": "string",
+          "minLength": 2
+        },
+        "placeholder": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "self_attested": {
+          "type": "boolean"
         }
       }
     },

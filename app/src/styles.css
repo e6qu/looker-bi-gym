@@ -930,6 +930,96 @@ h3 {
   color: var(--planned-text);
 }
 
+.cloudEvidenceLayout,
+.evidenceScopePanel {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.evidenceScopePanel,
+.evidencePanel {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.evidenceScopePanel ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+}
+
+.evidencePanel {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+
+.evidenceGrid {
+  display: grid;
+  gap: 14px;
+}
+
+.evidenceField {
+  display: grid;
+  gap: 8px;
+}
+
+.evidenceField > span,
+.evidenceChecklist > span {
+  display: grid;
+  gap: 3px;
+}
+
+.evidenceField small,
+.evidenceChecklist small {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.evidenceTextarea,
+.evidenceTextInput {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+  font: inherit;
+}
+
+.evidenceTextarea {
+  min-height: 150px;
+  padding: 12px;
+  background: #101820;
+  color: #ecf6f3;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  resize: vertical;
+}
+
+.evidenceTextInput {
+  min-height: 42px;
+  padding: 8px 10px;
+  background: #ffffff;
+}
+
+.evidenceChecklist {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-strong);
+}
+
+.evidenceChecklist input {
+  margin-top: 4px;
+}
+
 .quizPanel {
   display: grid;
   gap: 18px;
@@ -1116,10 +1206,12 @@ h3 {
   .settingsActionPanel,
   .contentOverview,
   .contentPage,
-  .challengeDetailMeta,
-  .instructionGrid,
-  .sqlChallengeLayout,
-  .sqlChallengeSummary {
+    .challengeDetailMeta,
+    .instructionGrid,
+    .sqlChallengeLayout,
+    .sqlChallengeSummary,
+    .cloudEvidenceLayout,
+    .evidenceScopePanel {
     grid-template-columns: 1fr;
   }
 

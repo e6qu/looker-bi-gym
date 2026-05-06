@@ -1,6 +1,6 @@
 PNPM ?= pnpm
 
-.PHONY: help install lint typecheck validate validate-manifests validate-datasets test test-quiz test-sql test-validators build check dev preview
+.PHONY: help install lint typecheck validate validate-manifests validate-datasets test test-quiz test-sql test-cloud-evidence test-validators build check dev preview
 
 help:
 	@printf '%s\n' \
@@ -14,6 +14,7 @@ help:
 		'  test                Run all automated tests' \
 		'  test-quiz           Run quiz evaluator tests' \
 		'  test-sql            Run SQL runtime smoke tests' \
+		'  test-cloud-evidence Run cloud evidence parser and validator tests' \
 		'  test-validators     Run browser validator tests' \
 		'  build               Build the static app' \
 		'  check               Run lint, typecheck, validation, tests, and build' \
@@ -37,13 +38,16 @@ validate-manifests:
 validate-datasets:
 	$(PNPM) validate:datasets
 
-test: test-quiz test-sql test-validators
+test: test-quiz test-sql test-cloud-evidence test-validators
 
 test-quiz:
 	$(PNPM) test:quiz
 
 test-sql:
 	$(PNPM) test:sql
+
+test-cloud-evidence:
+	$(PNPM) test:cloud-evidence
 
 test-validators:
 	$(PNPM) test:validators

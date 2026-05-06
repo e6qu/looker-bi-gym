@@ -4,11 +4,11 @@ Last updated: 2026-05-06
 
 ## Current State
 
-Planning, documentation, task tracking, continuity protocol, the static app skeleton, Markdown content navigation, challenge manifest validation/catalog generation, the first synthetic deposits dataset, the quiz challenge runtime, the browser SQL runtime, reusable browser validators, local flags, unified local progress storage, reset controls, and the first three browser-verifiable challenges are in place. Tasks 001 through 009 are complete. Git discipline requires `.gitignore` maintenance, no committed rebuildable artifacts, no committed WASM runtime artifacts, and a commit after each completed task. A root `Makefile` exposes the repository checks and tests through `make` targets.
+Planning, documentation, task tracking, continuity protocol, the static app skeleton, Markdown content navigation, challenge manifest validation/catalog generation, the first synthetic deposits dataset, the quiz challenge runtime, the browser SQL runtime, reusable browser validators, local flags, unified local progress storage, reset controls, the first three browser-verifiable challenges, and the first cloud-evidence challenge pattern are in place. Tasks 001 through 010 are complete. Git discipline requires `.gitignore` maintenance, no committed rebuildable artifacts, no committed WASM runtime artifacts, and a commit after each completed task. A root `Makefile` exposes the repository checks and tests through `make` targets.
 
 ## Active Task
 
-Active task: [010 - Cloud Evidence Challenge Pattern](tasks/010-cloud-evidence-challenge-pattern.md).
+Active task: [011 - Authoring Guide And Tutorial Conversion Rules](tasks/011-authoring-guide-and-tutorial-conversion-rules.md).
 
 ## Current Decisions
 
@@ -43,8 +43,13 @@ Active task: [010 - Cloud Evidence Challenge Pattern](tasks/010-cloud-evidence-c
   - 000 - Orientation Quiz.
   - 010 - First Banking Dataset Inspection.
   - 020 - Account Owner Fanout CTF.
+- The first cloud-evidence challenge is `030 - Looker Studio Evidence Pattern`.
+- Cloud-evidence challenges collect evidence locally in the browser and do not request or store credentials.
+- Cloud-evidence checks support SQL text contains checks, pasted CSV/JSON required-column checks, numeric ranges, report URL format validation, checklist confirmation, and basic evidence text matching.
+- Cloud-evidence challenge detail pages explicitly separate mechanically verified checks from self-attested evidence.
 - Challenge detail pages render manifest-backed scenario, inputs, outputs, checks, flag criteria, and hints.
 - SQL fixture tests run known-good and known-bad manifest-backed solutions for the dataset inspection and fanout challenges.
+- Cloud-evidence parser/validator tests run through `pnpm test:cloud-evidence` and `make check`.
 - DuckDB-WASM for browser SQL challenges.
 - Browser-first learner path.
 - Optional cloud-applied track through Google Cloud Console, BigQuery UI, and Looker Studio UI.
@@ -62,4 +67,4 @@ None known.
 
 ## Confidence
 
-High for planning direction, task structure, the app skeleton, Markdown content loading, challenge manifest validation, the initial deposits dataset, automated quiz grading, the browser SQL runtime, browser validators, local flags, unified progress storage, reset behavior, the first browser challenges, and the Makefile check harness.
+High for planning direction, task structure, the app skeleton, Markdown content loading, challenge manifest validation, the initial deposits dataset, automated quiz grading, the browser SQL runtime, browser validators, local flags, unified progress storage, reset behavior, the first browser challenges, the cloud-evidence pattern, and the Makefile check harness.

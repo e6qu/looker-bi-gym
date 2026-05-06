@@ -6,6 +6,10 @@ import {
   getSection,
 } from './content';
 import {
+  evaluateCloudEvidenceChecks,
+  isCloudEvidenceCheckSupported,
+} from './cloudEvidence';
+import {
   challengeCatalog,
   formatChallengeArea,
   formatChallengeDifficulty,
@@ -31,6 +35,7 @@ import { getSqlRuntime, isSqlPreviewSupported, runSqlPreview } from './sqlRuntim
 import { evaluateSqlResultChecks } from './validators';
 import type { JSX } from 'react';
 import type { ChallengeManifest } from './challengeTypes';
+import type { CloudEvidenceAnswerState, CloudEvidenceValue } from './cloudEvidence';
 import type { ContentDocument, ContentSectionId } from './content';
 import type { LearnerProgressState } from './progress';
 import type { QuizAnswerState, QuizResponse } from './quiz';
@@ -612,6 +617,324 @@ function ValidationSummary({
   );
 }
 
+function formatEvidenceType(type: string): string {
+  switch (type) {
+    case 'pasted-sql':
+      return 'SQL text';
+    case 'pasted-result':
+      return 'CSV/JSON result';
+    case 'numeric-value':
+      return 'Numeric value';
+    case 'report-url':
+    case 'url':
+      return 'Report URL';
+    case 'checklist-confirmation':
+      return 'Checklist';
+    case 'manual-note':
+      return 'Manual note';
+    default:
+      return type;
+  }
+}
+
+function CloudEvidenceField({
+  evidence,
+  value,
+  onChange,
+}: {
+  readonly evidence: NonNullable<ChallengeManifest['evidence']>[number];
+  readonly value: CloudEvidenceValue | undefined;
+  readonly onChange: (evidenceId: string, value: CloudEvidenceValue) => void;
+}): JSX.Element {
+  const inputId = `evidence-${evidence.id}`;
+  const label = evidence.label ?? evidence.description;
+  const stringValue = typeof value === 'string' ? value : '';
+  const isChecked = typeof value === 'boolean' ? value : false;
+
+  if (evidence.type === 'checklist-confirmation') {
+    return (
+      <label className="evidenceChecklist" htmlFor={inputId}>
+        <input
+          checked={isChecked}
+          id={inputId}
+          onChange={(event) => onChange(evidence.id, event.currentTarget.checked)}
+          type="checkbox"
+        />
+        <span>
+          <strong>{label}</strong>
+          <small>{evidence.description}</small>
+        </span>
+      </label>
+    );
+  }
+
+  const isTextarea =
+    evidence.type === 'pasted-sql' ||
+    evidence.type === 'pasted-result' ||
+    evidence.type === 'manual-note' ||
+    evidence.type === 'screenshot-description';
+
+  return (
+    <label className="evidenceField" htmlFor={inputId}>
+      <span>
+        <strong>{label}</strong>
+        <small>{formatEvidenceType(evidence.type)}</small>
+      </span>
+      {isTextarea ? (
+        <textarea
+          className="evidenceTextarea"
+          id={inputId}
+          onChange={(event) => onChange(evidence.id, event.currentTarget.value)}
+          placeholder={evidence.placeholder}
+          value={stringValue}
+        />
+      ) : (
+        <input
+          className="evidenceTextInput"
+          id={inputId}
+          inputMode={evidence.type === 'numeric-value' ? 'decimal' : undefined}
+          onChange={(event) => onChange(evidence.id, event.currentTarget.value)}
+          placeholder={evidence.placeholder}
+          type={evidence.type === 'numeric-value' ? 'number' : evidence.type === 'report-url' ? 'url' : 'text'}
+          value={stringValue}
+        />
+      )}
+      <small>{evidence.description}</small>
+    </label>
+  );
+}
+
+function CloudEvidencePage({
+  challenge,
+  isCompleted,
+  onComplete,
+}: {
+  readonly challenge: ChallengeManifest;
+  readonly isCompleted: boolean;
+  readonly onComplete: CompleteChallengeHandler;
+}): JSX.Element {
+  const [evidenceAnswers, setEvidenceAnswers] = useState<CloudEvidenceAnswerState>({});
+  const [questionAnswers, setQuestionAnswers] = useState<QuizAnswerState>({});
+  const checkEvaluation = useMemo(
+    () => evaluateCloudEvidenceChecks(challenge, evidenceAnswers),
+    [challenge, evidenceAnswers],
+  );
+  const questionEvaluation = useMemo(
+    () => evaluateChallengeQuestions(challenge, questionAnswers),
+    [challenge, questionAnswers],
+  );
+  const evaluationsByQuestion = useMemo(
+    () =>
+      new Map(
+        questionEvaluation.questions.map((question) => [question.questionId, question] as const),
+      ),
+    [questionEvaluation.questions],
+  );
+  const completion = useMemo(
+    () => maybeCreateLocalFlag(challenge, questionEvaluation, checkEvaluation),
+    [challenge, checkEvaluation, questionEvaluation],
+  );
+  const unsupportedChecks = challenge.checks.filter(
+    (check) => check.type !== 'quiz-answer' && !isCloudEvidenceCheckSupported(check),
+  );
+  const mechanicalChecks = checkEvaluation.checks.filter((check) => check.status !== 'unsupported');
+  const selfAttestedEvidence = challenge.evidence?.filter((evidence) => evidence.self_attested === true) ?? [];
+
+  useEffect(() => {
+    if (completion !== undefined && !isCompleted) {
+      onComplete(
+        completion.challengeId,
+        completion.flag,
+        completion.passedCheckIds,
+        completion.passedQuestionIds,
+      );
+    }
+  }, [completion, isCompleted, onComplete]);
+
+  function setEvidenceAnswer(evidenceId: string, value: CloudEvidenceValue): void {
+    setEvidenceAnswers((currentAnswers) => ({
+      ...currentAnswers,
+      [evidenceId]: value,
+    }));
+  }
+
+  function setQuestionAnswer(questionId: string, answer: QuizResponse): void {
+    setQuestionAnswers((currentAnswers) => ({
+      ...currentAnswers,
+      [questionId]: answer,
+    }));
+  }
+
+  return (
+    <section className="page challengeDetailPage cloudEvidencePage" aria-labelledby={`${challenge.id}-title`}>
+      <div className="challengeDetailHeader">
+        <a href="#/challenges">Back to challenges</a>
+        <PageTitle
+          title={challenge.title}
+          description={challenge.business_scenario}
+          id={`${challenge.id}-title`}
+        />
+        <dl className="challengeMeta challengeDetailMeta">
+          <div>
+            <dt>Mode</dt>
+            <dd>{formatChallengeMode(challenge.mode)}</dd>
+          </div>
+          <div>
+            <dt>Tools</dt>
+            <dd>{formatRequiredTools(challenge.required_tools)}</dd>
+          </div>
+          <div>
+            <dt>Status</dt>
+            <dd>{isCompleted ? 'Complete in this browser' : 'Not complete'}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <ChallengeInstructions challenge={challenge} />
+
+      <section className="evidenceScopePanel" aria-label="Evidence validation scope">
+        <div>
+          <p className="eyebrow">Mechanically verified</p>
+          <ul>
+            {mechanicalChecks.map((check) => (
+              <li key={check.checkId}>{check.description}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <p className="eyebrow">Self-attested</p>
+          <ul>
+            {selfAttestedEvidence.map((evidence) => (
+              <li key={evidence.id}>{evidence.description}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {unsupportedChecks.length > 0 ? (
+        <div className="feedbackBox feedbackFail" role="status">
+          This cloud evidence challenge includes unsupported checks and cannot be completed yet.
+        </div>
+      ) : null}
+
+      <div className="cloudEvidenceLayout">
+        <section className="evidencePanel" aria-label="Evidence inputs">
+          <div>
+            <p className="eyebrow">Evidence</p>
+            <h2>Local evidence capture</h2>
+          </div>
+          <div className="evidenceGrid">
+            {(challenge.evidence ?? []).map((evidence) => (
+              <CloudEvidenceField
+                evidence={evidence}
+                key={evidence.id}
+                onChange={setEvidenceAnswer}
+                value={evidenceAnswers[evidence.id]}
+              />
+            ))}
+          </div>
+        </section>
+
+        <section className="evidencePanel" aria-label="Evidence questions">
+          <div>
+            <p className="eyebrow">Checkpoint</p>
+            <h2>Credential boundary</h2>
+          </div>
+          <div className="quizPanel">
+            {challenge.questions.map((question, index) => {
+              const questionResult = evaluationsByQuestion.get(question.id);
+              const isCorrect = questionResult?.isCorrect ?? false;
+              const isAnswered = questionResult?.isAnswered ?? false;
+
+              return (
+                <fieldset className="quizQuestion" key={question.id}>
+                  <legend>
+                    <span>Question {index + 1}</span>
+                    {question.prompt}
+                  </legend>
+
+                  {question.type === 'multiple-choice' && question.options !== undefined ? (
+                    <div className="answerOptions">
+                      {question.options.map((option) => (
+                        <label key={option.id}>
+                          <input
+                            checked={getStringAnswer(questionAnswers, question.id) === option.id}
+                            name={question.id}
+                            onChange={() => setQuestionAnswer(question.id, option.id)}
+                            type="radio"
+                            value={option.id}
+                          />
+                          <span>{option.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  {question.type === 'select-all' && question.options !== undefined ? (
+                    <div className="answerOptions">
+                      {question.options.map((option) => {
+                        const selectedAnswers = getArrayAnswer(questionAnswers, question.id);
+                        const isSelected = selectedAnswers.includes(option.id);
+
+                        return (
+                          <label key={option.id}>
+                            <input
+                              checked={isSelected}
+                              onChange={() =>
+                                setQuestionAnswer(
+                                  question.id,
+                                  isSelected
+                                    ? selectedAnswers.filter((answer) => answer !== option.id)
+                                    : [...selectedAnswers, option.id],
+                                )
+                              }
+                              type="checkbox"
+                              value={option.id}
+                            />
+                            <span>{option.label}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  ) : null}
+
+                  {question.type === 'numeric' ? (
+                    <input
+                      className="numericAnswer"
+                      inputMode="decimal"
+                      onChange={(event) => setQuestionAnswer(question.id, event.currentTarget.value)}
+                      type="number"
+                      value={getStringAnswer(questionAnswers, question.id)}
+                    />
+                  ) : null}
+
+                  {isAnswered ? (
+                    <div
+                      className={isCorrect ? 'feedbackBox feedbackPass' : 'feedbackBox feedbackFail'}
+                      role="status"
+                    >
+                      {isCorrect ? 'Correct.' : 'Incorrect.'}
+                      {question.explanation !== undefined ? ` ${question.explanation}` : ''}
+                    </div>
+                  ) : null}
+                </fieldset>
+              );
+            })}
+          </div>
+        </section>
+      </div>
+
+      <ValidationSummary evaluation={checkEvaluation} />
+
+      {completion !== undefined ? (
+        <div className="feedbackBox feedbackPass" role="status">
+          Challenge complete. Flag: {completion.flag}
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
 function SqlChallengePage({
   challenge,
   isCompleted,
@@ -1126,6 +1449,17 @@ function ChallengesPage({
   if (selectedChallenge?.mode === 'browser-sql') {
     return (
       <SqlChallengePage
+        key={selectedChallenge.id}
+        challenge={selectedChallenge}
+        isCompleted={completedChallengeIds.has(selectedChallenge.id)}
+        onComplete={completeSelectedChallenge}
+      />
+    );
+  }
+
+  if (selectedChallenge?.mode === 'cloud-evidence') {
+    return (
+      <CloudEvidencePage
         key={selectedChallenge.id}
         challenge={selectedChallenge}
         isCompleted={completedChallengeIds.has(selectedChallenge.id)}

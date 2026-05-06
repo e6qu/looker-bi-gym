@@ -2,6 +2,36 @@
 
 ## 2026-05-06
 
+- Started and completed Task 010.
+- Added local cloud-evidence parsing and validation in `app/src/cloudEvidence.ts`.
+- Added validators for:
+  - SQL text containing required table/view names.
+  - pasted CSV/JSON tabular evidence with required columns.
+  - numeric evidence within configured ranges.
+  - report URL format with HTTPS and allowed host checks.
+  - checklist confirmation.
+  - basic text evidence matching.
+- Added the cloud-evidence challenge page to `app/src/App.tsx`.
+- Added evidence input components for:
+  - SQL text.
+  - pasted CSV/JSON result.
+  - numeric value.
+  - report URL.
+  - checklist confirmation.
+- The cloud-evidence page renders challenge instructions, evidence fields, credential-boundary questions, validation results, local completion flags, and a visible separation between mechanically verified and self-attested evidence.
+- Expanded the challenge manifest schema and shared manifest types for richer evidence fields and cloud-evidence check types.
+- Updated `challenges/manifests/looker-studio-evidence.yaml` into `030 - Looker Studio Evidence Pattern`.
+- Added `app/scripts/test-cloud-evidence.ts` and wired `pnpm test:cloud-evidence` into root/app scripts and `make test` / `make check`.
+- Ran `pnpm validate:manifests`; it passed.
+- Ran `pnpm test:cloud-evidence`; it passed.
+- Ran `pnpm typecheck`; the first attempt failed because a test fixture accessed `control_result` through dot notation and did not narrow an optional indexed value. Updated the test to use bracket access and explicit narrowing, then it passed.
+- Ran `pnpm lint`; the first attempt failed because of unnecessary parse-result conditionals and a possible undefined string concatenation in the CSV parser. Updated the parser/test structure, then it passed.
+- Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL tests, cloud-evidence tests, validator tests, and production build passed.
+- The production build still reports Vite's non-failing large DuckDB-WASM chunk warning.
+- Verified by source inspection that cloud-evidence processing added no network calls and uses local React state plus the existing local progress storage only.
+- Verified by source inspection that the app does not request credentials, tokens, secrets, API keys, service account keys, or OAuth tokens.
+- Updated Task 010 with completion and verification notes.
+
 - Started and completed Task 009.
 - Added Challenge 020, `020 - Account Owner Fanout CTF`, in `challenges/manifests/account-owner-fanout.yaml`.
 - Updated Challenge 000 and 010 titles to match the numbered browser challenge sequence:

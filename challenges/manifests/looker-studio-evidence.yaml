@@ -1,5 +1,5 @@
 id: looker-studio-evidence
-title: Looker Studio Evidence Pattern
+title: 030 - Looker Studio Evidence Pattern
 area: looker-studio-and-dashboard-design
 mode: cloud-evidence
 difficulty: intermediate
@@ -28,20 +28,52 @@ inputs:
     type: cloud-ui
     description: Optional browser UI workflow in BigQuery and Looker Studio.
 outputs:
-  - id: evidence_note
+  - id: serving_sql
+    type: sql-text
+    description: SQL text for the dashboard serving view.
+  - id: control_result
     type: dashboard-evidence
-    description: Pasted evidence that names the serving view, freshness label, and visible dashboard metric.
+    description: Pasted CSV or JSON result from the serving view control query.
+  - id: report_url
+    type: dashboard-evidence
+    description: Looker Studio report URL format evidence.
 checks:
-  - id: serving_view_named
-    type: evidence-format
-    description: Evidence mentions the serving view instead of an ad hoc source table.
-    target: evidence_note
-    expected: serving_view
-  - id: freshness_present
-    type: evidence-format
-    description: Evidence includes a visible freshness or source cutoff label.
-    target: evidence_note
-    expected: freshness
+  - id: serving_sql_names_view
+    type: sql-text-contains
+    description: SQL text names the serving view instead of only an ad hoc dashboard source.
+    target: serving_sql
+    expected:
+      - serving_deposit_dashboard
+      - account_daily_balances
+  - id: pasted_result_columns
+    type: tabular-required-columns
+    description: Pasted CSV or JSON result includes the expected dashboard control columns.
+    target: control_result
+    expected:
+      - business_date
+      - currency_code
+      - ledger_total
+  - id: dashboard_total_range
+    type: numeric-range
+    description: Visible dashboard total is in the expected synthetic latest-day range.
+    target: visible_total
+    expected:
+      min: 95000
+      max: 96000
+  - id: report_url_format
+    type: report-url-format
+    description: Report URL has a Looker Studio host and uses HTTPS.
+    target: report_url
+    expected:
+      require_https: true
+      allowed_hosts:
+        - lookerstudio.google.com
+        - datastudio.google.com
+  - id: manual_dashboard_confirmation
+    type: checklist-confirmed
+    description: Learner confirms the dashboard visibly labels source freshness and excludes sensitive fields.
+    target: dashboard_checklist
+    expected: true
 questions:
   - id: q_credentials
     type: multiple-choice
@@ -56,14 +88,44 @@ questions:
     answer: no_credentials
     explanation: Cloud work happens outside the static app; credentials must not be collected or stored.
 evidence:
-  - id: evidence_note
-    type: manual-note
-    description: Learner-provided note with serving view name, freshness label, and dashboard metric.
+  - id: serving_sql
+    type: pasted-sql
+    label: Serving view SQL
+    description: Paste the SQL that creates or selects from the dashboard serving view.
+    placeholder: "CREATE OR REPLACE VIEW serving_deposit_dashboard AS ..."
+    required: true
+  - id: control_result
+    type: pasted-result
+    label: Pasted control result
+    description: Paste CSV or JSON with business_date, currency_code, and ledger_total columns.
+    placeholder: "business_date,currency_code,ledger_total\n2026-03-31,RON,79300"
+    required: true
+  - id: visible_total
+    type: numeric-value
+    label: Visible latest-day total
+    description: Enter the latest-day dashboard total across currencies from the visible report.
+    placeholder: "95700"
+    required: true
+  - id: report_url
+    type: report-url
+    label: Report URL
+    description: Paste the Looker Studio report URL for format validation only.
+    placeholder: https://lookerstudio.google.com/reporting/example
+    required: true
+  - id: dashboard_checklist
+    type: checklist-confirmation
+    label: Dashboard confirmation
+    description: Confirm the report visibly labels source freshness and does not expose account_id, customer_id, or synthetic_iban.
+    required: true
+    self_attested: true
 flag:
   id: flag-looker-studio-evidence
   criteria:
-    - Evidence format checks pass locally.
+    - SQL, pasted result, numeric evidence, and URL format checks pass locally.
     - Credential storage question is answered correctly.
+    - Dashboard freshness and sensitive-field exclusion are self-attested by checklist.
 hints:
   - level: 1
     text: Evidence should describe what is visible without pasting secrets, tokens, or private URLs.
+  - level: 2
+    text: A valid control result can be pasted as CSV or as a JSON array of objects.

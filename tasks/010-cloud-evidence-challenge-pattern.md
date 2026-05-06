@@ -36,3 +36,23 @@ Define and implement the first cloud-evidence challenge pattern for tasks that i
 - Validate numeric evidence against configured ranges.
 - Verify an invalid report URL fails format validation.
 - Run app build.
+
+## Progress
+
+- [x] Implemented `cloud-evidence` challenge rendering in the app.
+- [x] Added evidence inputs for SQL text, pasted CSV/JSON result, numeric values, report URLs, and checklist confirmation.
+- [x] Added local cloud-evidence parsers and validators for SQL text, tabular CSV/JSON, numeric ranges, URL format, checklist confirmation, and basic text evidence.
+- [x] Updated the Looker Studio evidence manifest into `030 - Looker Studio Evidence Pattern`.
+- [x] Clearly separated mechanically verified checks from self-attested checklist evidence in the challenge page.
+- [x] Added cloud-evidence unit tests and included them in `make test` / `make check`.
+
+## Verification Notes
+
+- `pnpm validate:manifests` passed.
+- `pnpm test:cloud-evidence` passed.
+- `pnpm typecheck` passed.
+- `pnpm lint` passed.
+- `make check` passed, including manifest validation, dataset validation, lint, typecheck, quiz tests, SQL tests, cloud-evidence tests, validator tests, and production build.
+- Verified by source inspection that cloud-evidence validation uses local state only: no `fetch`, `XMLHttpRequest`, or beacon calls were added.
+- Verified by source inspection that the app asks for no credentials, tokens, secrets, or API keys; the only credential-related UI is the safety question that rejects credential storage.
+- The production build still reports the known non-failing Vite large-chunk warning for DuckDB-WASM assets.
