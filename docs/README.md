@@ -11,6 +11,7 @@ Start here:
 - [06 - Bibliography](06-bibliography.md): official docs and community source links.
 - [07 - Banking Domain Guide](07-banking-domain-guide.md): bank entities, facts, metrics, security concerns, controls, and demo-data strategy.
 - [08 - EU And Romanian Regulatory Context](08-eu-romania-regulatory-context.md): EU/Romanian banking, privacy, AML, payments, DORA, reporting, and deposit-guarantee topics for BI.
+- [09 - GitHub Pages Deployment](09-github-pages-deployment.md): CI, Pages publishing, base-path behavior, and deployment verification.
 
 The docs are literature notes and synthesis, not copied article archives. Official Google sources are the authority for product behavior; banking/regulatory sources are contextual anchors, not implementation advice. Community sources are used to identify recurring field problems.
 

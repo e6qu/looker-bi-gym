@@ -15,6 +15,7 @@
     "test:validators": "pnpm --filter @looker-bi-gym/app test:validators",
     "validate:datasets": "pnpm --filter @looker-bi-gym/app validate:datasets",
     "validate:manifests": "pnpm --filter @looker-bi-gym/app validate:manifests",
+    "validate:static-links": "pnpm --filter @looker-bi-gym/app validate:static-links",
     "typecheck": "pnpm --filter @looker-bi-gym/app typecheck",
     "preview": "pnpm --filter @looker-bi-gym/app preview"
   }

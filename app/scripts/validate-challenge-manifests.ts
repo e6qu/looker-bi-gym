@@ -1,4 +1,4 @@
-import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
@@ -19,6 +19,7 @@ const repoRoot = join(appRoot, '..');
 const manifestsDir = join(repoRoot, 'challenges', 'manifests');
 const draftsDir = join(repoRoot, 'challenges', 'drafts');
 const fixturesDir = join(repoRoot, 'challenges', 'fixtures');
+const datasetsDir = join(repoRoot, 'datasets');
 const schemaPath = join(repoRoot, 'challenges', 'schema', 'challenge-manifest.schema.json');
 const generatedCatalogPath = join(appRoot, 'src', 'generated', 'challengeCatalog.json');
 
@@ -59,6 +60,48 @@ function assertUniqueChallengeIds(manifests: readonly ChallengeManifest[]): void
 
   if (duplicates.size > 0) {
     throw new Error(`Duplicate challenge IDs: ${Array.from(duplicates).sort().join(', ')}`);
+  }
+}
+
+async function pathExists(path: string): Promise<boolean> {
+  try {
+    await stat(path);
+    return true;
+  } catch (error: unknown) {
+    if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
+      return false;
+    }
+
+    throw error;
+  }
+}
+
+async function assertDatasetReferencesResolve(manifests: readonly ChallengeManifest[]): Promise<void> {
+  const missingReferences: string[] = [];
+
+  for (const manifest of manifests) {
+    for (const input of manifest.inputs) {
+      if (input.dataset_id === undefined && input.dataset_version === undefined) {
+        continue;
+      }
+
+      if (input.dataset_id === undefined || input.dataset_version === undefined) {
+        missingReferences.push(`${manifest.id}:${input.id} must declare both dataset_id and dataset_version.`);
+        continue;
+      }
+
+      const metadataPath = join(datasetsDir, input.dataset_id, input.dataset_version, 'metadata.json');
+
+      if (!(await pathExists(metadataPath))) {
+        missingReferences.push(
+          `${manifest.id}:${input.id} references missing dataset ${input.dataset_id} ${input.dataset_version}.`,
+        );
+      }
+    }
+  }
+
+  if (missingReferences.length > 0) {
+    throw new Error(`Dataset reference validation failed:\n${missingReferences.join('\n')}`);
   }
 }
 
@@ -130,6 +173,7 @@ async function main(): Promise<void> {
     .sort((left, right) => left.id.localeCompare(right.id));
 
   assertUniqueChallengeIds(validManifests);
+  await assertDatasetReferencesResolve(validManifests);
 
   await mkdir(dirname(generatedCatalogPath), { recursive: true });
   await writeFile(generatedCatalogPath, `${JSON.stringify(catalogManifests, null, 2)}\n`, 'utf8');

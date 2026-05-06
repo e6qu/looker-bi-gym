@@ -10,6 +10,7 @@ Run from the repository root:
 - `pnpm dev`
 - `pnpm typecheck`
 - `pnpm build`
+- `pnpm validate:static-links`
 - `pnpm preview`
 
 ## GitHub Pages Base Path
@@ -23,6 +24,25 @@ GITHUB_PAGES_BASE=/your-repo-name/ pnpm build
 ```
 
 The app uses hash routes such as `#/docs`, so deep links do not require server rewrite rules.
+
+## GitHub Pages Deployment
+
+The repository uses GitHub Actions with `pnpm` for CI and Pages publishing:
+
+- `.github/workflows/ci.yml` installs dependencies, validates manifests and datasets, runs lint/typecheck/tests, builds the app, and checks the built `index.html` asset references.
+- `.github/workflows/pages.yml` repeats the same build gate, uploads `app/dist`, and deploys it to the `github-pages` environment.
+
+In the GitHub repository settings, set Pages source to GitHub Actions. The default workflow build uses relative production asset paths, which works for project Pages and user/organization Pages. If a deployment needs absolute asset paths, set `GITHUB_PAGES_BASE` for the build step, for example:
+
+```sh
+GITHUB_PAGES_BASE=/looker-bi-gym/ pnpm build
+```
+
+After deployment, verify:
+
+- the Pages environment URL opens the app;
+- `#/docs`, `#/challenges`, and a challenge route such as `#/challenges/first-banking-dataset` load after refresh;
+- browser developer tools show built JS/CSS/WASM assets loading from the expected Pages path.
 
 ## Runtime Boundary
 

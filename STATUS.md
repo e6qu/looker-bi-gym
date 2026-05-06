@@ -4,11 +4,11 @@ Last updated: 2026-05-06
 
 ## Current State
 
-Planning, documentation, task tracking, continuity protocol, the static app skeleton, Markdown content navigation, challenge manifest validation/catalog generation, the first synthetic deposits dataset, the quiz challenge runtime, the browser SQL runtime, reusable browser validators, local flags, unified local progress storage, reset controls, the first three browser-verifiable challenges, the first cloud-evidence challenge pattern, and the challenge authoring guide are in place. Tasks 001 through 011 are complete. Git discipline requires `.gitignore` maintenance, no committed rebuildable artifacts, no committed WASM runtime artifacts, and a commit after each completed task. A root `Makefile` exposes the repository checks and tests through `make` targets.
+Planning, documentation, task tracking, continuity protocol, the static app skeleton, Markdown content navigation, challenge manifest validation/catalog generation, the first synthetic deposits dataset, the quiz challenge runtime, the browser SQL runtime, reusable browser validators, local flags, unified local progress storage, reset controls, the first three browser-verifiable challenges, the first cloud-evidence challenge pattern, the challenge authoring guide, CI validation, and GitHub Pages deployment workflows are in place. Tasks 001 through 012 are complete except for live post-deploy URL verification, which requires a GitHub workflow run. Git discipline requires `.gitignore` maintenance, no committed rebuildable artifacts, no committed WASM runtime artifacts, and a commit after each completed task. A root `Makefile` exposes the repository checks and tests through `make` targets.
 
 ## Active Task
 
-Active task: [012 - CI And GitHub Pages Deployment](tasks/012-ci-and-github-pages-deployment.md).
+Active task: [013 - App Quality And Accessibility Pass](tasks/013-app-quality-and-accessibility-pass.md).
 
 ## Current Decisions
 
@@ -30,7 +30,10 @@ Active task: [012 - CI And GitHub Pages Deployment](tasks/012-ci-and-github-page
 - The first dataset lives at `datasets/deposits-seed/v0.1.0/` and is synthetic CSV only.
 - `pnpm validate:datasets` validates dataset row counts, primary keys, expected missing mappings, control totals, known issue counts, and the owner-join fanout negative test.
 - The Vite build runs both manifest and dataset validation before compiling the app.
-- `make check` runs lint, typecheck, manifest validation, dataset validation, quiz tests, SQL tests, and the production build.
+- `make check` runs lint, typecheck, manifest validation, dataset validation, quiz tests, SQL tests, cloud-evidence tests, validator tests, the production build, and built static asset-link validation.
+- GitHub Actions CI runs the same `pnpm` validation, test, build, and static-link gates.
+- GitHub Pages deployment builds `app/dist` with `pnpm`, uploads it as the Pages artifact, and deploys through the `github-pages` environment.
+- Manifest validation now fails when a declared dataset ID/version does not resolve to a committed dataset metadata file.
 - Quiz challenge details render from generated manifests at `#/challenges/{challenge-id}`.
 - The quiz runtime grades multiple-choice, select-all, and numeric answers deterministically in the browser.
 - Challenge completion state and local flags are stored in browser `localStorage` under `looker-bi-gym.progress.v1`.
@@ -69,4 +72,4 @@ None known.
 
 ## Confidence
 
-High for planning direction, task structure, the app skeleton, Markdown content loading, challenge manifest validation, draft validation, the initial deposits dataset, automated quiz grading, the browser SQL runtime, browser validators, local flags, unified progress storage, reset behavior, the first browser challenges, the cloud-evidence pattern, the authoring guide, and the Makefile check harness.
+High for planning direction, task structure, the app skeleton, Markdown content loading, challenge manifest validation, draft validation, dataset-reference validation, the initial deposits dataset, automated quiz grading, the browser SQL runtime, browser validators, local flags, unified progress storage, reset behavior, the first browser challenges, the cloud-evidence pattern, the authoring guide, the Makefile check harness, and CI/Pages workflow structure. Medium for live GitHub Pages reachability until the workflow runs in GitHub.

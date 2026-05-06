@@ -2,6 +2,37 @@
 
 ## 2026-05-06
 
+- Started and completed Task 012 implementation.
+- Added `.github/workflows/ci.yml` with a `pnpm` CI gate for:
+  - frozen-lockfile install
+  - challenge manifest validation
+  - synthetic dataset validation
+  - lint
+  - typecheck
+  - quiz, SQL, cloud-evidence, and validator tests
+  - production build
+  - built static asset-link validation
+- Added `.github/workflows/pages.yml` to build `app/dist`, upload it as the GitHub Pages artifact, and deploy through the `github-pages` environment.
+- Added `app/scripts/validate-static-links.ts`.
+- Added root/app `validate:static-links` scripts and the Makefile target.
+- Updated `make check` and `pnpm check` to run built static asset-link validation after the production build.
+- Updated `app/scripts/validate-challenge-manifests.ts` so declared dataset IDs and versions must resolve to `datasets/{dataset_id}/{dataset_version}/metadata.json`.
+- Added `docs/09-github-pages-deployment.md` and linked it from `docs/README.md`.
+- Expanded `app/README.md` with GitHub Actions, Pages setup, `GITHUB_PAGES_BASE`, and post-deploy verification notes.
+- Ran `pnpm validate:manifests`; it passed with dataset-reference validation.
+- Ran `pnpm validate:datasets`; it passed.
+- Ran `pnpm lint`; the first run failed because `validate-static-links.ts` threw a replacement error without preserving the caught cause. Added the cause and reran successfully.
+- Ran `pnpm typecheck`; it passed.
+- Ran `pnpm test:quiz`, `pnpm test:sql`, `pnpm test:cloud-evidence`, and `pnpm test:validators`; they passed.
+- Ran `pnpm build`; it passed with Vite's non-failing large DuckDB-WASM chunk warning.
+- Ran `CI=true pnpm install --frozen-lockfile`; the sandboxed run failed with `ENOTFOUND registry.npmjs.org`, then the approved network run passed. The first plain `pnpm install --frozen-lockfile` attempt also failed because pnpm refused a non-TTY module purge without `CI=true`.
+- Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL tests, cloud-evidence tests, validator tests, production build, and static-link validation passed.
+- Temporarily changed `challenges/manifests/first-banking-dataset.yaml` to reference `dataset_version: v9.9.9`; `pnpm validate:manifests` failed with the expected missing dataset reference error. Restored the manifest and reran `pnpm validate:manifests`; it passed.
+- Ran `GITHUB_PAGES_BASE=/looker-bi-gym/ pnpm build`; it passed.
+- Ran `GITHUB_PAGES_BASE=/looker-bi-gym/ pnpm validate:static-links`; it passed.
+- Reran default `pnpm build` and `pnpm validate:static-links`; both passed.
+- Updated Task 012 with implementation and verification notes. Live GitHub Pages URL and deep-link verification remain pending until the workflow runs in GitHub.
+
 - Started and completed Task 011.
 - Added `challenges/AUTHORING.md` with:
   - challenge mode selection rules
