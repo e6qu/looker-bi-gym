@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { readdir, readFile, stat } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -40,6 +40,17 @@ type FanoutNegativeTest = {
   readonly expected_delta: number;
 };
 
+type DatasetVersioningMetadata = {
+  readonly status: 'released' | 'simulation' | 'draft';
+  readonly immutable_after_release: boolean;
+  readonly supersedes_version?: string;
+  readonly output_changes?: readonly string[];
+  readonly affected_challenge_fixtures?: ReadonlyArray<{
+    readonly challenge_id: string;
+    readonly reason: string;
+  }>;
+};
+
 type DatasetMetadata = {
   readonly dataset_id: string;
   readonly version: string;
@@ -51,6 +62,15 @@ type DatasetMetadata = {
   readonly control_totals: readonly ControlTotal[];
   readonly known_issues: readonly KnownIssue[];
   readonly fanout_negative_test: FanoutNegativeTest;
+  readonly versioning?: DatasetVersioningMetadata;
+};
+
+type DatasetVersion = {
+  readonly datasetId: string;
+  readonly version: string;
+  readonly root: string;
+  readonly metadataPath: string;
+  readonly metadata: DatasetMetadata;
 };
 
 type CsvTable = {
@@ -61,8 +81,7 @@ type CsvTable = {
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const appRoot = join(scriptDir, '..');
 const repoRoot = join(appRoot, '..');
-const datasetRoot = join(repoRoot, 'datasets', 'deposits-seed', 'v0.1.0');
-const metadataPath = join(datasetRoot, 'metadata.json');
+const datasetsRoot = join(repoRoot, 'datasets');
 
 function parseCsv(source: string): CsvTable {
   const lines = source.trim().split(/\r?\n/);
@@ -273,7 +292,7 @@ function assertFanoutNegativeTest(
   }
 }
 
-async function readDatasetTables(metadata: DatasetMetadata): Promise<Map<string, CsvTable>> {
+async function readDatasetTables(datasetRoot: string, metadata: DatasetMetadata): Promise<Map<string, CsvTable>> {
   const tables = new Map<string, CsvTable>();
 
   for (const tableMetadata of metadata.tables) {
@@ -289,15 +308,139 @@ async function readDatasetTables(metadata: DatasetMetadata): Promise<Map<string,
   return tables;
 }
 
-async function main(): Promise<void> {
-  const metadataSource = await readFile(metadataPath, 'utf8');
-  const metadata = JSON.parse(metadataSource) as DatasetMetadata;
+async function pathExists(path: string): Promise<boolean> {
+  try {
+    await stat(path);
+    return true;
+  } catch (error: unknown) {
+    if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
+      return false;
+    }
+
+    throw error;
+  }
+}
+
+function assertDatasetMetadataShape(version: DatasetVersion): void {
+  const { datasetId, metadata } = version;
+
+  if (metadata.dataset_id !== datasetId || metadata.version !== version.version) {
+    throw new Error(
+      `${version.metadataPath} metadata identity mismatch: expected ${datasetId} ${version.version}, got ${metadata.dataset_id} ${metadata.version}.`,
+    );
+  }
 
   if (!metadata.synthetic_only) {
     throw new Error(`${metadata.dataset_id} ${metadata.version} must be marked synthetic_only.`);
   }
 
-  const tables = await readDatasetTables(metadata);
+  if (!/^v[0-9]+\.[0-9]+\.[0-9]+$/.test(metadata.version)) {
+    throw new Error(`${metadata.dataset_id} ${metadata.version} must use vMAJOR.MINOR.PATCH format.`);
+  }
+
+  if (metadata.regulatory_context.length === 0) {
+    throw new Error(`${metadata.dataset_id} ${metadata.version} must declare regulatory context tags.`);
+  }
+
+  if (metadata.tables.length === 0) {
+    throw new Error(`${metadata.dataset_id} ${metadata.version} must declare at least one table.`);
+  }
+
+  const tableIds = new Set<string>();
+
+  for (const table of metadata.tables) {
+    if (table.file.includes('/') || table.file.includes('\\') || table.file.length === 0) {
+      throw new Error(`${metadata.dataset_id} ${metadata.version} table ${table.id} has invalid file path ${table.file}.`);
+    }
+
+    if (tableIds.has(table.id)) {
+      throw new Error(`${metadata.dataset_id} ${metadata.version} has duplicate table metadata id ${table.id}.`);
+    }
+    tableIds.add(table.id);
+
+    if (table.grain.length === 0 || table.primary_key.length === 0) {
+      throw new Error(`${metadata.dataset_id} ${metadata.version} table ${table.id} must declare grain and primary key.`);
+    }
+
+    if (!Array.isArray(table.sensitive_fields) || !Array.isArray(table.date_semantics)) {
+      throw new Error(`${metadata.dataset_id} ${metadata.version} table ${table.id} must declare sensitive_fields and date_semantics arrays.`);
+    }
+  }
+}
+
+async function readDatasetVersion(datasetId: string, version: string): Promise<DatasetVersion> {
+  const root = join(datasetsRoot, datasetId, version);
+  const metadataPath = join(root, 'metadata.json');
+  const metadataSource = await readFile(metadataPath, 'utf8');
+  const metadata = JSON.parse(metadataSource) as DatasetMetadata;
+
+  return { datasetId, version, root, metadataPath, metadata };
+}
+
+async function listDatasetVersions(): Promise<DatasetVersion[]> {
+  const datasetEntries = await readdir(datasetsRoot, { withFileTypes: true });
+  const versions: DatasetVersion[] = [];
+
+  for (const datasetEntry of datasetEntries) {
+    if (!datasetEntry.isDirectory()) {
+      continue;
+    }
+
+    const datasetId = datasetEntry.name;
+    const versionEntries = await readdir(join(datasetsRoot, datasetId), { withFileTypes: true });
+
+    for (const versionEntry of versionEntries) {
+      if (!versionEntry.isDirectory()) {
+        continue;
+      }
+
+      const metadataPath = join(datasetsRoot, datasetId, versionEntry.name, 'metadata.json');
+
+      if (await pathExists(metadataPath)) {
+        versions.push(await readDatasetVersion(datasetId, versionEntry.name));
+      }
+    }
+  }
+
+  return versions.sort((left, right) => `${left.datasetId}/${left.version}`.localeCompare(`${right.datasetId}/${right.version}`));
+}
+
+function assertVersioningMetadata(versions: readonly DatasetVersion[]): void {
+  const versionKeys = new Set(versions.map((version) => `${version.datasetId}/${version.version}`));
+
+  for (const version of versions) {
+    const versioning = version.metadata.versioning;
+
+    if (versioning === undefined) {
+      continue;
+    }
+
+    if (versioning.status === 'released' && !versioning.immutable_after_release) {
+      throw new Error(`${version.datasetId} ${version.version} is released but not marked immutable_after_release.`);
+    }
+
+    if (versioning.supersedes_version !== undefined) {
+      const predecessorKey = `${version.datasetId}/${versioning.supersedes_version}`;
+
+      if (!versionKeys.has(predecessorKey)) {
+        throw new Error(`${version.datasetId} ${version.version} supersedes missing ${versioning.supersedes_version}.`);
+      }
+
+      if (versioning.supersedes_version === version.version) {
+        throw new Error(`${version.datasetId} ${version.version} cannot supersede itself.`);
+      }
+    }
+
+    if ((versioning.output_changes?.length ?? 0) > 0 && (versioning.affected_challenge_fixtures?.length ?? 0) === 0) {
+      throw new Error(`${version.datasetId} ${version.version} changes expected outputs but does not record affected challenge fixtures.`);
+    }
+  }
+}
+
+async function validateDatasetVersion(version: DatasetVersion): Promise<void> {
+  const { metadata } = version;
+  assertDatasetMetadataShape(version);
+  const tables = await readDatasetTables(version.root, metadata);
 
   for (const relationship of metadata.relationships) {
     assertRelationship(relationship, tables);
@@ -306,6 +449,20 @@ async function main(): Promise<void> {
   assertControlTotals(tables, metadata.control_totals);
   assertKnownIssues(tables, metadata.known_issues);
   assertFanoutNegativeTest(tables, metadata.fanout_negative_test);
+}
+
+async function main(): Promise<void> {
+  const versions = await listDatasetVersions();
+
+  if (versions.length === 0) {
+    throw new Error('No dataset versions found.');
+  }
+
+  for (const version of versions) {
+    await validateDatasetVersion(version);
+  }
+
+  assertVersioningMetadata(versions);
 }
 
 await main();

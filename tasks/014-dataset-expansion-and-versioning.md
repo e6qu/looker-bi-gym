@@ -45,3 +45,27 @@ Define and implement dataset versioning so synthetic data can expand beyond the 
 - Run manifest validation and confirm dataset version references resolve.
 - Record which challenge fixtures must be refreshed when dataset versions change.
 - Add a simulated changed dataset version and verify old challenge references still resolve to the old version.
+
+## Progress
+
+Completed on 2026-05-06.
+
+Implementation notes:
+
+- Added [Dataset Versioning](../datasets/VERSIONING.md) with the immutable-version policy, metadata contract, and fixture-refresh record.
+- Added [Expansion Roadmap](../datasets/EXPANSION_ROADMAP.md) for lending/credit risk, payments/cards/PSD2/fraud, AML/CFT/sanctions, finance/GL/reconciliation, and DORA/operations/BI observability.
+- Marked `deposits-seed/v0.1.0` metadata as released and immutable.
+- Added `deposits-seed/v0.1.1` as a synthetic changed-output simulation with an added `2026-04-01` balance snapshot.
+- Generalized `app/scripts/validate-datasets.ts` so `pnpm validate:datasets` discovers and validates every committed `datasets/{dataset_id}/{version}/metadata.json` instead of only the original seed version.
+- Recorded that adopting `deposits-seed/v0.1.1` would require refreshing `first-banking-dataset` and `account-owner-fanout` checks/fixtures.
+- Confirmed released challenge manifests still pin `deposits-seed` `v0.1.0`.
+
+Verification:
+
+- `pnpm validate:datasets` passed.
+- `pnpm validate:manifests` passed and resolved existing manifest dataset references.
+- `pnpm typecheck` passed.
+- `pnpm test:sql` passed with released challenges still using `v0.1.0` expected outputs.
+- `pnpm lint` passed after fixing the new validator type style.
+- `make check` passed, including manifest validation, dataset validation, lint, typecheck, quiz tests, SQL tests, cloud-evidence tests, validator tests, production build, and static-link validation.
+- The production build still reports Vite's non-failing large DuckDB-WASM chunk warning.

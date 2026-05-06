@@ -2,6 +2,33 @@
 
 ## 2026-05-06
 
+- Started and completed Task 014 implementation.
+- Added `datasets/VERSIONING.md` with dataset immutability rules, metadata expectations, changed-output rules, and fixture-refresh records.
+- Added `datasets/EXPANSION_ROADMAP.md` covering:
+  - lending and credit risk;
+  - payments/cards, PSD2, and fraud;
+  - AML/CFT and sanctions;
+  - finance, GL, and reconciliation;
+  - DORA, operations, and BI observability.
+- Updated `datasets/README.md` to link versioning/roadmap docs and list the changed-output simulation.
+- Marked `datasets/deposits-seed/v0.1.0/metadata.json` as released and immutable.
+- Added `datasets/deposits-seed/v0.1.1/` as a synthetic changed-output simulation:
+  - copied the seed dataset structure;
+  - added `2026-04-01` account daily balance rows;
+  - updated row counts, control totals, and fanout negative-test totals;
+  - recorded that `first-banking-dataset` and `account-owner-fanout` fixtures/checks would need refresh if challenges are repointed.
+- Generalized `app/scripts/validate-datasets.ts` so it discovers every committed `datasets/{dataset_id}/{version}/metadata.json` and validates identity, version format, synthetic-only flags, regulatory tags, table grains, primary keys, sensitive-field declarations, row counts, relationships, control totals, known issues, fanout negative tests, and versioning metadata.
+- Updated Task 015 notes to carry forward the fixture-refresh implications of `deposits-seed/v0.1.1`.
+- Ran `pnpm validate:datasets`; it passed.
+- Ran `pnpm validate:manifests`; it passed and confirmed released manifests still resolve dataset references.
+- Ran `pnpm typecheck`; it passed.
+- Ran `pnpm test:sql`; it passed with released challenges still pinned to `deposits-seed` `v0.1.0`.
+- Ran `pnpm lint`; the first post-edit run failed on a `@typescript-eslint/array-type` style issue in `validate-datasets.ts`; changed the non-simple array type to `ReadonlyArray`.
+- Reran `pnpm lint`; it passed.
+- Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL tests, cloud-evidence tests, validator tests, production build, and static-link validation passed.
+- The production build still reports Vite's non-failing large DuckDB-WASM chunk warning.
+- Updated Task 014 with completion and verification notes.
+
 - Started and completed Task 013 implementation.
 - Added app quality/accessibility improvements:
   - skip link to main content;

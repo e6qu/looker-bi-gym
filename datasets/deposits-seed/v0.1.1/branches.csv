@@ -1,0 +1,6 @@
+branch_id,branch_name,region_code,county,city,legal_entity_id,bnr_region,fgdb_member_flag
+B001,Bucuresti Nord,RO-BU,Bucuresti,Bucuresti,LE001,BNR-BUCURESTI,true
+B002,Cluj Centru,RO-CJ,Cluj,Cluj-Napoca,LE001,BNR-NORD-VEST,true
+B003,Iasi Copou,RO-IS,Iasi,Iasi,LE001,BNR-NORD-EST,true
+B004,Timisoara Vest,RO-TM,Timis,Timisoara,LE001,BNR-VEST,true
+B005,Brasov Centru,RO-BV,Brasov,Brasov,LE001,BNR-CENTRU,true

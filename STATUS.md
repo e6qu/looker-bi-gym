@@ -4,11 +4,11 @@ Last updated: 2026-05-06
 
 ## Current State
 
-Planning, documentation, task tracking, continuity protocol, the static app skeleton, Markdown content navigation, challenge manifest validation/catalog generation, the first synthetic deposits dataset, the quiz challenge runtime, the browser SQL runtime, reusable browser validators, local flags, unified local progress storage, reset controls, the first three browser-verifiable challenges, the first cloud-evidence challenge pattern, the challenge authoring guide, CI validation, GitHub Pages deployment workflows, and the app quality/accessibility pass are in place. Tasks 001 through 013 are complete except for live post-deploy URL verification, which requires a GitHub workflow run, and Safari second-browser smoke verification, which requires the user to explicitly enable Safari remote automation or perform a manual Safari pass. Git discipline requires `.gitignore` maintenance, no committed rebuildable artifacts, no committed WASM runtime artifacts, and a commit after each completed task. A root `Makefile` exposes the repository checks and tests through `make` targets.
+Planning, documentation, task tracking, continuity protocol, the static app skeleton, Markdown content navigation, challenge manifest validation/catalog generation, the first synthetic deposits dataset, dataset versioning policy, a changed-output dataset simulation, the quiz challenge runtime, the browser SQL runtime, reusable browser validators, local flags, unified local progress storage, reset controls, the first three browser-verifiable challenges, the first cloud-evidence challenge pattern, the challenge authoring guide, CI validation, GitHub Pages deployment workflows, and the app quality/accessibility pass are in place. Tasks 001 through 014 are complete except for live post-deploy URL verification, which requires a GitHub workflow run, and Safari second-browser smoke verification, which requires the user to explicitly enable Safari remote automation or perform a manual Safari pass. Git discipline requires `.gitignore` maintenance, no committed rebuildable artifacts, no committed WASM runtime artifacts, and a commit after each completed task. A root `Makefile` exposes the repository checks and tests through `make` targets.
 
 ## Active Task
 
-Active task: [014 - Dataset Expansion And Versioning](tasks/014-dataset-expansion-and-versioning.md).
+Active task: [015 - Solution Fixtures And Golden Tests](tasks/015-solution-fixtures-and-golden-tests.md).
 
 ## Current Decisions
 
@@ -28,7 +28,9 @@ Active task: [014 - Dataset Expansion And Versioning](tasks/014-dataset-expansio
 - The app challenge index is generated from the static challenge catalog instead of a hard-coded placeholder list.
 - Every challenge manifest must declare `required_tools`; browser-only tasks use `none`.
 - The first dataset lives at `datasets/deposits-seed/v0.1.0/` and is synthetic CSV only.
-- `pnpm validate:datasets` validates dataset row counts, primary keys, expected missing mappings, control totals, known issue counts, and the owner-join fanout negative test.
+- Dataset versions live at `datasets/{dataset_id}/{version}/`, use `vMAJOR.MINOR.PATCH`, and are immutable once used by released challenges.
+- `deposits-seed/v0.1.1` is a synthetic changed-output simulation that adds `2026-04-01` balance snapshots; released challenges remain pinned to `v0.1.0`.
+- `pnpm validate:datasets` discovers committed dataset versions and validates metadata identity, synthetic-only flags, table grains, primary keys, sensitive-field declarations, row counts, expected missing mappings, control totals, known issue counts, versioning metadata, and the deposits owner-join fanout negative test.
 - The Vite build runs both manifest and dataset validation before compiling the app.
 - `make check` runs lint, typecheck, manifest validation, dataset validation, quiz tests, SQL tests, cloud-evidence tests, validator tests, the production build, and built static asset-link validation.
 - GitHub Actions CI runs the same `pnpm` validation, test, build, and static-link gates.
@@ -73,4 +75,4 @@ None known.
 
 ## Confidence
 
-High for planning direction, task structure, the app skeleton, Markdown content loading, challenge manifest validation, draft validation, dataset-reference validation, the initial deposits dataset, automated quiz grading, the browser SQL runtime, browser validators, local flags, unified progress storage, reset behavior, the first browser challenges, the cloud-evidence pattern, the authoring guide, the Makefile check harness, CI/Pages workflow structure, and Chrome app quality smoke coverage. Medium for live GitHub Pages reachability until the workflow runs in GitHub and for Safari verification until remote automation is explicitly enabled or a manual Safari pass is completed.
+High for planning direction, task structure, the app skeleton, Markdown content loading, challenge manifest validation, draft validation, dataset-reference validation, the initial deposits dataset, dataset versioning policy, changed-output dataset simulation, automated quiz grading, the browser SQL runtime, browser validators, local flags, unified progress storage, reset behavior, the first browser challenges, the cloud-evidence pattern, the authoring guide, the Makefile check harness, CI/Pages workflow structure, and Chrome app quality smoke coverage. Medium for live GitHub Pages reachability until the workflow runs in GitHub and for Safari verification until remote automation is explicitly enabled or a manual Safari pass is completed.

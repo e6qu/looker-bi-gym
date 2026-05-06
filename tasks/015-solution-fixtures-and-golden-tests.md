@@ -34,3 +34,8 @@ Create known-good and known-bad solution fixtures so challenge validators can be
 - Temporarily alter a bad fixture into a passing solution and verify the bad-fixture expectation fails.
 - Run app build after fixture integration.
 - Run CI validation command that includes fixture tests.
+
+## Notes From Task 014
+
+- `deposits-seed/v0.1.1` intentionally changes outputs from `v0.1.0`.
+- If a challenge is repointed from `v0.1.0` to `v0.1.1`, refresh golden fixtures for `first-banking-dataset` and `account-owner-fanout` together with manifest checks.
