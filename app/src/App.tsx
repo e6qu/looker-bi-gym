@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   contentSections,
   getDefaultDocument,
@@ -386,6 +386,7 @@ function QuizChallengePage({
           const questionEvaluation = evaluationsByQuestion.get(question.id);
           const isCorrect = questionEvaluation?.isCorrect ?? false;
           const isAnswered = questionEvaluation?.isAnswered ?? false;
+          const numericInputId = `${challenge.id}-${question.id}-numeric-answer`;
 
           return (
             <fieldset className="quizQuestion" key={question.id}>
@@ -440,13 +441,17 @@ function QuizChallengePage({
               ) : null}
 
               {question.type === 'numeric' ? (
-                <input
-                  className="numericAnswer"
-                  inputMode="decimal"
-                  onChange={(event) => setAnswer(question.id, event.currentTarget.value)}
-                  type="number"
-                  value={getStringAnswer(answers, question.id)}
-                />
+                <label className="numericAnswerField" htmlFor={numericInputId}>
+                  <span className="fieldLabel">Numeric answer for question {index + 1}</span>
+                  <input
+                    className="numericAnswer"
+                    id={numericInputId}
+                    inputMode="decimal"
+                    onChange={(event) => setAnswer(question.id, event.currentTarget.value)}
+                    type="number"
+                    value={getStringAnswer(answers, question.id)}
+                  />
+                </label>
               ) : null}
 
               {hasSubmitted ? (
@@ -845,6 +850,7 @@ function CloudEvidencePage({
               const questionResult = evaluationsByQuestion.get(question.id);
               const isCorrect = questionResult?.isCorrect ?? false;
               const isAnswered = questionResult?.isAnswered ?? false;
+              const numericInputId = `${challenge.id}-${question.id}-numeric-answer`;
 
               return (
                 <fieldset className="quizQuestion" key={question.id}>
@@ -899,13 +905,17 @@ function CloudEvidencePage({
                   ) : null}
 
                   {question.type === 'numeric' ? (
-                    <input
-                      className="numericAnswer"
-                      inputMode="decimal"
-                      onChange={(event) => setQuestionAnswer(question.id, event.currentTarget.value)}
-                      type="number"
-                      value={getStringAnswer(questionAnswers, question.id)}
-                    />
+                    <label className="numericAnswerField" htmlFor={numericInputId}>
+                      <span className="fieldLabel">Numeric answer for question {index + 1}</span>
+                      <input
+                        className="numericAnswer"
+                        id={numericInputId}
+                        inputMode="decimal"
+                        onChange={(event) => setQuestionAnswer(question.id, event.currentTarget.value)}
+                        type="number"
+                        value={getStringAnswer(questionAnswers, question.id)}
+                      />
+                    </label>
                   ) : null}
 
                   {isAnswered ? (
@@ -961,6 +971,8 @@ function SqlChallengePage({
     | { readonly status: 'success'; readonly result: SqlQueryResult }
     | { readonly status: 'error'; readonly message: string }
   >({ status: 'idle' });
+  const sqlEditorId = `${challenge.id}-sql-editor`;
+  const sqlEditorHelpId = `${challenge.id}-sql-editor-help`;
   const checkEvaluation = useMemo(
     () =>
       queryState.status === 'success'
@@ -1090,12 +1102,23 @@ function SqlChallengePage({
         {runtimeState.status === 'ready' ? (
           <SqlTableBrowser tables={runtimeState.tables} onSelectTable={setSampleQuery} />
         ) : (
-          <aside className="sqlSidebar" aria-label="Loaded challenge tables">
+          <aside
+            aria-busy={runtimeState.status === 'loading'}
+            aria-label="Loaded challenge tables"
+            className="sqlSidebar"
+          >
             <div className="sidebarHeader">
               <p className="eyebrow">Schema browser</p>
               <h2>Seed tables</h2>
             </div>
-            <p className="sqlLoadingText">
+            <p
+              className={
+                runtimeState.status === 'loading'
+                  ? 'sqlLoadingText'
+                  : 'feedbackBox feedbackFail sqlFeedback'
+              }
+              role="status"
+            >
               {runtimeState.status === 'loading'
                 ? 'Loading DuckDB-Wasm and seed tables...'
                 : runtimeState.message}
@@ -1103,27 +1126,38 @@ function SqlChallengePage({
           </aside>
         )}
 
-        <section className="sqlWorkspace" aria-label="SQL workspace">
+        <section
+          aria-busy={queryState.status === 'running'}
+          aria-label="SQL workspace"
+          className="sqlWorkspace"
+        >
           <div className="sqlEditorPanel">
             <div className="sqlEditorHeader">
               <p className="eyebrow">SQL editor</p>
               <span>{isCompleted ? `Flag: ${challenge.flag.id}` : 'Flag appears after required checks pass'}</span>
             </div>
+            <label className="fieldLabel" htmlFor={sqlEditorId}>
+              SQL query
+            </label>
             <textarea
-              aria-label="SQL query editor"
+              aria-describedby={sqlEditorHelpId}
               className="sqlEditor"
+              id={sqlEditorId}
               onChange={(event) => setSql(event.currentTarget.value)}
               value={sql}
             />
             <div className="sqlEditorActions">
               <button
+                aria-describedby={sqlEditorHelpId}
                 disabled={runtimeState.status !== 'ready' || queryState.status === 'running'}
                 type="button"
                 onClick={() => void runQuery()}
               >
                 {queryState.status === 'running' ? 'Running...' : 'Run Query'}
               </button>
-              <p>Queries run fully in the browser against the loaded synthetic CSV tables.</p>
+              <p id={sqlEditorHelpId}>
+                Queries run fully in the browser against the loaded synthetic CSV tables.
+              </p>
             </div>
           </div>
 
@@ -1132,6 +1166,7 @@ function SqlChallengePage({
               const questionResult = evaluationsByQuestion.get(question.id);
               const isCorrect = questionResult?.isCorrect ?? false;
               const isAnswered = questionResult?.isAnswered ?? false;
+              const numericInputId = `${challenge.id}-${question.id}-numeric-answer`;
 
               return (
                 <fieldset className="quizQuestion" key={question.id}>
@@ -1186,13 +1221,17 @@ function SqlChallengePage({
                   ) : null}
 
                   {question.type === 'numeric' ? (
-                    <input
-                      className="numericAnswer"
-                      inputMode="decimal"
-                      onChange={(event) => setAnswer(question.id, event.currentTarget.value)}
-                      type="number"
-                      value={getStringAnswer(answers, question.id)}
-                    />
+                    <label className="numericAnswerField" htmlFor={numericInputId}>
+                      <span className="fieldLabel">Numeric answer for question {index + 1}</span>
+                      <input
+                        className="numericAnswer"
+                        id={numericInputId}
+                        inputMode="decimal"
+                        onChange={(event) => setAnswer(question.id, event.currentTarget.value)}
+                        type="number"
+                        value={getStringAnswer(answers, question.id)}
+                      />
+                    </label>
                   ) : null}
 
                   {isAnswered ? (
@@ -1230,6 +1269,12 @@ function SqlChallengePage({
           {queryState.status === 'error' ? (
             <div className="feedbackBox feedbackFail sqlFeedback" role="status">
               {queryState.message}
+            </div>
+          ) : null}
+
+          {queryState.status === 'running' ? (
+            <div className="feedbackBox sqlFeedback" role="status">
+              Running the SQL query in the browser.
             </div>
           ) : null}
 
@@ -1581,6 +1626,8 @@ function AppPage({ route }: { readonly route: AppRoute }): JSX.Element {
 
 export function App(): JSX.Element {
   const [activeRoute, setActiveRoute] = useState<AppRoute>(routeFromHash);
+  const mainRef = useRef<HTMLElement>(null);
+  const hasMountedRef = useRef<boolean>(false);
 
   useEffect(() => {
     const onHashChange = (): void => {
@@ -1590,6 +1637,14 @@ export function App(): JSX.Element {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
+  useEffect(() => {
+    if (hasMountedRef.current) {
+      mainRef.current?.focus();
+    } else {
+      hasMountedRef.current = true;
+    }
+  }, [activeRoute]);
+
   const activeLabel = useMemo(
     () => routes.find((route) => route.id === activeRoute.section)?.label ?? 'Home',
     [activeRoute.section],
@@ -1597,6 +1652,9 @@ export function App(): JSX.Element {
 
   return (
     <div className="appShell">
+      <a className="skipLink" href="#main-content">
+        Skip to main content
+      </a>
       <header className="topBar">
         <a className="brand" href="#/home" aria-label="Looker BI Gym home">
           <span className="brandMark" aria-hidden="true">
@@ -1617,7 +1675,7 @@ export function App(): JSX.Element {
         </nav>
       </header>
 
-      <main>
+      <main id="main-content" ref={mainRef} tabIndex={-1}>
         <div className="mobileRouteLabel" aria-live="polite">
           {activeLabel}
         </div>

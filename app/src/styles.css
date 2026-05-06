@@ -38,8 +38,51 @@ a {
   color: inherit;
 }
 
+button,
+input,
+textarea,
+summary,
+a {
+  outline-offset: 3px;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+a:focus-visible {
+  outline: 3px solid rgba(23, 107, 93, 0.42);
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
 .appShell {
   min-height: 100vh;
+}
+
+.skipLink {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 100;
+  transform: translateY(-160%);
+  padding: 10px 12px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--accent-strong);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.skipLink:focus-visible {
+  transform: translateY(0);
 }
 
 .topBar {
@@ -108,6 +151,10 @@ main {
   width: min(1180px, calc(100vw - 36px));
   margin: 0 auto;
   padding: 34px 0 56px;
+}
+
+main:focus {
+  outline: none;
 }
 
 .mobileRouteLabel {
@@ -677,6 +724,12 @@ h3 {
   color: var(--muted);
 }
 
+.fieldLabel {
+  color: var(--text);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
 .sqlTableList {
   display: grid;
   gap: 8px;
@@ -786,6 +839,12 @@ h3 {
   background: var(--accent);
   color: #ffffff;
   font-weight: 800;
+}
+
+.sqlEditorActions button:disabled {
+  border-color: var(--line);
+  background: var(--surface-strong);
+  color: var(--muted);
 }
 
 .sqlEditorActions p {
@@ -1079,6 +1138,12 @@ h3 {
   border-radius: 8px;
   color: var(--text);
   font: inherit;
+}
+
+.numericAnswerField {
+  display: grid;
+  gap: 7px;
+  width: min(280px, 100%);
 }
 
 .quizActions {

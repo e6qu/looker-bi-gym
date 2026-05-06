@@ -1,16 +1,12 @@
 # Bugs
 
-No known app bugs after the Task 012 implementation and automated checks.
+No known app bugs after the Task 013 implementation and automated checks.
 
 ## Follow-Up Verification Gaps
 
-- Add automated browser route smoke tests later, likely in Task 013, to verify rendered Markdown routes and browser console cleanliness under a real browser.
-- Add browser smoke coverage for the generated challenge index later, likely in Task 013.
-- Add browser smoke coverage for dataset-backed challenge loading after the SQL runtime exists.
 - Track Vite/DuckDB-WASM source-map noise during browser verification. It did not fail Task 008, but the dev server logged many DuckDB worker source-map warnings from package internals.
-- Add automated browser route/challenge completion smoke tests later, likely in Task 013, so the Task 009 headless browser verification does not remain only an ad hoc CDP run.
-- Add browser smoke coverage for the cloud-evidence route and local completion flow later, likely in Task 013. Task 010 verified the route through typecheck/build and parser/unit tests, but not a real browser interaction pass.
 - Verify the live GitHub Pages environment URL and hash deep links after the Task 012 workflows run in GitHub. Local build and static-link validation passed, but live deployment cannot be confirmed from the local workspace.
+- Complete Safari second-browser verification for Task 013. `safaridriver` is installed with Safari 26.1, but Safari's persistent "Allow remote automation" setting is disabled. Enabling it requires explicit user authorization because it changes a persistent browser security setting. The manual checklist lives in `docs/10-app-quality-browser-qa.md`.
 
 ## Template
 

@@ -48,6 +48,14 @@ After deployment, verify:
 
 The app is static and browser-hosted. It does not require a backend, credentials, user tracking, Google Cloud CLI, BigQuery CLI, Python, or Docker for the default learner path. Datasets and challenge content must remain synthetic.
 
+No third-party analytics, telemetry beacon, session replay, advertising tag, or learner-data upload is enabled by default. Browser-only challenge answers, local flags, and reset state stay in `localStorage` on the learner's device.
+
+## Browser Compatibility
+
+The target release browsers are current stable Chrome and Safari on desktop, with responsive layouts checked at common desktop, tablet, and narrow mobile widths. DuckDB-WASM SQL challenges require a browser with WebAssembly, Web Worker, Blob URL, and modern ES module support.
+
+If a browser blocks WebAssembly workers or local storage, Markdown/content routes remain readable, but browser SQL challenges or local progress flags may not complete. The app should show a DuckDB-WASM loading or error state instead of failing silently.
+
 ## Markdown Rendering
 
 Existing Markdown files are loaded at build time with Vite raw imports from `docs/`, `regulations/`, and `tutorials/`. The app renders them with `marked` and rewrites internal `.md` links to hash routes such as `#/docs/README.md`, which keeps navigation compatible with GitHub Pages project paths and avoids server rewrite rules.

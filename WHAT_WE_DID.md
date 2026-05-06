@@ -2,6 +2,31 @@
 
 ## 2026-05-06
 
+- Started and completed Task 013 implementation.
+- Added app quality/accessibility improvements:
+  - skip link to main content;
+  - route-change focus management for hash navigation;
+  - stronger shared focus-visible styles for links, buttons, inputs, textareas, and details summaries;
+  - visible labels for numeric challenge answers and the SQL editor;
+  - clearer SQL runtime loading, error, disabled, and running status messages.
+- Added `app/public/favicon.svg` and linked it from `app/index.html`, fixing the production-preview browser console/network 404 for `/favicon.ico`.
+- Added browser compatibility and no-third-party-analytics notes to `app/README.md`.
+- Added `docs/10-app-quality-browser-qa.md` and linked it from `docs/README.md`.
+- Ran `pnpm typecheck`; it passed.
+- Ran `pnpm lint`; it passed.
+- Ran `make check`; it passed before the favicon fix and again after the final rebuild.
+- Ran `pnpm preview`; the sandboxed run failed with `listen EPERM: operation not permitted 127.0.0.1:4173`.
+- Reran `pnpm preview` with approval; Vite preview served the built app at `http://127.0.0.1:4173/`.
+- Created temporary Chrome DevTools Protocol smoke tooling under `/private/tmp` for verification only.
+- Ran the Chrome smoke once; it failed because Chrome requested `/favicon.ico` and the built preview returned 404.
+- Added the favicon, rebuilt with `pnpm build`, and reran the Chrome smoke successfully.
+- Chrome 148 smoke verification covered home, docs, challenge index, orientation quiz, SQL challenge, cloud-evidence route, skip-link focus, route focus, unlabeled controls, SQL query execution, 390 px responsive layout, console errors, and unexpected external/mutation network requests.
+- Ran `rg` source inspection for `fetch`, `XMLHttpRequest`, `sendBeacon`, WebSocket, analytics, telemetry, and local storage boundaries. No external learner-data transmission paths were found; the app uses browser-local `localStorage`, DuckDB `registerFileText`, and a local DuckDB Web Worker.
+- Tried Safari verification through `safaridriver`; it failed because Safari's persistent "Allow remote automation" setting is disabled.
+- Tried `safaridriver --enable`; the escalation was rejected because enabling Safari WebDriver remote automation is a persistent security-setting change requiring explicit user authorization.
+- Stopped the approved Vite preview server and confirmed `127.0.0.1:4173` was no longer reachable.
+- Updated Task 013 with implementation and verification notes.
+
 - Started and completed Task 012 implementation.
 - Added `.github/workflows/ci.yml` with a `pnpm` CI gate for:
   - frozen-lockfile install

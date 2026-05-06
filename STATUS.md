@@ -4,11 +4,11 @@ Last updated: 2026-05-06
 
 ## Current State
 
-Planning, documentation, task tracking, continuity protocol, the static app skeleton, Markdown content navigation, challenge manifest validation/catalog generation, the first synthetic deposits dataset, the quiz challenge runtime, the browser SQL runtime, reusable browser validators, local flags, unified local progress storage, reset controls, the first three browser-verifiable challenges, the first cloud-evidence challenge pattern, the challenge authoring guide, CI validation, and GitHub Pages deployment workflows are in place. Tasks 001 through 012 are complete except for live post-deploy URL verification, which requires a GitHub workflow run. Git discipline requires `.gitignore` maintenance, no committed rebuildable artifacts, no committed WASM runtime artifacts, and a commit after each completed task. A root `Makefile` exposes the repository checks and tests through `make` targets.
+Planning, documentation, task tracking, continuity protocol, the static app skeleton, Markdown content navigation, challenge manifest validation/catalog generation, the first synthetic deposits dataset, the quiz challenge runtime, the browser SQL runtime, reusable browser validators, local flags, unified local progress storage, reset controls, the first three browser-verifiable challenges, the first cloud-evidence challenge pattern, the challenge authoring guide, CI validation, GitHub Pages deployment workflows, and the app quality/accessibility pass are in place. Tasks 001 through 013 are complete except for live post-deploy URL verification, which requires a GitHub workflow run, and Safari second-browser smoke verification, which requires the user to explicitly enable Safari remote automation or perform a manual Safari pass. Git discipline requires `.gitignore` maintenance, no committed rebuildable artifacts, no committed WASM runtime artifacts, and a commit after each completed task. A root `Makefile` exposes the repository checks and tests through `make` targets.
 
 ## Active Task
 
-Active task: [013 - App Quality And Accessibility Pass](tasks/013-app-quality-and-accessibility-pass.md).
+Active task: [014 - Dataset Expansion And Versioning](tasks/014-dataset-expansion-and-versioning.md).
 
 ## Current Decisions
 
@@ -34,6 +34,7 @@ Active task: [013 - App Quality And Accessibility Pass](tasks/013-app-quality-an
 - GitHub Actions CI runs the same `pnpm` validation, test, build, and static-link gates.
 - GitHub Pages deployment builds `app/dist` with `pnpm`, uploads it as the Pages artifact, and deploys through the `github-pages` environment.
 - Manifest validation now fails when a declared dataset ID/version does not resolve to a committed dataset metadata file.
+- The app quality pass added a skip link, route-change focus management, visible labels for numeric challenge answers and the SQL editor, stronger focus styles, clearer SQL loading/error/running states, a static favicon, browser compatibility notes, and a repeatable browser QA checklist.
 - Quiz challenge details render from generated manifests at `#/challenges/{challenge-id}`.
 - The quiz runtime grades multiple-choice, select-all, and numeric answers deterministically in the browser.
 - Challenge completion state and local flags are stored in browser `localStorage` under `looker-bi-gym.progress.v1`.
@@ -72,4 +73,4 @@ None known.
 
 ## Confidence
 
-High for planning direction, task structure, the app skeleton, Markdown content loading, challenge manifest validation, draft validation, dataset-reference validation, the initial deposits dataset, automated quiz grading, the browser SQL runtime, browser validators, local flags, unified progress storage, reset behavior, the first browser challenges, the cloud-evidence pattern, the authoring guide, the Makefile check harness, and CI/Pages workflow structure. Medium for live GitHub Pages reachability until the workflow runs in GitHub.
+High for planning direction, task structure, the app skeleton, Markdown content loading, challenge manifest validation, draft validation, dataset-reference validation, the initial deposits dataset, automated quiz grading, the browser SQL runtime, browser validators, local flags, unified progress storage, reset behavior, the first browser challenges, the cloud-evidence pattern, the authoring guide, the Makefile check harness, CI/Pages workflow structure, and Chrome app quality smoke coverage. Medium for live GitHub Pages reachability until the workflow runs in GitHub and for Safari verification until remote automation is explicitly enabled or a manual Safari pass is completed.
