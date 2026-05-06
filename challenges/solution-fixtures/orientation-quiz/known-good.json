@@ -1,0 +1,16 @@
+{
+  "fixture_id": "known-good",
+  "challenge_id": "orientation-quiz",
+  "mode": "quiz",
+  "kind": "known-good",
+  "description": "Correct orientation quiz answers for the synthetic-data and browser-first training boundary.",
+  "answers": {
+    "q_synthetic_data": "synthetic_only",
+    "q_required_tools": "none",
+    "q_sensitive_fields": ["account_id", "customer_id", "synthetic_iban"],
+    "q_supported_types": "3"
+  },
+  "expected": {
+    "required_passed": true
+  }
+}

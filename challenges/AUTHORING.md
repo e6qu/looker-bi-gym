@@ -8,6 +8,7 @@ Start from these references:
 - [Manifest schema](schema/challenge-manifest.schema.json) for the machine-readable field contract.
 - [Published manifests](manifests/) for released challenge examples.
 - [Draft manifests](drafts/) for validation-only authoring smoke tests.
+- [Solution fixtures](solution-fixtures/) for release-ready known-good and known-bad validator coverage.
 - [Deposits seed dataset](../datasets/deposits-seed/v0.1.0/README.md) and [dataset metadata](../datasets/deposits-seed/v0.1.0/metadata.json).
 - [Tutorial data-source contract](../tutorials/data-sources.md) and [tutorial index](../tutorials/README.md).
 - [Regulation briefs](../regulations/README.md) for EU/Romanian context notes.
@@ -19,7 +20,7 @@ These materials are technical training content, not legal, regulatory, accountin
 1. Pick a learning objective and challenge mode.
 2. Declare the input data grain, sensitive fields, date semantics, outputs, checks, questions, required tools, and flag criteria.
 3. Author YAML in `challenges/manifests/` for a released challenge, or `challenges/drafts/` for a validation-only draft.
-4. Add or update tests when the challenge uses SQL, validators, cloud evidence, or a new dataset expectation.
+4. Add or update solution fixtures and tests when the challenge uses SQL, validators, cloud evidence, or a new dataset expectation.
 5. Run `pnpm validate:manifests`, `pnpm validate:datasets` when datasets are referenced, and `make check` before considering the task done.
 
 Draft manifests are validated with the same schema as published manifests, but only files in `challenges/manifests/` are emitted to the browser catalog.
@@ -170,12 +171,13 @@ A release-ready challenge must document how it is verified. Prefer automated tes
 - `pnpm validate:manifests` for schema validity, unique IDs, invalid-fixture failure, and catalog generation.
 - `pnpm validate:datasets` when the challenge references dataset facts, relationships, control totals, or known issues.
 - `pnpm test:quiz` for quiz grading changes.
-- `pnpm test:sql` for browser SQL known-good and known-bad fixtures.
+- `pnpm test:sql` for browser SQL runtime smoke coverage.
+- `pnpm test:fixtures` for released challenge known-good and expected known-bad solution fixtures.
 - `pnpm test:cloud-evidence` for cloud evidence parser and validator changes.
 - `pnpm test:validators` for shared validator behavior.
 - `make check` before marking a task complete.
 
-Golden fixtures should prove both sides of a trap: one known-good solution passes and one known-bad solution fails. If a task cannot automate a check yet, write the manual procedure and residual risk in the relevant `tasks/*.md` file and continuity docs.
+Every released manifest under `challenges/manifests/` must have at least one known-good solution fixture under `challenges/solution-fixtures/{challenge_id}/`. Golden fixtures should prove both sides of a trap: one known-good solution passes and one known-bad solution fails for the expected check IDs. If a task cannot automate a check yet, write the manual procedure and residual risk in the relevant `tasks/*.md` file and continuity docs.
 
 ## Tutorial Conversion Checklist
 
@@ -190,7 +192,7 @@ When converting a markdown tutorial into a challenge:
 - Keep browser-first tasks at `required_tools: none`.
 - For cloud-applied tasks, list exact browser UI tools and state that no credentials, secrets, API keys, service account keys, OAuth tokens, or private data should be pasted into the app.
 - Add hints that guide reasoning before revealing implementation details.
-- Add or update fixtures/tests for any SQL, data, or evidence validation behavior.
+- Add or update solution fixtures/tests for any SQL, data, or evidence validation behavior.
 - Run the validation commands and record results in the task file and continuity docs.
 
 ## Example Templates

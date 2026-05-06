@@ -54,6 +54,9 @@ jobs:
       - name: Test SQL Runtime
         run: pnpm test:sql
 
+      - name: Test Solution Fixtures
+        run: pnpm test:fixtures
+
       - name: Test Cloud Evidence Runtime
         run: pnpm test:cloud-evidence
 

@@ -2,6 +2,37 @@
 
 ## 2026-05-06
 
+- Started and completed Task 015 implementation.
+- Added committed solution fixtures under `challenges/solution-fixtures/`:
+  - `orientation-quiz/known-good.json`;
+  - `first-banking-dataset/known-good.json` and `known-good.sql`;
+  - `first-banking-dataset/known-bad-account-grain.json` and `known-bad-account-grain.sql`;
+  - `account-owner-fanout/known-good.json` and `known-good.sql`;
+  - `account-owner-fanout/known-bad-naive-owner-fanout.json` and `known-bad-naive-owner-fanout.sql`;
+  - `looker-studio-evidence/known-good.json`.
+- Added `challenges/solution-fixtures/README.md` documenting fixture structure, coverage requirements, dataset version pins, and `deposits-seed/v0.1.1` refresh implications.
+- Added `app/scripts/test-solution-fixtures.ts`, which:
+  - loads released YAML manifests;
+  - loads committed fixture JSON/SQL files;
+  - enforces known-good fixture coverage for every released manifest;
+  - enforces known-bad fixture coverage for CTF/trap challenges;
+  - verifies browser SQL fixture dataset pins against manifest dataset references;
+  - evaluates quiz answers, browser SQL result validators, cloud-evidence checks, and challenge questions without browser storage.
+- Moved inline SQL known-good/known-bad golden cases out of `app/scripts/test-sql.ts`; that script now remains focused on DuckDB-WASM Node runtime smoke coverage.
+- Added `pnpm test:fixtures` at the root and app package levels.
+- Added Makefile `test-fixtures` and included it in `make test` / `make check`.
+- Added a CI workflow step for `pnpm test:fixtures`.
+- Updated `challenges/AUTHORING.md` and `challenges/README.md` to point authors at solution fixtures and the new release coverage rule.
+- Ran `pnpm test:fixtures`; it passed with 6 solution fixtures for 4 released challenges.
+- Ran `pnpm typecheck`; it initially failed on strict JSON narrowing and exact optional property handling in `test-solution-fixtures.ts`; tightened parsing and reran successfully.
+- Ran `pnpm lint`; it initially failed on unsafe narrowing, exhaustive switch handling, boolean template formatting, and console output in `test-solution-fixtures.ts`; fixed those issues and reran successfully.
+- Ran `pnpm test:sql`, `pnpm test:quiz`, `pnpm test:cloud-evidence`, and `pnpm test:validators`; they passed.
+- Temporarily changed `first-banking-dataset/known-good.sql` to return `COUNT(*) + 1`; `pnpm test:fixtures` failed as expected, then the fixture was restored.
+- Temporarily changed `account-owner-fanout/known-bad-naive-owner-fanout.sql` into a passing solution; `pnpm test:fixtures` failed because the known-bad fixture passed, then the fixture was restored.
+- Ran `pnpm build`; it passed with Vite's existing non-failing large DuckDB-WASM chunk warning.
+- Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL smoke tests, solution fixture golden tests, cloud-evidence tests, validator tests, production build, and static-link validation passed.
+- Updated Task 015 with completion and verification notes.
+
 - Started and completed Task 014 implementation.
 - Added `datasets/VERSIONING.md` with dataset immutability rules, metadata expectations, changed-output rules, and fixture-refresh records.
 - Added `datasets/EXPANSION_ROADMAP.md` covering:

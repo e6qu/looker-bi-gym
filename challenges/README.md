@@ -16,3 +16,5 @@ Every challenge must declare `required_tools`. Use `none` for browser-only work.
 See [Challenge Authoring Guide](AUTHORING.md) for mode selection, manifest fields, validators, dataset references, tutorial conversion rules, and example templates.
 
 Invalid fixtures live in `challenges/fixtures/` and are used to prove validation fails with a clear error.
+
+Solution fixtures live in `challenges/solution-fixtures/` and are used by `pnpm test:fixtures` to prove released challenge validators pass known-good solutions and reject expected known-bad solutions.

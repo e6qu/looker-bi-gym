@@ -1,0 +1,16 @@
+{
+  "fixture_id": "known-good",
+  "challenge_id": "first-banking-dataset",
+  "mode": "browser-sql",
+  "kind": "known-good",
+  "description": "One-row profile of the deposits seed without exposing sensitive identifiers.",
+  "dataset_id": "deposits-seed",
+  "dataset_version": "v0.1.0",
+  "sql_file": "known-good.sql",
+  "answers": {
+    "q_balance_grain": "account_day"
+  },
+  "expected": {
+    "required_passed": true
+  }
+}
