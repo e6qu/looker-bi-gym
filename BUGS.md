@@ -1,6 +1,6 @@
 # Bugs
 
-No known app bugs after the Task 010 implementation and automated checks.
+No known app bugs after the Task 011 implementation and automated checks.
 
 ## Follow-Up Verification Gaps
 

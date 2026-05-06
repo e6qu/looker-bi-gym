@@ -2,6 +2,28 @@
 
 ## 2026-05-06
 
+- Started and completed Task 011.
+- Added `challenges/AUTHORING.md` with:
+  - challenge mode selection rules
+  - manifest field reference
+  - validator reference
+  - dataset reference for `deposits-seed` `v0.1.0`
+  - required-tools policy
+  - tutorial conversion checklist
+  - quiz, browser SQL, and cloud-evidence templates
+  - explicit warnings against real banking data, credentials, secrets, API keys, esoteric tooling, and highly platform-specific tooling
+- Added validation-only draft manifest `challenges/drafts/minimal-authoring-draft.yaml` created from the guide.
+- Updated `app/scripts/validate-challenge-manifests.ts` so `challenges/drafts/` YAML files are schema-validated and included in unique-ID checks, but only `challenges/manifests/` files are emitted to ignored `app/src/generated/challengeCatalog.json`.
+- Updated `challenges/README.md` to link the authoring guide and explain draft validation behavior.
+- Ran `pnpm validate:manifests`; it passed with the draft included.
+- Ran `pnpm build`; it passed with draft validation in the build path.
+- Verified with `rg` that the draft ID is absent from the generated browser catalog.
+- Verified with `rg` that the guide links to dataset, regulation, task, tutorial, and manifest-schema references.
+- Verified with `rg` that the guide includes required safety and required-tools policy language.
+- Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL tests, cloud-evidence tests, validator tests, and production build passed.
+- The production build still reports Vite's non-failing large DuckDB-WASM chunk warning.
+- Updated Task 011 with completion and verification notes.
+
 - Started and completed Task 010.
 - Added local cloud-evidence parsing and validation in `app/src/cloudEvidence.ts`.
 - Added validators for:

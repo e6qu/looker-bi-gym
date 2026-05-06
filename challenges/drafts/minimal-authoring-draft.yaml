@@ -1,0 +1,59 @@
+id: minimal-authoring-draft
+title: 011 - Minimal Authoring Draft
+area: orientation-and-source-data
+mode: quiz
+difficulty: intro
+estimated_minutes: 5
+prerequisites: []
+business_scenario: Validate the authoring guide contract with a small draft challenge before publishing learner content.
+regulatory_context:
+  - GDPR
+required_tools: none
+inputs:
+  - id: authoring_guide
+    type: markdown
+    description: Challenge authoring guide with safety and required-tools policy.
+    path: challenges/AUTHORING.md
+outputs:
+  - id: draft_answers
+    type: answer-set
+    description: Browser-local answers proving the authoring safety rules are understood.
+checks:
+  - id: no_real_data
+    type: quiz-answer
+    description: Author confirms that real banking data is not allowed in challenge files.
+    target: q_allowed_data
+    expected: synthetic_only
+  - id: no_credentials
+    type: quiz-answer
+    description: Author confirms that credentials and secrets are not allowed in the static app.
+    target: q_credentials
+    expected: none
+questions:
+  - id: q_allowed_data
+    type: multiple-choice
+    prompt: Which data may be used in challenge files?
+    options:
+      - id: synthetic_only
+        label: Synthetic training data only.
+      - id: masked_real_data
+        label: Masked real banking data.
+    answer: synthetic_only
+    explanation: The project prohibits real banking data, including masked production samples.
+  - id: q_credentials
+    type: multiple-choice
+    prompt: Which credentials may be collected by the static app?
+    options:
+      - id: none
+        label: None.
+      - id: api_key
+        label: API keys for validation.
+    answer: none
+    explanation: Credentials, secrets, API keys, and tokens must not be collected or stored.
+flag:
+  id: flag-minimal-authoring-draft
+  criteria:
+    - Answer all authoring safety questions correctly.
+hints:
+  - level: 1
+    text: Check the Safety Rules and Required Tools Policy sections.

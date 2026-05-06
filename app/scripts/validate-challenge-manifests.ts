@@ -10,12 +10,14 @@ type ValidationTarget = {
   readonly label: string;
   readonly path: string;
   readonly shouldPass: boolean;
+  readonly includeInCatalog: boolean;
 };
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const appRoot = join(scriptDir, '..');
 const repoRoot = join(appRoot, '..');
 const manifestsDir = join(repoRoot, 'challenges', 'manifests');
+const draftsDir = join(repoRoot, 'challenges', 'drafts');
 const fixturesDir = join(repoRoot, 'challenges', 'fixtures');
 const schemaPath = join(repoRoot, 'challenges', 'schema', 'challenge-manifest.schema.json');
 const generatedCatalogPath = join(appRoot, 'src', 'generated', 'challengeCatalog.json');
@@ -89,29 +91,48 @@ async function main(): Promise<void> {
   const ajv = new Ajv2020({ allErrors: true, allowUnionTypes: true, strict: true });
   const validate = ajv.compile(schema);
   const manifestPaths = await listYamlFiles(manifestsDir);
+  const draftPaths = await listYamlFiles(draftsDir);
   const invalidFixturePath = join(fixturesDir, 'invalid-manifest.yaml');
   const targets: readonly ValidationTarget[] = [
     ...manifestPaths.map((path) => ({
       label: relative(repoRoot, path),
       path,
       shouldPass: true,
+      includeInCatalog: true,
+    })),
+    ...draftPaths.map((path) => ({
+      label: relative(repoRoot, path),
+      path,
+      shouldPass: true,
+      includeInCatalog: false,
     })),
     {
       label: relative(repoRoot, invalidFixturePath),
       path: invalidFixturePath,
       shouldPass: false,
+      includeInCatalog: false,
     },
   ];
 
-  const results = await Promise.all(targets.map((target) => validateTarget(target, validate)));
-  const manifests = results
+  const results = await Promise.all(
+    targets.map(async (target) => ({
+      target,
+      manifest: await validateTarget(target, validate),
+    })),
+  );
+  const validManifests = results
+    .map((result) => result.manifest)
+    .filter((manifest): manifest is ChallengeManifest => manifest !== undefined);
+  const catalogManifests = results
+    .filter((result) => result.target.includeInCatalog && result.manifest !== undefined)
+    .map((result) => result.manifest)
     .filter((manifest): manifest is ChallengeManifest => manifest !== undefined)
     .sort((left, right) => left.id.localeCompare(right.id));
 
-  assertUniqueChallengeIds(manifests);
+  assertUniqueChallengeIds(validManifests);
 
   await mkdir(dirname(generatedCatalogPath), { recursive: true });
-  await writeFile(generatedCatalogPath, `${JSON.stringify(manifests, null, 2)}\n`, 'utf8');
+  await writeFile(generatedCatalogPath, `${JSON.stringify(catalogManifests, null, 2)}\n`, 'utf8');
 }
 
 await main();
