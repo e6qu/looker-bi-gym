@@ -50,6 +50,14 @@ The app is static and browser-hosted. It does not require a backend, credentials
 
 No third-party analytics, telemetry beacon, session replay, advertising tag, or learner-data upload is enabled by default. Browser-only challenge answers, local flags, and reset state stay in `localStorage` on the learner's device.
 
+## Progress Export
+
+The Settings page can export local completion evidence as a JSON file. The export is generated in the browser from the current local progress state and is not uploaded by the app.
+
+The export format is `looker-bi-gym.progress-export.v1` and includes completed challenge IDs, local flags, completion timestamps, dataset IDs and versions, app/content version, privacy boundary fields, and optional learner notes typed into the export form. It excludes credentials, raw quiz answers, pasted cloud evidence, sensitive synthetic dataset columns, real banking data, storage keys, and hidden app internals.
+
+The Settings page shows a JSON preview before download. Import is not implemented in this static release; learners should review the JSON before sharing it for completion review. Resetting browser progress clears local storage only and does not delete exported JSON files already saved outside the browser.
+
 ## Browser Compatibility
 
 The target release browsers are current stable Chrome and Safari on desktop, with responsive layouts checked at common desktop, tablet, and narrow mobile widths. DuckDB-WASM SQL challenges require a browser with WebAssembly, Web Worker, Blob URL, and modern ES module support.

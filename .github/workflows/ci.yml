@@ -60,6 +60,9 @@ jobs:
       - name: Test Cloud Evidence Runtime
         run: pnpm test:cloud-evidence
 
+      - name: Test Progress Export
+        run: pnpm test:progress-export
+
       - name: Test Browser Validators
         run: pnpm test:validators
 

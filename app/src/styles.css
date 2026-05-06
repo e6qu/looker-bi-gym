@@ -1253,6 +1253,56 @@ h3 {
   font-weight: 800;
 }
 
+.progressExportPanel button {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.exportNotesField,
+.exportPreview {
+  grid-column: 1 / -1;
+}
+
+.exportNotesField {
+  display: grid;
+  gap: 8px;
+}
+
+.exportNotesField textarea,
+.exportPreview textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+  font: inherit;
+}
+
+.exportNotesField textarea {
+  min-height: 96px;
+  padding: 12px;
+  resize: vertical;
+}
+
+.exportPreview {
+  display: grid;
+  gap: 10px;
+}
+
+.exportPreview h3,
+.exportPreview p {
+  margin: 0;
+}
+
+.exportPreview textarea {
+  min-height: 260px;
+  padding: 12px;
+  background: #101820;
+  color: #ecf6f3;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  resize: vertical;
+}
+
 @media (max-width: 860px) {
   .topBar {
     position: static;

@@ -15,6 +15,40 @@ export type LearnerProgressState = {
   readonly challenges: Readonly<Record<string, ChallengeProgress>>;
 };
 
+export type ProgressExportDataset = {
+  readonly dataset_id: string;
+  readonly dataset_version: string;
+};
+
+export type ProgressExportChallenge = {
+  readonly challenge_id: string;
+  readonly title: string | null;
+  readonly mode: ChallengeManifest['mode'] | null;
+  readonly completed_at: string;
+  readonly flag: string;
+  readonly dataset_versions: readonly ProgressExportDataset[];
+  readonly passed_check_ids: readonly string[];
+  readonly passed_question_ids: readonly string[];
+};
+
+export type LearnerProgressExport = {
+  readonly format: 'looker-bi-gym.progress-export.v1';
+  readonly exported_at: string;
+  readonly app_version: string;
+  readonly content_version: string;
+  readonly storage_version: LearnerProgressState['version'];
+  readonly completed_challenge_ids: readonly string[];
+  readonly completed_challenges: readonly ProgressExportChallenge[];
+  readonly privacy: {
+    readonly created_locally: true;
+    readonly backend_required: false;
+    readonly includes_credentials: false;
+    readonly includes_real_banking_data: false;
+    readonly includes_raw_answers: false;
+  };
+  readonly learner_notes?: string;
+};
+
 export type ChallengeCompletionInput = {
   readonly challengeId: string;
   readonly flag: string;
@@ -153,6 +187,73 @@ export function resetLearnerProgress(storage: BrowserStorage): LearnerProgressSt
   storage.removeItem(progressStorageKey);
   storage.removeItem(legacyQuizProgressStorageKey);
   return { version: 1, challenges: {} };
+}
+
+function getDatasetVersions(challenge: ChallengeManifest | undefined): readonly ProgressExportDataset[] {
+  if (challenge === undefined) {
+    return [];
+  }
+
+  return challenge.inputs
+    .filter(
+      (input): input is typeof input & Required<Pick<typeof input, 'dataset_id' | 'dataset_version'>> =>
+        typeof input.dataset_id === 'string' && typeof input.dataset_version === 'string',
+    )
+    .map((input) => ({
+      dataset_id: input.dataset_id,
+      dataset_version: input.dataset_version,
+    }));
+}
+
+export function buildLearnerProgressExport(
+  progress: LearnerProgressState,
+  challenges: readonly ChallengeManifest[],
+  options: {
+    readonly appVersion: string;
+    readonly contentVersion: string;
+    readonly exportedAt?: string;
+    readonly learnerNotes?: string;
+  },
+): LearnerProgressExport {
+  const challengesById = new Map(challenges.map((challenge) => [challenge.id, challenge] as const));
+  const completedChallenges = Object.entries(progress.challenges)
+    .filter((entry) => entry[1].completed)
+    .sort((left, right) => left[0].localeCompare(right[0]))
+    .map(([challengeId, challengeProgress]) => {
+      const challenge = challengesById.get(challengeId);
+
+      return {
+        challenge_id: challengeId,
+        title: challenge?.title ?? null,
+        mode: challenge?.mode ?? null,
+        completed_at: challengeProgress.completedAt,
+        flag: challengeProgress.flag,
+        dataset_versions: getDatasetVersions(challenge),
+        passed_check_ids: challengeProgress.passedCheckIds,
+        passed_question_ids: challengeProgress.passedQuestionIds,
+      };
+    });
+  const baseExport = {
+    format: 'looker-bi-gym.progress-export.v1',
+    exported_at: options.exportedAt ?? new Date().toISOString(),
+    app_version: options.appVersion,
+    content_version: options.contentVersion,
+    storage_version: progress.version,
+    completed_challenge_ids: completedChallenges.map((challenge) => challenge.challenge_id),
+    completed_challenges: completedChallenges,
+    privacy: {
+      created_locally: true,
+      backend_required: false,
+      includes_credentials: false,
+      includes_real_banking_data: false,
+      includes_raw_answers: false,
+    },
+  } satisfies Omit<LearnerProgressExport, 'learner_notes'>;
+  const learnerNotes = options.learnerNotes?.trim() ?? '';
+
+  return learnerNotes.length > 0
+    ? { ...baseExport, learner_notes: learnerNotes }
+    : baseExport;
 }
 
 export function getPassedQuestionIds(evaluation: QuizEvaluation): readonly string[] {

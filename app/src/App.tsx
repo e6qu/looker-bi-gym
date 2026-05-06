@@ -23,6 +23,7 @@ import {
   isSupportedQuizQuestion,
 } from './quiz';
 import {
+  buildLearnerProgressExport,
   completeChallenge,
   getCompletedChallengeIds,
   getPassedQuestionIds,
@@ -33,6 +34,7 @@ import {
 } from './progress';
 import { getSqlRuntime, isSqlPreviewSupported, runSqlPreview } from './sqlRuntime';
 import { evaluateSqlResultChecks } from './validators';
+import appPackage from '../package.json';
 import type { JSX } from 'react';
 import type { ChallengeManifest } from './challengeTypes';
 import type { CloudEvidenceAnswerState, CloudEvidenceValue } from './cloudEvidence';
@@ -75,6 +77,8 @@ const contentRouteIds: ReadonlySet<RouteId> = new Set<RouteId>([
   'regulations',
   'tutorials',
 ]);
+const appVersion = appPackage.version;
+const contentVersion = appPackage.version;
 
 const principles: readonly string[] = [
   'Static GitHub Pages app',
@@ -1531,17 +1535,48 @@ function ChallengesPage({
 
 function SettingsPage(): JSX.Element {
   const [resetMessage, setResetMessage] = useState<string>('');
+  const [progress, setProgress] = useState<LearnerProgressState>(() =>
+    readLearnerProgress(window.localStorage),
+  );
+  const [learnerNotes, setLearnerNotes] = useState<string>('');
+  const [exportMessage, setExportMessage] = useState<string>('');
+  const progressExport = useMemo(
+    () =>
+      buildLearnerProgressExport(progress, challengeCatalog, {
+        appVersion,
+        contentVersion,
+        learnerNotes,
+      }),
+    [learnerNotes, progress],
+  );
+  const exportJson = useMemo(() => JSON.stringify(progressExport, null, 2), [progressExport]);
 
   function resetProgress(): void {
-    resetLearnerProgress(window.localStorage);
+    setProgress(resetLearnerProgress(window.localStorage));
     setResetMessage('Local progress has been reset in this browser.');
+    setExportMessage('');
+  }
+
+  function exportProgress(): void {
+    const blob = new Blob([exportJson], { type: 'application/json' });
+    const objectUrl = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = objectUrl;
+    link.download = `looker-bi-gym-progress-${progressExport.exported_at.slice(0, 10)}.json`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(objectUrl);
+    setExportMessage('Progress export was prepared locally as a JSON download.');
+    setResetMessage('');
   }
 
   return (
     <section className="page settingsPage" aria-labelledby="settings-title">
       <PageTitle
         title="Settings"
-        description="Learner state remains browser-local. Reset clears challenge completion and local flags from this browser."
+        description="Learner state remains browser-local. Export creates a user-controlled JSON file; reset clears challenge completion and local flags from this browser."
         id="settings-title"
       />
       <div className="settingsPanel">
@@ -1561,10 +1596,50 @@ function SettingsPage(): JSX.Element {
           <p>No BigQuery, Looker Studio, Google Cloud, or banking credentials are requested or stored.</p>
         </div>
       </div>
+      <div className="settingsActionPanel progressExportPanel">
+        <div>
+          <h3>Progress Export</h3>
+          <p>
+            Exported JSON includes completed challenge IDs, local flags, timestamps, dataset
+            versions, app/content version, and notes you type here. It excludes credentials,
+            raw challenge answers, pasted cloud evidence, and real banking data.
+          </p>
+        </div>
+        <button type="button" onClick={exportProgress}>
+          Export JSON
+        </button>
+        <label className="exportNotesField" htmlFor="progress-export-notes">
+          <span className="fieldLabel">Learner notes for this export</span>
+          <textarea
+            id="progress-export-notes"
+            onChange={(event) => setLearnerNotes(event.currentTarget.value)}
+            placeholder="Optional reviewer-facing notes. Do not include credentials or real banking data."
+            value={learnerNotes}
+          />
+        </label>
+        <div className="exportPreview">
+          <div>
+            <h3>Preview</h3>
+            <p>
+              Import is not implemented in this static release. Review this local JSON before
+              sharing it for completion evidence.
+            </p>
+          </div>
+          <textarea aria-label="Progress export JSON preview" readOnly value={exportJson} />
+        </div>
+        {exportMessage.length > 0 ? (
+          <div className="feedbackBox feedbackPass" role="status">
+            {exportMessage}
+          </div>
+        ) : null}
+      </div>
       <div className="settingsActionPanel">
         <div>
           <h3>Progress</h3>
-          <p>Completion flags and challenge state are stored only in local browser storage.</p>
+          <p>
+            Completion flags and challenge state are stored only in local browser storage.
+            Reset does not delete exported JSON files that already exist outside the browser.
+          </p>
         </div>
         <button type="button" onClick={resetProgress}>
           Reset Progress

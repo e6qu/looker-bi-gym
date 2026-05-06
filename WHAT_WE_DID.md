@@ -2,6 +2,29 @@
 
 ## 2026-05-06
 
+- Started and completed Task 016 implementation.
+- Added `looker-bi-gym.progress-export.v1` via `buildLearnerProgressExport` in `app/src/progress.ts`.
+- The export includes completed challenge IDs, local flags, completion timestamps, dataset IDs and versions, app/content version, passed check/question IDs, privacy boundary fields, and optional learner notes only when the learner types them.
+- Added a Settings progress export panel in `app/src/App.tsx` with:
+  - optional learner notes;
+  - JSON preview before download;
+  - local JSON download action;
+  - explicit privacy copy;
+  - documented import behavior: import is not implemented in this static release.
+- Updated Settings reset copy to clarify that resetting browser progress does not delete exported JSON files already saved outside the browser.
+- Added export styling in `app/src/styles.css`.
+- Added `app/scripts/test-progress-export.ts`, which completes a representative challenge in memory, validates the export JSON structure, checks IDs/flags/timestamps/dataset versions, verifies optional notes behavior, resets local progress, confirms the built export remains separate from storage, and checks that credentials, storage keys, raw answers, sensitive synthetic field names, and hidden internals are not exported.
+- Added `pnpm test:progress-export` at root and app levels.
+- Added Makefile `test-progress-export` and included it in `make test` / `make check`.
+- Added a CI workflow step for `pnpm test:progress-export`.
+- Updated `app/README.md` with the progress export format, local-only privacy boundary, preview behavior, and no-import note.
+- Ran `pnpm test:progress-export`; the first run failed because the test incorrectly rejected the explicit privacy field name `includes_credentials: false`; tightened the assertion to reject actual secret-like content and reran successfully.
+- Ran `pnpm typecheck`; it passed.
+- Ran `pnpm lint`; the first run failed on unnecessary optional chaining in `test-progress-export.ts`; tightened the test fixture narrowing and reran successfully.
+- Ran `pnpm build`; it passed with Vite's existing non-failing large DuckDB-WASM chunk warning.
+- Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL smoke tests, solution fixture golden tests, cloud-evidence tests, progress-export tests, validator tests, production build, and static-link validation passed.
+- Updated Task 016 with completion and verification notes.
+
 - Started and completed Task 015 implementation.
 - Added committed solution fixtures under `challenges/solution-fixtures/`:
   - `orientation-quiz/known-good.json`;

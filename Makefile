@@ -1,6 +1,6 @@
 PNPM ?= pnpm
 
-.PHONY: help install lint typecheck validate validate-manifests validate-datasets validate-static-links test test-quiz test-sql test-fixtures test-cloud-evidence test-validators build check dev preview
+.PHONY: help install lint typecheck validate validate-manifests validate-datasets validate-static-links test test-quiz test-sql test-fixtures test-cloud-evidence test-progress-export test-validators build check dev preview
 
 help:
 	@printf '%s\n' \
@@ -17,6 +17,7 @@ help:
 		'  test-sql            Run SQL runtime smoke tests' \
 		'  test-fixtures       Run solution fixture golden tests' \
 		'  test-cloud-evidence Run cloud evidence parser and validator tests' \
+		'  test-progress-export Run progress export structure tests' \
 		'  test-validators     Run browser validator tests' \
 		'  build               Build the static app' \
 		'  check               Run lint, typecheck, validation, tests, and build' \
@@ -43,7 +44,7 @@ validate-datasets:
 validate-static-links:
 	$(PNPM) validate:static-links
 
-test: test-quiz test-sql test-fixtures test-cloud-evidence test-validators
+test: test-quiz test-sql test-fixtures test-cloud-evidence test-progress-export test-validators
 
 test-quiz:
 	$(PNPM) test:quiz
@@ -56,6 +57,9 @@ test-fixtures:
 
 test-cloud-evidence:
 	$(PNPM) test:cloud-evidence
+
+test-progress-export:
+	$(PNPM) test:progress-export
 
 test-validators:
 	$(PNPM) test:validators

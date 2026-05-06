@@ -13,6 +13,7 @@
     "test:sql": "pnpm --filter @looker-bi-gym/app test:sql",
     "test:fixtures": "pnpm --filter @looker-bi-gym/app test:fixtures",
     "test:cloud-evidence": "pnpm --filter @looker-bi-gym/app test:cloud-evidence",
+    "test:progress-export": "pnpm --filter @looker-bi-gym/app test:progress-export",
     "test:validators": "pnpm --filter @looker-bi-gym/app test:validators",
     "validate:datasets": "pnpm --filter @looker-bi-gym/app validate:datasets",
     "validate:manifests": "pnpm --filter @looker-bi-gym/app validate:manifests",

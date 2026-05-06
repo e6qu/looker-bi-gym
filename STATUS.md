@@ -4,11 +4,11 @@ Last updated: 2026-05-06
 
 ## Current State
 
-Planning, documentation, task tracking, continuity protocol, the static app skeleton, Markdown content navigation, challenge manifest validation/catalog generation, the first synthetic deposits dataset, dataset versioning policy, a changed-output dataset simulation, the quiz challenge runtime, the browser SQL runtime, reusable browser validators, local flags, unified local progress storage, reset controls, the first three browser-verifiable challenges, the first cloud-evidence challenge pattern, the challenge authoring guide, CI validation, GitHub Pages deployment workflows, the app quality/accessibility pass, and solution fixture golden tests are in place. Tasks 001 through 015 are complete except for live post-deploy URL verification, which requires a GitHub workflow run, and Safari second-browser smoke verification, which requires the user to explicitly enable Safari remote automation or perform a manual Safari pass. Git discipline requires `.gitignore` maintenance, no committed rebuildable artifacts, no committed WASM runtime artifacts, and a commit after each completed task. A root `Makefile` exposes the repository checks and tests through `make` targets.
+Planning, documentation, task tracking, continuity protocol, the static app skeleton, Markdown content navigation, challenge manifest validation/catalog generation, the first synthetic deposits dataset, dataset versioning policy, a changed-output dataset simulation, the quiz challenge runtime, the browser SQL runtime, reusable browser validators, local flags, unified local progress storage, reset controls, the first three browser-verifiable challenges, the first cloud-evidence challenge pattern, the challenge authoring guide, CI validation, GitHub Pages deployment workflows, the app quality/accessibility pass, solution fixture golden tests, and local progress export/completion evidence are in place. Tasks 001 through 016 are complete except for live post-deploy URL verification, which requires a GitHub workflow run, and Safari second-browser smoke verification, which requires the user to explicitly enable Safari remote automation or perform a manual Safari pass. Git discipline requires `.gitignore` maintenance, no committed rebuildable artifacts, no committed WASM runtime artifacts, and a commit after each completed task. A root `Makefile` exposes the repository checks and tests through `make` targets.
 
 ## Active Task
 
-Active task: [016 - Progress Export And Completion Evidence](tasks/016-progress-export-and-completion-evidence.md).
+Active task: [017 - Content QA And Regulatory Disclaimer Pass](tasks/017-content-qa-and-regulatory-disclaimer-pass.md).
 
 ## Current Decisions
 
@@ -32,7 +32,7 @@ Active task: [016 - Progress Export And Completion Evidence](tasks/016-progress-
 - `deposits-seed/v0.1.1` is a synthetic changed-output simulation that adds `2026-04-01` balance snapshots; released challenges remain pinned to `v0.1.0`.
 - `pnpm validate:datasets` discovers committed dataset versions and validates metadata identity, synthetic-only flags, table grains, primary keys, sensitive-field declarations, row counts, expected missing mappings, control totals, known issue counts, versioning metadata, and the deposits owner-join fanout negative test.
 - The Vite build runs both manifest and dataset validation before compiling the app.
-- `make check` runs lint, typecheck, manifest validation, dataset validation, quiz tests, SQL smoke tests, solution fixture golden tests, cloud-evidence tests, validator tests, the production build, and built static asset-link validation.
+- `make check` runs lint, typecheck, manifest validation, dataset validation, quiz tests, SQL smoke tests, solution fixture golden tests, cloud-evidence tests, progress-export tests, validator tests, the production build, and built static asset-link validation.
 - GitHub Actions CI runs the same `pnpm` validation, test, build, and static-link gates.
 - GitHub Pages deployment builds `app/dist` with `pnpm`, uploads it as the Pages artifact, and deploys through the `github-pages` environment.
 - Manifest validation now fails when a declared dataset ID/version does not resolve to a committed dataset metadata file.
@@ -59,6 +59,12 @@ Active task: [016 - Progress Export And Completion Evidence](tasks/016-progress-
 - `pnpm test:fixtures` enforces that every released manifest has a known-good fixture or documented exception, and that CTF/trap challenges have known-bad fixture coverage.
 - The SQL smoke test remains focused on DuckDB-WASM table loading, basic totals, and invalid SQL handling.
 - Cloud-evidence parser/validator tests run through `pnpm test:cloud-evidence` and `make check`.
+- Progress exports use the stable `looker-bi-gym.progress-export.v1` JSON format.
+- Settings can export local completion evidence as a user-controlled JSON download and shows a JSON preview before download.
+- Progress exports include completed challenge IDs, local flags, completion timestamps, dataset IDs/versions, app/content version, passed check/question IDs, privacy boundary fields, and optional learner notes.
+- Progress exports are generated locally from normalized progress state and exclude credentials, raw answers, pasted cloud evidence, sensitive synthetic field names, real banking data, storage keys, and hidden app internals.
+- Import is not implemented in the current static release; preview/review behavior is documented in Settings and `app/README.md`.
+- `pnpm test:progress-export` validates export structure, local-state matching, notes behavior, reset separation, and content boundaries; `make check` includes it.
 - Challenge authoring rules live in `challenges/AUTHORING.md`.
 - Draft manifests live in `challenges/drafts/` and are validated by `pnpm validate:manifests`, but only `challenges/manifests/` files are emitted to the browser catalog.
 - DuckDB-WASM for browser SQL challenges.
@@ -78,4 +84,4 @@ None known.
 
 ## Confidence
 
-High for planning direction, task structure, the app skeleton, Markdown content loading, challenge manifest validation, draft validation, dataset-reference validation, the initial deposits dataset, dataset versioning policy, changed-output dataset simulation, automated quiz grading, the browser SQL runtime, browser validators, local flags, unified progress storage, reset behavior, the first browser challenges, the cloud-evidence pattern, the authoring guide, solution fixture golden coverage, the Makefile check harness, CI/Pages workflow structure, and Chrome app quality smoke coverage. Medium for live GitHub Pages reachability until the workflow runs in GitHub and for Safari verification until remote automation is explicitly enabled or a manual Safari pass is completed.
+High for planning direction, task structure, the app skeleton, Markdown content loading, challenge manifest validation, draft validation, dataset-reference validation, the initial deposits dataset, dataset versioning policy, changed-output dataset simulation, automated quiz grading, the browser SQL runtime, browser validators, local flags, unified progress storage, reset behavior, progress export/completion evidence, the first browser challenges, the cloud-evidence pattern, the authoring guide, solution fixture golden coverage, the Makefile check harness, CI/Pages workflow structure, and Chrome app quality smoke coverage. Medium for live GitHub Pages reachability until the workflow runs in GitHub and for Safari verification until remote automation is explicitly enabled or a manual Safari pass is completed.
