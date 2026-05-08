@@ -1,0 +1,5 @@
+product_id,product_family,product_name,business_line,balance_sheet_class,regulatory_product_code,currency_allowed,fgdb_eligible_flag
+P_CUR_RON,current_account,Cont curent RON,Retail deposits,deposit_liability,DEP-CUR,RON,true
+P_SAV_EUR,savings_account,Economii EUR,Retail deposits,deposit_liability,DEP-SAV,EUR,true
+P_TERM_RON,term_deposit,Depozit termen RON,Retail deposits,deposit_liability,DEP-TERM,RON,true
+P_SME_RON,current_account,Cont curent IMM RON,SME deposits,deposit_liability,DEP-SME,RON,true

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Looker BI Gym">
+  <rect width="64" height="64" rx="10" fill="#176b5d" />
+  <path d="M12 46h40v6H12zM16 42V24h8v18zM28 42V16h8v26zM40 42V29h8v13z" fill="#ffffff" />
+  <path d="M13 20h38l-19-9z" fill="#8ee3c2" />
+</svg>

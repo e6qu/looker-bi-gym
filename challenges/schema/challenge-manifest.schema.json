@@ -1,0 +1,495 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://looker-bi-gym.local/schema/challenge-manifest.schema.json",
+  "title": "Looker BI Gym Challenge Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "version",
+    "title",
+    "area",
+    "mode",
+    "difficulty",
+    "estimated_minutes",
+    "prerequisites",
+    "business_scenario",
+    "regulatory_context",
+    "inputs",
+    "outputs",
+    "checks",
+    "questions",
+    "required_tools",
+    "flag"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "description": "Stable challenge identifier used for routes, local progress, flags, and fixture references."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Challenge contract version. Bump when learner-visible instructions, checks, flags, expected outputs, or required evidence changes."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 3
+    },
+    "area": {
+      "type": "string",
+      "enum": [
+        "orientation-and-source-data",
+        "warehouse-modeling-and-metrics",
+        "looker-studio-and-dashboard-design",
+        "governance-security-and-operations",
+        "capstone"
+      ]
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "quiz",
+        "browser-sql",
+        "browser-config",
+        "cloud-evidence",
+        "capstone"
+      ]
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": ["intro", "beginner", "intermediate", "advanced", "capstone"]
+    },
+    "estimated_minutes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 480
+    },
+    "prerequisites": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+      },
+      "uniqueItems": true
+    },
+    "business_scenario": {
+      "type": "string",
+      "minLength": 10
+    },
+    "regulatory_context": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "BNR",
+          "DORA",
+          "EBA",
+          "FGDB",
+          "GDPR",
+          "PSD2",
+          "Romania Law 190"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "inputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/input"
+      }
+    },
+    "outputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/output"
+      }
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/check"
+      }
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/question"
+      }
+    },
+    "required_tools": {
+      "oneOf": [
+        {
+          "type": "string",
+          "const": "none"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/tool"
+          }
+        }
+      ]
+    },
+    "flag": {
+      "$ref": "#/$defs/flag"
+    },
+    "hints": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/hint"
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidence"
+      }
+    },
+    "rubric": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/rubric_item"
+      }
+    },
+    "next_challenges": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+      },
+      "uniqueItems": true
+    }
+  },
+  "$defs": {
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "description"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+$"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "dataset",
+            "table",
+            "csv",
+            "markdown",
+            "browser-form",
+            "cloud-ui"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "minLength": 8
+        },
+        "dataset_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "dataset_version": {
+          "type": "string",
+          "pattern": "^v[0-9]+(?:\\.[0-9]+)*$"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tables": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$"
+          },
+          "uniqueItems": true
+        },
+        "sensitive_fields": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$"
+          },
+          "uniqueItems": true
+        },
+        "date_semantics": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3
+          }
+        },
+        "grain": {
+          "type": "string",
+          "minLength": 3
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "description"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+$"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "answer-set",
+            "sql-result",
+            "sql-text",
+            "dashboard-evidence",
+            "metric-contract",
+            "written-note"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "minLength": 8
+        }
+      }
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "description"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+$"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "quiz-answer",
+            "required-column",
+            "forbidden-column",
+            "row-count",
+            "aggregate-total",
+            "scalar-aggregate",
+            "unique-key",
+            "sensitive-field-exclusion",
+            "sql-text-contains",
+            "tabular-required-columns",
+            "numeric-range",
+            "report-url-format",
+            "checklist-confirmed",
+            "reconciliation",
+            "evidence-format",
+            "manual-review"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "minLength": 8
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["required", "advisory"],
+          "default": "required"
+        },
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expected": {
+          "type": [
+            "string",
+            "number",
+            "integer",
+            "boolean",
+            "array",
+            "object",
+            "null"
+          ]
+        }
+      }
+    },
+    "question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "prompt"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+$"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "multiple-choice",
+            "select-all",
+            "numeric",
+            "matching",
+            "short-evidence"
+          ]
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 8
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/question_option"
+          },
+          "minItems": 2
+        },
+        "answer": {
+          "type": ["string", "number", "integer", "array", "object", "null"]
+        },
+        "tolerance": {
+          "type": "number",
+          "minimum": 0
+        },
+        "explanation": {
+          "type": "string",
+          "minLength": 8
+        }
+      }
+    },
+    "question_option": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "purpose", "required"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 2
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 8
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "platform_notes": {
+          "type": "string",
+          "minLength": 3
+        }
+      }
+    },
+    "flag": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "criteria"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^flag-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "criteria": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 5
+          }
+        }
+      }
+    },
+    "hint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level", "text"],
+      "properties": {
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "text": {
+          "type": "string",
+          "minLength": 8
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "description"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+$"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "url",
+            "pasted-sql",
+            "pasted-result",
+            "numeric-value",
+            "report-url",
+            "checklist-confirmation",
+            "screenshot-description",
+            "manual-note"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "minLength": 8
+        },
+        "label": {
+          "type": "string",
+          "minLength": 2
+        },
+        "placeholder": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "self_attested": {
+          "type": "boolean"
+        }
+      }
+    },
+    "rubric_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "description"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+$"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 8
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,169 @@
+{
+  "dataset_id": "deposits-seed",
+  "version": "v0.1.1",
+  "description": "Synthetic deposits seed change fixture that adds one later daily balance snapshot for dataset versioning tests.",
+  "synthetic_only": true,
+  "regulatory_context": ["BNR", "FGDB", "GDPR"],
+  "versioning": {
+    "status": "simulation",
+    "immutable_after_release": false,
+    "supersedes_version": "v0.1.0",
+    "output_changes": [
+      "Adds 2026-04-01 account_daily_balances rows, changing row-count, latest-date, control-total, and fanout expected outputs."
+    ],
+    "affected_challenge_fixtures": [
+      {
+        "challenge_id": "first-banking-dataset",
+        "reason": "The profile row count and latest balance date would change from v0.1.0 expectations."
+      },
+      {
+        "challenge_id": "account-owner-fanout",
+        "reason": "The latest-date correct total, naive owner-join total, and fanout delta would change from v0.1.0 expectations."
+      }
+    ]
+  },
+  "tables": [
+    {
+      "id": "raw_ref.branches",
+      "file": "branches.csv",
+      "grain": "One row per branch.",
+      "row_count": 5,
+      "primary_key": ["branch_id"],
+      "sensitive_fields": [],
+      "date_semantics": []
+    },
+    {
+      "id": "raw_ref.products",
+      "file": "products.csv",
+      "grain": "One row per product.",
+      "row_count": 4,
+      "primary_key": ["product_id"],
+      "sensitive_fields": [],
+      "date_semantics": []
+    },
+    {
+      "id": "raw_deposits.accounts",
+      "file": "accounts.csv",
+      "grain": "One row per account.",
+      "row_count": 6,
+      "primary_key": ["account_id"],
+      "sensitive_fields": ["account_id", "synthetic_iban"],
+      "date_semantics": [
+        "open_date and close_date are lifecycle dates, not balance snapshot dates."
+      ]
+    },
+    {
+      "id": "raw_deposits.account_owners",
+      "file": "account_owners.csv",
+      "grain": "One row per account-customer ownership relationship.",
+      "row_count": 9,
+      "primary_key": ["account_id", "customer_id", "valid_from"],
+      "sensitive_fields": ["account_id", "customer_id"],
+      "date_semantics": [
+        "valid_from and valid_to bound the ownership relationship."
+      ]
+    },
+    {
+      "id": "raw_deposits.account_daily_balances",
+      "file": "account_daily_balances.csv",
+      "grain": "One row per account per business_date.",
+      "row_count": 24,
+      "primary_key": ["business_date", "account_id"],
+      "sensitive_fields": ["account_id"],
+      "date_semantics": [
+        "business_date is a daily balance snapshot date; balances are semi-additive across time."
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "from_table": "raw_deposits.accounts",
+      "from_field": "branch_id",
+      "to_table": "raw_ref.branches",
+      "to_field": "branch_id",
+      "expected_missing_count": 1,
+      "intentional_issue": "A1006 references missing branch B999."
+    },
+    {
+      "from_table": "raw_deposits.accounts",
+      "from_field": "product_id",
+      "to_table": "raw_ref.products",
+      "to_field": "product_id",
+      "expected_missing_count": 0
+    },
+    {
+      "from_table": "raw_deposits.account_owners",
+      "from_field": "account_id",
+      "to_table": "raw_deposits.accounts",
+      "to_field": "account_id",
+      "expected_missing_count": 0
+    },
+    {
+      "from_table": "raw_deposits.account_daily_balances",
+      "from_field": "account_id",
+      "to_table": "raw_deposits.accounts",
+      "to_field": "account_id",
+      "expected_missing_count": 0
+    }
+  ],
+  "control_totals": [
+    {
+      "business_date": "2026-03-29",
+      "currency_code": "EUR",
+      "ledger_total": 16450
+    },
+    {
+      "business_date": "2026-03-29",
+      "currency_code": "RON",
+      "ledger_total": 78740
+    },
+    {
+      "business_date": "2026-03-30",
+      "currency_code": "EUR",
+      "ledger_total": 16550
+    },
+    {
+      "business_date": "2026-03-30",
+      "currency_code": "RON",
+      "ledger_total": 79130
+    },
+    {
+      "business_date": "2026-03-31",
+      "currency_code": "EUR",
+      "ledger_total": 16400
+    },
+    {
+      "business_date": "2026-03-31",
+      "currency_code": "RON",
+      "ledger_total": 79300
+    },
+    {
+      "business_date": "2026-04-01",
+      "currency_code": "EUR",
+      "ledger_total": 16450
+    },
+    {
+      "business_date": "2026-04-01",
+      "currency_code": "RON",
+      "ledger_total": 79830
+    }
+  ],
+  "known_issues": [
+    {
+      "id": "missing_branch_mapping",
+      "description": "Account A1006 references branch B999, which is absent from branches.csv.",
+      "expected_count": 1
+    },
+    {
+      "id": "ownership_share_over_100",
+      "description": "Account A1005 ownership shares sum to 110 percent.",
+      "expected_count": 1
+    }
+  ],
+  "fanout_negative_test": {
+    "business_date": "2026-04-01",
+    "base_total": 96280,
+    "naive_owner_join_total": 165930,
+    "expected_delta": 69650
+  }
+}

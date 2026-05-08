@@ -1,0 +1,23 @@
+{
+  "fixture_id": "known-bad-account-grain",
+  "challenge_id": "first-banking-dataset",
+  "mode": "browser-sql",
+  "kind": "known-bad",
+  "description": "Bad profile query that leaks account_id and returns account-grain rows instead of one profile row.",
+  "dataset_id": "deposits-seed",
+  "dataset_version": "v0.1.0",
+  "sql_file": "known-bad-account-grain.sql",
+  "answers": {
+    "q_balance_grain": "account_day"
+  },
+  "expected": {
+    "required_passed": false,
+    "failed_check_ids": [
+      "required_columns",
+      "no_sensitive_fields",
+      "no_raw_identifiers",
+      "one_profile_row",
+      "balance_row_total"
+    ]
+  }
+}

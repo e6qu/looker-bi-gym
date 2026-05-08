@@ -1,0 +1,20 @@
+{
+  "fixture_id": "known-good",
+  "challenge_id": "looker-studio-evidence",
+  "mode": "cloud-evidence",
+  "kind": "known-good",
+  "description": "Valid local evidence values for the Looker Studio evidence pattern without credentials.",
+  "evidence": {
+    "serving_sql": "CREATE OR REPLACE VIEW serving_deposit_dashboard AS\nSELECT business_date, currency_code, SUM(ledger_balance) AS ledger_total\nFROM account_daily_balances\nGROUP BY business_date, currency_code;",
+    "control_result": "business_date,currency_code,ledger_total\n2026-03-31,RON,79300\n2026-03-31,EUR,16400",
+    "visible_total": "95700",
+    "report_url": "https://lookerstudio.google.com/reporting/example-report",
+    "dashboard_checklist": true
+  },
+  "answers": {
+    "q_credentials": "no_credentials"
+  },
+  "expected": {
+    "required_passed": true
+  }
+}

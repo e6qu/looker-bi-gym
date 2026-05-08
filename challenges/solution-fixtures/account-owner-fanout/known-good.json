@@ -1,0 +1,17 @@
+{
+  "fixture_id": "known-good",
+  "challenge_id": "account-owner-fanout",
+  "mode": "browser-sql",
+  "kind": "known-good",
+  "description": "Correct fanout proof comparing latest account-grain balances with a naive owner join.",
+  "dataset_id": "deposits-seed",
+  "dataset_version": "v0.1.0",
+  "sql_file": "known-good.sql",
+  "answers": {
+    "q_safe_grain": "account_latest_date",
+    "q_delta": "69100"
+  },
+  "expected": {
+    "required_passed": true
+  }
+}

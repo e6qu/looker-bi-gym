@@ -1,0 +1,10 @@
+account_id,customer_id,ownership_role,ownership_share_pct,valid_from,valid_to,gdpr_restricted_flag
+A1001,C0001,primary,70,2023-01-12,,false
+A1001,C0002,joint,30,2023-01-12,,false
+A1002,C0003,primary,100,2022-11-03,,false
+A1003,C0004,primary,60,2024-02-18,,true
+A1003,C0005,joint,40,2024-02-18,,false
+A1004,C0002,primary,100,2021-07-09,,false
+A1005,C0006,primary,60,2023-09-26,,false
+A1005,C0007,joint,50,2023-09-26,,false
+A1006,C0008,primary,100,2024-05-14,,false

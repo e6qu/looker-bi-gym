@@ -1,0 +1,637 @@
+# What We Did
+
+## 2026-05-09
+
+- Moved app tool configs into typed TypeScript files under `app/configs/` and updated Vite, ESLint, Playwright, scripts, and node tsconfig paths accordingly.
+- Replaced the deprecated TypeScript ESLint config helper with ESLint's supported `defineConfig`.
+- Added Prettier as the repository formatter with `bun run format`, `bun run format:check`, and matching Makefile targets.
+- Ran whole-repository formatting and tightened ignore files so rebuildable generated files, local caches, Playwright output, logs, TypeScript build info, and DuckDB-WASM runtime artifacts are not committed.
+- Ran `bun update --latest`; Bun reported no dependency changes beyond the added formatter tooling.
+- Verified package manager references are Bun-only outside `bun.lock`.
+- Checked GitHub action releases; updated `actions/configure-pages` to `v6`, while `actions/checkout@v6`, `oven-sh/setup-bun@v2`, `actions/upload-pages-artifact@v5`, and `actions/deploy-pages@v5` were already on current major tracks.
+- Ran `bun run format:check`; it passed.
+- Ran `bun run lint`; it passed with zero warnings.
+- Ran `bun run typecheck`; it passed.
+- Ran `bun run check`; the sandboxed run reached Playwright and failed only because local preview binding to `127.0.0.1:4173` was blocked.
+- Reran `bun run check` with approved local preview binding; it passed, including all 5 Playwright rendered UI tests, production build, and static-link validation.
+
+## 2026-05-09
+
+- Fixed remaining local warnings after the PR was opened.
+- Added `app/scripts/test-e2e.ts` to run Playwright with `NO_COLOR` removed from the spawned environment, eliminating the Node `NO_COLOR`/`FORCE_COLOR` warning during rendered UI tests.
+- Raised Vite `chunkSizeWarningLimit` to `1024` KiB so expected DuckDB-WASM worker chunks no longer emit the non-actionable large-chunk warning.
+- Ran `bun run typecheck`; it passed.
+- Ran `bun run lint`; it passed.
+- Ran `bun run test:e2e` with approved local preview binding; all 5 rendered UI tests passed without the previous warning lines.
+- Ran final `bun run check` with approved local preview binding; it passed without the previous warning lines.
+- Checked failed GitHub Actions log; CI installed Playwright Chromium from the repository root, which resolved the wrong Playwright browser revision. Updated CI and Pages workflow Playwright install steps to run from `app/`, matching the pinned app Playwright dependency.
+
+## 2026-05-09
+
+- Switched active repository tooling from the prior package manager to Bun only after user direction.
+- Updated root and app package scripts to use `bun run`, added root workspaces to `package.json`, removed `legacy lockfile` and `legacy workspace file`, and generated committed `bun.lock`.
+- Removed `tsx` as a direct app dev dependency because Bun now runs TypeScript scripts directly.
+- Added `@playwright/test` and `bun run test:e2e`.
+- Updated CI and Pages workflows to use `oven-sh/setup-bun`, `bun install --frozen-lockfile`, Bun commands, and Playwright Chromium installation.
+- Updated Makefile targets to call Bun and added `test-e2e`.
+- Tightened `.gitignore` for generated TypeScript, Playwright output, test output, caches, logs, editor files, and local package-manager cache noise.
+- Added `app/playwright.config.ts` and `app/tests/rendered-ui.spec.ts`.
+- Playwright coverage now verifies:
+  - desktop and mobile home rendering with nonblank screenshots;
+  - primary routes across mobile, tablet, and desktop viewports;
+  - no horizontal page overflow;
+  - visible control text fitting inside controls;
+  - challenge catalog/detail metadata and regulatory links;
+  - DuckDB-WASM SQL challenge query execution and results;
+  - cloud-evidence controls and Settings export/version metadata.
+- Updated current docs and continuity files to describe Bun-only tooling and rendered UI tests.
+- Ran `bun install`; the sandboxed run failed because Bun could not write temp/cache files, then the approved run succeeded and wrote `bun.lock`.
+- Ran `bun run validate:manifests`; it passed.
+- Ran `bun run typecheck`; it initially failed because Playwright tests needed DOM libs in the node tsconfig; added DOM libs and reran successfully.
+- Ran `bun run lint`; it initially failed on explicit env narrowing and test nullable text handling; fixed both and reran successfully.
+- Ran `bun run test:e2e`; the first sandboxed run failed because preview could not bind `127.0.0.1:4173`.
+- Reran `bun run test:e2e` with approval; it then failed because the pinned Playwright Chromium browser was not installed.
+- Ran `bunx playwright install chromium` from the app workspace with approval; it installed the pinned Chromium revision.
+- Reran `bun run test:e2e`; selector strictness failures exposed ambiguous assertions, so the tests were tightened to target table column/cell roles and actual cloud-evidence labels.
+- Reran `bun run test:e2e`; all 5 rendered UI tests passed.
+- Ran final `bun run check`; it passed, including manifest validation, lint, typecheck, dataset validation, quiz tests, SQL tests, solution fixture tests, cloud-evidence tests, progress-export tests, content QA, validator tests, Playwright rendered UI tests, production build, and static-link validation.
+
+## 2026-05-09
+
+- Started and completed Task 018 implementation.
+- Set the first tracked app/content release version to `0.1.0` in root and app package metadata.
+- Added `VERSIONING.md` with app/content, challenge catalog, dataset, regulation-brief, and release-checklist policy.
+- Added `CHANGELOG.md` with the `0.1.0` release contents, verification gates, known verification gaps, and breaking-change notes.
+- Added `app/src/release.ts` so the static app exposes app version, content version, and optional `VITE_BUILD_REF` build reference.
+- Updated the app footer and Settings page to display app/content/build metadata.
+- Required top-level challenge `version` metadata in `challenges/schema/challenge-manifest.schema.json`.
+- Added `version: v0.1.0` to released challenge manifests and the validation-only draft manifest.
+- Added challenge versions to challenge list cards, challenge detail pages, and progress export completed-challenge entries.
+- Updated progress export tests for `0.1.0` and challenge version metadata.
+- Updated quiz, validator, and cloud-evidence test challenge fixtures to include challenge versions.
+- Updated `challenges/AUTHORING.md`, `app/README.md`, and `docs/README.md` for release metadata and links.
+- Ran `bun validate:manifests`; it passed.
+- Ran `bun validate:datasets`; it passed.
+- Ran `bun test:progress-export`; it passed.
+- Ran `bun test:content-qa`; it passed.
+- Ran `bun typecheck`; it initially failed because `VITE_BUILD_REF` needed indexed access under `noPropertyAccessFromIndexSignature`.
+- Ran `bun lint`; it initially failed on unsafe env assignment in `app/src/release.ts`.
+- Fixed release env handling by reading `VITE_BUILD_REF` through indexed access and narrowing it from `unknown`.
+- Reran `bun typecheck`; it passed.
+- Reran `bun lint`; it passed.
+- Ran `bun build`; it passed with Vite's existing non-failing DuckDB-WASM large chunk warning.
+- Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL smoke tests, solution fixture golden tests, cloud-evidence tests, progress-export tests, content QA, validator tests, production build, and static-link validation passed.
+- Checked ignored generated artifacts: `app/dist/`, `app/src/generated/challengeCatalog.json`, and `node_modules/` remain ignored; no WASM runtime artifacts are listed as normal git changes.
+- Updated Task 018 with completion and verification notes.
+- Reran `bun test:content-qa` after updating continuity/task Markdown; it passed.
+- Committed the completed Task 017 and Task 018 changes with message `Complete content QA and release versioning`.
+
+## 2026-05-06
+
+- Started and completed Task 017 implementation.
+- Added `docs/11-content-qa-checklist.md` and linked it from `docs/README.md`.
+- Added `app/src/regulatoryContext.ts` with regulation brief links for BNR, DORA, EBA, FGDB, GDPR, PSD2, and Romania Law 190.
+- Updated challenge instructions in `app/src/App.tsx` and `app/src/styles.css` so regulatory-context tags render as links to the relevant regulation briefs with a visible training-context note.
+- Tightened challenge copy in `account-owner-fanout.yaml` and `looker-studio-evidence.yaml` so the synthetic-data boundary is explicit.
+- Added training-boundary disclaimers to every individual regulation brief and tightened the regulations index disclaimer to include model-risk advice.
+- Added training-boundary notes to docs that discuss credentials, warehouse access, regulatory sources, or production-style controls.
+- Added synthetic-data boundary notes to tutorial files that did not previously state the boundary directly.
+- Updated `datasets/deposits-seed/v0.1.1/README.md` to state that the changed-output fixture is not derived from real bank data.
+- Added `app/scripts/test-content-qa.ts`, which validates required-tool declarations, optional-tool boundary language, regulatory-context link coverage, regulation disclaimer language, tutorial synthetic-data language, dataset synthetic-only README/metadata language, and internal Markdown links.
+- Added `bun test:content-qa` at root and app levels.
+- Added Makefile `test-content-qa` and included it in `make test` / `make check`.
+- Added a CI workflow step for `bun test:content-qa`.
+- Ran `bun test:content-qa`; the first run failed because the new check rejected "no Google Cloud CLI" wording, so the assertion was tightened to block required CLI/key wording while allowing explicit no-CLI boundaries.
+- Ran `bun test:content-qa`; the second run failed because `regulations/README.md` did not include the exact model-risk disclaimer boundary, so the disclaimer was updated and the test reran successfully.
+- Ran text-search checks for tutorial synthetic-data language and regulation disclaimer language; no gaps remained.
+- Ran `bun validate:manifests`, `bun typecheck`, `bun lint`, and `bun build`; they passed.
+- Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL smoke tests, solution fixture golden tests, cloud-evidence tests, progress-export tests, content QA, validator tests, production build, and static-link validation passed.
+- The production build still reports Vite's existing non-failing large DuckDB-WASM chunk warning.
+- Updated Task 017 with completion and verification notes.
+
+- Started and completed Task 016 implementation.
+- Added `looker-bi-gym.progress-export.v1` via `buildLearnerProgressExport` in `app/src/progress.ts`.
+- The export includes completed challenge IDs, local flags, completion timestamps, dataset IDs and versions, app/content version, passed check/question IDs, privacy boundary fields, and optional learner notes only when the learner types them.
+- Added a Settings progress export panel in `app/src/App.tsx` with:
+  - optional learner notes;
+  - JSON preview before download;
+  - local JSON download action;
+  - explicit privacy copy;
+  - documented import behavior: import is not implemented in this static release.
+- Updated Settings reset copy to clarify that resetting browser progress does not delete exported JSON files already saved outside the browser.
+- Added export styling in `app/src/styles.css`.
+- Added `app/scripts/test-progress-export.ts`, which completes a representative challenge in memory, validates the export JSON structure, checks IDs/flags/timestamps/dataset versions, verifies optional notes behavior, resets local progress, confirms the built export remains separate from storage, and checks that credentials, storage keys, raw answers, sensitive synthetic field names, and hidden internals are not exported.
+- Added `bun test:progress-export` at root and app levels.
+- Added Makefile `test-progress-export` and included it in `make test` / `make check`.
+- Added a CI workflow step for `bun test:progress-export`.
+- Updated `app/README.md` with the progress export format, local-only privacy boundary, preview behavior, and no-import note.
+- Ran `bun test:progress-export`; the first run failed because the test incorrectly rejected the explicit privacy field name `includes_credentials: false`; tightened the assertion to reject actual secret-like content and reran successfully.
+- Ran `bun typecheck`; it passed.
+- Ran `bun lint`; the first run failed on unnecessary optional chaining in `test-progress-export.ts`; tightened the test fixture narrowing and reran successfully.
+- Ran `bun build`; it passed with Vite's existing non-failing large DuckDB-WASM chunk warning.
+- Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL smoke tests, solution fixture golden tests, cloud-evidence tests, progress-export tests, validator tests, production build, and static-link validation passed.
+- Updated Task 016 with completion and verification notes.
+
+- Started and completed Task 015 implementation.
+- Added committed solution fixtures under `challenges/solution-fixtures/`:
+  - `orientation-quiz/known-good.json`;
+  - `first-banking-dataset/known-good.json` and `known-good.sql`;
+  - `first-banking-dataset/known-bad-account-grain.json` and `known-bad-account-grain.sql`;
+  - `account-owner-fanout/known-good.json` and `known-good.sql`;
+  - `account-owner-fanout/known-bad-naive-owner-fanout.json` and `known-bad-naive-owner-fanout.sql`;
+  - `looker-studio-evidence/known-good.json`.
+- Added `challenges/solution-fixtures/README.md` documenting fixture structure, coverage requirements, dataset version pins, and `deposits-seed/v0.1.1` refresh implications.
+- Added `app/scripts/test-solution-fixtures.ts`, which:
+  - loads released YAML manifests;
+  - loads committed fixture JSON/SQL files;
+  - enforces known-good fixture coverage for every released manifest;
+  - enforces known-bad fixture coverage for CTF/trap challenges;
+  - verifies browser SQL fixture dataset pins against manifest dataset references;
+  - evaluates quiz answers, browser SQL result validators, cloud-evidence checks, and challenge questions without browser storage.
+- Moved inline SQL known-good/known-bad golden cases out of `app/scripts/test-sql.ts`; that script now remains focused on DuckDB-WASM Node runtime smoke coverage.
+- Added `bun test:fixtures` at the root and app package levels.
+- Added Makefile `test-fixtures` and included it in `make test` / `make check`.
+- Added a CI workflow step for `bun test:fixtures`.
+- Updated `challenges/AUTHORING.md` and `challenges/README.md` to point authors at solution fixtures and the new release coverage rule.
+- Ran `bun test:fixtures`; it passed with 6 solution fixtures for 4 released challenges.
+- Ran `bun typecheck`; it initially failed on strict JSON narrowing and exact optional property handling in `test-solution-fixtures.ts`; tightened parsing and reran successfully.
+- Ran `bun lint`; it initially failed on unsafe narrowing, exhaustive switch handling, boolean template formatting, and console output in `test-solution-fixtures.ts`; fixed those issues and reran successfully.
+- Ran `bun test:sql`, `bun test:quiz`, `bun test:cloud-evidence`, and `bun test:validators`; they passed.
+- Temporarily changed `first-banking-dataset/known-good.sql` to return `COUNT(*) + 1`; `bun test:fixtures` failed as expected, then the fixture was restored.
+- Temporarily changed `account-owner-fanout/known-bad-naive-owner-fanout.sql` into a passing solution; `bun test:fixtures` failed because the known-bad fixture passed, then the fixture was restored.
+- Ran `bun build`; it passed with Vite's existing non-failing large DuckDB-WASM chunk warning.
+- Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL smoke tests, solution fixture golden tests, cloud-evidence tests, validator tests, production build, and static-link validation passed.
+- Updated Task 015 with completion and verification notes.
+
+- Started and completed Task 014 implementation.
+- Added `datasets/VERSIONING.md` with dataset immutability rules, metadata expectations, changed-output rules, and fixture-refresh records.
+- Added `datasets/EXPANSION_ROADMAP.md` covering:
+  - lending and credit risk;
+  - payments/cards, PSD2, and fraud;
+  - AML/CFT and sanctions;
+  - finance, GL, and reconciliation;
+  - DORA, operations, and BI observability.
+- Updated `datasets/README.md` to link versioning/roadmap docs and list the changed-output simulation.
+- Marked `datasets/deposits-seed/v0.1.0/metadata.json` as released and immutable.
+- Added `datasets/deposits-seed/v0.1.1/` as a synthetic changed-output simulation:
+  - copied the seed dataset structure;
+  - added `2026-04-01` account daily balance rows;
+  - updated row counts, control totals, and fanout negative-test totals;
+  - recorded that `first-banking-dataset` and `account-owner-fanout` fixtures/checks would need refresh if challenges are repointed.
+- Generalized `app/scripts/validate-datasets.ts` so it discovers every committed `datasets/{dataset_id}/{version}/metadata.json` and validates identity, version format, synthetic-only flags, regulatory tags, table grains, primary keys, sensitive-field declarations, row counts, relationships, control totals, known issues, fanout negative tests, and versioning metadata.
+- Updated Task 015 notes to carry forward the fixture-refresh implications of `deposits-seed/v0.1.1`.
+- Ran `bun validate:datasets`; it passed.
+- Ran `bun validate:manifests`; it passed and confirmed released manifests still resolve dataset references.
+- Ran `bun typecheck`; it passed.
+- Ran `bun test:sql`; it passed with released challenges still pinned to `deposits-seed` `v0.1.0`.
+- Ran `bun lint`; the first post-edit run failed on a `@typescript-eslint/array-type` style issue in `validate-datasets.ts`; changed the non-simple array type to `ReadonlyArray`.
+- Reran `bun lint`; it passed.
+- Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL tests, cloud-evidence tests, validator tests, production build, and static-link validation passed.
+- The production build still reports Vite's non-failing large DuckDB-WASM chunk warning.
+- Updated Task 014 with completion and verification notes.
+
+- Started and completed Task 013 implementation.
+- Added app quality/accessibility improvements:
+  - skip link to main content;
+  - route-change focus management for hash navigation;
+  - stronger shared focus-visible styles for links, buttons, inputs, textareas, and details summaries;
+  - visible labels for numeric challenge answers and the SQL editor;
+  - clearer SQL runtime loading, error, disabled, and running status messages.
+- Added `app/public/favicon.svg` and linked it from `app/index.html`, fixing the production-preview browser console/network 404 for `/favicon.ico`.
+- Added browser compatibility and no-third-party-analytics notes to `app/README.md`.
+- Added `docs/10-app-quality-browser-qa.md` and linked it from `docs/README.md`.
+- Ran `bun typecheck`; it passed.
+- Ran `bun lint`; it passed.
+- Ran `make check`; it passed before the favicon fix and again after the final rebuild.
+- Ran `bun preview`; the sandboxed run failed with `listen EPERM: operation not permitted 127.0.0.1:4173`.
+- Reran `bun preview` with approval; Vite preview served the built app at `http://127.0.0.1:4173/`.
+- Created temporary Chrome DevTools Protocol smoke tooling under `/private/tmp` for verification only.
+- Ran the Chrome smoke once; it failed because Chrome requested `/favicon.ico` and the built preview returned 404.
+- Added the favicon, rebuilt with `bun build`, and reran the Chrome smoke successfully.
+- Chrome 148 smoke verification covered home, docs, challenge index, orientation quiz, SQL challenge, cloud-evidence route, skip-link focus, route focus, unlabeled controls, SQL query execution, 390 px responsive layout, console errors, and unexpected external/mutation network requests.
+- Ran `rg` source inspection for `fetch`, `XMLHttpRequest`, `sendBeacon`, WebSocket, analytics, telemetry, and local storage boundaries. No external learner-data transmission paths were found; the app uses browser-local `localStorage`, DuckDB `registerFileText`, and a local DuckDB Web Worker.
+- Tried Safari verification through `safaridriver`; it failed because Safari's persistent "Allow remote automation" setting is disabled.
+- Tried `safaridriver --enable`; the escalation was rejected because enabling Safari WebDriver remote automation is a persistent security-setting change requiring explicit user authorization.
+- Stopped the approved Vite preview server and confirmed `127.0.0.1:4173` was no longer reachable.
+- Updated Task 013 with implementation and verification notes.
+
+- Started and completed Task 012 implementation.
+- Added `.github/workflows/ci.yml` with a `bun` CI gate for:
+  - frozen-lockfile install
+  - challenge manifest validation
+  - synthetic dataset validation
+  - lint
+  - typecheck
+  - quiz, SQL, cloud-evidence, and validator tests
+  - production build
+  - built static asset-link validation
+- Added `.github/workflows/pages.yml` to build `app/dist`, upload it as the GitHub Pages artifact, and deploy through the `github-pages` environment.
+- Added `app/scripts/validate-static-links.ts`.
+- Added root/app `validate:static-links` scripts and the Makefile target.
+- Updated `make check` and `bun check` to run built static asset-link validation after the production build.
+- Updated `app/scripts/validate-challenge-manifests.ts` so declared dataset IDs and versions must resolve to `datasets/{dataset_id}/{dataset_version}/metadata.json`.
+- Added `docs/09-github-pages-deployment.md` and linked it from `docs/README.md`.
+- Expanded `app/README.md` with GitHub Actions, Pages setup, `GITHUB_PAGES_BASE`, and post-deploy verification notes.
+- Ran `bun validate:manifests`; it passed with dataset-reference validation.
+- Ran `bun validate:datasets`; it passed.
+- Ran `bun lint`; the first run failed because `validate-static-links.ts` threw a replacement error without preserving the caught cause. Added the cause and reran successfully.
+- Ran `bun typecheck`; it passed.
+- Ran `bun test:quiz`, `bun test:sql`, `bun test:cloud-evidence`, and `bun test:validators`; they passed.
+- Ran `bun build`; it passed with Vite's non-failing large DuckDB-WASM chunk warning.
+- Ran `CI=true bun install --frozen-lockfile`; the sandboxed run failed with `ENOTFOUND package registry`, then the approved network run passed. The first plain `bun install --frozen-lockfile` attempt also failed because bun refused a non-TTY module purge without `CI=true`.
+- Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL tests, cloud-evidence tests, validator tests, production build, and static-link validation passed.
+- Temporarily changed `challenges/manifests/first-banking-dataset.yaml` to reference `dataset_version: v9.9.9`; `bun validate:manifests` failed with the expected missing dataset reference error. Restored the manifest and reran `bun validate:manifests`; it passed.
+- Ran `GITHUB_PAGES_BASE=/looker-bi-gym/ bun build`; it passed.
+- Ran `GITHUB_PAGES_BASE=/looker-bi-gym/ bun validate:static-links`; it passed.
+- Reran default `bun build` and `bun validate:static-links`; both passed.
+- Updated Task 012 with implementation and verification notes. Live GitHub Pages URL and deep-link verification remain pending until the workflow runs in GitHub.
+
+- Started and completed Task 011.
+- Added `challenges/AUTHORING.md` with:
+  - challenge mode selection rules
+  - manifest field reference
+  - validator reference
+  - dataset reference for `deposits-seed` `v0.1.0`
+  - required-tools policy
+  - tutorial conversion checklist
+  - quiz, browser SQL, and cloud-evidence templates
+  - explicit warnings against real banking data, credentials, secrets, API keys, esoteric tooling, and highly platform-specific tooling
+- Added validation-only draft manifest `challenges/drafts/minimal-authoring-draft.yaml` created from the guide.
+- Updated `app/scripts/validate-challenge-manifests.ts` so `challenges/drafts/` YAML files are schema-validated and included in unique-ID checks, but only `challenges/manifests/` files are emitted to ignored `app/src/generated/challengeCatalog.json`.
+- Updated `challenges/README.md` to link the authoring guide and explain draft validation behavior.
+- Ran `bun validate:manifests`; it passed with the draft included.
+- Ran `bun build`; it passed with draft validation in the build path.
+- Verified with `rg` that the draft ID is absent from the generated browser catalog.
+- Verified with `rg` that the guide links to dataset, regulation, task, tutorial, and manifest-schema references.
+- Verified with `rg` that the guide includes required safety and required-tools policy language.
+- Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL tests, cloud-evidence tests, validator tests, and production build passed.
+- The production build still reports Vite's non-failing large DuckDB-WASM chunk warning.
+- Updated Task 011 with completion and verification notes.
+
+- Started and completed Task 010.
+- Added local cloud-evidence parsing and validation in `app/src/cloudEvidence.ts`.
+- Added validators for:
+  - SQL text containing required table/view names.
+  - pasted CSV/JSON tabular evidence with required columns.
+  - numeric evidence within configured ranges.
+  - report URL format with HTTPS and allowed host checks.
+  - checklist confirmation.
+  - basic text evidence matching.
+- Added the cloud-evidence challenge page to `app/src/App.tsx`.
+- Added evidence input components for:
+  - SQL text.
+  - pasted CSV/JSON result.
+  - numeric value.
+  - report URL.
+  - checklist confirmation.
+- The cloud-evidence page renders challenge instructions, evidence fields, credential-boundary questions, validation results, local completion flags, and a visible separation between mechanically verified and self-attested evidence.
+- Expanded the challenge manifest schema and shared manifest types for richer evidence fields and cloud-evidence check types.
+- Updated `challenges/manifests/looker-studio-evidence.yaml` into `030 - Looker Studio Evidence Pattern`.
+- Added `app/scripts/test-cloud-evidence.ts` and wired `bun test:cloud-evidence` into root/app scripts and `make test` / `make check`.
+- Ran `bun validate:manifests`; it passed.
+- Ran `bun test:cloud-evidence`; it passed.
+- Ran `bun typecheck`; the first attempt failed because a test fixture accessed `control_result` through dot notation and did not narrow an optional indexed value. Updated the test to use bracket access and explicit narrowing, then it passed.
+- Ran `bun lint`; the first attempt failed because of unnecessary parse-result conditionals and a possible undefined string concatenation in the CSV parser. Updated the parser/test structure, then it passed.
+- Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL tests, cloud-evidence tests, validator tests, and production build passed.
+- The production build still reports Vite's non-failing large DuckDB-WASM chunk warning.
+- Verified by source inspection that cloud-evidence processing added no network calls and uses local React state plus the existing local progress storage only.
+- Verified by source inspection that the app does not request credentials, tokens, secrets, API keys, service account keys, or OAuth tokens.
+- Updated Task 010 with completion and verification notes.
+
+- Started and completed Task 009.
+- Added Challenge 020, `020 - Account Owner Fanout CTF`, in `challenges/manifests/account-owner-fanout.yaml`.
+- Updated Challenge 000 and 010 titles to match the numbered browser challenge sequence:
+  - `000 - Orientation Quiz`
+  - `010 - First Banking Dataset Inspection`
+  - `020 - Account Owner Fanout CTF`
+- Corrected the first dataset inspection challenge:
+  - The starter SQL now uses `currency_code` instead of a non-existent `currency` column.
+  - The scalar row-count check now expects the actual 18 seed balance rows instead of 12.
+  - The next challenge points to the fanout CTF.
+- Added manifest-backed learner instructions to quiz and SQL challenge detail pages:
+  - scenario
+  - inputs
+  - outputs
+  - required checks
+  - flag criteria
+  - hints
+- Added challenge-specific starter SQL for the fanout challenge.
+- Sorted the app challenge catalog by numbered title so the browser sequence appears as 000, 010, 020, then the later cloud-evidence challenge.
+- Expanded `app/scripts/test-sql.ts` so it runs manifest-backed known-good and known-bad SQL fixtures for:
+  - `first-banking-dataset`
+  - `account-owner-fanout`
+- Ran `bun validate:manifests`; it passed.
+- Ran `bun test:quiz`; it passed.
+- Ran `bun test:validators`; it passed.
+- Ran `bun test:sql`; the first attempt failed because DuckDB aggregate `SUM` values were not plain numeric values in the Node test runtime.
+- Updated the fanout starter and SQL fixtures to cast aggregate totals to `DOUBLE`.
+- Reran `bun test:sql`; it passed.
+- Ran `bun lint`; the first attempt failed while testing a broader validator numeric coercion change, then passed after removing that unnecessary validator change and casting fanout aggregates explicitly.
+- Ran `bun typecheck`; it passed.
+- Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL tests, validator tests, and production build passed.
+- The production build still reports Vite's non-failing large DuckDB-WASM chunk warning.
+- Tried `bun preview` in the sandbox; it failed with `listen EPERM: operation not permitted 127.0.0.1:4173`.
+- Reran `bun preview` with approval; Vite preview served the built app at `http://127.0.0.1:4173/`.
+- Launched headless Chrome with approval for built-site verification.
+- Ran a Chrome DevTools Protocol verification against the built preview:
+  - completed `000 - Orientation Quiz`
+  - completed `010 - First Banking Dataset Inspection`
+  - completed `020 - Account Owner Fanout CTF`
+  - verified all three browser challenge flags were stored in local progress
+  - verified the challenge index showed all three browser challenges as complete
+- Stopped the Vite preview and headless Chrome processes after verification.
+- Confirmed the preview server was no longer reachable on `127.0.0.1:4173`.
+- Updated Task 009 with completion and verification notes.
+
+- Started and completed Task 008.
+- Added reusable browser-side SQL/data validation in `app/src/validators.ts`.
+- Added validators for:
+  - required columns
+  - forbidden columns
+  - row count
+  - unique key
+  - scalar aggregate / aggregate total
+  - sensitive-field exclusion
+- Added unified browser-local progress storage and local flag generation in `app/src/progress.ts`.
+- Migrated completion state away from the old quiz-only storage key, while still reading legacy quiz progress when present.
+- Updated quiz completion to write unified progress with local flags.
+- Updated the SQL challenge page to:
+  - run manifest-backed validators against the submitted result set
+  - show pass/fail explanations for every check
+  - require the challenge question and required SQL checks before generating a flag
+  - persist SQL challenge completion and flags in local storage
+- Added Settings reset controls that clear unified progress and legacy quiz progress.
+- Expanded the first SQL challenge manifest with row-count, unique-key, scalar-aggregate, and sensitive-field-exclusion checks.
+- Expanded the challenge manifest schema with `scalar-aggregate` and `sensitive-field-exclusion` check types.
+- Added validator and progress fixtures in `app/scripts/test-validators.ts`.
+- Added `test:validators` scripts and Makefile target.
+- Ran `bun test:validators`; it passed.
+- Ran `bun typecheck`; it passed after removing a node-test import path that pulled Vite browser-only types into the node TypeScript project.
+- Ran `bun lint`; it passed.
+- Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL tests, validator tests, and production build passed.
+- The production build still reports Vite's non-failing large DuckDB-WASM chunk warning.
+- Tried `bun dev` in the sandbox; it failed with `listen EPERM: operation not permitted 127.0.0.1:5173`.
+- Reran `bun dev` with approval; Vite started at `http://127.0.0.1:5173/`.
+- Confirmed the dev server returned HTTP 200 with an approved local `curl`.
+- Ran a headless Chrome verification through the Chrome DevTools protocol:
+  - completed the orientation quiz
+  - verified the orientation flag persisted after reload
+  - completed the SQL challenge
+  - verified the SQL flag persisted after reload
+  - reset progress in Settings
+  - verified local progress was cleared
+- The first headless Chrome verification attempt completed the app path but failed during temporary Chrome profile cleanup; fixed the cleanup race and reran successfully.
+- Stopped the Vite dev server after verification.
+- Updated Tasks 006 and 007 to close the prior manual refresh verification gaps.
+- Updated Task 008 with completion notes.
+
+- Retried `bun dev`; the sandboxed run still failed with `listen EPERM: operation not permitted 127.0.0.1:5173`.
+- Reran `bun dev` with approval; Vite started at `http://127.0.0.1:5173/`.
+- Checked for existing browser automation tooling:
+  - `bun exec playwright --version` failed because Playwright is not installed.
+  - `bun exec vitest --version` failed because Vitest is not installed.
+- Confirmed the dev server was no longer reachable after the session ended.
+- Added Git discipline to `AGENTS.md`: keep `.gitignore` current and commit after each completed task.
+- Expanded `.gitignore` with coverage and local environment file exclusions.
+- Updated continuity files so the active task is Task 008 and the commit-after-task rule is recorded.
+- Created baseline commit `0ff5263` with the existing verified project state.
+- Added a root `Makefile` with targets for:
+  - `install`
+  - `lint`
+  - `typecheck`
+  - `validate`
+  - `validate-manifests`
+  - `validate-datasets`
+  - `test`
+  - `test-quiz`
+  - `test-sql`
+  - `build`
+  - `check`
+  - `dev`
+  - `preview`
+- Ran `make check`; lint, typecheck, manifest validation, dataset validation, quiz tests, SQL tests, and production build passed.
+- The build still reports Vite's non-failing large chunk warning for bundled DuckDB-WASM assets.
+- Applied the "do not bundle what can be built locally" rule:
+  - Added it to `AGENTS.md`.
+  - Ignored locally generated challenge catalog JSON.
+  - Changed the manifest validator to create `app/src/generated/` when needed.
+  - Updated lint, typecheck, check, and Makefile paths so the generated catalog is rebuilt locally before it is needed.
+  - Removed `app/src/generated/challengeCatalog.json` from git tracking.
+- Confirmed no `.wasm`, DuckDB worker, or `app/dist/` artifacts are tracked by git.
+- Added `*.wasm` to `.gitignore` and recorded that WASM runtime artifacts must come from package dependencies or local build output rather than committed binary files.
+- Reran `make check`; lint, typecheck, manifest validation, dataset validation, quiz tests, SQL tests, and production build passed with the generated catalog ignored.
+
+## 2026-05-05
+
+- Created initial BI research docs under `docs/`.
+- Reoriented the guide to banking, financial operations, back-office BI, and EU/Romanian context.
+- Added `regulations/` with one regulation/framework brief per document.
+- Added `tutorials/` with a layered curriculum, predefined data-source contract, and tutorial sketches.
+- Created split planning docs:
+  - `PLAN.md`
+  - `PLAN_BI_TUTORIAL_APP.md`
+  - `PLAN_BI_TUTORIAL_TUTORIALS.md`
+- Created `tasks/` with numbered implementation tasks.
+- Captured project continuity protocol in `AGENTS.md`.
+- Added continuity files:
+  - `STATUS.md`
+  - `WHAT_WE_DID.md`
+  - `DO_NEXT.md`
+  - `BUGS.md`
+- Updated task rules to require reviewing/updating continuity docs before and after each task.
+- Verified task files include required verification/test sections.
+- Audited the plan/task backlog for missing details before implementation.
+- Added plan details for YAML source manifests, generated JSON catalog, source dataset location, dataset versioning, golden solution fixtures, progress export, content QA, release versioning, and iterative plan readjustment.
+- Added tasks 014-018 for dataset expansion/versioning, solution fixtures/golden tests, progress export, content QA, and release/version tracking.
+- Closed Task 001 after running its required verification commands:
+  - `rg -n "PLAN_BI_TUTORIAL_APP|PLAN_BI_TUTORIAL_TUTORIALS|tasks/README" PLAN.md`
+  - `rg --files tasks`
+  - `rg -L "^## Tests" tasks/*.md`
+  - `rg -L "^## Verification" tasks/*.md`
+  - `rg -n "Before starting any task|After finishing or pausing any task|BUGS.md" AGENTS.md tasks/README.md`
+- Added Task 001 verification notes and marked it complete.
+- Started and completed Task 002.
+- Added root `package.json`, `legacy workspace file`, and `.gitignore`.
+- Created the static app under `app/`:
+  - `app/package.json`
+  - `app/index.html`
+  - `app/vite.config.ts`
+  - `app/tsconfig.json`
+  - `app/tsconfig.node.json`
+  - `app/src/main.tsx`
+  - `app/src/App.tsx`
+  - `app/src/styles.css`
+  - `app/README.md`
+- Built a React + TypeScript + Vite shell with hash routes for Home, Docs, Regulations, Tutorials, Challenges, and Settings.
+- Added visible UI statements for synthetic data, browser-local state, no backend, no credentials, and explicit optional-tool requirements.
+- Installed `Bun` globally because `bun` and `corepack` were not available on PATH.
+- Ran `bun install`; the first sandboxed attempt failed with `ENOTFOUND package registry`, then the approved network run succeeded.
+- Ran `bun typecheck`; initial run failed because `vite.config.ts` needed Node type definitions. Added `@types/node` and reran successfully.
+- Ran `bun build`; it passed.
+- Ran `bun preview`; the sandboxed attempt failed with `listen EPERM` on localhost, then the approved run served the app at `http://127.0.0.1:4173/`.
+- Changed the default production Vite base path from `/looker-bi-gym/` to relative `./` after local preview showed absolute project-path assets were awkward to verify locally. `GITHUB_PAGES_BASE` remains available for deployments that require absolute asset URLs.
+- Verified served HTML and built JS assets returned HTTP 200 from the local preview server.
+- Started and completed Task 003.
+- Added `marked` for Markdown rendering.
+- Added `app/src/content.ts` to load `docs/`, `regulations/`, and `tutorials/` Markdown files via Vite raw imports.
+- Added `app/src/markdown.ts` to render Markdown, rewrite internal `.md` links to hash routes, and label external links.
+- Replaced the placeholder Docs, Regulations, and Tutorials pages with document indexes backed by existing Markdown source files.
+- Added strong domain types for content sections, content documents, routes, and work items.
+- Added type-aware ESLint with pedantic rules:
+  - no `any`
+  - no broad `object`, `Object`, or `{}` types
+  - no TypeScript suppression comments
+  - no non-null assertions
+  - no unsafe assignments/calls/member access/arguments/returns
+  - no inline dynamic imports
+  - separate type imports
+  - zero warnings
+- Tightened TypeScript compiler settings with additional strict flags including `exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`, and `noPropertyAccessFromIndexSignature`.
+- Added root/app `lint` and `check` scripts.
+- Queried package registry live for current top-level package versions and updated exact pins:
+  - `react@19.2.5`
+  - `react-dom@19.2.5`
+  - `vite@8.0.10`
+  - `@vitejs/plugin-react@6.0.1`
+  - `typescript@6.0.3`
+  - `Bun`
+  - plus current direct lint/type packages used by app/tooling code.
+- Moved build/tooling imports to top-level `devDependencies` and kept runtime imports in top-level `dependencies`.
+- Verified every external package imported by app source, Vite config, or ESLint config is directly declared in `app/package.json`.
+- Ran `bun check`; lint, typecheck, and build passed.
+- Ran `bun outdated --recursive`; no outdated top-level packages were reported.
+
+## Tried And Failed
+
+- The first `bun install` attempt failed in the sandbox because registry DNS/network access was blocked. Reran with approval and succeeded.
+- The first `bun typecheck` attempt failed because `vite.config.ts` referenced `process.env` without Node types. Added `@types/node` and succeeded.
+- The first `bun preview` attempt failed in the sandbox because localhost binding was blocked. Reran with approval and succeeded.
+- The initial absolute GitHub Pages base path made Vite preview serve awkward asset URLs locally. Switched the default build base to relative paths and documented the override.
+- Initial strict lint/typecheck runs surfaced issues with optional properties, nullable checks, broad environment access, and TypeScript project scoping. Fixed the code/config instead of relaxing the rules.
+- Initial large patch for the plan/task additions failed because one context block in `PLAN_BI_TUTORIAL_APP.md` did not match exactly. Reapplied the changes in smaller patches successfully.
+
+## Task 004 - Challenge Manifest Schema
+
+- Started and completed Task 004.
+- Added challenge manifest authoring docs in `challenges/README.md`.
+- Added machine-readable JSON Schema in `challenges/schema/challenge-manifest.schema.json`.
+- Added valid YAML example manifests for:
+  - `quiz`: `challenges/manifests/orientation-quiz.yaml`
+  - `browser-sql`: `challenges/manifests/first-banking-dataset.yaml`
+  - `cloud-evidence`: `challenges/manifests/looker-studio-evidence.yaml`
+- Added intentionally invalid validation fixture: `challenges/fixtures/invalid-manifest.yaml`.
+- Added shared challenge manifest types in `app/src/challengeTypes.ts`.
+- Added app challenge catalog loader/formatters in `app/src/challenges.ts`.
+- Added generated browser catalog at `app/src/generated/challengeCatalog.json`.
+- Added TypeScript manifest validation/generation script at `app/scripts/validate-challenge-manifests.ts`.
+- Added root and app `validate:manifests` scripts.
+- Updated the app Challenges page to render from generated manifests instead of hard-coded placeholder challenge cards.
+- Added direct app dev dependencies for validation tooling after live package registry checks:
+  - `ajv@8.20.0`
+  - `tsx@4.21.0`
+  - `yaml@2.8.4`
+- Updated `legacy lockfile` with `bun install`.
+- Ran `bun validate:manifests`; it passed and regenerated the challenge catalog.
+- Ran `bun check`; lint, typecheck, manifest validation, and Vite build passed.
+- Confirmed built assets and generated catalog contain the three example challenge titles.
+- Confirmed generated manifests include required fields and `required_tools`.
+
+## Task 004 Tried And Failed
+
+- The first `bun view ajv version && bun view yaml version && bun view tsx version` attempt failed in the sandbox with `ENOTFOUND package registry`. Reran with approved network access and confirmed current exact versions.
+- The first `bun install` attempt failed because bun could not purge modules without a TTY.
+- The `CI=true bun install` attempt failed because CI mode enabled frozen lockfile checks after package metadata changed.
+- The `CI=true bun install --no-frozen-lockfile` attempt failed in the sandbox with registry DNS errors. Reran with approved network access and succeeded.
+- The first `bun validate:manifests` attempt failed because the `tsx` CLI opened an IPC pipe blocked by the sandbox. Switched the script to `node --import tsx scripts/validate-challenge-manifests.ts`, which runs in the sandbox.
+- The first direct validator run exposed Ajv strict schema handling for union `type` arrays. Enabled `allowUnionTypes` explicitly.
+- The first `bun check` attempt failed lint because the validator function was typed too loosely around `validate.errors`. Switched to Ajv's `ValidateFunction`.
+- The second `bun check` attempt failed typecheck because the parsed JSON Schema was still `unknown`. Typed that boundary as Ajv's `AnySchema`.
+
+## Task 005 - Synthetic Dataset Seed
+
+- Started and completed Task 005.
+- Added dataset root documentation in `datasets/README.md`.
+- Added the first dataset under `datasets/deposits-seed/v0.1.0/`.
+- Added CSV source files for:
+  - `raw_ref.branches`: `branches.csv`
+  - `raw_ref.products`: `products.csv`
+  - `raw_deposits.accounts`: `accounts.csv`
+  - `raw_deposits.account_owners`: `account_owners.csv`
+  - `raw_deposits.account_daily_balances`: `account_daily_balances.csv`
+- Added dataset metadata in `datasets/deposits-seed/v0.1.0/metadata.json`.
+- Added the dataset data dictionary, control totals, and BI trap notes in `datasets/deposits-seed/v0.1.0/README.md`.
+- Included Romanian/EU banking flavor:
+  - RON/EUR balances.
+  - Bucuresti, Cluj-Napoca, Iasi, Timisoara, and Brasov branch geography.
+  - BNR, FGDB, and GDPR context tags.
+- Included intentional BI/CTF traps:
+  - Many-to-many account ownership that multiplies balances under naive joins.
+  - Sensitive serving-output fields: `account_id`, `customer_id`, and `synthetic_iban`.
+  - Missing branch mapping: account `A1006` references branch `B999`.
+  - Ownership share issue: account `A1005` totals 110 percent ownership.
+  - Semi-additive daily balance snapshots.
+- Added `app/scripts/validate-datasets.ts`.
+- Added root and app `validate:datasets` scripts.
+- Updated app build to run `bun validate:manifests`, `bun validate:datasets`, typecheck, and Vite build.
+- Aligned `challenges/manifests/first-banking-dataset.yaml` with the final seed table names:
+  - `account_owners`
+  - `account_daily_balances`
+- Regenerated `app/src/generated/challengeCatalog.json`.
+- Ran `bun validate:datasets`; it passed.
+- Ran `bun validate:manifests`; it passed after manifest alignment.
+- Ran `bun check`; lint, typecheck, manifest validation, dataset validation, and Vite build passed.
+
+## Task 005 Tried And Failed
+
+- The first `bun validate:datasets` run failed because `A1006` had balances but no owner row, so the naive owner join dropped that account and produced `159800` instead of the expected `164800`. Added owner `C0008` for `A1006` and updated the owner row count.
+- The first `bun check` after adding dataset validation failed lint on a nested readonly array type in `validate-datasets.ts`. Changed it to `ReadonlyArray<Readonly<Record<string, string>>>`.
+
+## Task 006 - Quiz Challenge Runtime
+
+- Started Task 006.
+- Added browser quiz grading logic in `app/src/quiz.ts`.
+- Added support for:
+  - Multiple-choice answers.
+  - Select-all answers with order-insensitive exact matching.
+  - Numeric answers with configured tolerance.
+- Added `app/scripts/test-quiz.ts` for deterministic quiz evaluator tests.
+- Added root and app `test:quiz` scripts.
+- Updated the orientation quiz manifest with select-all and numeric questions so all supported quiz answer types are represented.
+- Regenerated `app/src/generated/challengeCatalog.json` with `bun validate:manifests`.
+- Updated the Challenges page so cards link to `#/challenges/{challenge-id}` detail routes.
+- Added a quiz challenge detail renderer for `quiz` manifests.
+- Added browser-local answer state and per-question feedback.
+- Added a narrow quiz completion store in browser `localStorage` under `looker-bi-gym.quiz-progress.v1`.
+- Added a non-quiz challenge detail placeholder for later runtime tasks.
+- Ran `bun test:quiz`; it passed.
+- Ran `bun validate:manifests`; it passed.
+- Ran `bun check`; lint, typecheck, manifest validation, dataset validation, and Vite build passed.
+
+## Task 006 Tried And Failed
+
+- The first `bun check` after adding quiz UI failed lint because `Array.isArray` narrowed a quiz response to an unsafe array type. Reworked the helper to narrow the `QuizResponse` union without unsafe array return.
+- `bun dev` failed in the sandbox with `listen EPERM: operation not permitted 127.0.0.1:5173`.
+- An escalated `bun dev` request was rejected by the environment, so manual browser completion and refresh verification could not be run in this turn.
+
+## Task 007 - Browser SQL Runtime
+
+- Started Task 007.
+- Added a browser-side DuckDB-WASM runtime in `app/src/sqlRuntime.ts`.
+- Added a static seed dataset loader in `app/src/seedDataset.ts` that imports the synthetic deposits CSV files.
+- Integrated DuckDB-WASM into the app using local Vite-bundled worker and wasm assets.
+- Added browser SQL support to the Challenges page for `browser-sql` manifests.
+- Added a schema browser, SQL editor, query result table, and SQL error display.
+- Added bounded preview-query execution so large result sets are capped in the UI.
+- Added `app/scripts/test-sql.ts` for offline SQL smoke tests using the node-blocking DuckDB-WASM bindings.
+- Added root and app `test:sql` scripts.
+- Added the `@duckdb/duckdb-wasm` dependency.
+- Ran `bun test:sql`; it passed.
+- Ran `bun test:quiz`; it passed.
+- Ran `bun check`; lint, typecheck, manifest validation, dataset validation, and Vite build passed.
+
+## Task 007 Tried And Failed
+
+- The first `bun test:sql` run failed because the node-blocking bindings needed an explicit instantiate step before `connect()`. Added the instantiate call and reran successfully.
+- The first `bun check` after adding the SQL runtime failed lint on array type conventions, direct React state updates in an effect, and object stringification. Tightened the types, removed the effect-local loading reset, and switched the result formatter to explicit primitive handling.
+- `bun dev` still cannot bind `127.0.0.1:5173` in the sandbox, so manual browser refresh verification remains pending.
+- The escalated `bun dev` request was rejected by the environment, so the browser refresh check could not be run here.
