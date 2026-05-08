@@ -2,6 +2,36 @@
 
 ## 2026-05-09
 
+- Switched active repository tooling from pnpm to Bun only after user direction.
+- Updated root and app package scripts to use `bun run`, added root workspaces to `package.json`, removed `pnpm-lock.yaml` and `pnpm-workspace.yaml`, and generated committed `bun.lock`.
+- Removed `tsx` as a direct app dev dependency because Bun now runs TypeScript scripts directly.
+- Added `@playwright/test` and `bun run test:e2e`.
+- Updated CI and Pages workflows to use `oven-sh/setup-bun`, `bun install --frozen-lockfile`, Bun commands, and Playwright Chromium installation.
+- Updated Makefile targets to call Bun and added `test-e2e`.
+- Tightened `.gitignore` for generated TypeScript, Playwright output, test output, caches, logs, editor files, and legacy local pnpm store noise.
+- Added `app/playwright.config.ts` and `app/tests/rendered-ui.spec.ts`.
+- Playwright coverage now verifies:
+  - desktop and mobile home rendering with nonblank screenshots;
+  - primary routes across mobile, tablet, and desktop viewports;
+  - no horizontal page overflow;
+  - visible control text fitting inside controls;
+  - challenge catalog/detail metadata and regulatory links;
+  - DuckDB-WASM SQL challenge query execution and results;
+  - cloud-evidence controls and Settings export/version metadata.
+- Updated current docs and continuity files to describe Bun-only tooling and rendered UI tests.
+- Ran `bun install`; the sandboxed run failed because Bun could not write temp/cache files, then the approved run succeeded and wrote `bun.lock`.
+- Ran `bun run validate:manifests`; it passed.
+- Ran `bun run typecheck`; it initially failed because Playwright tests needed DOM libs in the node tsconfig; added DOM libs and reran successfully.
+- Ran `bun run lint`; it initially failed on explicit env narrowing and test nullable text handling; fixed both and reran successfully.
+- Ran `bun run test:e2e`; the first sandboxed run failed because preview could not bind `127.0.0.1:4173`.
+- Reran `bun run test:e2e` with approval; it then failed because the pinned Playwright Chromium browser was not installed.
+- Ran `bunx playwright install chromium` from the app workspace with approval; it installed the pinned Chromium revision.
+- Reran `bun run test:e2e`; selector strictness failures exposed ambiguous assertions, so the tests were tightened to target table column/cell roles and actual cloud-evidence labels.
+- Reran `bun run test:e2e`; all 5 rendered UI tests passed.
+- Ran final `bun run check`; it passed, including manifest validation, lint, typecheck, dataset validation, quiz tests, SQL tests, solution fixture tests, cloud-evidence tests, progress-export tests, content QA, validator tests, Playwright rendered UI tests, production build, and static-link validation.
+
+## 2026-05-09
+
 - Started and completed Task 018 implementation.
 - Set the first tracked app/content release version to `0.1.0` in root and app package metadata.
 - Added `VERSIONING.md` with app/content, challenge catalog, dataset, regulation-brief, and release-checklist policy.

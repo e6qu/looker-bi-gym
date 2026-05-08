@@ -9,7 +9,7 @@ Core direction:
 - Static GitHub Pages app.
 - No backend.
 - React + TypeScript + Vite.
-- `pnpm` for repository development.
+- `bun` for repository development.
 - DuckDB-WASM for browser SQL challenges.
 - Markdown/MDX content.
 - YAML or JSON challenge manifests.
@@ -62,7 +62,7 @@ Do not rely on chat history as the source of truth. Keep these files current so 
 
 ## Tooling Rules
 
-- Use `pnpm` for package management and scripts.
+- Use `bun` for package management and scripts.
 - Do not introduce alternate package managers unless the user approves.
 - Keep the main learner path browser-first.
 - Any learner-required local tool must be explicit, common, cross-platform, justified, and listed in the challenge.

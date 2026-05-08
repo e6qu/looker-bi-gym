@@ -44,10 +44,11 @@ Before tagging or publishing a release:
 
 1. Update package versions and challenge manifest versions as needed.
 2. Update `CHANGELOG.md` with app, content, challenge, dataset, and known verification gaps.
-3. Run `pnpm validate:manifests` and confirm every challenge has a version.
-4. Run `pnpm validate:datasets`.
-5. Run `pnpm test:fixtures` for known-good and known-bad challenge coverage.
-6. Run `pnpm test:content-qa`.
-7. Run `pnpm build`.
+3. Run `bun run validate:manifests` and confirm every challenge has a version.
+4. Run `bun run validate:datasets`.
+5. Run `bun run test:fixtures` for known-good and known-bad challenge coverage.
+6. Run `bun run test:content-qa`.
+7. Run `bun run test:e2e`.
+8. Run `bun run build`.
 8. Run `make check`.
 9. Confirm `git status --short` does not include rebuildable generated artifacts, build output, WASM runtime files, dependency directories, or local OS/editor files.

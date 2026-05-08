@@ -16,7 +16,7 @@ The default learner path should run in the browser. If a tutorial requires local
 
 - Static browser app hosted on GitHub Pages.
 - React, TypeScript, Vite.
-- `pnpm` for repository development commands.
+- `bun` for repository development commands.
 - DuckDB-WASM for browser SQL challenges.
 - Markdown for long-form content.
 - YAML source manifests with a locally generated JSON catalog for the app.

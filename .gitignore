@@ -1,7 +1,15 @@
 node_modules/
+.pnpm-store/
 app/dist/
 coverage/
+playwright-report/
+test-results/
+.cache/
+.vite/
+app/.vite/
 app/src/generated/*.json
+app/src/generated/*.ts
+app/src/generated/*.tsx
 *.wasm
 *.tsbuildinfo
 app/vite.config.d.ts
@@ -10,3 +18,10 @@ app/vite.config.js
 .env.*
 !.env.example
 .DS_Store
+.idea/
+.vscode/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*

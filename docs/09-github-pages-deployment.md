@@ -4,14 +4,14 @@ This project deploys as a static GitHub Pages app. There is no backend, credenti
 
 ## Workflows
 
-CI is defined in `.github/workflows/ci.yml`. It runs on pushes, pull requests, and manual dispatch. The CI job uses `pnpm` and runs:
+CI is defined in `.github/workflows/ci.yml`. It runs on pushes, pull requests, and manual dispatch. The CI job uses Bun and runs:
 
 - dependency install with the committed lockfile;
 - challenge manifest validation and catalog generation;
 - synthetic dataset validation;
 - ESLint;
 - TypeScript checks;
-- quiz, SQL, cloud-evidence, and validator tests;
+- quiz, SQL, cloud-evidence, validator, and Playwright rendered UI tests;
 - production build;
 - built `index.html` asset-link validation.
 
@@ -26,7 +26,7 @@ The default production Vite base path is relative. That keeps the built app port
 Use `GITHUB_PAGES_BASE` only when a deployment needs absolute asset URLs:
 
 ```sh
-GITHUB_PAGES_BASE=/looker-bi-gym/ pnpm build
+GITHUB_PAGES_BASE=/looker-bi-gym/ bun run build
 ```
 
 ## Verification
@@ -34,12 +34,12 @@ GITHUB_PAGES_BASE=/looker-bi-gym/ pnpm build
 Before merging deployment changes, run:
 
 ```sh
-pnpm install --frozen-lockfile
-pnpm check
-pnpm validate:static-links
+bun install --frozen-lockfile
+bun run check
+bun run validate:static-links
 ```
 
-To prove CI catches invalid challenge content, temporarily change a manifest dataset version or required field locally and run `pnpm validate:manifests`. Revert the temporary change after confirming the command fails.
+To prove CI catches invalid challenge content, temporarily change a manifest dataset version or required field locally and run `bun run validate:manifests`. Revert the temporary change after confirming the command fails.
 
 After GitHub Pages publishes, verify:
 

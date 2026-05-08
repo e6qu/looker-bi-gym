@@ -6,12 +6,13 @@ This directory contains the static React + TypeScript + Vite app.
 
 Run from the repository root:
 
-- `pnpm install`
-- `pnpm dev`
-- `pnpm typecheck`
-- `pnpm build`
-- `pnpm validate:static-links`
-- `pnpm preview`
+- `bun install`
+- `bun run dev`
+- `bun run typecheck`
+- `bun run build`
+- `bun run test:e2e`
+- `bun run validate:static-links`
+- `bun run preview`
 
 ## GitHub Pages Base Path
 
@@ -20,22 +21,22 @@ The Vite config uses `/` while running the dev server and relative asset paths f
 Override the production base path when a deployment needs absolute asset URLs:
 
 ```sh
-GITHUB_PAGES_BASE=/your-repo-name/ pnpm build
+GITHUB_PAGES_BASE=/your-repo-name/ bun run build
 ```
 
 The app uses hash routes such as `#/docs`, so deep links do not require server rewrite rules.
 
 ## GitHub Pages Deployment
 
-The repository uses GitHub Actions with `pnpm` for CI and Pages publishing:
+The repository uses GitHub Actions with Bun for CI and Pages publishing:
 
-- `.github/workflows/ci.yml` installs dependencies, validates manifests and datasets, runs lint/typecheck/tests, builds the app, and checks the built `index.html` asset references.
+- `.github/workflows/ci.yml` installs dependencies, validates manifests and datasets, runs lint/typecheck/tests, runs Playwright rendered UI tests, builds the app, and checks the built `index.html` asset references.
 - `.github/workflows/pages.yml` repeats the same build gate, uploads `app/dist`, and deploys it to the `github-pages` environment.
 
 In the GitHub repository settings, set Pages source to GitHub Actions. The default workflow build uses relative production asset paths, which works for project Pages and user/organization Pages. If a deployment needs absolute asset paths, set `GITHUB_PAGES_BASE` for the build step, for example:
 
 ```sh
-GITHUB_PAGES_BASE=/looker-bi-gym/ pnpm build
+GITHUB_PAGES_BASE=/looker-bi-gym/ bun run build
 ```
 
 After deployment, verify:
@@ -68,6 +69,10 @@ The target release browsers are current stable Chrome and Safari on desktop, wit
 
 If a browser blocks WebAssembly workers or local storage, Markdown/content routes remain readable, but browser SQL challenges or local progress flags may not complete. The app should show a DuckDB-WASM loading or error state instead of failing silently.
 
+## Rendered UI Tests
+
+Playwright tests live in `app/tests/` and run with `bun run test:e2e`. They build and preview the static app, then verify real rendered routes, responsive overflow boundaries, challenge metadata, DuckDB-WASM SQL execution, cloud-evidence controls, Settings export metadata, and nonblank desktop/mobile rendering.
+
 ## Markdown Rendering
 
 Existing Markdown files are loaded at build time with Vite raw imports from `docs/`, `regulations/`, and `tutorials/`. The app renders them with `marked` and rewrites internal `.md` links to hash routes such as `#/docs/README.md`, which keeps navigation compatible with GitHub Pages project paths and avoids server rewrite rules.
@@ -78,7 +83,7 @@ External Markdown links open in a new tab and are visibly labeled as external in
 
 Run the full local gate from the repository root:
 
-- `pnpm check`
+- `bun run check`
 
 This runs ESLint, TypeScript, and the static build.
 

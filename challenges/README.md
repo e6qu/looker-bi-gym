@@ -2,7 +2,7 @@
 
 Challenge manifests are authored as YAML in `challenges/manifests/`.
 
-The static app does not read YAML directly. Run `pnpm validate:manifests` to:
+The static app does not read YAML directly. Run `bun run validate:manifests` to:
 
 - validate every source manifest against `challenges/schema/challenge-manifest.schema.json`;
 - validate draft manifests under `challenges/drafts/`;
@@ -17,4 +17,4 @@ See [Challenge Authoring Guide](AUTHORING.md) for mode selection, manifest field
 
 Invalid fixtures live in `challenges/fixtures/` and are used to prove validation fails with a clear error.
 
-Solution fixtures live in `challenges/solution-fixtures/` and are used by `pnpm test:fixtures` to prove released challenge validators pass known-good solutions and reject expected known-bad solutions.
+Solution fixtures live in `challenges/solution-fixtures/` and are used by `bun run test:fixtures` to prove released challenge validators pass known-good solutions and reject expected known-bad solutions.

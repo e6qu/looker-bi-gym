@@ -32,7 +32,7 @@ Initial static training release.
 
 ### Verification
 
-- Local `pnpm build` and `make check` are required release gates.
+- Local `bun run build` and `make check` are required release gates.
 - Fixture tests cover known-good released challenge solutions and known-bad SQL trap coverage.
 - Content QA validates synthetic-data and regulatory-training boundaries.
 

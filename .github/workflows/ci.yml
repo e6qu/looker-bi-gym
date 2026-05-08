@@ -23,54 +23,55 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Set Up pnpm
-        uses: pnpm/action-setup@v6
-
-      - name: Set Up Node.js
-        uses: actions/setup-node@v6
+      - name: Set Up Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: 24
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
+          bun-version: 1.3.10
 
       - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       - name: Validate Challenge Manifests
-        run: pnpm validate:manifests
+        run: bun run validate:manifests
 
       - name: Validate Synthetic Datasets
-        run: pnpm validate:datasets
+        run: bun run validate:datasets
 
       - name: Lint
-        run: pnpm lint
+        run: bun run lint
 
       - name: Typecheck
-        run: pnpm typecheck
+        run: bun run typecheck
 
       - name: Test Quiz Runtime
-        run: pnpm test:quiz
+        run: bun run test:quiz
 
       - name: Test SQL Runtime
-        run: pnpm test:sql
+        run: bun run test:sql
 
       - name: Test Solution Fixtures
-        run: pnpm test:fixtures
+        run: bun run test:fixtures
 
       - name: Test Cloud Evidence Runtime
-        run: pnpm test:cloud-evidence
+        run: bun run test:cloud-evidence
 
       - name: Test Progress Export
-        run: pnpm test:progress-export
+        run: bun run test:progress-export
 
       - name: Test Content QA
-        run: pnpm test:content-qa
+        run: bun run test:content-qa
 
       - name: Test Browser Validators
-        run: pnpm test:validators
+        run: bun run test:validators
+
+      - name: Install Playwright Browser
+        run: bunx playwright install --with-deps chromium
+
+      - name: Test Rendered UI
+        run: bun run test:e2e
 
       - name: Build Static App
-        run: pnpm build
+        run: bun run build
 
       - name: Validate Built Static Links
-        run: pnpm validate:static-links
+        run: bun run validate:static-links

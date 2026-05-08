@@ -32,7 +32,13 @@ Use this checklist before releasing learner-facing content.
 Run:
 
 ```sh
-pnpm test:content-qa
+bun run test:content-qa
+```
+
+Rendered UI and responsive layout checks run separately:
+
+```sh
+bun run test:e2e
 ```
 
 The same check is included in `make check` and CI.

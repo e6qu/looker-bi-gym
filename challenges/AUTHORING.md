@@ -21,7 +21,7 @@ These materials are technical training content, not legal, regulatory, accountin
 2. Declare the input data grain, sensitive fields, date semantics, outputs, checks, questions, required tools, and flag criteria.
 3. Author YAML in `challenges/manifests/` for a released challenge, or `challenges/drafts/` for a validation-only draft.
 4. Add or update solution fixtures and tests when the challenge uses SQL, validators, cloud evidence, or a new dataset expectation.
-5. Run `pnpm validate:manifests`, `pnpm validate:datasets` when datasets are referenced, and `make check` before considering the task done.
+5. Run `bun run validate:manifests`, `bun run validate:datasets` when datasets are referenced, and `make check` before considering the task done.
 
 Draft manifests are validated with the same schema as published manifests, but only files in `challenges/manifests/` are emitted to the browser catalog.
 
@@ -33,7 +33,7 @@ Do not add credentials, secrets, API keys, OAuth tokens, service account keys, p
 
 Do not require esoteric or highly platform-specific tooling. The default learner path is browser-first. If a challenge cannot run fully in the browser, it must explain why and list exact tools in `required_tools`.
 
-Do not require Google Cloud CLI, BigQuery CLI, Python, Docker, or local package managers in early learner tutorials. Repository development can use `pnpm`; learner-facing tutorials only require it when the task explicitly targets local app development.
+Do not require Google Cloud CLI, BigQuery CLI, Python, Docker, or alternate package managers in early learner tutorials. Repository development uses Bun; learner-facing tutorials only require it when the task explicitly targets local app development.
 
 ## Choosing Mode
 
@@ -169,13 +169,13 @@ Schema-only or future/manual checks include `reconciliation`, `manual-review`, a
 
 A release-ready challenge must document how it is verified. Prefer automated tests:
 
-- `pnpm validate:manifests` for schema validity, unique IDs, invalid-fixture failure, and catalog generation.
-- `pnpm validate:datasets` when the challenge references dataset facts, relationships, control totals, or known issues.
-- `pnpm test:quiz` for quiz grading changes.
-- `pnpm test:sql` for browser SQL runtime smoke coverage.
-- `pnpm test:fixtures` for released challenge known-good and expected known-bad solution fixtures.
-- `pnpm test:cloud-evidence` for cloud evidence parser and validator changes.
-- `pnpm test:validators` for shared validator behavior.
+- `bun run validate:manifests` for schema validity, unique IDs, invalid-fixture failure, and catalog generation.
+- `bun run validate:datasets` when the challenge references dataset facts, relationships, control totals, or known issues.
+- `bun run test:quiz` for quiz grading changes.
+- `bun run test:sql` for browser SQL runtime smoke coverage.
+- `bun run test:fixtures` for released challenge known-good and expected known-bad solution fixtures.
+- `bun run test:cloud-evidence` for cloud evidence parser and validator changes.
+- `bun run test:validators` for shared validator behavior.
 - `make check` before marking a task complete.
 
 Every released manifest under `challenges/manifests/` must have at least one known-good solution fixture under `challenges/solution-fixtures/{challenge_id}/`. Golden fixtures should prove both sides of a trap: one known-good solution passes and one known-bad solution fails for the expected check IDs. If a task cannot automate a check yet, write the manual procedure and residual risk in the relevant `tasks/*.md` file and continuity docs.

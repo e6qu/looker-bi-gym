@@ -32,7 +32,7 @@ Frontend:
 - React
 - TypeScript
 - Vite
-- `pnpm` for repository development commands
+- `bun` for repository development commands
 
 Static hosting:
 
@@ -61,7 +61,7 @@ CI/CD:
 
 Tooling decisions:
 
-- Repository development uses `pnpm`.
+- Repository development uses `bun`.
 - Learner main path is browser-only.
 - Optional cloud-applied tasks may use Google Cloud Console, BigQuery UI, and Looker Studio UI.
 - Avoid requiring Google Cloud CLI, BigQuery CLI, Python, or Docker in early tutorials.

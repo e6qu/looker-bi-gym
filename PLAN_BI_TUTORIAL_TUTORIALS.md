@@ -10,7 +10,7 @@ Execution tasks are tracked in [tasks/README.md](tasks/README.md).
 
 The default tutorial path should work in the browser. Tutorials may require local tools only when explicitly listed in the tutorial setup and when those tools are common, cross-platform, and justified by the learning objective.
 
-Repository development uses `pnpm`. Learner-facing tutorials should not assume `pnpm` unless the tutorial explicitly targets local development of the app itself.
+Repository development uses `bun`. Learner-facing tutorials should not assume `bun` unless the tutorial explicitly targets local development of the app itself.
 
 Plans and tasks should be readjusted after each task if implementation uncovers a true blocker, wrong assumption, or better path. The overall objective is stable; the route to get there is expected to evolve.
 
