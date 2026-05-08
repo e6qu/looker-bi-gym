@@ -1,6 +1,6 @@
 # Bugs
 
-No known app bugs after the Task 018 implementation and automated checks.
+No known app bugs after the Bun-only tooling, typed config, formatting, rendered UI, and automated check passes.
 
 ## Follow-Up Verification Gaps
 

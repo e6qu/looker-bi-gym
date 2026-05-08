@@ -43,8 +43,8 @@ Add browser-side SQL execution over synthetic datasets.
 - Browser SQL runtime source: `app/src/sqlRuntime.ts`.
 - Browser SQL page source: `app/src/App.tsx`.
 - Seed dataset loader: `app/src/seedDataset.ts`.
-- SQL smoke test command: `pnpm test:sql`.
-- `pnpm test:sql`, `pnpm test:quiz`, and `pnpm check` passed on 2026-05-06.
-- `pnpm dev` failed in the sandbox with `listen EPERM: operation not permitted 127.0.0.1:5173`.
-- An approved `pnpm dev` run started Vite at `http://127.0.0.1:5173/` on 2026-05-06.
+- SQL smoke test command: `bun test:sql`.
+- `bun test:sql`, `bun test:quiz`, and `bun check` passed on 2026-05-06.
+- `bun dev` failed in the sandbox with `listen EPERM: operation not permitted 127.0.0.1:5173`.
+- An approved `bun dev` run started Vite at `http://127.0.0.1:5173/` on 2026-05-06.
 - Headless Chrome completed the SQL challenge, verified completion persisted after reload, and confirmed a query could run after refresh on 2026-05-06.

@@ -1,4 +1,4 @@
-export type ContentSectionId = 'docs' | 'regulations' | 'tutorials';
+export type ContentSectionId = "docs" | "regulations" | "tutorials";
 
 export type ContentDocument = {
   readonly section: ContentSectionId;
@@ -15,22 +15,22 @@ export type ContentSection = {
   readonly documents: readonly ContentDocument[];
 };
 
-const rawDocs = import.meta.glob<string>('../../docs/*.md', {
+const rawDocs = import.meta.glob<string>("../../docs/*.md", {
   eager: true,
-  import: 'default',
-  query: '?raw',
+  import: "default",
+  query: "?raw",
 });
 
-const rawRegulations = import.meta.glob<string>('../../regulations/*.md', {
+const rawRegulations = import.meta.glob<string>("../../regulations/*.md", {
   eager: true,
-  import: 'default',
-  query: '?raw',
+  import: "default",
+  query: "?raw",
 });
 
-const rawTutorials = import.meta.glob<string>('../../tutorials/*.md', {
+const rawTutorials = import.meta.glob<string>("../../tutorials/*.md", {
   eager: true,
-  import: 'default',
-  query: '?raw',
+  import: "default",
+  query: "?raw",
 });
 
 function titleFromMarkdown(markdown: string, fileName: string): string {
@@ -40,9 +40,9 @@ function titleFromMarkdown(markdown: string, fileName: string): string {
   }
 
   return fileName
-    .replace(/\.md$/, '')
-    .replace(/^\d+-/, '')
-    .replaceAll('-', ' ')
+    .replace(/\.md$/, "")
+    .replace(/^\d+-/, "")
+    .replaceAll("-", " ")
     .replace(/\b\w/g, (letter: string) => letter.toUpperCase());
 }
 
@@ -52,7 +52,7 @@ function toDocuments(
 ): ContentDocument[] {
   return Object.entries(files)
     .map(([importPath, markdown]) => {
-      const maybeFileName = importPath.split('/').at(-1);
+      const maybeFileName = importPath.split("/").at(-1);
       const fileName = maybeFileName ?? importPath;
       return {
         section,
@@ -63,10 +63,10 @@ function toDocuments(
       };
     })
     .sort((left, right) => {
-      if (left.fileName === 'README.md') {
+      if (left.fileName === "README.md") {
         return -1;
       }
-      if (right.fileName === 'README.md') {
+      if (right.fileName === "README.md") {
         return 1;
       }
       return left.fileName.localeCompare(right.fileName);
@@ -75,25 +75,25 @@ function toDocuments(
 
 export const contentSections: readonly ContentSection[] = [
   {
-    id: 'docs',
-    label: 'Docs',
+    id: "docs",
+    label: "Docs",
     description:
-      'Source notes and technical references for BI foundations, banking context, and tooling decisions.',
-    documents: toDocuments('docs', rawDocs),
+      "Source notes and technical references for BI foundations, banking context, and tooling decisions.",
+    documents: toDocuments("docs", rawDocs),
   },
   {
-    id: 'regulations',
-    label: 'Regulations',
+    id: "regulations",
+    label: "Regulations",
     description:
-      'EU and Romanian regulatory context labels for synthetic banking BI scenarios.',
-    documents: toDocuments('regulations', rawRegulations),
+      "EU and Romanian regulatory context labels for synthetic banking BI scenarios.",
+    documents: toDocuments("regulations", rawRegulations),
   },
   {
-    id: 'tutorials',
-    label: 'Tutorials',
+    id: "tutorials",
+    label: "Tutorials",
     description:
-      'Layered tutorial sketches and contracts for browser-first technical BI practice.',
-    documents: toDocuments('tutorials', rawTutorials),
+      "Layered tutorial sketches and contracts for browser-first technical BI practice.",
+    documents: toDocuments("tutorials", rawTutorials),
   },
 ];
 
@@ -103,11 +103,15 @@ export const contentByPath = new Map(
   ),
 );
 
-export function getSection(sectionId: ContentSectionId): ContentSection | undefined {
+export function getSection(
+  sectionId: ContentSectionId,
+): ContentSection | undefined {
   return contentSections.find((section) => section.id === sectionId);
 }
 
-export function getDefaultDocument(sectionId: ContentSectionId): ContentDocument | undefined {
+export function getDefaultDocument(
+  sectionId: ContentSectionId,
+): ContentDocument | undefined {
   return getSection(sectionId)?.documents[0];
 }
 
@@ -119,5 +123,8 @@ export function getDocument(
     return getDefaultDocument(sectionId);
   }
 
-  return contentByPath.get(`${sectionId}/${fileName}`) ?? getDefaultDocument(sectionId);
+  return (
+    contentByPath.get(`${sectionId}/${fileName}`) ??
+    getDefaultDocument(sectionId)
+  );
 }

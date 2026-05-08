@@ -1,6 +1,6 @@
 BUN ?= bun
 
-.PHONY: help install lint typecheck validate validate-manifests validate-datasets validate-static-links test test-quiz test-sql test-fixtures test-cloud-evidence test-progress-export test-content-qa test-e2e test-validators build check dev preview
+.PHONY: help install lint typecheck format format-check validate validate-manifests validate-datasets validate-static-links test test-quiz test-sql test-fixtures test-cloud-evidence test-progress-export test-content-qa test-e2e test-validators build check dev preview
 
 help:
 	@printf '%s\n' \
@@ -8,6 +8,8 @@ help:
 		'  install             Install workspace dependencies with Bun' \
 		'  lint                Run ESLint' \
 		'  typecheck           Run TypeScript checks' \
+		'  format              Format repository files with Prettier' \
+		'  format-check        Check Prettier formatting' \
 		'  validate            Validate manifests and datasets' \
 		'  validate-manifests  Validate challenge manifests and regenerate catalog' \
 		'  validate-datasets   Validate synthetic datasets' \
@@ -34,6 +36,12 @@ lint: validate-manifests
 
 typecheck: validate-manifests
 	$(BUN) run typecheck
+
+format:
+	$(BUN) run format
+
+format-check:
+	$(BUN) run format:check
 
 validate: validate-manifests validate-datasets
 

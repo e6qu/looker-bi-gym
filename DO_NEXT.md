@@ -10,6 +10,8 @@ Next verification steps:
 - If a Safari pass is required before release, ask the user to explicitly enable Safari "Allow remote automation" or perform the manual Safari QA checklist in `docs/10-app-quality-browser-qa.md`.
 - Keep rebuildable generated outputs ignored; regenerate them from committed source instead of committing them.
 - Keep DuckDB-WASM runtime files supplied by dependencies/local build output, not committed binary artifacts.
+- Keep config files in `app/configs/` as TypeScript and covered by `tsconfig.node.json`.
+- Keep `bun run format:check`, `bun run lint`, `bun run typecheck`, and `bun run check` clean before merging.
 - Preserve the Task 015 fixture coverage rule: every released manifest needs a known-good solution fixture or a documented exception, and CTF/trap challenges need expected known-bad coverage.
 - Preserve the Task 016 export boundary: progress export must stay local, user-controlled, and free of credentials, raw answers, pasted cloud evidence, sensitive synthetic field names, real banking data, storage keys, and hidden app internals.
 - Preserve the Task 017 content QA boundary: `bun run test:content-qa` must keep required tools, regulatory-context links, disclaimer language, synthetic-data warnings, dataset synthetic-only notes, and internal Markdown links covered.

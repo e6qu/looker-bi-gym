@@ -21,7 +21,7 @@ Automate validation, static build, and GitHub Pages deployment.
   - Dataset validation
   - Link validation where feasible
 - [x] Deployment instructions.
-- [x] CI uses `pnpm`.
+- [x] CI uses `bun`.
 
 ## Verification
 
@@ -32,7 +32,7 @@ Automate validation, static build, and GitHub Pages deployment.
 
 ## Tests
 
-- [x] Run all CI commands locally with `pnpm` where possible.
+- [x] Run all CI commands locally with `bun` where possible.
 - [x] Push or simulate workflow and confirm build job succeeds.
 - [x] Introduce a temporary invalid manifest in a local branch and verify validation fails.
 - [ ] Verify deployed app loads under the GitHub Pages URL.
@@ -40,13 +40,13 @@ Automate validation, static build, and GitHub Pages deployment.
 
 ## Notes
 
-- Added `.github/workflows/ci.yml` with `pnpm install --frozen-lockfile`, manifest validation, dataset validation, lint, typecheck, quiz/SQL/cloud-evidence/validator tests, production build, and static asset-link validation.
+- Added `.github/workflows/ci.yml` with `bun install --frozen-lockfile`, manifest validation, dataset validation, lint, typecheck, quiz/SQL/cloud-evidence/validator tests, production build, and static asset-link validation.
 - Added `.github/workflows/pages.yml` to run the local gate, upload `app/dist`, and deploy through GitHub Pages.
-- Added `pnpm validate:static-links` and the matching Makefile target.
-- Extended `pnpm validate:manifests` so manifest inputs with `dataset_id` and `dataset_version` must resolve to `datasets/{dataset_id}/{dataset_version}/metadata.json`.
+- Added `bun validate:static-links` and the matching Makefile target.
+- Extended `bun validate:manifests` so manifest inputs with `dataset_id` and `dataset_version` must resolve to `datasets/{dataset_id}/{dataset_version}/metadata.json`.
 - Documented deployment setup and `GITHUB_PAGES_BASE` behavior in `app/README.md` and `docs/09-github-pages-deployment.md`.
 - `make check` passed on 2026-05-06. The production build still reports Vite's non-failing large DuckDB-WASM chunk warning.
-- `CI=true pnpm install --frozen-lockfile` passed after rerunning with approved network access. The first non-TTY install attempt failed, then a sandboxed CI-mode install failed with `ENOTFOUND registry.npmjs.org`.
-- Temporary negative manifest check passed: changing `first-banking-dataset` to `dataset_version: v9.9.9` made `pnpm validate:manifests` fail with a missing dataset reference error, then the manifest was restored and validation passed.
-- `GITHUB_PAGES_BASE=/looker-bi-gym/ pnpm build` and `GITHUB_PAGES_BASE=/looker-bi-gym/ pnpm validate:static-links` passed.
+- `CI=true bun install --frozen-lockfile` passed after rerunning with approved network access. The first non-TTY install attempt failed, then a sandboxed CI-mode install failed with `ENOTFOUND package registry`.
+- Temporary negative manifest check passed: changing `first-banking-dataset` to `dataset_version: v9.9.9` made `bun validate:manifests` fail with a missing dataset reference error, then the manifest was restored and validation passed.
+- `GITHUB_PAGES_BASE=/looker-bi-gym/ bun build` and `GITHUB_PAGES_BASE=/looker-bi-gym/ bun validate:static-links` passed.
 - Live GitHub Pages URL and post-deploy deep-link verification remain pending until these workflows run in GitHub.

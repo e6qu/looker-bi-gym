@@ -18,5 +18,5 @@
     "noUnusedParameters": true,
     "noEmit": true
   },
-  "include": ["vite.config.ts", "playwright.config.ts", "scripts/**/*.ts", "tests/**/*.ts"]
+  "include": ["configs/**/*.ts", "scripts/**/*.ts", "tests/**/*.ts"]
 }

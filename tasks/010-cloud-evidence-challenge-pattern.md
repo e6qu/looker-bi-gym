@@ -48,10 +48,10 @@ Define and implement the first cloud-evidence challenge pattern for tasks that i
 
 ## Verification Notes
 
-- `pnpm validate:manifests` passed.
-- `pnpm test:cloud-evidence` passed.
-- `pnpm typecheck` passed.
-- `pnpm lint` passed.
+- `bun validate:manifests` passed.
+- `bun test:cloud-evidence` passed.
+- `bun typecheck` passed.
+- `bun lint` passed.
 - `make check` passed, including manifest validation, dataset validation, lint, typecheck, quiz tests, SQL tests, cloud-evidence tests, validator tests, and production build.
 - Verified by source inspection that cloud-evidence validation uses local state only: no `fetch`, `XMLHttpRequest`, or beacon calls were added.
 - Verified by source inspection that the app asks for no credentials, tokens, secrets, or API keys; the only credential-related UI is the safety question that rejects credential storage.

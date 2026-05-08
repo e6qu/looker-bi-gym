@@ -54,11 +54,11 @@ Render existing project content inside the static app so learners can browse doc
   - no inline dynamic imports
   - separate type imports
   - zero lint warnings
-- Added `pnpm lint` and `pnpm check` scripts at the root and app levels.
-- Updated top-level package versions using live npm registry checks instead of remembered versions.
+- Added `bun lint` and `bun check` scripts at the root and app levels.
+- Updated top-level package versions using live package registry checks instead of remembered versions.
 - Pinned direct top-level dependencies exactly in `app/package.json`.
 - Confirmed every imported external package is declared directly in `app/package.json`; only Node built-ins are implicit.
-- `pnpm check` passed.
-- `pnpm outdated --recursive` reported no outdated top-level packages after updates.
+- `bun check` passed.
+- `bun outdated --recursive` reported no outdated top-level packages after updates.
 - Source scan of `app/src` and `app/vite.config.ts` found no `any`, no `object`, no `@ts-` suppression comments, and no dynamic inline imports.
 - Full browser console verification was not automated in this task; add Playwright-based route smoke tests in a later quality task if this becomes required before CI.

@@ -1,16 +1,16 @@
-import { marked } from 'marked';
-import { contentByPath } from './content';
-import type { ContentDocument } from './content';
+import { marked } from "marked";
+import { contentByPath } from "./content";
+import type { ContentDocument } from "./content";
 
 function normalizePath(path: string): string {
   const output: string[] = [];
 
-  for (const part of path.split('/')) {
-    if (part.length === 0 || part === '.') {
+  for (const part of path.split("/")) {
+    if (part.length === 0 || part === ".") {
       continue;
     }
 
-    if (part === '..') {
+    if (part === "..") {
       output.pop();
       continue;
     }
@@ -18,27 +18,27 @@ function normalizePath(path: string): string {
     output.push(part);
   }
 
-  return output.join('/');
+  return output.join("/");
 }
 
 function resolveInternalMarkdownLink(
   document: ContentDocument,
   href: string,
 ): string | undefined {
-  const [hrefPath, hash] = href.split('#');
+  const [hrefPath, hash] = href.split("#");
 
-  if (hrefPath?.endsWith('.md') !== true) {
+  if (hrefPath?.endsWith(".md") !== true) {
     return undefined;
   }
 
-  const currentDirectory = document.filePath.split('/').slice(0, -1).join('/');
+  const currentDirectory = document.filePath.split("/").slice(0, -1).join("/");
   const targetPath = normalizePath(`${currentDirectory}/${hrefPath}`);
 
   if (!contentByPath.has(targetPath)) {
     return undefined;
   }
 
-  return `#/${targetPath}${hash !== undefined && hash.length > 0 ? `#${hash}` : ''}`;
+  return `#/${targetPath}${hash !== undefined && hash.length > 0 ? `#${hash}` : ""}`;
 }
 
 function isExternalUrl(href: string): boolean {
@@ -50,19 +50,19 @@ export function renderMarkdown(document: ContentDocument): string {
     async: false,
     gfm: true,
   });
-  const parsed = new DOMParser().parseFromString(unsafeHtml, 'text/html');
+  const parsed = new DOMParser().parseFromString(unsafeHtml, "text/html");
 
-  parsed.querySelectorAll<HTMLAnchorElement>('a[href]').forEach((link) => {
-    const href = link.getAttribute('href');
+  parsed.querySelectorAll<HTMLAnchorElement>("a[href]").forEach((link) => {
+    const href = link.getAttribute("href");
     if (href === null || href.length === 0) {
       return;
     }
 
     if (isExternalUrl(href)) {
-      link.target = '_blank';
-      link.rel = 'noreferrer';
-      link.dataset['external'] = 'true';
-      link.setAttribute('aria-label', `${link.textContent} (external link)`);
+      link.target = "_blank";
+      link.rel = "noreferrer";
+      link.dataset["external"] = "true";
+      link.setAttribute("aria-label", `${link.textContent} (external link)`);
       return;
     }
 

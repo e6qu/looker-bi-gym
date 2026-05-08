@@ -34,7 +34,9 @@
       "row_count": 6,
       "primary_key": ["account_id"],
       "sensitive_fields": ["account_id", "synthetic_iban"],
-      "date_semantics": ["open_date and close_date are lifecycle dates, not balance snapshot dates."]
+      "date_semantics": [
+        "open_date and close_date are lifecycle dates, not balance snapshot dates."
+      ]
     },
     {
       "id": "raw_deposits.account_owners",
@@ -43,7 +45,9 @@
       "row_count": 9,
       "primary_key": ["account_id", "customer_id", "valid_from"],
       "sensitive_fields": ["account_id", "customer_id"],
-      "date_semantics": ["valid_from and valid_to bound the ownership relationship."]
+      "date_semantics": [
+        "valid_from and valid_to bound the ownership relationship."
+      ]
     },
     {
       "id": "raw_deposits.account_daily_balances",
@@ -52,7 +56,9 @@
       "row_count": 18,
       "primary_key": ["business_date", "account_id"],
       "sensitive_fields": ["account_id"],
-      "date_semantics": ["business_date is a daily balance snapshot date; balances are semi-additive across time."]
+      "date_semantics": [
+        "business_date is a daily balance snapshot date; balances are semi-additive across time."
+      ]
     }
   ],
   "relationships": [
@@ -87,12 +93,36 @@
     }
   ],
   "control_totals": [
-    { "business_date": "2026-03-29", "currency_code": "EUR", "ledger_total": 16450 },
-    { "business_date": "2026-03-29", "currency_code": "RON", "ledger_total": 78740 },
-    { "business_date": "2026-03-30", "currency_code": "EUR", "ledger_total": 16550 },
-    { "business_date": "2026-03-30", "currency_code": "RON", "ledger_total": 79130 },
-    { "business_date": "2026-03-31", "currency_code": "EUR", "ledger_total": 16400 },
-    { "business_date": "2026-03-31", "currency_code": "RON", "ledger_total": 79300 }
+    {
+      "business_date": "2026-03-29",
+      "currency_code": "EUR",
+      "ledger_total": 16450
+    },
+    {
+      "business_date": "2026-03-29",
+      "currency_code": "RON",
+      "ledger_total": 78740
+    },
+    {
+      "business_date": "2026-03-30",
+      "currency_code": "EUR",
+      "ledger_total": 16550
+    },
+    {
+      "business_date": "2026-03-30",
+      "currency_code": "RON",
+      "ledger_total": 79130
+    },
+    {
+      "business_date": "2026-03-31",
+      "currency_code": "EUR",
+      "ledger_total": 16400
+    },
+    {
+      "business_date": "2026-03-31",
+      "currency_code": "RON",
+      "ledger_total": 79300
+    }
   ],
   "known_issues": [
     {

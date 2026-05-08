@@ -1,16 +1,19 @@
-import assert from 'node:assert/strict';
-import { createRequire } from 'node:module';
-import { dirname, extname, join, relative } from 'node:path';
-import { readdir, readFile } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
-import { parse } from 'yaml';
-import { evaluateCloudEvidenceChecks } from '../src/cloudEvidence';
-import { evaluateChallengeQuestions } from '../src/quiz';
-import { evaluateSqlResultChecks } from '../src/validators';
-import type { ChallengeManifest, ChallengeMode } from '../src/challengeTypes';
-import type { CloudEvidenceAnswerState } from '../src/cloudEvidence';
-import type { QuizAnswerState } from '../src/quiz';
-import type { SqlValidationResult, ValidationCheckResult } from '../src/validators';
+import assert from "node:assert/strict";
+import { createRequire } from "node:module";
+import { dirname, extname, join, relative } from "node:path";
+import { readdir, readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+import { parse } from "yaml";
+import { evaluateCloudEvidenceChecks } from "../src/cloudEvidence";
+import { evaluateChallengeQuestions } from "../src/quiz";
+import { evaluateSqlResultChecks } from "../src/validators";
+import type { ChallengeManifest, ChallengeMode } from "../src/challengeTypes";
+import type { CloudEvidenceAnswerState } from "../src/cloudEvidence";
+import type { QuizAnswerState } from "../src/quiz";
+import type {
+  SqlValidationResult,
+  ValidationCheckResult,
+} from "../src/validators";
 
 type DuckDbRow = Readonly<Record<string, unknown>>;
 
@@ -39,7 +42,10 @@ type DuckDbConnectionLike = {
 type DuckDbBindingsLike = {
   readonly registerFileText: (path: string, text: string) => Promise<void>;
   readonly connect: () => Promise<DuckDbConnectionLike>;
-  readonly instantiate: (mainModule: string, pthreadWorker?: string) => Promise<void>;
+  readonly instantiate: (
+    mainModule: string,
+    pthreadWorker?: string,
+  ) => Promise<void>;
   readonly terminate?: () => Promise<void>;
 };
 
@@ -63,7 +69,7 @@ type DuckDbBundles = {
   readonly eh: DuckDbBundle;
 };
 
-type FixtureKind = 'known-good' | 'known-bad' | 'coverage-exception';
+type FixtureKind = "known-good" | "known-bad" | "coverage-exception";
 
 type FixtureExpected = {
   readonly required_passed?: boolean;
@@ -103,54 +109,73 @@ type FixtureEvaluation = {
 
 const require = createRequire(import.meta.url);
 const scriptDir = dirname(fileURLToPath(import.meta.url));
-const appRoot = join(scriptDir, '..');
-const repoRoot = join(appRoot, '..');
-const manifestsRoot = join(repoRoot, 'challenges', 'manifests');
-const fixturesRoot = join(repoRoot, 'challenges', 'solution-fixtures');
-const datasetsRoot = join(repoRoot, 'datasets');
-const packageRoot = dirname(require.resolve('@duckdb/duckdb-wasm'));
-const duckdbNode = require(join(packageRoot, 'duckdb-node-blocking.cjs')) as DuckDbNodeBlockingModule;
+const appRoot = join(scriptDir, "..");
+const repoRoot = join(appRoot, "..");
+const manifestsRoot = join(repoRoot, "challenges", "manifests");
+const fixturesRoot = join(repoRoot, "challenges", "solution-fixtures");
+const datasetsRoot = join(repoRoot, "datasets");
+const packageRoot = dirname(require.resolve("@duckdb/duckdb-wasm"));
+const duckdbNode = require(
+  join(packageRoot, "duckdb-node-blocking.cjs"),
+) as DuckDbNodeBlockingModule;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
-  return value !== null && typeof value === 'object' && !Array.isArray(value);
+  return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
 function isChallengeMode(value: unknown): value is ChallengeMode {
   return (
-    value === 'quiz' ||
-    value === 'browser-sql' ||
-    value === 'browser-config' ||
-    value === 'cloud-evidence' ||
-    value === 'capstone'
+    value === "quiz" ||
+    value === "browser-sql" ||
+    value === "browser-config" ||
+    value === "cloud-evidence" ||
+    value === "capstone"
   );
 }
 
 function isFixtureKind(value: unknown): value is FixtureKind {
-  return value === 'known-good' || value === 'known-bad' || value === 'coverage-exception';
+  return (
+    value === "known-good" ||
+    value === "known-bad" ||
+    value === "coverage-exception"
+  );
 }
 
 function isStringArray(value: unknown): value is readonly string[] {
-  return Array.isArray(value) && value.every((item) => typeof item === 'string');
+  return (
+    Array.isArray(value) && value.every((item) => typeof item === "string")
+  );
 }
 
 function parseString(value: unknown, field: string, filePath: string): string {
-  if (typeof value !== 'string') {
-    throw new Error(`${relative(repoRoot, filePath)} field ${field} must be a string.`);
+  if (typeof value !== "string") {
+    throw new Error(
+      `${relative(repoRoot, filePath)} field ${field} must be a string.`,
+    );
   }
 
   if (value.trim().length === 0) {
-    throw new Error(`${relative(repoRoot, filePath)} field ${field} must be non-empty.`);
+    throw new Error(
+      `${relative(repoRoot, filePath)} field ${field} must be non-empty.`,
+    );
   }
 
   return value;
 }
 
-function parseStringList(value: unknown, field: string, filePath: string): readonly string[] | undefined {
+function parseStringList(
+  value: unknown,
+  field: string,
+  filePath: string,
+): readonly string[] | undefined {
   if (value === undefined) {
     return undefined;
   }
 
-  assert.ok(isStringArray(value), `${relative(repoRoot, filePath)} field ${field} must be a string array.`);
+  assert.ok(
+    isStringArray(value),
+    `${relative(repoRoot, filePath)} field ${field} must be a string array.`,
+  );
 
   return value;
 }
@@ -164,12 +189,13 @@ function parseAnswerState(
     return undefined;
   }
 
-  assert.ok(isRecord(value), `${relative(repoRoot, filePath)} field ${field} must be an object.`);
+  assert.ok(
+    isRecord(value),
+    `${relative(repoRoot, filePath)} field ${field} must be an object.`,
+  );
 
   for (const [key, answer] of Object.entries(value)) {
-    const isValidAnswer =
-      typeof answer === 'string' ||
-      isStringArray(answer);
+    const isValidAnswer = typeof answer === "string" || isStringArray(answer);
 
     assert.ok(
       isValidAnswer,
@@ -189,11 +215,14 @@ function parseEvidenceState(
     return undefined;
   }
 
-  assert.ok(isRecord(value), `${relative(repoRoot, filePath)} field ${field} must be an object.`);
+  assert.ok(
+    isRecord(value),
+    `${relative(repoRoot, filePath)} field ${field} must be an object.`,
+  );
 
   for (const [key, evidence] of Object.entries(value)) {
     assert.ok(
-      typeof evidence === 'string' || typeof evidence === 'boolean',
+      typeof evidence === "string" || typeof evidence === "boolean",
       `${relative(repoRoot, filePath)} evidence ${key} must be a string or boolean.`,
     );
   }
@@ -201,17 +230,23 @@ function parseEvidenceState(
   return value as CloudEvidenceAnswerState;
 }
 
-function parseExpected(value: unknown, filePath: string): FixtureExpected | undefined {
+function parseExpected(
+  value: unknown,
+  filePath: string,
+): FixtureExpected | undefined {
   if (value === undefined) {
     return undefined;
   }
 
-  assert.ok(isRecord(value), `${relative(repoRoot, filePath)} field expected must be an object.`);
+  assert.ok(
+    isRecord(value),
+    `${relative(repoRoot, filePath)} field expected must be an object.`,
+  );
 
-  const requiredPassed = value['required_passed'];
+  const requiredPassed = value["required_passed"];
 
   assert.ok(
-    requiredPassed === undefined || typeof requiredPassed === 'boolean',
+    requiredPassed === undefined || typeof requiredPassed === "boolean",
     `${relative(repoRoot, filePath)} expected.required_passed must be a boolean.`,
   );
 
@@ -220,11 +255,15 @@ function parseExpected(value: unknown, filePath: string): FixtureExpected | unde
     failed_check_ids?: readonly string[];
   } = {};
 
-  if (typeof requiredPassed === 'boolean') {
+  if (typeof requiredPassed === "boolean") {
     expected.required_passed = requiredPassed;
   }
 
-  const failedCheckIds = parseStringList(value['failed_check_ids'], 'expected.failed_check_ids', filePath);
+  const failedCheckIds = parseStringList(
+    value["failed_check_ids"],
+    "expected.failed_check_ids",
+    filePath,
+  );
 
   if (failedCheckIds !== undefined) {
     expected.failed_check_ids = failedCheckIds;
@@ -236,43 +275,54 @@ function parseExpected(value: unknown, filePath: string): FixtureExpected | unde
 function parseFixture(source: string, filePath: string): SolutionFixture {
   const parsed = JSON.parse(source) as unknown;
 
-  assert.ok(isRecord(parsed), `${relative(repoRoot, filePath)} must be a JSON object.`);
+  assert.ok(
+    isRecord(parsed),
+    `${relative(repoRoot, filePath)} must be a JSON object.`,
+  );
 
-  const mode = parsed['mode'];
-  const kind = parsed['kind'];
-
-  assert.ok(isChallengeMode(mode), `${relative(repoRoot, filePath)} field mode is unsupported.`);
-  assert.ok(isFixtureKind(kind), `${relative(repoRoot, filePath)} field kind is unsupported.`);
-
-  const datasetId = parsed['dataset_id'];
-  const datasetVersion = parsed['dataset_version'];
-  const sqlFile = parsed['sql_file'];
+  const mode = parsed["mode"];
+  const kind = parsed["kind"];
 
   assert.ok(
-    datasetId === undefined || typeof datasetId === 'string',
+    isChallengeMode(mode),
+    `${relative(repoRoot, filePath)} field mode is unsupported.`,
+  );
+  assert.ok(
+    isFixtureKind(kind),
+    `${relative(repoRoot, filePath)} field kind is unsupported.`,
+  );
+
+  const datasetId = parsed["dataset_id"];
+  const datasetVersion = parsed["dataset_version"];
+  const sqlFile = parsed["sql_file"];
+
+  assert.ok(
+    datasetId === undefined || typeof datasetId === "string",
     `${relative(repoRoot, filePath)} field dataset_id must be a string.`,
   );
   assert.ok(
-    datasetVersion === undefined || typeof datasetVersion === 'string',
+    datasetVersion === undefined || typeof datasetVersion === "string",
     `${relative(repoRoot, filePath)} field dataset_version must be a string.`,
   );
   assert.ok(
-    sqlFile === undefined || typeof sqlFile === 'string',
+    sqlFile === undefined || typeof sqlFile === "string",
     `${relative(repoRoot, filePath)} field sql_file must be a string.`,
   );
 
-  const answers = parseAnswerState(parsed['answers'], 'answers', filePath);
-  const evidence = parseEvidenceState(parsed['evidence'], 'evidence', filePath);
-  const expected = parseExpected(parsed['expected'], filePath);
+  const answers = parseAnswerState(parsed["answers"], "answers", filePath);
+  const evidence = parseEvidenceState(parsed["evidence"], "evidence", filePath);
+  const expected = parseExpected(parsed["expected"], filePath);
 
   return {
-    fixture_id: parseString(parsed['fixture_id'], 'fixture_id', filePath),
-    challenge_id: parseString(parsed['challenge_id'], 'challenge_id', filePath),
+    fixture_id: parseString(parsed["fixture_id"], "fixture_id", filePath),
+    challenge_id: parseString(parsed["challenge_id"], "challenge_id", filePath),
     mode,
     kind,
-    description: parseString(parsed['description'], 'description', filePath),
+    description: parseString(parsed["description"], "description", filePath),
     ...(datasetId !== undefined ? { dataset_id: datasetId } : {}),
-    ...(datasetVersion !== undefined ? { dataset_version: datasetVersion } : {}),
+    ...(datasetVersion !== undefined
+      ? { dataset_version: datasetVersion }
+      : {}),
     ...(sqlFile !== undefined ? { sql_file: sqlFile } : {}),
     ...(answers !== undefined ? { answers } : {}),
     ...(evidence !== undefined ? { evidence } : {}),
@@ -281,7 +331,10 @@ function parseFixture(source: string, filePath: string): SolutionFixture {
   };
 }
 
-async function listFiles(root: string, extension: string): Promise<readonly string[]> {
+async function listFiles(
+  root: string,
+  extension: string,
+): Promise<readonly string[]> {
   const entries = await readdir(root, { withFileTypes: true });
   const files: string[] = [];
 
@@ -298,15 +351,20 @@ async function listFiles(root: string, extension: string): Promise<readonly stri
   return files.sort();
 }
 
-async function readManifests(): Promise<ReadonlyMap<string, ChallengeManifest>> {
-  const manifestFiles = await listFiles(manifestsRoot, '.yaml');
+async function readManifests(): Promise<
+  ReadonlyMap<string, ChallengeManifest>
+> {
+  const manifestFiles = await listFiles(manifestsRoot, ".yaml");
   const manifests = new Map<string, ChallengeManifest>();
 
   for (const filePath of manifestFiles) {
-    const source = await readFile(filePath, 'utf8');
+    const source = await readFile(filePath, "utf8");
     const manifest = parse(source) as ChallengeManifest;
 
-    assert.ok(!manifests.has(manifest.id), `Duplicate manifest id ${manifest.id}.`);
+    assert.ok(
+      !manifests.has(manifest.id),
+      `Duplicate manifest id ${manifest.id}.`,
+    );
     manifests.set(manifest.id, manifest);
   }
 
@@ -314,11 +372,11 @@ async function readManifests(): Promise<ReadonlyMap<string, ChallengeManifest>> 
 }
 
 async function readFixtures(): Promise<readonly SolutionFixture[]> {
-  const fixtureFiles = await listFiles(fixturesRoot, '.json');
+  const fixtureFiles = await listFiles(fixturesRoot, ".json");
   const fixtures: SolutionFixture[] = [];
 
   for (const filePath of fixtureFiles) {
-    fixtures.push(parseFixture(await readFile(filePath, 'utf8'), filePath));
+    fixtures.push(parseFixture(await readFile(filePath, "utf8"), filePath));
   }
 
   return fixtures;
@@ -327,12 +385,12 @@ async function readFixtures(): Promise<readonly SolutionFixture[]> {
 function manualBundles(): DuckDbBundles {
   return {
     eh: {
-      mainModule: join(packageRoot, 'duckdb-eh.wasm'),
-      mainWorker: join(packageRoot, 'duckdb-node-eh.worker.cjs'),
+      mainModule: join(packageRoot, "duckdb-eh.wasm"),
+      mainWorker: join(packageRoot, "duckdb-node-eh.worker.cjs"),
     },
     mvp: {
-      mainModule: join(packageRoot, 'duckdb-mvp.wasm'),
-      mainWorker: join(packageRoot, 'duckdb-node-mvp.worker.cjs'),
+      mainModule: join(packageRoot, "duckdb-mvp.wasm"),
+      mainWorker: join(packageRoot, "duckdb-node-mvp.worker.cjs"),
     },
   };
 }
@@ -348,22 +406,34 @@ async function createDatabase(): Promise<DuckDbBindingsLike> {
   return database;
 }
 
-function parseDatasetMetadata(source: string, filePath: string): DatasetMetadata {
+function parseDatasetMetadata(
+  source: string,
+  filePath: string,
+): DatasetMetadata {
   const parsed = JSON.parse(source) as unknown;
 
-  assert.ok(isRecord(parsed), `${relative(repoRoot, filePath)} must be a JSON object.`);
-  const datasetId = parseString(parsed['dataset_id'], 'dataset_id', filePath);
-  const version = parseString(parsed['version'], 'version', filePath);
-  const rawTables = parsed['tables'];
+  assert.ok(
+    isRecord(parsed),
+    `${relative(repoRoot, filePath)} must be a JSON object.`,
+  );
+  const datasetId = parseString(parsed["dataset_id"], "dataset_id", filePath);
+  const version = parseString(parsed["version"], "version", filePath);
+  const rawTables = parsed["tables"];
 
-  assert.ok(Array.isArray(rawTables), `${relative(repoRoot, filePath)} tables must be an array.`);
+  assert.ok(
+    Array.isArray(rawTables),
+    `${relative(repoRoot, filePath)} tables must be an array.`,
+  );
 
   const tables: DatasetTableMetadata[] = rawTables.map((table, index) => {
-    assert.ok(isRecord(table), `${relative(repoRoot, filePath)} tables[${index}] must be an object.`);
+    assert.ok(
+      isRecord(table),
+      `${relative(repoRoot, filePath)} tables[${index}] must be an object.`,
+    );
 
     return {
-      id: parseString(table['id'], `tables[${index}].id`, filePath),
-      file: parseString(table['file'], `tables[${index}].file`, filePath),
+      id: parseString(table["id"], `tables[${index}].id`, filePath),
+      file: parseString(table["file"], `tables[${index}].file`, filePath),
     };
   });
 
@@ -375,10 +445,13 @@ function parseDatasetMetadata(source: string, filePath: string): DatasetMetadata
 }
 
 function tableNameFromMetadataId(tableId: string): string {
-  const parts = tableId.split('.');
+  const parts = tableId.split(".");
   const tableName = parts[parts.length - 1];
 
-  assert.ok(tableName !== undefined && tableName.length > 0, `Invalid dataset table id: ${tableId}.`);
+  assert.ok(
+    tableName !== undefined && tableName.length > 0,
+    `Invalid dataset table id: ${tableId}.`,
+  );
   return tableName;
 }
 
@@ -389,14 +462,17 @@ async function loadDataset(
   datasetVersion: string,
 ): Promise<void> {
   const datasetRoot = join(datasetsRoot, datasetId, datasetVersion);
-  const metadataPath = join(datasetRoot, 'metadata.json');
-  const metadata = parseDatasetMetadata(await readFile(metadataPath, 'utf8'), metadataPath);
+  const metadataPath = join(datasetRoot, "metadata.json");
+  const metadata = parseDatasetMetadata(
+    await readFile(metadataPath, "utf8"),
+    metadataPath,
+  );
 
   assert.equal(metadata.dataset_id, datasetId);
   assert.equal(metadata.version, datasetVersion);
 
   for (const table of metadata.tables) {
-    const csv = await readFile(join(datasetRoot, table.file), 'utf8');
+    const csv = await readFile(join(datasetRoot, table.file), "utf8");
     const registeredPath = `${datasetId}/${datasetVersion}/${table.file}`;
     const tableName = tableNameFromMetadataId(table.id);
 
@@ -419,7 +495,10 @@ async function runValidationQuery(
   };
 }
 
-function manifestDatasetMatchesFixture(challenge: ChallengeManifest, fixture: SolutionFixture): boolean {
+function manifestDatasetMatchesFixture(
+  challenge: ChallengeManifest,
+  fixture: SolutionFixture,
+): boolean {
   return challenge.inputs.some(
     (input) =>
       input.dataset_id === fixture.dataset_id &&
@@ -427,7 +506,10 @@ function manifestDatasetMatchesFixture(challenge: ChallengeManifest, fixture: So
   );
 }
 
-function evaluateQuestions(challenge: ChallengeManifest, fixture: SolutionFixture): boolean {
+function evaluateQuestions(
+  challenge: ChallengeManifest,
+  fixture: SolutionFixture,
+): boolean {
   if (challenge.questions.length === 0) {
     return true;
   }
@@ -468,7 +550,7 @@ async function evaluateBrowserSqlFixture(
 
   try {
     await loadDataset(database, connection, datasetId, datasetVersion);
-    const sql = await readFile(join(dirname(fixture.path), sqlFile), 'utf8');
+    const sql = await readFile(join(dirname(fixture.path), sqlFile), "utf8");
     const result = await runValidationQuery(connection, sql);
     const sqlEvaluation = evaluateSqlResultChecks(challenge, result);
     const questionsPassed = evaluateQuestions(challenge, fixture);
@@ -480,7 +562,7 @@ async function evaluateBrowserSqlFixture(
   } finally {
     await Promise.resolve(connection.close());
 
-    if (typeof database.terminate === 'function') {
+    if (typeof database.terminate === "function") {
       await database.terminate();
     }
   }
@@ -515,21 +597,24 @@ async function evaluateFixture(
   fixture: SolutionFixture,
 ): Promise<FixtureEvaluation> {
   switch (challenge.mode) {
-    case 'quiz':
+    case "quiz":
       return evaluateQuizFixture(challenge, fixture);
-    case 'browser-sql':
+    case "browser-sql":
       return evaluateBrowserSqlFixture(challenge, fixture);
-    case 'cloud-evidence':
+    case "cloud-evidence":
       return evaluateCloudEvidenceFixture(challenge, fixture);
-    case 'browser-config':
-    case 'capstone':
-      throw new Error(`Fixture runner does not support mode ${challenge.mode} for ${challenge.id}.`);
+    case "browser-config":
+    case "capstone":
+      throw new Error(
+        `Fixture runner does not support mode ${challenge.mode} for ${challenge.id}.`,
+      );
   }
 }
 
 function requiresKnownBadFixture(challenge: ChallengeManifest): boolean {
-  const haystack = `${challenge.title} ${challenge.business_scenario}`.toLowerCase();
-  return haystack.includes('ctf') || haystack.includes('trap');
+  const haystack =
+    `${challenge.title} ${challenge.business_scenario}`.toLowerCase();
+  return haystack.includes("ctf") || haystack.includes("trap");
 }
 
 function assertExpectedFailedChecks(
@@ -539,7 +624,7 @@ function assertExpectedFailedChecks(
   const expectedFailedCheckIds = fixture.expected?.failed_check_ids ?? [];
   const failedCheckIds = new Set(
     evaluation.checkResults
-      .filter((check) => check.status === 'fail')
+      .filter((check) => check.status === "fail")
       .map((check) => check.checkId),
   );
 
@@ -572,18 +657,26 @@ function assertFixtureCoverage(
     );
 
     const fixtureKey = `${fixture.challenge_id}/${fixture.fixture_id}`;
-    assert.ok(!fixtureKeys.has(fixtureKey), `Duplicate solution fixture ${fixtureKey}.`);
+    assert.ok(
+      !fixtureKeys.has(fixtureKey),
+      `Duplicate solution fixture ${fixtureKey}.`,
+    );
     fixtureKeys.add(fixtureKey);
 
-    const existingFixtures = fixturesByChallenge.get(fixture.challenge_id) ?? [];
+    const existingFixtures =
+      fixturesByChallenge.get(fixture.challenge_id) ?? [];
     existingFixtures.push(fixture);
     fixturesByChallenge.set(fixture.challenge_id, existingFixtures);
   }
 
   for (const challenge of manifests.values()) {
     const challengeFixtures = fixturesByChallenge.get(challenge.id) ?? [];
-    const hasGoodFixture = challengeFixtures.some((fixture) => fixture.kind === 'known-good');
-    const hasCoverageException = challengeFixtures.some((fixture) => fixture.kind === 'coverage-exception');
+    const hasGoodFixture = challengeFixtures.some(
+      (fixture) => fixture.kind === "known-good",
+    );
+    const hasCoverageException = challengeFixtures.some(
+      (fixture) => fixture.kind === "coverage-exception",
+    );
 
     assert.ok(
       hasGoodFixture || hasCoverageException,
@@ -592,7 +685,7 @@ function assertFixtureCoverage(
 
     if (requiresKnownBadFixture(challenge)) {
       assert.ok(
-        challengeFixtures.some((fixture) => fixture.kind === 'known-bad'),
+        challengeFixtures.some((fixture) => fixture.kind === "known-bad"),
         `${challenge.id} is a CTF/trap challenge and must have a known-bad fixture.`,
       );
     }
@@ -608,16 +701,20 @@ async function main(): Promise<void> {
   let executedCount = 0;
 
   for (const fixture of fixtures) {
-    if (fixture.kind === 'coverage-exception') {
+    if (fixture.kind === "coverage-exception") {
       continue;
     }
 
     const challenge = manifests.get(fixture.challenge_id);
 
-    assert.ok(challenge !== undefined, `${fixture.challenge_id} should have been checked during coverage validation.`);
+    assert.ok(
+      challenge !== undefined,
+      `${fixture.challenge_id} should have been checked during coverage validation.`,
+    );
 
     const evaluation = await evaluateFixture(challenge, fixture);
-    const expectedRequiredPassed = fixture.expected?.required_passed ?? fixture.kind === 'known-good';
+    const expectedRequiredPassed =
+      fixture.expected?.required_passed ?? fixture.kind === "known-good";
 
     assert.equal(
       evaluation.requiredPassed,
@@ -625,7 +722,7 @@ async function main(): Promise<void> {
       `${fixture.challenge_id}/${fixture.fixture_id} expected required_passed=${String(expectedRequiredPassed)}.`,
     );
 
-    if (fixture.kind === 'known-good') {
+    if (fixture.kind === "known-good") {
       assert.equal(
         evaluation.requiredPassed,
         true,
@@ -633,7 +730,7 @@ async function main(): Promise<void> {
       );
     }
 
-    if (fixture.kind === 'known-bad') {
+    if (fixture.kind === "known-bad") {
       assert.equal(
         evaluation.requiredPassed,
         false,
@@ -645,7 +742,9 @@ async function main(): Promise<void> {
     executedCount += 1;
   }
 
-  process.stdout.write(`Validated ${executedCount} solution fixtures for ${manifests.size} released challenges.\n`);
+  process.stdout.write(
+    `Validated ${executedCount} solution fixtures for ${manifests.size} released challenges.\n`,
+  );
 }
 
 await main();

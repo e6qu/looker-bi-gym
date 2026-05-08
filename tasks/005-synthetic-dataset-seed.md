@@ -52,5 +52,5 @@ Create the first small synthetic banking dataset for browser challenges.
 - Dataset root: `datasets/deposits-seed/v0.1.0/`.
 - Metadata: `datasets/deposits-seed/v0.1.0/metadata.json`.
 - Data dictionary: `datasets/deposits-seed/v0.1.0/README.md`.
-- Validation command: `pnpm validate:datasets`.
-- `pnpm validate:datasets`, `pnpm validate:manifests`, and `pnpm check` passed on 2026-05-05.
+- Validation command: `bun validate:datasets`.
+- `bun validate:datasets`, `bun validate:manifests`, and `bun check` passed on 2026-05-05.

@@ -1,5 +1,4 @@
 node_modules/
-.pnpm-store/
 app/dist/
 coverage/
 playwright-report/
@@ -21,7 +20,3 @@ app/vite.config.js
 .idea/
 .vscode/
 *.log
-npm-debug.log*
-pnpm-debug.log*
-yarn-debug.log*
-yarn-error.log*

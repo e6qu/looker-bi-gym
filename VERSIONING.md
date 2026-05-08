@@ -50,5 +50,5 @@ Before tagging or publishing a release:
 6. Run `bun run test:content-qa`.
 7. Run `bun run test:e2e`.
 8. Run `bun run build`.
-8. Run `make check`.
-9. Confirm `git status --short` does not include rebuildable generated artifacts, build output, WASM runtime files, dependency directories, or local OS/editor files.
+9. Run `make check`.
+10. Confirm `git status --short` does not include rebuildable generated artifacts, build output, WASM runtime files, dependency directories, or local OS/editor files.

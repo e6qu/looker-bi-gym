@@ -1,4 +1,4 @@
-import type { ChallengeManifest, ChallengeQuestion } from './challengeTypes';
+import type { ChallengeManifest, ChallengeQuestion } from "./challengeTypes";
 
 export type QuizResponse = string | readonly string[];
 
@@ -16,16 +16,21 @@ export type QuizEvaluation = {
 };
 
 const supportedQuizQuestionTypes: ReadonlySet<string> = new Set([
-  'multiple-choice',
-  'select-all',
-  'numeric',
+  "multiple-choice",
+  "select-all",
+  "numeric",
 ]);
 
 function isStringArray(value: unknown): value is readonly string[] {
-  return Array.isArray(value) && value.every((item) => typeof item === 'string');
+  return (
+    Array.isArray(value) && value.every((item) => typeof item === "string")
+  );
 }
 
-function sameStringSet(left: readonly string[], right: readonly string[]): boolean {
+function sameStringSet(
+  left: readonly string[],
+  right: readonly string[],
+): boolean {
   if (left.length !== right.length) {
     return false;
   }
@@ -39,8 +44,10 @@ function sameStringSet(left: readonly string[], right: readonly string[]): boole
   return right.every((item) => leftValues.has(item));
 }
 
-function parseNumericResponse(response: QuizResponse | undefined): number | undefined {
-  if (typeof response !== 'string' || response.trim().length === 0) {
+function parseNumericResponse(
+  response: QuizResponse | undefined,
+): number | undefined {
+  if (typeof response !== "string" || response.trim().length === 0) {
     return undefined;
   }
 
@@ -61,13 +68,13 @@ export function evaluateQuestion(
   }
 
   switch (question.type) {
-    case 'multiple-choice':
+    case "multiple-choice":
       return {
         questionId: question.id,
-        isAnswered: typeof response === 'string' && response.length > 0,
-        isCorrect: typeof response === 'string' && response === question.answer,
+        isAnswered: typeof response === "string" && response.length > 0,
+        isCorrect: typeof response === "string" && response === question.answer,
       };
-    case 'select-all':
+    case "select-all":
       return {
         questionId: question.id,
         isAnswered: isStringArray(response) && response.length > 0,
@@ -76,10 +83,11 @@ export function evaluateQuestion(
           isStringArray(question.answer) &&
           sameStringSet(response, question.answer),
       };
-    case 'numeric': {
+    case "numeric": {
       const numericResponse = parseNumericResponse(response);
       const tolerance = question.tolerance ?? 0;
-      const expected = typeof question.answer === 'number' ? question.answer : undefined;
+      const expected =
+        typeof question.answer === "number" ? question.answer : undefined;
 
       return {
         questionId: question.id,
@@ -103,7 +111,7 @@ export function evaluateQuiz(
 
   return {
     questions: evaluation.questions,
-    isComplete: challenge.mode === 'quiz' && evaluation.isComplete,
+    isComplete: challenge.mode === "quiz" && evaluation.isComplete,
   };
 }
 

@@ -1,23 +1,23 @@
 export type ChallengeMode =
-  | 'quiz'
-  | 'browser-sql'
-  | 'browser-config'
-  | 'cloud-evidence'
-  | 'capstone';
+  | "quiz"
+  | "browser-sql"
+  | "browser-config"
+  | "cloud-evidence"
+  | "capstone";
 
 export type ChallengeArea =
-  | 'orientation-and-source-data'
-  | 'warehouse-modeling-and-metrics'
-  | 'looker-studio-and-dashboard-design'
-  | 'governance-security-and-operations'
-  | 'capstone';
+  | "orientation-and-source-data"
+  | "warehouse-modeling-and-metrics"
+  | "looker-studio-and-dashboard-design"
+  | "governance-security-and-operations"
+  | "capstone";
 
 export type ChallengeDifficulty =
-  | 'intro'
-  | 'beginner'
-  | 'intermediate'
-  | 'advanced'
-  | 'capstone';
+  | "intro"
+  | "beginner"
+  | "intermediate"
+  | "advanced"
+  | "capstone";
 
 export type ChallengeInput = {
   readonly id: string;
@@ -42,7 +42,7 @@ export type ChallengeCheck = {
   readonly id: string;
   readonly type: string;
   readonly description: string;
-  readonly severity?: 'required' | 'advisory';
+  readonly severity?: "required" | "advisory";
   readonly target?: string;
   readonly expected?: unknown;
 };
@@ -70,7 +70,7 @@ export type ChallengeTool = {
   readonly platform_notes?: string;
 };
 
-export type ChallengeRequiredTools = 'none' | readonly ChallengeTool[];
+export type ChallengeRequiredTools = "none" | readonly ChallengeTool[];
 
 export type ChallengeFlag = {
   readonly id: string;

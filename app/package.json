@@ -4,10 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --host 127.0.0.1",
-    "build": "bun run validate:manifests && bun run validate:datasets && bun run typecheck && vite build",
-    "check": "bun run validate:manifests && bun run lint && bun run typecheck && bun run validate:datasets && bun run test:quiz && bun run test:sql && bun run test:fixtures && bun run test:cloud-evidence && bun run test:progress-export && bun run test:content-qa && bun run test:validators && bun run test:e2e && vite build && bun run validate:static-links",
-    "lint": "bun run validate:manifests && eslint . --max-warnings 0",
+    "dev": "vite --config configs/vite.config.ts --host 127.0.0.1",
+    "build": "bun run validate:manifests && bun run validate:datasets && bun run typecheck && vite build --config configs/vite.config.ts",
+    "check": "bun run validate:manifests && bun run lint && bun run typecheck && bun run validate:datasets && bun run test:quiz && bun run test:sql && bun run test:fixtures && bun run test:cloud-evidence && bun run test:progress-export && bun run test:content-qa && bun run test:validators && bun run test:e2e && vite build --config configs/vite.config.ts && bun run validate:static-links",
+    "lint": "bun run validate:manifests && eslint --config configs/eslint.config.ts . --max-warnings 0",
+    "format": "prettier --write .. --ignore-path ../.prettierignore",
+    "format:check": "prettier --check .. --ignore-path ../.prettierignore",
     "test:quiz": "bun run scripts/test-quiz.ts",
     "test:sql": "bun run scripts/test-sql.ts",
     "test:fixtures": "bun run scripts/test-solution-fixtures.ts",
@@ -20,7 +22,7 @@
     "validate:manifests": "bun run scripts/validate-challenge-manifests.ts",
     "validate:static-links": "bun run scripts/validate-static-links.ts",
     "typecheck": "bun run validate:manifests && tsc -p tsconfig.json --noEmit --pretty false && tsc -p tsconfig.node.json --noEmit --pretty false",
-    "preview": "vite preview --host 127.0.0.1"
+    "preview": "vite preview --config configs/vite.config.ts --host 127.0.0.1"
   },
   "dependencies": {
     "@duckdb/duckdb-wasm": "1.29.1-dev132.0",
@@ -40,6 +42,8 @@
     "eslint-plugin-react-hooks": "7.1.1",
     "eslint-plugin-react-refresh": "0.5.2",
     "globals": "17.6.0",
+    "jiti": "2.7.0",
+    "prettier": "3.8.3",
     "typescript": "6.0.3",
     "typescript-eslint": "8.59.2",
     "vite": "8.0.10",

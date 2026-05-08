@@ -1,17 +1,17 @@
-import assert from 'node:assert/strict';
+import assert from "node:assert/strict";
 import {
   completeChallenge,
   maybeCreateLocalFlag,
   readLearnerProgress,
   resetLearnerProgress,
   writeLearnerProgress,
-} from '../src/progress';
-import { evaluateChallengeQuestions } from '../src/quiz';
-import { evaluateSqlResultChecks } from '../src/validators';
-import type { ChallengeManifest } from '../src/challengeTypes';
-import type { BrowserStorage, LearnerProgressState } from '../src/progress';
-import type { QuizAnswerState } from '../src/quiz';
-import type { SqlValidationResult } from '../src/validators';
+} from "../src/progress";
+import { evaluateChallengeQuestions } from "../src/quiz";
+import { evaluateSqlResultChecks } from "../src/validators";
+import type { ChallengeManifest } from "../src/challengeTypes";
+import type { BrowserStorage, LearnerProgressState } from "../src/progress";
+import type { QuizAnswerState } from "../src/quiz";
+import type { SqlValidationResult } from "../src/validators";
 
 class MemoryStorage implements BrowserStorage {
   readonly values = new Map<string, string>();
@@ -30,101 +30,101 @@ class MemoryStorage implements BrowserStorage {
 }
 
 const challenge: ChallengeManifest = {
-  id: 'validator-test',
-  version: 'v0.1.0',
-  title: 'Validator Test',
-  area: 'orientation-and-source-data',
-  mode: 'browser-sql',
-  difficulty: 'beginner',
+  id: "validator-test",
+  version: "v0.1.0",
+  title: "Validator Test",
+  area: "orientation-and-source-data",
+  mode: "browser-sql",
+  difficulty: "beginner",
   estimated_minutes: 10,
   prerequisites: [],
-  business_scenario: 'Validate browser-side SQL result checks.',
-  regulatory_context: ['GDPR'],
-  required_tools: 'none',
+  business_scenario: "Validate browser-side SQL result checks.",
+  regulatory_context: ["GDPR"],
+  required_tools: "none",
   inputs: [
     {
-      id: 'seed',
-      type: 'dataset',
-      description: 'Synthetic seed dataset.',
-      dataset_id: 'deposits-seed',
-      dataset_version: 'v0.1.0',
-      sensitive_fields: ['account_id', 'customer_id'],
+      id: "seed",
+      type: "dataset",
+      description: "Synthetic seed dataset.",
+      dataset_id: "deposits-seed",
+      dataset_version: "v0.1.0",
+      sensitive_fields: ["account_id", "customer_id"],
     },
   ],
   outputs: [
     {
-      id: 'profile_result',
-      type: 'sql-result',
-      description: 'Synthetic profile result.',
+      id: "profile_result",
+      type: "sql-result",
+      description: "Synthetic profile result.",
     },
   ],
   checks: [
     {
-      id: 'required_columns',
-      type: 'required-column',
-      description: 'Required columns exist.',
-      expected: ['row_count', 'currency_count', 'latest_balance_date'],
+      id: "required_columns",
+      type: "required-column",
+      description: "Required columns exist.",
+      expected: ["row_count", "currency_count", "latest_balance_date"],
     },
     {
-      id: 'forbidden_columns',
-      type: 'forbidden-column',
-      description: 'Forbidden columns are absent.',
-      expected: ['account_id'],
+      id: "forbidden_columns",
+      type: "forbidden-column",
+      description: "Forbidden columns are absent.",
+      expected: ["account_id"],
     },
     {
-      id: 'one_row',
-      type: 'row-count',
-      description: 'One profile row is returned.',
+      id: "one_row",
+      type: "row-count",
+      description: "One profile row is returned.",
       expected: 1,
     },
     {
-      id: 'unique_date',
-      type: 'unique-key',
-      description: 'Dates are unique.',
-      expected: ['latest_balance_date'],
+      id: "unique_date",
+      type: "unique-key",
+      description: "Dates are unique.",
+      expected: ["latest_balance_date"],
     },
     {
-      id: 'aggregate_total',
-      type: 'scalar-aggregate',
-      description: 'Aggregate total matches.',
+      id: "aggregate_total",
+      type: "scalar-aggregate",
+      description: "Aggregate total matches.",
       expected: {
-        column: 'row_count',
+        column: "row_count",
         value: 12,
         tolerance: 0,
       },
     },
     {
-      id: 'sensitive_exclusion',
-      type: 'sensitive-field-exclusion',
-      description: 'Sensitive fields are excluded.',
-      expected: ['synthetic_iban'],
+      id: "sensitive_exclusion",
+      type: "sensitive-field-exclusion",
+      description: "Sensitive fields are excluded.",
+      expected: ["synthetic_iban"],
     },
   ],
   questions: [
     {
-      id: 'q_grain',
-      type: 'multiple-choice',
-      prompt: 'What is the daily balance grain?',
+      id: "q_grain",
+      type: "multiple-choice",
+      prompt: "What is the daily balance grain?",
       options: [
-        { id: 'account_day', label: 'Account day' },
-        { id: 'branch_month', label: 'Branch month' },
+        { id: "account_day", label: "Account day" },
+        { id: "branch_month", label: "Branch month" },
       ],
-      answer: 'account_day',
+      answer: "account_day",
     },
   ],
   flag: {
-    id: 'flag-validator-test',
-    criteria: ['Pass SQL checks and answer the question.'],
+    id: "flag-validator-test",
+    criteria: ["Pass SQL checks and answer the question."],
   },
 };
 
 const passingResult: SqlValidationResult = {
-  columns: ['row_count', 'currency_count', 'latest_balance_date'],
+  columns: ["row_count", "currency_count", "latest_balance_date"],
   rows: [
     {
       row_count: 12,
       currency_count: 2,
-      latest_balance_date: '2026-03-31',
+      latest_balance_date: "2026-03-31",
     },
   ],
 };
@@ -140,7 +140,9 @@ function resultWith(
 
 function getCheckStatus(result: SqlValidationResult, checkId: string): string {
   const evaluation = evaluateSqlResultChecks(challenge, result);
-  const check = evaluation.checks.find((candidate) => candidate.checkId === checkId);
+  const check = evaluation.checks.find(
+    (candidate) => candidate.checkId === checkId,
+  );
 
   if (check === undefined) {
     throw new Error(`Missing check result: ${checkId}`);
@@ -151,35 +153,43 @@ function getCheckStatus(result: SqlValidationResult, checkId: string): string {
 
 const passingEvaluation = evaluateSqlResultChecks(challenge, passingResult);
 assert.equal(passingEvaluation.requiredPassed, true);
-assert.equal(passingEvaluation.checks.every((check) => check.status === 'pass'), true);
+assert.equal(
+  passingEvaluation.checks.every((check) => check.status === "pass"),
+  true,
+);
 
 assert.equal(
   getCheckStatus(
     resultWith({
-      columns: ['row_count', 'currency_count'],
+      columns: ["row_count", "currency_count"],
       rows: [{ row_count: 12, currency_count: 2 }],
     }),
-    'required_columns',
+    "required_columns",
   ),
-  'fail',
+  "fail",
 );
 
 assert.equal(
   getCheckStatus(
     resultWith({
-      columns: ['row_count', 'currency_count', 'latest_balance_date', 'account_id'],
+      columns: [
+        "row_count",
+        "currency_count",
+        "latest_balance_date",
+        "account_id",
+      ],
       rows: [
         {
           row_count: 12,
           currency_count: 2,
-          latest_balance_date: '2026-03-31',
-          account_id: 'A1001',
+          latest_balance_date: "2026-03-31",
+          account_id: "A1001",
         },
       ],
     }),
-    'forbidden_columns',
+    "forbidden_columns",
   ),
-  'fail',
+  "fail",
 );
 
 assert.equal(
@@ -189,18 +199,18 @@ assert.equal(
         {
           row_count: 12,
           currency_count: 2,
-          latest_balance_date: '2026-03-31',
+          latest_balance_date: "2026-03-31",
         },
         {
           row_count: 12,
           currency_count: 2,
-          latest_balance_date: '2026-03-30',
+          latest_balance_date: "2026-03-30",
         },
       ],
     }),
-    'one_row',
+    "one_row",
   ),
-  'fail',
+  "fail",
 );
 
 assert.equal(
@@ -210,18 +220,18 @@ assert.equal(
         {
           row_count: 12,
           currency_count: 2,
-          latest_balance_date: '2026-03-31',
+          latest_balance_date: "2026-03-31",
         },
         {
           row_count: 13,
           currency_count: 2,
-          latest_balance_date: '2026-03-31',
+          latest_balance_date: "2026-03-31",
         },
       ],
     }),
-    'unique_date',
+    "unique_date",
   ),
-  'fail',
+  "fail",
 );
 
 assert.equal(
@@ -231,42 +241,57 @@ assert.equal(
         {
           row_count: 11,
           currency_count: 2,
-          latest_balance_date: '2026-03-31',
+          latest_balance_date: "2026-03-31",
         },
       ],
     }),
-    'aggregate_total',
+    "aggregate_total",
   ),
-  'fail',
+  "fail",
 );
 
 assert.equal(
   getCheckStatus(
     resultWith({
-      columns: ['row_count', 'currency_count', 'latest_balance_date', 'customer_id'],
+      columns: [
+        "row_count",
+        "currency_count",
+        "latest_balance_date",
+        "customer_id",
+      ],
       rows: [
         {
           row_count: 12,
           currency_count: 2,
-          latest_balance_date: '2026-03-31',
-          customer_id: 'C0001',
+          latest_balance_date: "2026-03-31",
+          customer_id: "C0001",
         },
       ],
     }),
-    'sensitive_exclusion',
+    "sensitive_exclusion",
   ),
-  'fail',
+  "fail",
 );
 
 const correctAnswers: QuizAnswerState = {
-  q_grain: 'account_day',
+  q_grain: "account_day",
 };
 const incompleteAnswers: QuizAnswerState = {};
-const questionEvaluation = evaluateChallengeQuestions(challenge, correctAnswers);
-const incompleteQuestionEvaluation = evaluateChallengeQuestions(challenge, incompleteAnswers);
+const questionEvaluation = evaluateChallengeQuestions(
+  challenge,
+  correctAnswers,
+);
+const incompleteQuestionEvaluation = evaluateChallengeQuestions(
+  challenge,
+  incompleteAnswers,
+);
 
 assert.equal(
-  maybeCreateLocalFlag(challenge, incompleteQuestionEvaluation, passingEvaluation),
+  maybeCreateLocalFlag(
+    challenge,
+    incompleteQuestionEvaluation,
+    passingEvaluation,
+  ),
   undefined,
 );
 assert.equal(
@@ -280,7 +305,7 @@ assert.equal(
           {
             row_count: 11,
             currency_count: 2,
-            latest_balance_date: '2026-03-31',
+            latest_balance_date: "2026-03-31",
           },
         ],
       }),
@@ -290,20 +315,26 @@ assert.equal(
 );
 assert.equal(
   maybeCreateLocalFlag(challenge, questionEvaluation, passingEvaluation)?.flag,
-  'flag-validator-test',
+  "flag-validator-test",
 );
 
 const storage = new MemoryStorage();
 const emptyProgress = readLearnerProgress(storage);
-const completedProgress: LearnerProgressState = completeChallenge(emptyProgress, {
-  challengeId: challenge.id,
-  flag: challenge.flag.id,
-  passedCheckIds: passingEvaluation.passedRequiredCheckIds,
-  passedQuestionIds: ['q_grain'],
-  completedAt: '2026-05-06T00:00:00.000Z',
-});
+const completedProgress: LearnerProgressState = completeChallenge(
+  emptyProgress,
+  {
+    challengeId: challenge.id,
+    flag: challenge.flag.id,
+    passedCheckIds: passingEvaluation.passedRequiredCheckIds,
+    passedQuestionIds: ["q_grain"],
+    completedAt: "2026-05-06T00:00:00.000Z",
+  },
+);
 
 writeLearnerProgress(completedProgress, storage);
-assert.equal(readLearnerProgress(storage).challenges[challenge.id]?.flag, challenge.flag.id);
+assert.equal(
+  readLearnerProgress(storage).challenges[challenge.id]?.flag,
+  challenge.flag.id,
+);
 assert.equal(resetLearnerProgress(storage).challenges[challenge.id], undefined);
 assert.equal(readLearnerProgress(storage).challenges[challenge.id], undefined);

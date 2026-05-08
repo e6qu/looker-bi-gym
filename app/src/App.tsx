@@ -1,27 +1,27 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   contentSections,
   getDefaultDocument,
   getDocument,
   getSection,
-} from './content';
+} from "./content";
 import {
   evaluateCloudEvidenceChecks,
   isCloudEvidenceCheckSupported,
-} from './cloudEvidence';
+} from "./cloudEvidence";
 import {
   challengeCatalog,
   formatChallengeArea,
   formatChallengeDifficulty,
   formatChallengeMode,
   formatRequiredTools,
-} from './challenges';
-import { renderMarkdown } from './markdown';
+} from "./challenges";
+import { renderMarkdown } from "./markdown";
 import {
   evaluateChallengeQuestions,
   evaluateQuiz,
   isSupportedQuizQuestion,
-} from './quiz';
+} from "./quiz";
 import {
   buildLearnerProgressExport,
   completeChallenge,
@@ -31,21 +31,28 @@ import {
   readLearnerProgress,
   resetLearnerProgress,
   writeLearnerProgress,
-} from './progress';
-import { getRegulatoryContextReference } from './regulatoryContext';
-import { appVersion, contentVersion, formatVersionLabel } from './release';
-import { getSqlRuntime, isSqlPreviewSupported, runSqlPreview } from './sqlRuntime';
-import { evaluateSqlResultChecks } from './validators';
-import type { JSX } from 'react';
-import type { ChallengeManifest } from './challengeTypes';
-import type { CloudEvidenceAnswerState, CloudEvidenceValue } from './cloudEvidence';
-import type { ContentDocument, ContentSectionId } from './content';
-import type { LearnerProgressState } from './progress';
-import type { QuizAnswerState, QuizResponse } from './quiz';
-import type { SqlQueryResult, SqlTableSchema } from './sqlRuntime';
-import type { ValidationEvaluation } from './validators';
+} from "./progress";
+import { getRegulatoryContextReference } from "./regulatoryContext";
+import { appVersion, contentVersion, formatVersionLabel } from "./release";
+import {
+  getSqlRuntime,
+  isSqlPreviewSupported,
+  runSqlPreview,
+} from "./sqlRuntime";
+import { evaluateSqlResultChecks } from "./validators";
+import type { JSX } from "react";
+import type { ChallengeManifest } from "./challengeTypes";
+import type {
+  CloudEvidenceAnswerState,
+  CloudEvidenceValue,
+} from "./cloudEvidence";
+import type { ContentDocument, ContentSectionId } from "./content";
+import type { LearnerProgressState } from "./progress";
+import type { QuizAnswerState, QuizResponse } from "./quiz";
+import type { SqlQueryResult, SqlTableSchema } from "./sqlRuntime";
+import type { ValidationEvaluation } from "./validators";
 
-type RouteId = 'home' | ContentSectionId | 'challenges' | 'settings';
+type RouteId = "home" | ContentSectionId | "challenges" | "settings";
 
 type AppRoute = {
   readonly section: RouteId;
@@ -65,26 +72,26 @@ type CompleteChallengeHandler = (
 ) => void;
 
 const routes: readonly Route[] = [
-  { id: 'home', label: 'Home' },
-  { id: 'docs', label: 'Docs' },
-  { id: 'regulations', label: 'Regulations' },
-  { id: 'tutorials', label: 'Tutorials' },
-  { id: 'challenges', label: 'Challenges' },
-  { id: 'settings', label: 'Settings' },
+  { id: "home", label: "Home" },
+  { id: "docs", label: "Docs" },
+  { id: "regulations", label: "Regulations" },
+  { id: "tutorials", label: "Tutorials" },
+  { id: "challenges", label: "Challenges" },
+  { id: "settings", label: "Settings" },
 ];
 
 const contentRouteIds: ReadonlySet<RouteId> = new Set<RouteId>([
-  'docs',
-  'regulations',
-  'tutorials',
+  "docs",
+  "regulations",
+  "tutorials",
 ]);
 
 const principles: readonly string[] = [
-  'Static GitHub Pages app',
-  'No backend or credentials',
-  'Synthetic banking datasets only',
-  'Default learner path runs in the browser',
-  'Optional tools are listed per tutorial',
+  "Static GitHub Pages app",
+  "No backend or credentials",
+  "Synthetic banking datasets only",
+  "Default learner path runs in the browser",
+  "Optional tools are listed per tutorial",
 ];
 
 function isRouteId(value: string | undefined): value is RouteId {
@@ -96,14 +103,13 @@ function isContentSectionId(value: RouteId): value is ContentSectionId {
 }
 
 function routeFromHash(): AppRoute {
-  const hashPath = window.location.hash.replace(/^#\/?/, '');
-  const [sectionCandidate, ...fileParts] = hashPath.split('/');
-  const section = isRouteId(sectionCandidate) ? sectionCandidate : 'home';
-  const fileName = fileParts.join('/');
+  const hashPath = window.location.hash.replace(/^#\/?/, "");
+  const [sectionCandidate, ...fileParts] = hashPath.split("/");
+  const section = isRouteId(sectionCandidate) ? sectionCandidate : "home";
+  const fileName = fileParts.join("/");
 
   return fileName.length > 0 ? { section, fileName } : { section };
 }
-
 
 function ChallengeList({
   challenges,
@@ -115,18 +121,22 @@ function ChallengeList({
   return (
     <div className="itemGrid">
       {challenges.map((challenge) => (
-        <a className="itemCard challengeCard challengeLink" href={`#/challenges/${challenge.id}`} key={challenge.id}>
+        <a
+          className="itemCard challengeCard challengeLink"
+          href={`#/challenges/${challenge.id}`}
+          key={challenge.id}
+        >
           <div className="itemHeader">
             <h3>{challenge.title}</h3>
             <span
               className={
                 completedChallengeIds.has(challenge.id)
-                  ? 'status statusComplete'
-                  : 'status statusReady'
+                  ? "status statusComplete"
+                  : "status statusReady"
               }
             >
               {completedChallengeIds.has(challenge.id)
-                ? 'Complete'
+                ? "Complete"
                 : formatChallengeMode(challenge.mode)}
             </span>
           </div>
@@ -159,7 +169,9 @@ function ChallengeList({
   );
 }
 
-function getChallengeById(challengeId: string | undefined): ChallengeManifest | undefined {
+function getChallengeById(
+  challengeId: string | undefined,
+): ChallengeManifest | undefined {
   return challengeCatalog.find((challenge) => challenge.id === challengeId);
 }
 
@@ -172,24 +184,27 @@ function getQuestionAnswer(
 
 function getStringAnswer(answers: QuizAnswerState, questionId: string): string {
   const answer = getQuestionAnswer(answers, questionId);
-  return typeof answer === 'string' ? answer : '';
+  return typeof answer === "string" ? answer : "";
 }
 
-function getArrayAnswer(answers: QuizAnswerState, questionId: string): readonly string[] {
+function getArrayAnswer(
+  answers: QuizAnswerState,
+  questionId: string,
+): readonly string[] {
   const answer = getQuestionAnswer(answers, questionId);
-  return answer !== undefined && typeof answer !== 'string' ? answer : [];
+  return answer !== undefined && typeof answer !== "string" ? answer : [];
 }
 
 function formatSqlCellValue(value: unknown): string {
   if (value === null || value === undefined) {
-    return 'NULL';
+    return "NULL";
   }
 
   if (
-    typeof value === 'string' ||
-    typeof value === 'number' ||
-    typeof value === 'bigint' ||
-    typeof value === 'boolean'
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "bigint" ||
+    typeof value === "boolean"
   ) {
     return String(value);
   }
@@ -198,7 +213,7 @@ function formatSqlCellValue(value: unknown): string {
 }
 
 function getStarterSql(challenge: ChallengeManifest): string {
-  if (challenge.id === 'account-owner-fanout') {
+  if (challenge.id === "account-owner-fanout") {
     return `WITH latest_balances AS (
   SELECT account_id, business_date, ledger_balance
   FROM account_daily_balances
@@ -251,7 +266,10 @@ function ChallengeInstructions({
     .filter((reference) => reference !== undefined);
 
   return (
-    <section className="challengeInstructions" aria-label="Challenge instructions">
+    <section
+      className="challengeInstructions"
+      aria-label="Challenge instructions"
+    >
       <div>
         <p className="eyebrow">Scenario</p>
         <p>{challenge.business_scenario}</p>
@@ -265,10 +283,10 @@ function ChallengeInstructions({
               <strong>{input.description}</strong>
               {input.grain !== undefined ? <p>Grain: {input.grain}</p> : null}
               {input.tables !== undefined ? (
-                <p>Tables: {input.tables.join(', ')}</p>
+                <p>Tables: {input.tables.join(", ")}</p>
               ) : null}
               {input.sensitive_fields !== undefined ? (
-                <p>Sensitive fields: {input.sensitive_fields.join(', ')}</p>
+                <p>Sensitive fields: {input.sensitive_fields.join(", ")}</p>
               ) : null}
             </div>
           ))}
@@ -313,8 +331,8 @@ function ChallengeInstructions({
               ))}
             </ul>
             <p className="instructionNote">
-              Training context only; validate production interpretation with the appropriate
-              institutional teams.
+              Training context only; validate production interpretation with the
+              appropriate institutional teams.
             </p>
           </section>
         ) : null}
@@ -345,11 +363,16 @@ function QuizChallengePage({
 }): JSX.Element {
   const [answers, setAnswers] = useState<QuizAnswerState>({});
   const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
-  const evaluation = useMemo(() => evaluateQuiz(challenge, answers), [answers, challenge]);
+  const evaluation = useMemo(
+    () => evaluateQuiz(challenge, answers),
+    [answers, challenge],
+  );
   const evaluationsByQuestion = useMemo(
     () =>
       new Map(
-        evaluation.questions.map((question) => [question.questionId, question] as const),
+        evaluation.questions.map(
+          (question) => [question.questionId, question] as const,
+        ),
       ),
     [evaluation.questions],
   );
@@ -378,7 +401,10 @@ function QuizChallengePage({
   }
 
   return (
-    <section className="page challengeDetailPage" aria-labelledby={`${challenge.id}-title`}>
+    <section
+      className="page challengeDetailPage"
+      aria-labelledby={`${challenge.id}-title`}
+    >
       <div className="challengeDetailHeader">
         <a href="#/challenges">Back to challenges</a>
         <PageTitle
@@ -401,14 +427,15 @@ function QuizChallengePage({
           </div>
           <div>
             <dt>Status</dt>
-            <dd>{isCompleted ? 'Complete in this browser' : 'Not complete'}</dd>
+            <dd>{isCompleted ? "Complete in this browser" : "Not complete"}</dd>
           </div>
         </dl>
       </div>
 
       {unsupportedQuestions.length > 0 ? (
         <div className="feedbackBox feedbackFail" role="status">
-          This quiz includes unsupported question types and cannot be completed yet.
+          This quiz includes unsupported question types and cannot be completed
+          yet.
         </div>
       ) : null}
 
@@ -428,12 +455,15 @@ function QuizChallengePage({
                 {question.prompt}
               </legend>
 
-              {question.type === 'multiple-choice' && question.options !== undefined ? (
+              {question.type === "multiple-choice" &&
+              question.options !== undefined ? (
                 <div className="answerOptions">
                   {question.options.map((option) => (
                     <label key={option.id}>
                       <input
-                        checked={getStringAnswer(answers, question.id) === option.id}
+                        checked={
+                          getStringAnswer(answers, question.id) === option.id
+                        }
                         name={question.id}
                         onChange={() => setAnswer(question.id, option.id)}
                         type="radio"
@@ -445,10 +475,14 @@ function QuizChallengePage({
                 </div>
               ) : null}
 
-              {question.type === 'select-all' && question.options !== undefined ? (
+              {question.type === "select-all" &&
+              question.options !== undefined ? (
                 <div className="answerOptions">
                   {question.options.map((option) => {
-                    const selectedAnswers = getArrayAnswer(answers, question.id);
+                    const selectedAnswers = getArrayAnswer(
+                      answers,
+                      question.id,
+                    );
                     const isSelected = selectedAnswers.includes(option.id);
 
                     return (
@@ -459,7 +493,9 @@ function QuizChallengePage({
                             setAnswer(
                               question.id,
                               isSelected
-                                ? selectedAnswers.filter((answer) => answer !== option.id)
+                                ? selectedAnswers.filter(
+                                    (answer) => answer !== option.id,
+                                  )
                                 : [...selectedAnswers, option.id],
                             )
                           }
@@ -473,14 +509,18 @@ function QuizChallengePage({
                 </div>
               ) : null}
 
-              {question.type === 'numeric' ? (
+              {question.type === "numeric" ? (
                 <label className="numericAnswerField" htmlFor={numericInputId}>
-                  <span className="fieldLabel">Numeric answer for question {index + 1}</span>
+                  <span className="fieldLabel">
+                    Numeric answer for question {index + 1}
+                  </span>
                   <input
                     className="numericAnswer"
                     id={numericInputId}
                     inputMode="decimal"
-                    onChange={(event) => setAnswer(question.id, event.currentTarget.value)}
+                    onChange={(event) =>
+                      setAnswer(question.id, event.currentTarget.value)
+                    }
                     type="number"
                     value={getStringAnswer(answers, question.id)}
                   />
@@ -489,11 +529,21 @@ function QuizChallengePage({
 
               {hasSubmitted ? (
                 <div
-                  className={isCorrect ? 'feedbackBox feedbackPass' : 'feedbackBox feedbackFail'}
+                  className={
+                    isCorrect
+                      ? "feedbackBox feedbackPass"
+                      : "feedbackBox feedbackFail"
+                  }
                   role="status"
                 >
-                  {isCorrect ? 'Correct.' : isAnswered ? 'Incorrect.' : 'Answer required.'}
-                  {question.explanation !== undefined ? ` ${question.explanation}` : ''}
+                  {isCorrect
+                    ? "Correct."
+                    : isAnswered
+                      ? "Incorrect."
+                      : "Answer required."}
+                  {question.explanation !== undefined
+                    ? ` ${question.explanation}`
+                    : ""}
                 </div>
               ) : null}
             </fieldset>
@@ -502,19 +552,25 @@ function QuizChallengePage({
       </div>
 
       <div className="quizActions">
-        <button disabled={unsupportedQuestions.length > 0} onClick={submitQuiz} type="button">
+        <button
+          disabled={unsupportedQuestions.length > 0}
+          onClick={submitQuiz}
+          type="button"
+        >
           Check Answers
         </button>
         {hasSubmitted ? (
           <div
             className={
-              evaluation.isComplete ? 'feedbackBox feedbackPass' : 'feedbackBox feedbackFail'
+              evaluation.isComplete
+                ? "feedbackBox feedbackPass"
+                : "feedbackBox feedbackFail"
             }
             role="status"
           >
             {evaluation.isComplete
               ? `Challenge complete. Flag: ${challenge.flag.id}`
-              : 'The quiz is not complete yet.'}
+              : "The quiz is not complete yet."}
           </div>
         ) : null}
       </div>
@@ -529,7 +585,9 @@ function UnsupportedChallengePage({
 }): JSX.Element {
   return (
     <section className="page" aria-labelledby={`${challenge.id}-title`}>
-      <a className="backLink" href="#/challenges">Back to challenges</a>
+      <a className="backLink" href="#/challenges">
+        Back to challenges
+      </a>
       <PageTitle
         title={challenge.title}
         description="This challenge is present in the static catalog. Its runtime arrives in a later task."
@@ -568,7 +626,11 @@ function SqlTableBrowser({
       </div>
       <div className="sqlTableList">
         {tables.map((table) => (
-          <button key={table.tableName} type="button" onClick={() => onSelectTable(table.tableName)}>
+          <button
+            key={table.tableName}
+            type="button"
+            onClick={() => onSelectTable(table.tableName)}
+          >
             <strong>{table.tableName}</strong>
             <span>{table.rowCount} rows</span>
           </button>
@@ -602,9 +664,15 @@ function SqlResultTable({
     <div className="sqlResultWrap">
       <div className="sqlResultMeta">
         <span>{result.rowCount} rows returned</span>
-        {result.truncated ? <span>Showing first {result.rows.length} rows</span> : null}
+        {result.truncated ? (
+          <span>Showing first {result.rows.length} rows</span>
+        ) : null}
       </div>
-      <div className="sqlResultTable" role="table" aria-label="SQL query result">
+      <div
+        className="sqlResultTable"
+        role="table"
+        aria-label="SQL query result"
+      >
         <div className="sqlResultHead" role="row">
           {result.columns.map((column) => (
             <div key={column} role="columnheader">
@@ -636,18 +704,33 @@ function ValidationSummary({
   readonly evaluation: ValidationEvaluation;
 }): JSX.Element {
   return (
-    <section className="validationPanel" aria-label="Challenge validation results">
+    <section
+      className="validationPanel"
+      aria-label="Challenge validation results"
+    >
       <div className="validationHeader">
         <p className="eyebrow">Checks</p>
-        <strong>{evaluation.requiredPassed ? 'Required checks passed' : 'Required checks pending'}</strong>
+        <strong>
+          {evaluation.requiredPassed
+            ? "Required checks passed"
+            : "Required checks pending"}
+        </strong>
       </div>
       <ul>
         {evaluation.checks.map((check) => (
           <li
-            className={check.status === 'pass' ? 'validationPass' : 'validationFail'}
+            className={
+              check.status === "pass" ? "validationPass" : "validationFail"
+            }
             key={check.checkId}
           >
-            <span>{check.status === 'pass' ? 'Pass' : check.status === 'fail' ? 'Fail' : 'Unsupported'}</span>
+            <span>
+              {check.status === "pass"
+                ? "Pass"
+                : check.status === "fail"
+                  ? "Fail"
+                  : "Unsupported"}
+            </span>
             <div>
               <strong>{check.description}</strong>
               <p>{check.message}</p>
@@ -661,19 +744,19 @@ function ValidationSummary({
 
 function formatEvidenceType(type: string): string {
   switch (type) {
-    case 'pasted-sql':
-      return 'SQL text';
-    case 'pasted-result':
-      return 'CSV/JSON result';
-    case 'numeric-value':
-      return 'Numeric value';
-    case 'report-url':
-    case 'url':
-      return 'Report URL';
-    case 'checklist-confirmation':
-      return 'Checklist';
-    case 'manual-note':
-      return 'Manual note';
+    case "pasted-sql":
+      return "SQL text";
+    case "pasted-result":
+      return "CSV/JSON result";
+    case "numeric-value":
+      return "Numeric value";
+    case "report-url":
+    case "url":
+      return "Report URL";
+    case "checklist-confirmation":
+      return "Checklist";
+    case "manual-note":
+      return "Manual note";
     default:
       return type;
   }
@@ -684,22 +767,24 @@ function CloudEvidenceField({
   value,
   onChange,
 }: {
-  readonly evidence: NonNullable<ChallengeManifest['evidence']>[number];
+  readonly evidence: NonNullable<ChallengeManifest["evidence"]>[number];
   readonly value: CloudEvidenceValue | undefined;
   readonly onChange: (evidenceId: string, value: CloudEvidenceValue) => void;
 }): JSX.Element {
   const inputId = `evidence-${evidence.id}`;
   const label = evidence.label ?? evidence.description;
-  const stringValue = typeof value === 'string' ? value : '';
-  const isChecked = typeof value === 'boolean' ? value : false;
+  const stringValue = typeof value === "string" ? value : "";
+  const isChecked = typeof value === "boolean" ? value : false;
 
-  if (evidence.type === 'checklist-confirmation') {
+  if (evidence.type === "checklist-confirmation") {
     return (
       <label className="evidenceChecklist" htmlFor={inputId}>
         <input
           checked={isChecked}
           id={inputId}
-          onChange={(event) => onChange(evidence.id, event.currentTarget.checked)}
+          onChange={(event) =>
+            onChange(evidence.id, event.currentTarget.checked)
+          }
           type="checkbox"
         />
         <span>
@@ -711,10 +796,10 @@ function CloudEvidenceField({
   }
 
   const isTextarea =
-    evidence.type === 'pasted-sql' ||
-    evidence.type === 'pasted-result' ||
-    evidence.type === 'manual-note' ||
-    evidence.type === 'screenshot-description';
+    evidence.type === "pasted-sql" ||
+    evidence.type === "pasted-result" ||
+    evidence.type === "manual-note" ||
+    evidence.type === "screenshot-description";
 
   return (
     <label className="evidenceField" htmlFor={inputId}>
@@ -734,10 +819,16 @@ function CloudEvidenceField({
         <input
           className="evidenceTextInput"
           id={inputId}
-          inputMode={evidence.type === 'numeric-value' ? 'decimal' : undefined}
+          inputMode={evidence.type === "numeric-value" ? "decimal" : undefined}
           onChange={(event) => onChange(evidence.id, event.currentTarget.value)}
           placeholder={evidence.placeholder}
-          type={evidence.type === 'numeric-value' ? 'number' : evidence.type === 'report-url' ? 'url' : 'text'}
+          type={
+            evidence.type === "numeric-value"
+              ? "number"
+              : evidence.type === "report-url"
+                ? "url"
+                : "text"
+          }
           value={stringValue}
         />
       )}
@@ -755,7 +846,8 @@ function CloudEvidencePage({
   readonly isCompleted: boolean;
   readonly onComplete: CompleteChallengeHandler;
 }): JSX.Element {
-  const [evidenceAnswers, setEvidenceAnswers] = useState<CloudEvidenceAnswerState>({});
+  const [evidenceAnswers, setEvidenceAnswers] =
+    useState<CloudEvidenceAnswerState>({});
   const [questionAnswers, setQuestionAnswers] = useState<QuizAnswerState>({});
   const checkEvaluation = useMemo(
     () => evaluateCloudEvidenceChecks(challenge, evidenceAnswers),
@@ -768,7 +860,9 @@ function CloudEvidencePage({
   const evaluationsByQuestion = useMemo(
     () =>
       new Map(
-        questionEvaluation.questions.map((question) => [question.questionId, question] as const),
+        questionEvaluation.questions.map(
+          (question) => [question.questionId, question] as const,
+        ),
       ),
     [questionEvaluation.questions],
   );
@@ -777,10 +871,15 @@ function CloudEvidencePage({
     [challenge, checkEvaluation, questionEvaluation],
   );
   const unsupportedChecks = challenge.checks.filter(
-    (check) => check.type !== 'quiz-answer' && !isCloudEvidenceCheckSupported(check),
+    (check) =>
+      check.type !== "quiz-answer" && !isCloudEvidenceCheckSupported(check),
   );
-  const mechanicalChecks = checkEvaluation.checks.filter((check) => check.status !== 'unsupported');
-  const selfAttestedEvidence = challenge.evidence?.filter((evidence) => evidence.self_attested === true) ?? [];
+  const mechanicalChecks = checkEvaluation.checks.filter(
+    (check) => check.status !== "unsupported",
+  );
+  const selfAttestedEvidence =
+    challenge.evidence?.filter((evidence) => evidence.self_attested === true) ??
+    [];
 
   useEffect(() => {
     if (completion !== undefined && !isCompleted) {
@@ -793,7 +892,10 @@ function CloudEvidencePage({
     }
   }, [completion, isCompleted, onComplete]);
 
-  function setEvidenceAnswer(evidenceId: string, value: CloudEvidenceValue): void {
+  function setEvidenceAnswer(
+    evidenceId: string,
+    value: CloudEvidenceValue,
+  ): void {
     setEvidenceAnswers((currentAnswers) => ({
       ...currentAnswers,
       [evidenceId]: value,
@@ -808,7 +910,10 @@ function CloudEvidencePage({
   }
 
   return (
-    <section className="page challengeDetailPage cloudEvidencePage" aria-labelledby={`${challenge.id}-title`}>
+    <section
+      className="page challengeDetailPage cloudEvidencePage"
+      aria-labelledby={`${challenge.id}-title`}
+    >
       <div className="challengeDetailHeader">
         <a href="#/challenges">Back to challenges</a>
         <PageTitle
@@ -831,14 +936,17 @@ function CloudEvidencePage({
           </div>
           <div>
             <dt>Status</dt>
-            <dd>{isCompleted ? 'Complete in this browser' : 'Not complete'}</dd>
+            <dd>{isCompleted ? "Complete in this browser" : "Not complete"}</dd>
           </div>
         </dl>
       </div>
 
       <ChallengeInstructions challenge={challenge} />
 
-      <section className="evidenceScopePanel" aria-label="Evidence validation scope">
+      <section
+        className="evidenceScopePanel"
+        aria-label="Evidence validation scope"
+      >
         <div>
           <p className="eyebrow">Mechanically verified</p>
           <ul>
@@ -859,7 +967,8 @@ function CloudEvidencePage({
 
       {unsupportedChecks.length > 0 ? (
         <div className="feedbackBox feedbackFail" role="status">
-          This cloud evidence challenge includes unsupported checks and cannot be completed yet.
+          This cloud evidence challenge includes unsupported checks and cannot
+          be completed yet.
         </div>
       ) : null}
 
@@ -900,14 +1009,20 @@ function CloudEvidencePage({
                     {question.prompt}
                   </legend>
 
-                  {question.type === 'multiple-choice' && question.options !== undefined ? (
+                  {question.type === "multiple-choice" &&
+                  question.options !== undefined ? (
                     <div className="answerOptions">
                       {question.options.map((option) => (
                         <label key={option.id}>
                           <input
-                            checked={getStringAnswer(questionAnswers, question.id) === option.id}
+                            checked={
+                              getStringAnswer(questionAnswers, question.id) ===
+                              option.id
+                            }
                             name={question.id}
-                            onChange={() => setQuestionAnswer(question.id, option.id)}
+                            onChange={() =>
+                              setQuestionAnswer(question.id, option.id)
+                            }
                             type="radio"
                             value={option.id}
                           />
@@ -917,10 +1032,14 @@ function CloudEvidencePage({
                     </div>
                   ) : null}
 
-                  {question.type === 'select-all' && question.options !== undefined ? (
+                  {question.type === "select-all" &&
+                  question.options !== undefined ? (
                     <div className="answerOptions">
                       {question.options.map((option) => {
-                        const selectedAnswers = getArrayAnswer(questionAnswers, question.id);
+                        const selectedAnswers = getArrayAnswer(
+                          questionAnswers,
+                          question.id,
+                        );
                         const isSelected = selectedAnswers.includes(option.id);
 
                         return (
@@ -931,7 +1050,9 @@ function CloudEvidencePage({
                                 setQuestionAnswer(
                                   question.id,
                                   isSelected
-                                    ? selectedAnswers.filter((answer) => answer !== option.id)
+                                    ? selectedAnswers.filter(
+                                        (answer) => answer !== option.id,
+                                      )
                                     : [...selectedAnswers, option.id],
                                 )
                               }
@@ -945,14 +1066,24 @@ function CloudEvidencePage({
                     </div>
                   ) : null}
 
-                  {question.type === 'numeric' ? (
-                    <label className="numericAnswerField" htmlFor={numericInputId}>
-                      <span className="fieldLabel">Numeric answer for question {index + 1}</span>
+                  {question.type === "numeric" ? (
+                    <label
+                      className="numericAnswerField"
+                      htmlFor={numericInputId}
+                    >
+                      <span className="fieldLabel">
+                        Numeric answer for question {index + 1}
+                      </span>
                       <input
                         className="numericAnswer"
                         id={numericInputId}
                         inputMode="decimal"
-                        onChange={(event) => setQuestionAnswer(question.id, event.currentTarget.value)}
+                        onChange={(event) =>
+                          setQuestionAnswer(
+                            question.id,
+                            event.currentTarget.value,
+                          )
+                        }
                         type="number"
                         value={getStringAnswer(questionAnswers, question.id)}
                       />
@@ -961,11 +1092,17 @@ function CloudEvidencePage({
 
                   {isAnswered ? (
                     <div
-                      className={isCorrect ? 'feedbackBox feedbackPass' : 'feedbackBox feedbackFail'}
+                      className={
+                        isCorrect
+                          ? "feedbackBox feedbackPass"
+                          : "feedbackBox feedbackFail"
+                      }
                       role="status"
                     >
-                      {isCorrect ? 'Correct.' : 'Incorrect.'}
-                      {question.explanation !== undefined ? ` ${question.explanation}` : ''}
+                      {isCorrect ? "Correct." : "Incorrect."}
+                      {question.explanation !== undefined
+                        ? ` ${question.explanation}`
+                        : ""}
                     </div>
                   ) : null}
                 </fieldset>
@@ -998,25 +1135,27 @@ function SqlChallengePage({
   const [sql, setSql] = useState<string>(() => getStarterSql(challenge));
   const [answers, setAnswers] = useState<QuizAnswerState>({});
   const [runtimeState, setRuntimeState] = useState<
-    | { readonly status: 'loading' }
+    | { readonly status: "loading" }
     | {
-        readonly status: 'ready';
+        readonly status: "ready";
         readonly tables: readonly SqlTableSchema[];
-        readonly connection: Awaited<ReturnType<typeof getSqlRuntime>>['connection'];
+        readonly connection: Awaited<
+          ReturnType<typeof getSqlRuntime>
+        >["connection"];
       }
-    | { readonly status: 'error'; readonly message: string }
-  >({ status: 'loading' });
+    | { readonly status: "error"; readonly message: string }
+  >({ status: "loading" });
   const [queryState, setQueryState] = useState<
-    | { readonly status: 'idle' }
-    | { readonly status: 'running' }
-    | { readonly status: 'success'; readonly result: SqlQueryResult }
-    | { readonly status: 'error'; readonly message: string }
-  >({ status: 'idle' });
+    | { readonly status: "idle" }
+    | { readonly status: "running" }
+    | { readonly status: "success"; readonly result: SqlQueryResult }
+    | { readonly status: "error"; readonly message: string }
+  >({ status: "idle" });
   const sqlEditorId = `${challenge.id}-sql-editor`;
   const sqlEditorHelpId = `${challenge.id}-sql-editor-help`;
   const checkEvaluation = useMemo(
     () =>
-      queryState.status === 'success'
+      queryState.status === "success"
         ? evaluateSqlResultChecks(challenge, queryState.result)
         : undefined,
     [challenge, queryState],
@@ -1028,7 +1167,9 @@ function SqlChallengePage({
   const evaluationsByQuestion = useMemo(
     () =>
       new Map(
-        questionEvaluation.questions.map((question) => [question.questionId, question] as const),
+        questionEvaluation.questions.map(
+          (question) => [question.questionId, question] as const,
+        ),
       ),
     [questionEvaluation.questions],
   );
@@ -1044,7 +1185,7 @@ function SqlChallengePage({
       .then((runtime) => {
         if (isActive) {
           setRuntimeState({
-            status: 'ready',
+            status: "ready",
             tables: runtime.tables,
             connection: runtime.connection,
           });
@@ -1053,8 +1194,11 @@ function SqlChallengePage({
       .catch((error: unknown) => {
         if (isActive) {
           setRuntimeState({
-            status: 'error',
-            message: error instanceof Error ? error.message : 'Unable to load DuckDB-Wasm.',
+            status: "error",
+            message:
+              error instanceof Error
+                ? error.message
+                : "Unable to load DuckDB-Wasm.",
           });
         }
       });
@@ -1083,27 +1227,29 @@ function SqlChallengePage({
   }
 
   async function runQuery(): Promise<void> {
-    if (runtimeState.status !== 'ready') {
+    if (runtimeState.status !== "ready") {
       return;
     }
 
     if (!isSqlPreviewSupported(sql)) {
       setQueryState({
-        status: 'error',
-        message: 'Enter a SELECT or WITH query to run against the browser SQL runtime.',
+        status: "error",
+        message:
+          "Enter a SELECT or WITH query to run against the browser SQL runtime.",
       });
       return;
     }
 
-    setQueryState({ status: 'running' });
+    setQueryState({ status: "running" });
 
     try {
       const result = await runSqlPreview(runtimeState.connection, sql);
-      setQueryState({ status: 'success', result });
+      setQueryState({ status: "success", result });
     } catch (error: unknown) {
       setQueryState({
-        status: 'error',
-        message: error instanceof Error ? error.message : 'SQL execution failed.',
+        status: "error",
+        message:
+          error instanceof Error ? error.message : "SQL execution failed.",
       });
     }
   }
@@ -1113,7 +1259,10 @@ function SqlChallengePage({
   }
 
   return (
-    <section className="page challengeDetailPage sqlChallengePage" aria-labelledby={`${challenge.id}-title`}>
+    <section
+      className="page challengeDetailPage sqlChallengePage"
+      aria-labelledby={`${challenge.id}-title`}
+    >
       <div className="challengeDetailHeader">
         <a href="#/challenges">Back to challenges</a>
         <PageTitle
@@ -1136,7 +1285,9 @@ function SqlChallengePage({
           </div>
           <div>
             <strong>Loaded dataset</strong>
-            <span>{challenge.inputs[0]?.dataset_id ?? 'Synthetic CSV seed'}</span>
+            <span>
+              {challenge.inputs[0]?.dataset_id ?? "Synthetic CSV seed"}
+            </span>
           </div>
         </div>
       </div>
@@ -1144,11 +1295,14 @@ function SqlChallengePage({
       <ChallengeInstructions challenge={challenge} />
 
       <div className="sqlChallengeLayout">
-        {runtimeState.status === 'ready' ? (
-          <SqlTableBrowser tables={runtimeState.tables} onSelectTable={setSampleQuery} />
+        {runtimeState.status === "ready" ? (
+          <SqlTableBrowser
+            tables={runtimeState.tables}
+            onSelectTable={setSampleQuery}
+          />
         ) : (
           <aside
-            aria-busy={runtimeState.status === 'loading'}
+            aria-busy={runtimeState.status === "loading"}
             aria-label="Loaded challenge tables"
             className="sqlSidebar"
           >
@@ -1158,28 +1312,32 @@ function SqlChallengePage({
             </div>
             <p
               className={
-                runtimeState.status === 'loading'
-                  ? 'sqlLoadingText'
-                  : 'feedbackBox feedbackFail sqlFeedback'
+                runtimeState.status === "loading"
+                  ? "sqlLoadingText"
+                  : "feedbackBox feedbackFail sqlFeedback"
               }
               role="status"
             >
-              {runtimeState.status === 'loading'
-                ? 'Loading DuckDB-Wasm and seed tables...'
+              {runtimeState.status === "loading"
+                ? "Loading DuckDB-Wasm and seed tables..."
                 : runtimeState.message}
             </p>
           </aside>
         )}
 
         <section
-          aria-busy={queryState.status === 'running'}
+          aria-busy={queryState.status === "running"}
           aria-label="SQL workspace"
           className="sqlWorkspace"
         >
           <div className="sqlEditorPanel">
             <div className="sqlEditorHeader">
               <p className="eyebrow">SQL editor</p>
-              <span>{isCompleted ? `Flag: ${challenge.flag.id}` : 'Flag appears after required checks pass'}</span>
+              <span>
+                {isCompleted
+                  ? `Flag: ${challenge.flag.id}`
+                  : "Flag appears after required checks pass"}
+              </span>
             </div>
             <label className="fieldLabel" htmlFor={sqlEditorId}>
               SQL query
@@ -1194,14 +1352,18 @@ function SqlChallengePage({
             <div className="sqlEditorActions">
               <button
                 aria-describedby={sqlEditorHelpId}
-                disabled={runtimeState.status !== 'ready' || queryState.status === 'running'}
+                disabled={
+                  runtimeState.status !== "ready" ||
+                  queryState.status === "running"
+                }
                 type="button"
                 onClick={() => void runQuery()}
               >
-                {queryState.status === 'running' ? 'Running...' : 'Run Query'}
+                {queryState.status === "running" ? "Running..." : "Run Query"}
               </button>
               <p id={sqlEditorHelpId}>
-                Queries run fully in the browser against the loaded synthetic CSV tables.
+                Queries run fully in the browser against the loaded synthetic
+                CSV tables.
               </p>
             </div>
           </div>
@@ -1220,12 +1382,16 @@ function SqlChallengePage({
                     {question.prompt}
                   </legend>
 
-                  {question.type === 'multiple-choice' && question.options !== undefined ? (
+                  {question.type === "multiple-choice" &&
+                  question.options !== undefined ? (
                     <div className="answerOptions">
                       {question.options.map((option) => (
                         <label key={option.id}>
                           <input
-                            checked={getStringAnswer(answers, question.id) === option.id}
+                            checked={
+                              getStringAnswer(answers, question.id) ===
+                              option.id
+                            }
                             name={question.id}
                             onChange={() => setAnswer(question.id, option.id)}
                             type="radio"
@@ -1237,10 +1403,14 @@ function SqlChallengePage({
                     </div>
                   ) : null}
 
-                  {question.type === 'select-all' && question.options !== undefined ? (
+                  {question.type === "select-all" &&
+                  question.options !== undefined ? (
                     <div className="answerOptions">
                       {question.options.map((option) => {
-                        const selectedAnswers = getArrayAnswer(answers, question.id);
+                        const selectedAnswers = getArrayAnswer(
+                          answers,
+                          question.id,
+                        );
                         const isSelected = selectedAnswers.includes(option.id);
 
                         return (
@@ -1251,7 +1421,9 @@ function SqlChallengePage({
                                 setAnswer(
                                   question.id,
                                   isSelected
-                                    ? selectedAnswers.filter((answer) => answer !== option.id)
+                                    ? selectedAnswers.filter(
+                                        (answer) => answer !== option.id,
+                                      )
                                     : [...selectedAnswers, option.id],
                                 )
                               }
@@ -1265,14 +1437,21 @@ function SqlChallengePage({
                     </div>
                   ) : null}
 
-                  {question.type === 'numeric' ? (
-                    <label className="numericAnswerField" htmlFor={numericInputId}>
-                      <span className="fieldLabel">Numeric answer for question {index + 1}</span>
+                  {question.type === "numeric" ? (
+                    <label
+                      className="numericAnswerField"
+                      htmlFor={numericInputId}
+                    >
+                      <span className="fieldLabel">
+                        Numeric answer for question {index + 1}
+                      </span>
                       <input
                         className="numericAnswer"
                         id={numericInputId}
                         inputMode="decimal"
-                        onChange={(event) => setAnswer(question.id, event.currentTarget.value)}
+                        onChange={(event) =>
+                          setAnswer(question.id, event.currentTarget.value)
+                        }
                         type="number"
                         value={getStringAnswer(answers, question.id)}
                       />
@@ -1281,11 +1460,17 @@ function SqlChallengePage({
 
                   {isAnswered ? (
                     <div
-                      className={isCorrect ? 'feedbackBox feedbackPass' : 'feedbackBox feedbackFail'}
+                      className={
+                        isCorrect
+                          ? "feedbackBox feedbackPass"
+                          : "feedbackBox feedbackFail"
+                      }
                       role="status"
                     >
-                      {isCorrect ? 'Correct.' : 'Incorrect.'}
-                      {question.explanation !== undefined ? ` ${question.explanation}` : ''}
+                      {isCorrect ? "Correct." : "Incorrect."}
+                      {question.explanation !== undefined
+                        ? ` ${question.explanation}`
+                        : ""}
                     </div>
                   ) : null}
                 </fieldset>
@@ -1294,44 +1479,56 @@ function SqlChallengePage({
           </div>
 
           <div className="sqlExamples">
-            <button type="button" onClick={() => setSampleQuery('branches')}>
+            <button type="button" onClick={() => setSampleQuery("branches")}>
               branches
             </button>
-            <button type="button" onClick={() => setSampleQuery('products')}>
+            <button type="button" onClick={() => setSampleQuery("products")}>
               products
             </button>
-            <button type="button" onClick={() => setSampleQuery('accounts')}>
+            <button type="button" onClick={() => setSampleQuery("accounts")}>
               accounts
             </button>
-            <button type="button" onClick={() => setSampleQuery('account_owners')}>
+            <button
+              type="button"
+              onClick={() => setSampleQuery("account_owners")}
+            >
               account_owners
             </button>
-            <button type="button" onClick={() => setSampleQuery('account_daily_balances')}>
+            <button
+              type="button"
+              onClick={() => setSampleQuery("account_daily_balances")}
+            >
               account_daily_balances
             </button>
           </div>
 
-          {queryState.status === 'error' ? (
+          {queryState.status === "error" ? (
             <div className="feedbackBox feedbackFail sqlFeedback" role="status">
               {queryState.message}
             </div>
           ) : null}
 
-          {queryState.status === 'running' ? (
+          {queryState.status === "running" ? (
             <div className="feedbackBox sqlFeedback" role="status">
               Running the SQL query in the browser.
             </div>
           ) : null}
 
-          {queryState.status === 'success' ? <SqlResultTable result={queryState.result} /> : null}
-          {checkEvaluation !== undefined ? <ValidationSummary evaluation={checkEvaluation} /> : null}
+          {queryState.status === "success" ? (
+            <SqlResultTable result={queryState.result} />
+          ) : null}
+          {checkEvaluation !== undefined ? (
+            <ValidationSummary evaluation={checkEvaluation} />
+          ) : null}
           {completion !== undefined ? (
             <div className="feedbackBox feedbackPass sqlFeedback" role="status">
               Challenge complete. Flag: {completion.flag}
             </div>
           ) : null}
-          {queryState.status === 'idle' ? (
-            <div className="sqlEmptyState">Run a query to inspect the synthetic banking tables.</div>
+          {queryState.status === "idle" ? (
+            <div className="sqlEmptyState">
+              Run a query to inspect the synthetic banking tables.
+            </div>
           ) : null}
         </section>
       </div>
@@ -1347,8 +1544,9 @@ function HomePage(): JSX.Element {
           <p className="eyebrow">Browser-hosted banking BI tutorial platform</p>
           <h1 id="home-title">Looker BI Gym</h1>
           <p className="lead">
-            A static React app for technical BI practice with Romanian banking flavor,
-            deterministic browser checks, Markdown content, and local learner progress.
+            A static React app for technical BI practice with Romanian banking
+            flavor, deterministic browser checks, Markdown content, and local
+            learner progress.
           </p>
           <div className="heroActions" aria-label="Start points">
             <a href="#/docs/README.md">Read Docs</a>
@@ -1396,17 +1594,18 @@ function HomePage(): JSX.Element {
         <section aria-labelledby="current-track">
           <h2 id="current-track">Current Track</h2>
           <p>
-            The app shell now loads existing Markdown source material. Challenge manifests,
-            datasets, DuckDB-WASM SQL execution, browser validators, and local progress flags
-            are in place for the first browser challenges.
+            The app shell now loads existing Markdown source material. Challenge
+            manifests, datasets, DuckDB-WASM SQL execution, browser validators,
+            and local progress flags are in place for the first browser
+            challenges.
           </p>
         </section>
         <section aria-labelledby="safety-note">
           <h2 id="safety-note">Training Boundary</h2>
           <p>
-            This is technical training material. It is not legal, regulatory, accounting,
-            privacy, compliance, or model-risk advice. Validate production banking work with
-            the appropriate institutional teams.
+            This is technical training material. It is not legal, regulatory,
+            accounting, privacy, compliance, or model-risk advice. Validate
+            production banking work with the appropriate institutional teams.
           </p>
         </section>
       </div>
@@ -1447,7 +1646,9 @@ function ContentPage({
         <nav>
           {section.documents.map((candidate) => (
             <a
-              aria-current={candidate.fileName === document.fileName ? 'page' : undefined}
+              aria-current={
+                candidate.fileName === document.fileName ? "page" : undefined
+              }
               href={`#/${candidate.filePath}`}
               key={candidate.filePath}
             >
@@ -1475,7 +1676,10 @@ function MarkdownArticle({
         <span>{document.filePath}</span>
         <a href={`#/${document.section}`}>Back to {document.section}</a>
       </div>
-      <div className="markdownBody" dangerouslySetInnerHTML={{ __html: html }} />
+      <div
+        className="markdownBody"
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
     </article>
   );
 }
@@ -1515,7 +1719,9 @@ function ChallengesPage({
   if (challengeId !== undefined && selectedChallenge === undefined) {
     return (
       <section className="page" aria-labelledby="missing-challenge-title">
-        <a className="backLink" href="#/challenges">Back to challenges</a>
+        <a className="backLink" href="#/challenges">
+          Back to challenges
+        </a>
         <PageTitle
           title="Challenge Not Found"
           description="The requested challenge is not available in the generated static catalog."
@@ -1525,7 +1731,7 @@ function ChallengesPage({
     );
   }
 
-  if (selectedChallenge?.mode === 'quiz') {
+  if (selectedChallenge?.mode === "quiz") {
     return (
       <QuizChallengePage
         key={selectedChallenge.id}
@@ -1536,7 +1742,7 @@ function ChallengesPage({
     );
   }
 
-  if (selectedChallenge?.mode === 'browser-sql') {
+  if (selectedChallenge?.mode === "browser-sql") {
     return (
       <SqlChallengePage
         key={selectedChallenge.id}
@@ -1547,7 +1753,7 @@ function ChallengesPage({
     );
   }
 
-  if (selectedChallenge?.mode === 'cloud-evidence') {
+  if (selectedChallenge?.mode === "cloud-evidence") {
     return (
       <CloudEvidencePage
         key={selectedChallenge.id}
@@ -1569,18 +1775,21 @@ function ChallengesPage({
         description="Challenge modes are loaded from validated static manifests. No backend calls or hidden server checks are required."
         id="challenges-title"
       />
-      <ChallengeList challenges={challengeCatalog} completedChallengeIds={completedChallengeIds} />
+      <ChallengeList
+        challenges={challengeCatalog}
+        completedChallengeIds={completedChallengeIds}
+      />
     </section>
   );
 }
 
 function SettingsPage(): JSX.Element {
-  const [resetMessage, setResetMessage] = useState<string>('');
+  const [resetMessage, setResetMessage] = useState<string>("");
   const [progress, setProgress] = useState<LearnerProgressState>(() =>
     readLearnerProgress(window.localStorage),
   );
-  const [learnerNotes, setLearnerNotes] = useState<string>('');
-  const [exportMessage, setExportMessage] = useState<string>('');
+  const [learnerNotes, setLearnerNotes] = useState<string>("");
+  const [exportMessage, setExportMessage] = useState<string>("");
   const progressExport = useMemo(
     () =>
       buildLearnerProgressExport(progress, challengeCatalog, {
@@ -1590,18 +1799,21 @@ function SettingsPage(): JSX.Element {
       }),
     [learnerNotes, progress],
   );
-  const exportJson = useMemo(() => JSON.stringify(progressExport, null, 2), [progressExport]);
+  const exportJson = useMemo(
+    () => JSON.stringify(progressExport, null, 2),
+    [progressExport],
+  );
 
   function resetProgress(): void {
     setProgress(resetLearnerProgress(window.localStorage));
-    setResetMessage('Local progress has been reset in this browser.');
-    setExportMessage('');
+    setResetMessage("Local progress has been reset in this browser.");
+    setExportMessage("");
   }
 
   function exportProgress(): void {
-    const blob = new Blob([exportJson], { type: 'application/json' });
+    const blob = new Blob([exportJson], { type: "application/json" });
     const objectUrl = URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
 
     link.href = objectUrl;
     link.download = `looker-bi-gym-progress-${progressExport.exported_at.slice(0, 10)}.json`;
@@ -1609,8 +1821,10 @@ function SettingsPage(): JSX.Element {
     link.click();
     link.remove();
     URL.revokeObjectURL(objectUrl);
-    setExportMessage('Progress export was prepared locally as a JSON download.');
-    setResetMessage('');
+    setExportMessage(
+      "Progress export was prepared locally as a JSON download.",
+    );
+    setResetMessage("");
   }
 
   return (
@@ -1623,7 +1837,10 @@ function SettingsPage(): JSX.Element {
       <div className="settingsPanel">
         <div>
           <h3>Storage</h3>
-          <p>Local browser storage only. Nothing is transmitted by this static app.</p>
+          <p>
+            Local browser storage only. Nothing is transmitted by this static
+            app.
+          </p>
         </div>
         <div>
           <h3>Release</h3>
@@ -1632,22 +1849,26 @@ function SettingsPage(): JSX.Element {
         <div>
           <h3>Tools</h3>
           <p>
-            The default path requires no learner-installed tools. Optional tools must be
-            named by the tutorial.
+            The default path requires no learner-installed tools. Optional tools
+            must be named by the tutorial.
           </p>
         </div>
         <div>
           <h3>Credentials</h3>
-          <p>No BigQuery, Looker Studio, Google Cloud, or banking credentials are requested or stored.</p>
+          <p>
+            No BigQuery, Looker Studio, Google Cloud, or banking credentials are
+            requested or stored.
+          </p>
         </div>
       </div>
       <div className="settingsActionPanel progressExportPanel">
         <div>
           <h3>Progress Export</h3>
           <p>
-            Exported JSON includes completed challenge IDs, local flags, timestamps, dataset
-            versions, app/content version, and notes you type here. It excludes credentials,
-            raw challenge answers, pasted cloud evidence, and real banking data.
+            Exported JSON includes completed challenge IDs, local flags,
+            timestamps, dataset versions, app/content version, and notes you
+            type here. It excludes credentials, raw challenge answers, pasted
+            cloud evidence, and real banking data.
           </p>
         </div>
         <button type="button" onClick={exportProgress}>
@@ -1666,11 +1887,15 @@ function SettingsPage(): JSX.Element {
           <div>
             <h3>Preview</h3>
             <p>
-              Import is not implemented in this static release. Review this local JSON before
-              sharing it for completion evidence.
+              Import is not implemented in this static release. Review this
+              local JSON before sharing it for completion evidence.
             </p>
           </div>
-          <textarea aria-label="Progress export JSON preview" readOnly value={exportJson} />
+          <textarea
+            aria-label="Progress export JSON preview"
+            readOnly
+            value={exportJson}
+          />
         </div>
         {exportMessage.length > 0 ? (
           <div className="feedbackBox feedbackPass" role="status">
@@ -1682,8 +1907,9 @@ function SettingsPage(): JSX.Element {
         <div>
           <h3>Progress</h3>
           <p>
-            Completion flags and challenge state are stored only in local browser storage.
-            Reset does not delete exported JSON files that already exist outside the browser.
+            Completion flags and challenge state are stored only in local
+            browser storage. Reset does not delete exported JSON files that
+            already exist outside the browser.
           </p>
         </div>
         <button type="button" onClick={resetProgress}>
@@ -1731,15 +1957,15 @@ function AppPage({ route }: { readonly route: AppRoute }): JSX.Element {
   }
 
   switch (route.section) {
-    case 'home':
+    case "home":
       return <HomePage />;
-    case 'challenges':
+    case "challenges":
       return route.fileName !== undefined ? (
         <ChallengesPage challengeId={route.fileName} />
       ) : (
         <ChallengesPage />
       );
-    case 'settings':
+    case "settings":
       return <SettingsPage />;
   }
 }
@@ -1753,8 +1979,8 @@ export function App(): JSX.Element {
     const onHashChange = (): void => {
       setActiveRoute(routeFromHash());
     };
-    window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
 
   useEffect(() => {
@@ -1766,7 +1992,8 @@ export function App(): JSX.Element {
   }, [activeRoute]);
 
   const activeLabel = useMemo(
-    () => routes.find((route) => route.id === activeRoute.section)?.label ?? 'Home',
+    () =>
+      routes.find((route) => route.id === activeRoute.section)?.label ?? "Home",
     [activeRoute.section],
   );
 
@@ -1785,7 +2012,9 @@ export function App(): JSX.Element {
         <nav className="navLinks" aria-label="Primary navigation">
           {routes.map((route) => (
             <a
-              aria-current={route.id === activeRoute.section ? 'page' : undefined}
+              aria-current={
+                route.id === activeRoute.section ? "page" : undefined
+              }
               href={`#/${route.id}`}
               key={route.id}
             >

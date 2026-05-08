@@ -53,8 +53,8 @@ When a dataset version changes challenge outputs, refresh or explicitly review:
 
 Current changed-output simulation:
 
-| Dataset | Change | Fixtures requiring refresh if adopted |
-| --- | --- | --- |
+| Dataset                | Change                               | Fixtures requiring refresh if adopted           |
+| ---------------------- | ------------------------------------ | ----------------------------------------------- |
 | `deposits-seed/v0.1.1` | Adds `2026-04-01` balance snapshots. | `first-banking-dataset`, `account-owner-fanout` |
 
 The released browser challenge sequence remains pinned to `deposits-seed/v0.1.0`.

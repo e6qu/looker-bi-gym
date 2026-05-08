@@ -36,7 +36,8 @@ metric: delinquency_rate_30_plus
 owner: credit_risk_analytics
 grain: loan_month_end_snapshot
 formula: exposure_30_plus_dpd / total_exposure
-allowed_dimensions: [reporting_month, product_family, branch_region, risk_segment]
+allowed_dimensions:
+  [reporting_month, product_family, branch_region, risk_segment]
 freshness_sla: 24h
 ```
 

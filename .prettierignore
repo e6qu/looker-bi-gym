@@ -1,0 +1,11 @@
+.git
+node_modules
+app/node_modules
+app/dist
+app/src/generated
+app/test-results
+coverage
+playwright-report
+*.log
+*.tsbuildinfo
+bun.lock

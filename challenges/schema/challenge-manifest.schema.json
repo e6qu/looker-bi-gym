@@ -59,13 +59,7 @@
     },
     "difficulty": {
       "type": "string",
-      "enum": [
-        "intro",
-        "beginner",
-        "intermediate",
-        "advanced",
-        "capstone"
-      ]
+      "enum": ["intro", "beginner", "intermediate", "advanced", "capstone"]
     },
     "estimated_minutes": {
       "type": "integer",
@@ -177,11 +171,7 @@
     "input": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "id",
-        "type",
-        "description"
-      ],
+      "required": ["id", "type", "description"],
       "properties": {
         "id": {
           "type": "string",
@@ -246,11 +236,7 @@
     "output": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "id",
-        "type",
-        "description"
-      ],
+      "required": ["id", "type", "description"],
       "properties": {
         "id": {
           "type": "string",
@@ -276,11 +262,7 @@
     "check": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "id",
-        "type",
-        "description"
-      ],
+      "required": ["id", "type", "description"],
       "properties": {
         "id": {
           "type": "string",
@@ -313,10 +295,7 @@
         },
         "severity": {
           "type": "string",
-          "enum": [
-            "required",
-            "advisory"
-          ],
+          "enum": ["required", "advisory"],
           "default": "required"
         },
         "target": {
@@ -339,11 +318,7 @@
     "question": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "id",
-        "type",
-        "prompt"
-      ],
+      "required": ["id", "type", "prompt"],
       "properties": {
         "id": {
           "type": "string",
@@ -371,14 +346,7 @@
           "minItems": 2
         },
         "answer": {
-          "type": [
-            "string",
-            "number",
-            "integer",
-            "array",
-            "object",
-            "null"
-          ]
+          "type": ["string", "number", "integer", "array", "object", "null"]
         },
         "tolerance": {
           "type": "number",
@@ -393,10 +361,7 @@
     "question_option": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "id",
-        "label"
-      ],
+      "required": ["id", "label"],
       "properties": {
         "id": {
           "type": "string",
@@ -411,11 +376,7 @@
     "tool": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "name",
-        "purpose",
-        "required"
-      ],
+      "required": ["name", "purpose", "required"],
       "properties": {
         "name": {
           "type": "string",
@@ -441,10 +402,7 @@
     "flag": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "id",
-        "criteria"
-      ],
+      "required": ["id", "criteria"],
       "properties": {
         "id": {
           "type": "string",
@@ -463,10 +421,7 @@
     "hint": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "level",
-        "text"
-      ],
+      "required": ["level", "text"],
       "properties": {
         "level": {
           "type": "integer",
@@ -482,11 +437,7 @@
     "evidence": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "id",
-        "type",
-        "description"
-      ],
+      "required": ["id", "type", "description"],
       "properties": {
         "id": {
           "type": "string",
@@ -528,10 +479,7 @@
     "rubric_item": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "id",
-        "description"
-      ],
+      "required": ["id", "description"],
       "properties": {
         "id": {
           "type": "string",

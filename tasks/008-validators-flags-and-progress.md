@@ -49,7 +49,7 @@ Add reusable browser-side validation, flag generation, and local progress tracki
 - Browser validator source: `app/src/validators.ts`.
 - Unified local progress source: `app/src/progress.ts`.
 - Validator fixtures: `app/scripts/test-validators.ts`.
-- Test command: `pnpm test:validators`.
+- Test command: `bun test:validators`.
 - Full gate command: `make check`.
 - `make check` passed on 2026-05-06.
 - Headless Chrome verification against Vite passed on 2026-05-06:

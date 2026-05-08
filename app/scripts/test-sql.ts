@@ -1,8 +1,8 @@
-import assert from 'node:assert/strict';
-import { createRequire } from 'node:module';
-import { dirname, join } from 'node:path';
-import { readFile } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
+import assert from "node:assert/strict";
+import { createRequire } from "node:module";
+import { dirname, join } from "node:path";
+import { readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
 
 type DuckDbRow = Readonly<Record<string, unknown>>;
 
@@ -31,7 +31,10 @@ type DuckDbConnectionLike = {
 type DuckDbBindingsLike = {
   readonly registerFileText: (path: string, text: string) => Promise<void>;
   readonly connect: () => Promise<DuckDbConnectionLike>;
-  readonly instantiate: (mainModule: string, pthreadWorker?: string) => Promise<void>;
+  readonly instantiate: (
+    mainModule: string,
+    pthreadWorker?: string,
+  ) => Promise<void>;
   readonly terminate?: () => Promise<void>;
 };
 
@@ -57,28 +60,38 @@ type DuckDbBundles = {
 
 type SeedTable = {
   readonly fileName:
-    | 'account_daily_balances.csv'
-    | 'account_owners.csv'
-    | 'accounts.csv'
-    | 'branches.csv'
-    | 'products.csv';
-  readonly tableName: 'branches' | 'products' | 'accounts' | 'account_owners' | 'account_daily_balances';
+    | "account_daily_balances.csv"
+    | "account_owners.csv"
+    | "accounts.csv"
+    | "branches.csv"
+    | "products.csv";
+  readonly tableName:
+    | "branches"
+    | "products"
+    | "accounts"
+    | "account_owners"
+    | "account_daily_balances";
 };
 
 const require = createRequire(import.meta.url);
 const scriptDir = dirname(fileURLToPath(import.meta.url));
-const appRoot = join(scriptDir, '..');
-const repoRoot = join(appRoot, '..');
-const packageRoot = dirname(require.resolve('@duckdb/duckdb-wasm'));
-const duckdbNode = require(join(packageRoot, 'duckdb-node-blocking.cjs')) as DuckDbNodeBlockingModule;
-const datasetRoot = join(repoRoot, 'datasets', 'deposits-seed', 'v0.1.0');
+const appRoot = join(scriptDir, "..");
+const repoRoot = join(appRoot, "..");
+const packageRoot = dirname(require.resolve("@duckdb/duckdb-wasm"));
+const duckdbNode = require(
+  join(packageRoot, "duckdb-node-blocking.cjs"),
+) as DuckDbNodeBlockingModule;
+const datasetRoot = join(repoRoot, "datasets", "deposits-seed", "v0.1.0");
 
 const seedTables: readonly SeedTable[] = [
-  { fileName: 'branches.csv', tableName: 'branches' },
-  { fileName: 'products.csv', tableName: 'products' },
-  { fileName: 'accounts.csv', tableName: 'accounts' },
-  { fileName: 'account_owners.csv', tableName: 'account_owners' },
-  { fileName: 'account_daily_balances.csv', tableName: 'account_daily_balances' },
+  { fileName: "branches.csv", tableName: "branches" },
+  { fileName: "products.csv", tableName: "products" },
+  { fileName: "accounts.csv", tableName: "accounts" },
+  { fileName: "account_owners.csv", tableName: "account_owners" },
+  {
+    fileName: "account_daily_balances.csv",
+    tableName: "account_daily_balances",
+  },
 ];
 
 function readNumberField(row: DuckDbRow, field: string): number {
@@ -92,10 +105,13 @@ function readNumberField(row: DuckDbRow, field: string): number {
   return numericValue;
 }
 
-async function loadSeedTables(database: DuckDbBindingsLike, connection: DuckDbConnectionLike): Promise<void> {
+async function loadSeedTables(
+  database: DuckDbBindingsLike,
+  connection: DuckDbConnectionLike,
+): Promise<void> {
   for (const table of seedTables) {
     const csvPath = join(datasetRoot, table.fileName);
-    const csv = await readFile(csvPath, 'utf8');
+    const csv = await readFile(csvPath, "utf8");
     const registeredPath = `seed/${table.fileName}`;
 
     await database.registerFileText(registeredPath, csv);
@@ -108,12 +124,12 @@ async function loadSeedTables(database: DuckDbBindingsLike, connection: DuckDbCo
 function manualBundles(): DuckDbBundles {
   return {
     eh: {
-      mainModule: join(packageRoot, 'duckdb-eh.wasm'),
-      mainWorker: join(packageRoot, 'duckdb-node-eh.worker.cjs'),
+      mainModule: join(packageRoot, "duckdb-eh.wasm"),
+      mainWorker: join(packageRoot, "duckdb-node-eh.worker.cjs"),
     },
     mvp: {
-      mainModule: join(packageRoot, 'duckdb-mvp.wasm'),
-      mainWorker: join(packageRoot, 'duckdb-node-mvp.worker.cjs'),
+      mainModule: join(packageRoot, "duckdb-mvp.wasm"),
+      mainWorker: join(packageRoot, "duckdb-node-mvp.worker.cjs"),
     },
   };
 }
@@ -137,15 +153,22 @@ async function main(): Promise<void> {
     await loadSeedTables(database, connection);
 
     for (const table of seedTables) {
-      const result = await connection.query(`SELECT count(*) AS row_count FROM "${table.tableName}";`);
+      const result = await connection.query(
+        `SELECT count(*) AS row_count FROM "${table.tableName}";`,
+      );
       const rows = result.toArray().map((row) => row.toJSON());
-      const rowCount = readNumberField(rows[0] ?? {}, 'row_count');
+      const rowCount = readNumberField(rows[0] ?? {}, "row_count");
 
       assert.ok(rowCount > 0, `${table.tableName} should have rows`);
     }
 
-    const branchRows = await connection.query('SELECT count(*) AS row_count FROM branches;');
-    const branchCount = readNumberField(branchRows.toArray()[0]?.toJSON() ?? {}, 'row_count');
+    const branchRows = await connection.query(
+      "SELECT count(*) AS row_count FROM branches;",
+    );
+    const branchCount = readNumberField(
+      branchRows.toArray()[0]?.toJSON() ?? {},
+      "row_count",
+    );
     assert.equal(branchCount, 5);
 
     const joinResult = await connection.query(
@@ -156,12 +179,15 @@ async function main(): Promise<void> {
         WHERE b.business_date = '2026-03-31'
       `,
     );
-    const joinTotal = readNumberField(joinResult.toArray()[0]?.toJSON() ?? {}, 'total_balance');
+    const joinTotal = readNumberField(
+      joinResult.toArray()[0]?.toJSON() ?? {},
+      "total_balance",
+    );
     assert.equal(joinTotal, 95700);
 
     let invalidSqlFailed = false;
     try {
-      await connection.query('SELECT * FROM missing_table;');
+      await connection.query("SELECT * FROM missing_table;");
     } catch {
       invalidSqlFailed = true;
     }
@@ -169,9 +195,10 @@ async function main(): Promise<void> {
     assert.equal(invalidSqlFailed, true);
   } finally {
     await Promise.resolve(connection.close());
-    const terminate = (database as { readonly terminate?: () => unknown }).terminate;
+    const terminate = (database as { readonly terminate?: () => unknown })
+      .terminate;
 
-    if (typeof terminate === 'function') {
+    if (typeof terminate === "function") {
       await Promise.resolve(terminate());
     }
   }

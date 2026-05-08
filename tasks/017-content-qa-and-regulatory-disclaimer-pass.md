@@ -50,7 +50,7 @@ Complete on 2026-05-06.
 - Added explicit training-boundary disclaimer language to every regulation brief and to docs that discuss credentials, warehouse access, regulatory sources, or production-style controls.
 - Added synthetic-data boundary language to tutorial files that did not previously state it directly.
 - Tightened challenge copy for the fanout and cloud-evidence challenges so their synthetic-data boundary is explicit.
-- Added `pnpm test:content-qa` to validate:
+- Added `bun test:content-qa` to validate:
   - challenge required-tool declarations;
   - challenge regulatory-context links;
   - regulation disclaimer language;
@@ -70,10 +70,10 @@ Complete on 2026-05-06.
 
 ## Test Runs
 
-- `pnpm test:content-qa` initially failed because the new QA assertion rejected "no Google Cloud CLI"; fixed the assertion to allow explicit no-CLI boundary language.
-- `pnpm test:content-qa` then failed because `regulations/README.md` did not include the model-risk disclaimer phrase; updated it and reran successfully.
-- `pnpm validate:manifests` passed.
-- `pnpm typecheck` passed.
-- `pnpm lint` passed.
-- `pnpm build` passed with Vite's existing non-failing DuckDB-WASM large chunk warning.
+- `bun test:content-qa` initially failed because the new QA assertion rejected "no Google Cloud CLI"; fixed the assertion to allow explicit no-CLI boundary language.
+- `bun test:content-qa` then failed because `regulations/README.md` did not include the model-risk disclaimer phrase; updated it and reran successfully.
+- `bun validate:manifests` passed.
+- `bun typecheck` passed.
+- `bun lint` passed.
+- `bun build` passed with Vite's existing non-failing DuckDB-WASM large chunk warning.
 - `make check` passed, including manifest validation, dataset validation, lint, typecheck, quiz tests, SQL smoke tests, solution fixture tests, cloud-evidence tests, progress-export tests, content QA, validator tests, production build, and static-link validation.

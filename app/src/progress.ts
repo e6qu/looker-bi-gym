@@ -1,6 +1,6 @@
-import type { ChallengeManifest } from './challengeTypes';
-import type { QuizEvaluation } from './quiz';
-import type { ValidationEvaluation } from './validators';
+import type { ChallengeManifest } from "./challengeTypes";
+import type { QuizEvaluation } from "./quiz";
+import type { ValidationEvaluation } from "./validators";
 
 export type ChallengeProgress = {
   readonly completed: boolean;
@@ -24,7 +24,7 @@ export type ProgressExportChallenge = {
   readonly challenge_id: string;
   readonly challenge_version: string | null;
   readonly title: string | null;
-  readonly mode: ChallengeManifest['mode'] | null;
+  readonly mode: ChallengeManifest["mode"] | null;
   readonly completed_at: string;
   readonly flag: string;
   readonly dataset_versions: readonly ProgressExportDataset[];
@@ -33,11 +33,11 @@ export type ProgressExportChallenge = {
 };
 
 export type LearnerProgressExport = {
-  readonly format: 'looker-bi-gym.progress-export.v1';
+  readonly format: "looker-bi-gym.progress-export.v1";
   readonly exported_at: string;
   readonly app_version: string;
   readonly content_version: string;
-  readonly storage_version: LearnerProgressState['version'];
+  readonly storage_version: LearnerProgressState["version"];
   readonly completed_challenge_ids: readonly string[];
   readonly completed_challenges: readonly ProgressExportChallenge[];
   readonly privacy: {
@@ -64,34 +64,38 @@ export type BrowserStorage = {
   readonly removeItem: (key: string) => void;
 };
 
-const progressStorageKey = 'looker-bi-gym.progress.v1';
-const legacyQuizProgressStorageKey = 'looker-bi-gym.quiz-progress.v1';
+const progressStorageKey = "looker-bi-gym.progress.v1";
+const legacyQuizProgressStorageKey = "looker-bi-gym.quiz-progress.v1";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
-  return value !== null && typeof value === 'object' && !Array.isArray(value);
+  return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
 function isStringArray(value: unknown): value is readonly string[] {
-  return Array.isArray(value) && value.every((item) => typeof item === 'string');
+  return (
+    Array.isArray(value) && value.every((item) => typeof item === "string")
+  );
 }
 
 function isChallengeProgress(value: unknown): value is ChallengeProgress {
   return (
     isRecord(value) &&
-    value['completed'] === true &&
-    typeof value['completedAt'] === 'string' &&
-    typeof value['flag'] === 'string' &&
-    isStringArray(value['passedCheckIds']) &&
-    isStringArray(value['passedQuestionIds'])
+    value["completed"] === true &&
+    typeof value["completedAt"] === "string" &&
+    typeof value["flag"] === "string" &&
+    isStringArray(value["passedCheckIds"]) &&
+    isStringArray(value["passedQuestionIds"])
   );
 }
 
 function isLearnerProgressState(value: unknown): value is LearnerProgressState {
   return (
     isRecord(value) &&
-    value['version'] === 1 &&
-    isRecord(value['challenges']) &&
-    Object.values(value['challenges']).every((item) => isChallengeProgress(item))
+    value["version"] === 1 &&
+    isRecord(value["challenges"]) &&
+    Object.values(value["challenges"]).every((item) =>
+      isChallengeProgress(item),
+    )
   );
 }
 
@@ -109,7 +113,9 @@ function readJsonStorage(storage: BrowserStorage, key: string): unknown {
   }
 }
 
-function readLegacyQuizProgress(storage: BrowserStorage): Readonly<Record<string, ChallengeProgress>> {
+function readLegacyQuizProgress(
+  storage: BrowserStorage,
+): Readonly<Record<string, ChallengeProgress>> {
   const parsed = readJsonStorage(storage, legacyQuizProgressStorageKey);
 
   if (!isRecord(parsed)) {
@@ -143,7 +149,9 @@ export function buildCompletedChallengeProgress(
   };
 }
 
-export function getCompletedChallengeIds(progress: LearnerProgressState): ReadonlySet<string> {
+export function getCompletedChallengeIds(
+  progress: LearnerProgressState,
+): ReadonlySet<string> {
   return new Set(
     Object.entries(progress.challenges)
       .filter((entry) => entry[1].completed)
@@ -151,7 +159,9 @@ export function getCompletedChallengeIds(progress: LearnerProgressState): Readon
   );
 }
 
-export function readLearnerProgress(storage: BrowserStorage): LearnerProgressState {
+export function readLearnerProgress(
+  storage: BrowserStorage,
+): LearnerProgressState {
   const parsed = readJsonStorage(storage, progressStorageKey);
 
   if (isLearnerProgressState(parsed)) {
@@ -184,21 +194,29 @@ export function completeChallenge(
   };
 }
 
-export function resetLearnerProgress(storage: BrowserStorage): LearnerProgressState {
+export function resetLearnerProgress(
+  storage: BrowserStorage,
+): LearnerProgressState {
   storage.removeItem(progressStorageKey);
   storage.removeItem(legacyQuizProgressStorageKey);
   return { version: 1, challenges: {} };
 }
 
-function getDatasetVersions(challenge: ChallengeManifest | undefined): readonly ProgressExportDataset[] {
+function getDatasetVersions(
+  challenge: ChallengeManifest | undefined,
+): readonly ProgressExportDataset[] {
   if (challenge === undefined) {
     return [];
   }
 
   return challenge.inputs
     .filter(
-      (input): input is typeof input & Required<Pick<typeof input, 'dataset_id' | 'dataset_version'>> =>
-        typeof input.dataset_id === 'string' && typeof input.dataset_version === 'string',
+      (
+        input,
+      ): input is typeof input &
+        Required<Pick<typeof input, "dataset_id" | "dataset_version">> =>
+        typeof input.dataset_id === "string" &&
+        typeof input.dataset_version === "string",
     )
     .map((input) => ({
       dataset_id: input.dataset_id,
@@ -216,7 +234,9 @@ export function buildLearnerProgressExport(
     readonly learnerNotes?: string;
   },
 ): LearnerProgressExport {
-  const challengesById = new Map(challenges.map((challenge) => [challenge.id, challenge] as const));
+  const challengesById = new Map(
+    challenges.map((challenge) => [challenge.id, challenge] as const),
+  );
   const completedChallenges = Object.entries(progress.challenges)
     .filter((entry) => entry[1].completed)
     .sort((left, right) => left[0].localeCompare(right[0]))
@@ -236,12 +256,14 @@ export function buildLearnerProgressExport(
       };
     });
   const baseExport = {
-    format: 'looker-bi-gym.progress-export.v1',
+    format: "looker-bi-gym.progress-export.v1",
     exported_at: options.exportedAt ?? new Date().toISOString(),
     app_version: options.appVersion,
     content_version: options.contentVersion,
     storage_version: progress.version,
-    completed_challenge_ids: completedChallenges.map((challenge) => challenge.challenge_id),
+    completed_challenge_ids: completedChallenges.map(
+      (challenge) => challenge.challenge_id,
+    ),
     completed_challenges: completedChallenges,
     privacy: {
       created_locally: true,
@@ -250,15 +272,17 @@ export function buildLearnerProgressExport(
       includes_real_banking_data: false,
       includes_raw_answers: false,
     },
-  } satisfies Omit<LearnerProgressExport, 'learner_notes'>;
-  const learnerNotes = options.learnerNotes?.trim() ?? '';
+  } satisfies Omit<LearnerProgressExport, "learner_notes">;
+  const learnerNotes = options.learnerNotes?.trim() ?? "";
 
   return learnerNotes.length > 0
     ? { ...baseExport, learner_notes: learnerNotes }
     : baseExport;
 }
 
-export function getPassedQuestionIds(evaluation: QuizEvaluation): readonly string[] {
+export function getPassedQuestionIds(
+  evaluation: QuizEvaluation,
+): readonly string[] {
   return evaluation.questions
     .filter((question) => question.isAnswered && question.isCorrect)
     .map((question) => question.questionId);

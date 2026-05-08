@@ -43,9 +43,9 @@ Implement the first mechanically graded quiz challenge mode.
 
 - Quiz evaluator source: `app/src/quiz.ts`.
 - Quiz UI source: `app/src/App.tsx`.
-- Quiz test command: `pnpm test:quiz`.
-- Full check command: `pnpm check`.
-- `pnpm test:quiz`, `pnpm validate:manifests`, and `pnpm check` passed on 2026-05-05.
-- `pnpm dev` failed in the sandbox with `listen EPERM: operation not permitted 127.0.0.1:5173`.
-- An approved `pnpm dev` run started Vite at `http://127.0.0.1:5173/` on 2026-05-06.
+- Quiz test command: `bun test:quiz`.
+- Full check command: `bun check`.
+- `bun test:quiz`, `bun validate:manifests`, and `bun check` passed on 2026-05-05.
+- `bun dev` failed in the sandbox with `listen EPERM: operation not permitted 127.0.0.1:5173`.
+- An approved `bun dev` run started Vite at `http://127.0.0.1:5173/` on 2026-05-06.
 - Headless Chrome completed the orientation quiz and verified completion persisted after reload on 2026-05-06.

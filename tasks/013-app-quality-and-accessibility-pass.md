@@ -46,12 +46,12 @@ Improve usability, accessibility, and robustness of the first app release.
 
 ## Verification Notes
 
-- `pnpm typecheck` passed.
-- `pnpm lint` passed.
-- `pnpm build` passed.
-- `pnpm validate:static-links` passed.
+- `bun typecheck` passed.
+- `bun lint` passed.
+- `bun build` passed.
+- `bun validate:static-links` passed.
 - `make check` passed after the favicon rebuild.
-- `pnpm preview` was blocked by the sandbox with `listen EPERM` on `127.0.0.1:4173`; the approved run served the built app at `http://127.0.0.1:4173/`.
+- `bun preview` was blocked by the sandbox with `listen EPERM` on `127.0.0.1:4173`; the approved run served the built app at `http://127.0.0.1:4173/`.
 - Headless Chrome 148 smoke verification passed against the production preview for:
   - home route rendering;
   - skip-link focus;

@@ -1,15 +1,19 @@
-import { spawn } from 'node:child_process';
+import { spawn } from "node:child_process";
 
 const env = { ...process.env };
-delete env['NO_COLOR'];
+delete env["NO_COLOR"];
 
-const command = process.platform === 'win32' ? 'playwright.cmd' : 'playwright';
-const child = spawn(command, ['test'], {
-  env,
-  stdio: 'inherit',
-});
+const command = process.platform === "win32" ? "playwright.cmd" : "playwright";
+const child = spawn(
+  command,
+  ["test", "--config", "configs/playwright.config.ts"],
+  {
+    env,
+    stdio: "inherit",
+  },
+);
 
-child.on('exit', (code, signal) => {
+child.on("exit", (code, signal) => {
   if (signal !== null) {
     process.kill(process.pid, signal);
     return;
@@ -18,6 +22,6 @@ child.on('exit', (code, signal) => {
   process.exitCode = code ?? 1;
 });
 
-child.on('error', (error) => {
+child.on("error", (error) => {
   throw error;
 });

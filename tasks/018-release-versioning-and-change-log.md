@@ -65,13 +65,13 @@ Complete on 2026-05-09.
 
 ## Test Runs
 
-- `pnpm validate:manifests` passed and required challenge versions through the schema.
-- `pnpm validate:datasets` passed and confirmed dataset metadata versions.
-- `pnpm test:progress-export` passed after updating expectations to `0.1.0` and challenge versions.
-- `pnpm test:content-qa` passed with the new release links.
-- `pnpm typecheck` initially failed because `VITE_BUILD_REF` needed indexed access under `noPropertyAccessFromIndexSignature`; fixed by narrowing the env value.
-- `pnpm lint` initially failed on unsafe env assignment; fixed by narrowing the env value from `unknown`.
-- `pnpm typecheck` passed after the fix.
-- `pnpm lint` passed after the fix.
-- `pnpm build` passed with Vite's existing non-failing DuckDB-WASM large chunk warning.
+- `bun validate:manifests` passed and required challenge versions through the schema.
+- `bun validate:datasets` passed and confirmed dataset metadata versions.
+- `bun test:progress-export` passed after updating expectations to `0.1.0` and challenge versions.
+- `bun test:content-qa` passed with the new release links.
+- `bun typecheck` initially failed because `VITE_BUILD_REF` needed indexed access under `noPropertyAccessFromIndexSignature`; fixed by narrowing the env value.
+- `bun lint` initially failed on unsafe env assignment; fixed by narrowing the env value from `unknown`.
+- `bun typecheck` passed after the fix.
+- `bun lint` passed after the fix.
+- `bun build` passed with Vite's existing non-failing DuckDB-WASM large chunk warning.
 - `make check` passed, including manifest validation, dataset validation, lint, typecheck, quiz tests, SQL smoke tests, solution fixture tests, cloud-evidence tests, progress-export tests, content QA, validator tests, production build, and static-link validation.

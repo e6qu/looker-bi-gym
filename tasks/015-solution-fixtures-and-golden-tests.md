@@ -52,15 +52,15 @@ Completed on 2026-05-06.
   - Challenge 020 includes `known-bad-naive-owner-fanout`, which fails for `correct_latest_total`, `fanout_delta`, and `overstatement_pct`.
 - Added `app/scripts/test-solution-fixtures.ts` to load released manifests, enforce fixture coverage, run quiz/cloud-evidence/browser-SQL validators, verify dataset pins, and ensure known-bad fixtures fail for expected check IDs.
 - Moved inline SQL golden cases out of `app/scripts/test-sql.ts`; that script now remains focused on DuckDB-WASM Node runtime smoke coverage.
-- Added `pnpm test:fixtures`, Makefile `test-fixtures`, and a CI workflow step.
+- Added `bun test:fixtures`, Makefile `test-fixtures`, and a CI workflow step.
 - Documented fixture structure and authoring expectations in `challenges/solution-fixtures/README.md`, `challenges/AUTHORING.md`, and `challenges/README.md`.
 
 ## Verification Notes
 
-- `pnpm test:fixtures` passed with 6 solution fixtures for 4 released challenges.
-- Temporarily changed `first-banking-dataset/known-good.sql` to return `COUNT(*) + 1`; `pnpm test:fixtures` failed as expected, then the fixture was restored.
-- Temporarily changed `account-owner-fanout/known-bad-naive-owner-fanout.sql` into a passing solution; `pnpm test:fixtures` failed because the known-bad fixture passed, then the fixture was restored.
-- `pnpm test:sql`, `pnpm test:quiz`, `pnpm test:cloud-evidence`, and `pnpm test:validators` passed.
-- `pnpm typecheck` and `pnpm lint` passed.
-- `pnpm build` passed; Vite still reports the existing non-failing large DuckDB-WASM chunk warning.
-- `make check` passed and includes `pnpm test:fixtures`.
+- `bun test:fixtures` passed with 6 solution fixtures for 4 released challenges.
+- Temporarily changed `first-banking-dataset/known-good.sql` to return `COUNT(*) + 1`; `bun test:fixtures` failed as expected, then the fixture was restored.
+- Temporarily changed `account-owner-fanout/known-bad-naive-owner-fanout.sql` into a passing solution; `bun test:fixtures` failed because the known-bad fixture passed, then the fixture was restored.
+- `bun test:sql`, `bun test:quiz`, `bun test:cloud-evidence`, and `bun test:validators` passed.
+- `bun typecheck` and `bun lint` passed.
+- `bun build` passed; Vite still reports the existing non-failing large DuckDB-WASM chunk warning.
+- `make check` passed and includes `bun test:fixtures`.

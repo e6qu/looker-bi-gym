@@ -2,6 +2,21 @@
 
 ## 2026-05-09
 
+- Moved app tool configs into typed TypeScript files under `app/configs/` and updated Vite, ESLint, Playwright, scripts, and node tsconfig paths accordingly.
+- Replaced the deprecated TypeScript ESLint config helper with ESLint's supported `defineConfig`.
+- Added Prettier as the repository formatter with `bun run format`, `bun run format:check`, and matching Makefile targets.
+- Ran whole-repository formatting and tightened ignore files so rebuildable generated files, local caches, Playwright output, logs, TypeScript build info, and DuckDB-WASM runtime artifacts are not committed.
+- Ran `bun update --latest`; Bun reported no dependency changes beyond the added formatter tooling.
+- Verified package manager references are Bun-only outside `bun.lock`.
+- Checked GitHub action releases; updated `actions/configure-pages` to `v6`, while `actions/checkout@v6`, `oven-sh/setup-bun@v2`, `actions/upload-pages-artifact@v5`, and `actions/deploy-pages@v5` were already on current major tracks.
+- Ran `bun run format:check`; it passed.
+- Ran `bun run lint`; it passed with zero warnings.
+- Ran `bun run typecheck`; it passed.
+- Ran `bun run check`; the sandboxed run reached Playwright and failed only because local preview binding to `127.0.0.1:4173` was blocked.
+- Reran `bun run check` with approved local preview binding; it passed, including all 5 Playwright rendered UI tests, production build, and static-link validation.
+
+## 2026-05-09
+
 - Fixed remaining local warnings after the PR was opened.
 - Added `app/scripts/test-e2e.ts` to run Playwright with `NO_COLOR` removed from the spawned environment, eliminating the Node `NO_COLOR`/`FORCE_COLOR` warning during rendered UI tests.
 - Raised Vite `chunkSizeWarningLimit` to `1024` KiB so expected DuckDB-WASM worker chunks no longer emit the non-actionable large-chunk warning.
@@ -13,13 +28,13 @@
 
 ## 2026-05-09
 
-- Switched active repository tooling from pnpm to Bun only after user direction.
-- Updated root and app package scripts to use `bun run`, added root workspaces to `package.json`, removed `pnpm-lock.yaml` and `pnpm-workspace.yaml`, and generated committed `bun.lock`.
+- Switched active repository tooling from the prior package manager to Bun only after user direction.
+- Updated root and app package scripts to use `bun run`, added root workspaces to `package.json`, removed `legacy lockfile` and `legacy workspace file`, and generated committed `bun.lock`.
 - Removed `tsx` as a direct app dev dependency because Bun now runs TypeScript scripts directly.
 - Added `@playwright/test` and `bun run test:e2e`.
 - Updated CI and Pages workflows to use `oven-sh/setup-bun`, `bun install --frozen-lockfile`, Bun commands, and Playwright Chromium installation.
 - Updated Makefile targets to call Bun and added `test-e2e`.
-- Tightened `.gitignore` for generated TypeScript, Playwright output, test output, caches, logs, editor files, and legacy local pnpm store noise.
+- Tightened `.gitignore` for generated TypeScript, Playwright output, test output, caches, logs, editor files, and local package-manager cache noise.
 - Added `app/playwright.config.ts` and `app/tests/rendered-ui.spec.ts`.
 - Playwright coverage now verifies:
   - desktop and mobile home rendering with nonblank screenshots;
@@ -55,20 +70,20 @@
 - Updated progress export tests for `0.1.0` and challenge version metadata.
 - Updated quiz, validator, and cloud-evidence test challenge fixtures to include challenge versions.
 - Updated `challenges/AUTHORING.md`, `app/README.md`, and `docs/README.md` for release metadata and links.
-- Ran `pnpm validate:manifests`; it passed.
-- Ran `pnpm validate:datasets`; it passed.
-- Ran `pnpm test:progress-export`; it passed.
-- Ran `pnpm test:content-qa`; it passed.
-- Ran `pnpm typecheck`; it initially failed because `VITE_BUILD_REF` needed indexed access under `noPropertyAccessFromIndexSignature`.
-- Ran `pnpm lint`; it initially failed on unsafe env assignment in `app/src/release.ts`.
+- Ran `bun validate:manifests`; it passed.
+- Ran `bun validate:datasets`; it passed.
+- Ran `bun test:progress-export`; it passed.
+- Ran `bun test:content-qa`; it passed.
+- Ran `bun typecheck`; it initially failed because `VITE_BUILD_REF` needed indexed access under `noPropertyAccessFromIndexSignature`.
+- Ran `bun lint`; it initially failed on unsafe env assignment in `app/src/release.ts`.
 - Fixed release env handling by reading `VITE_BUILD_REF` through indexed access and narrowing it from `unknown`.
-- Reran `pnpm typecheck`; it passed.
-- Reran `pnpm lint`; it passed.
-- Ran `pnpm build`; it passed with Vite's existing non-failing DuckDB-WASM large chunk warning.
+- Reran `bun typecheck`; it passed.
+- Reran `bun lint`; it passed.
+- Ran `bun build`; it passed with Vite's existing non-failing DuckDB-WASM large chunk warning.
 - Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL smoke tests, solution fixture golden tests, cloud-evidence tests, progress-export tests, content QA, validator tests, production build, and static-link validation passed.
 - Checked ignored generated artifacts: `app/dist/`, `app/src/generated/challengeCatalog.json`, and `node_modules/` remain ignored; no WASM runtime artifacts are listed as normal git changes.
 - Updated Task 018 with completion and verification notes.
-- Reran `pnpm test:content-qa` after updating continuity/task Markdown; it passed.
+- Reran `bun test:content-qa` after updating continuity/task Markdown; it passed.
 - Committed the completed Task 017 and Task 018 changes with message `Complete content QA and release versioning`.
 
 ## 2026-05-06
@@ -83,13 +98,13 @@
 - Added synthetic-data boundary notes to tutorial files that did not previously state the boundary directly.
 - Updated `datasets/deposits-seed/v0.1.1/README.md` to state that the changed-output fixture is not derived from real bank data.
 - Added `app/scripts/test-content-qa.ts`, which validates required-tool declarations, optional-tool boundary language, regulatory-context link coverage, regulation disclaimer language, tutorial synthetic-data language, dataset synthetic-only README/metadata language, and internal Markdown links.
-- Added `pnpm test:content-qa` at root and app levels.
+- Added `bun test:content-qa` at root and app levels.
 - Added Makefile `test-content-qa` and included it in `make test` / `make check`.
-- Added a CI workflow step for `pnpm test:content-qa`.
-- Ran `pnpm test:content-qa`; the first run failed because the new check rejected "no Google Cloud CLI" wording, so the assertion was tightened to block required CLI/key wording while allowing explicit no-CLI boundaries.
-- Ran `pnpm test:content-qa`; the second run failed because `regulations/README.md` did not include the exact model-risk disclaimer boundary, so the disclaimer was updated and the test reran successfully.
+- Added a CI workflow step for `bun test:content-qa`.
+- Ran `bun test:content-qa`; the first run failed because the new check rejected "no Google Cloud CLI" wording, so the assertion was tightened to block required CLI/key wording while allowing explicit no-CLI boundaries.
+- Ran `bun test:content-qa`; the second run failed because `regulations/README.md` did not include the exact model-risk disclaimer boundary, so the disclaimer was updated and the test reran successfully.
 - Ran text-search checks for tutorial synthetic-data language and regulation disclaimer language; no gaps remained.
-- Ran `pnpm validate:manifests`, `pnpm typecheck`, `pnpm lint`, and `pnpm build`; they passed.
+- Ran `bun validate:manifests`, `bun typecheck`, `bun lint`, and `bun build`; they passed.
 - Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL smoke tests, solution fixture golden tests, cloud-evidence tests, progress-export tests, content QA, validator tests, production build, and static-link validation passed.
 - The production build still reports Vite's existing non-failing large DuckDB-WASM chunk warning.
 - Updated Task 017 with completion and verification notes.
@@ -106,14 +121,14 @@
 - Updated Settings reset copy to clarify that resetting browser progress does not delete exported JSON files already saved outside the browser.
 - Added export styling in `app/src/styles.css`.
 - Added `app/scripts/test-progress-export.ts`, which completes a representative challenge in memory, validates the export JSON structure, checks IDs/flags/timestamps/dataset versions, verifies optional notes behavior, resets local progress, confirms the built export remains separate from storage, and checks that credentials, storage keys, raw answers, sensitive synthetic field names, and hidden internals are not exported.
-- Added `pnpm test:progress-export` at root and app levels.
+- Added `bun test:progress-export` at root and app levels.
 - Added Makefile `test-progress-export` and included it in `make test` / `make check`.
-- Added a CI workflow step for `pnpm test:progress-export`.
+- Added a CI workflow step for `bun test:progress-export`.
 - Updated `app/README.md` with the progress export format, local-only privacy boundary, preview behavior, and no-import note.
-- Ran `pnpm test:progress-export`; the first run failed because the test incorrectly rejected the explicit privacy field name `includes_credentials: false`; tightened the assertion to reject actual secret-like content and reran successfully.
-- Ran `pnpm typecheck`; it passed.
-- Ran `pnpm lint`; the first run failed on unnecessary optional chaining in `test-progress-export.ts`; tightened the test fixture narrowing and reran successfully.
-- Ran `pnpm build`; it passed with Vite's existing non-failing large DuckDB-WASM chunk warning.
+- Ran `bun test:progress-export`; the first run failed because the test incorrectly rejected the explicit privacy field name `includes_credentials: false`; tightened the assertion to reject actual secret-like content and reran successfully.
+- Ran `bun typecheck`; it passed.
+- Ran `bun lint`; the first run failed on unnecessary optional chaining in `test-progress-export.ts`; tightened the test fixture narrowing and reran successfully.
+- Ran `bun build`; it passed with Vite's existing non-failing large DuckDB-WASM chunk warning.
 - Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL smoke tests, solution fixture golden tests, cloud-evidence tests, progress-export tests, validator tests, production build, and static-link validation passed.
 - Updated Task 016 with completion and verification notes.
 
@@ -134,17 +149,17 @@
   - verifies browser SQL fixture dataset pins against manifest dataset references;
   - evaluates quiz answers, browser SQL result validators, cloud-evidence checks, and challenge questions without browser storage.
 - Moved inline SQL known-good/known-bad golden cases out of `app/scripts/test-sql.ts`; that script now remains focused on DuckDB-WASM Node runtime smoke coverage.
-- Added `pnpm test:fixtures` at the root and app package levels.
+- Added `bun test:fixtures` at the root and app package levels.
 - Added Makefile `test-fixtures` and included it in `make test` / `make check`.
-- Added a CI workflow step for `pnpm test:fixtures`.
+- Added a CI workflow step for `bun test:fixtures`.
 - Updated `challenges/AUTHORING.md` and `challenges/README.md` to point authors at solution fixtures and the new release coverage rule.
-- Ran `pnpm test:fixtures`; it passed with 6 solution fixtures for 4 released challenges.
-- Ran `pnpm typecheck`; it initially failed on strict JSON narrowing and exact optional property handling in `test-solution-fixtures.ts`; tightened parsing and reran successfully.
-- Ran `pnpm lint`; it initially failed on unsafe narrowing, exhaustive switch handling, boolean template formatting, and console output in `test-solution-fixtures.ts`; fixed those issues and reran successfully.
-- Ran `pnpm test:sql`, `pnpm test:quiz`, `pnpm test:cloud-evidence`, and `pnpm test:validators`; they passed.
-- Temporarily changed `first-banking-dataset/known-good.sql` to return `COUNT(*) + 1`; `pnpm test:fixtures` failed as expected, then the fixture was restored.
-- Temporarily changed `account-owner-fanout/known-bad-naive-owner-fanout.sql` into a passing solution; `pnpm test:fixtures` failed because the known-bad fixture passed, then the fixture was restored.
-- Ran `pnpm build`; it passed with Vite's existing non-failing large DuckDB-WASM chunk warning.
+- Ran `bun test:fixtures`; it passed with 6 solution fixtures for 4 released challenges.
+- Ran `bun typecheck`; it initially failed on strict JSON narrowing and exact optional property handling in `test-solution-fixtures.ts`; tightened parsing and reran successfully.
+- Ran `bun lint`; it initially failed on unsafe narrowing, exhaustive switch handling, boolean template formatting, and console output in `test-solution-fixtures.ts`; fixed those issues and reran successfully.
+- Ran `bun test:sql`, `bun test:quiz`, `bun test:cloud-evidence`, and `bun test:validators`; they passed.
+- Temporarily changed `first-banking-dataset/known-good.sql` to return `COUNT(*) + 1`; `bun test:fixtures` failed as expected, then the fixture was restored.
+- Temporarily changed `account-owner-fanout/known-bad-naive-owner-fanout.sql` into a passing solution; `bun test:fixtures` failed because the known-bad fixture passed, then the fixture was restored.
+- Ran `bun build`; it passed with Vite's existing non-failing large DuckDB-WASM chunk warning.
 - Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL smoke tests, solution fixture golden tests, cloud-evidence tests, validator tests, production build, and static-link validation passed.
 - Updated Task 015 with completion and verification notes.
 
@@ -165,12 +180,12 @@
   - recorded that `first-banking-dataset` and `account-owner-fanout` fixtures/checks would need refresh if challenges are repointed.
 - Generalized `app/scripts/validate-datasets.ts` so it discovers every committed `datasets/{dataset_id}/{version}/metadata.json` and validates identity, version format, synthetic-only flags, regulatory tags, table grains, primary keys, sensitive-field declarations, row counts, relationships, control totals, known issues, fanout negative tests, and versioning metadata.
 - Updated Task 015 notes to carry forward the fixture-refresh implications of `deposits-seed/v0.1.1`.
-- Ran `pnpm validate:datasets`; it passed.
-- Ran `pnpm validate:manifests`; it passed and confirmed released manifests still resolve dataset references.
-- Ran `pnpm typecheck`; it passed.
-- Ran `pnpm test:sql`; it passed with released challenges still pinned to `deposits-seed` `v0.1.0`.
-- Ran `pnpm lint`; the first post-edit run failed on a `@typescript-eslint/array-type` style issue in `validate-datasets.ts`; changed the non-simple array type to `ReadonlyArray`.
-- Reran `pnpm lint`; it passed.
+- Ran `bun validate:datasets`; it passed.
+- Ran `bun validate:manifests`; it passed and confirmed released manifests still resolve dataset references.
+- Ran `bun typecheck`; it passed.
+- Ran `bun test:sql`; it passed with released challenges still pinned to `deposits-seed` `v0.1.0`.
+- Ran `bun lint`; the first post-edit run failed on a `@typescript-eslint/array-type` style issue in `validate-datasets.ts`; changed the non-simple array type to `ReadonlyArray`.
+- Reran `bun lint`; it passed.
 - Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL tests, cloud-evidence tests, validator tests, production build, and static-link validation passed.
 - The production build still reports Vite's non-failing large DuckDB-WASM chunk warning.
 - Updated Task 014 with completion and verification notes.
@@ -185,14 +200,14 @@
 - Added `app/public/favicon.svg` and linked it from `app/index.html`, fixing the production-preview browser console/network 404 for `/favicon.ico`.
 - Added browser compatibility and no-third-party-analytics notes to `app/README.md`.
 - Added `docs/10-app-quality-browser-qa.md` and linked it from `docs/README.md`.
-- Ran `pnpm typecheck`; it passed.
-- Ran `pnpm lint`; it passed.
+- Ran `bun typecheck`; it passed.
+- Ran `bun lint`; it passed.
 - Ran `make check`; it passed before the favicon fix and again after the final rebuild.
-- Ran `pnpm preview`; the sandboxed run failed with `listen EPERM: operation not permitted 127.0.0.1:4173`.
-- Reran `pnpm preview` with approval; Vite preview served the built app at `http://127.0.0.1:4173/`.
+- Ran `bun preview`; the sandboxed run failed with `listen EPERM: operation not permitted 127.0.0.1:4173`.
+- Reran `bun preview` with approval; Vite preview served the built app at `http://127.0.0.1:4173/`.
 - Created temporary Chrome DevTools Protocol smoke tooling under `/private/tmp` for verification only.
 - Ran the Chrome smoke once; it failed because Chrome requested `/favicon.ico` and the built preview returned 404.
-- Added the favicon, rebuilt with `pnpm build`, and reran the Chrome smoke successfully.
+- Added the favicon, rebuilt with `bun build`, and reran the Chrome smoke successfully.
 - Chrome 148 smoke verification covered home, docs, challenge index, orientation quiz, SQL challenge, cloud-evidence route, skip-link focus, route focus, unlabeled controls, SQL query execution, 390 px responsive layout, console errors, and unexpected external/mutation network requests.
 - Ran `rg` source inspection for `fetch`, `XMLHttpRequest`, `sendBeacon`, WebSocket, analytics, telemetry, and local storage boundaries. No external learner-data transmission paths were found; the app uses browser-local `localStorage`, DuckDB `registerFileText`, and a local DuckDB Web Worker.
 - Tried Safari verification through `safaridriver`; it failed because Safari's persistent "Allow remote automation" setting is disabled.
@@ -201,7 +216,7 @@
 - Updated Task 013 with implementation and verification notes.
 
 - Started and completed Task 012 implementation.
-- Added `.github/workflows/ci.yml` with a `pnpm` CI gate for:
+- Added `.github/workflows/ci.yml` with a `bun` CI gate for:
   - frozen-lockfile install
   - challenge manifest validation
   - synthetic dataset validation
@@ -213,22 +228,22 @@
 - Added `.github/workflows/pages.yml` to build `app/dist`, upload it as the GitHub Pages artifact, and deploy through the `github-pages` environment.
 - Added `app/scripts/validate-static-links.ts`.
 - Added root/app `validate:static-links` scripts and the Makefile target.
-- Updated `make check` and `pnpm check` to run built static asset-link validation after the production build.
+- Updated `make check` and `bun check` to run built static asset-link validation after the production build.
 - Updated `app/scripts/validate-challenge-manifests.ts` so declared dataset IDs and versions must resolve to `datasets/{dataset_id}/{dataset_version}/metadata.json`.
 - Added `docs/09-github-pages-deployment.md` and linked it from `docs/README.md`.
 - Expanded `app/README.md` with GitHub Actions, Pages setup, `GITHUB_PAGES_BASE`, and post-deploy verification notes.
-- Ran `pnpm validate:manifests`; it passed with dataset-reference validation.
-- Ran `pnpm validate:datasets`; it passed.
-- Ran `pnpm lint`; the first run failed because `validate-static-links.ts` threw a replacement error without preserving the caught cause. Added the cause and reran successfully.
-- Ran `pnpm typecheck`; it passed.
-- Ran `pnpm test:quiz`, `pnpm test:sql`, `pnpm test:cloud-evidence`, and `pnpm test:validators`; they passed.
-- Ran `pnpm build`; it passed with Vite's non-failing large DuckDB-WASM chunk warning.
-- Ran `CI=true pnpm install --frozen-lockfile`; the sandboxed run failed with `ENOTFOUND registry.npmjs.org`, then the approved network run passed. The first plain `pnpm install --frozen-lockfile` attempt also failed because pnpm refused a non-TTY module purge without `CI=true`.
+- Ran `bun validate:manifests`; it passed with dataset-reference validation.
+- Ran `bun validate:datasets`; it passed.
+- Ran `bun lint`; the first run failed because `validate-static-links.ts` threw a replacement error without preserving the caught cause. Added the cause and reran successfully.
+- Ran `bun typecheck`; it passed.
+- Ran `bun test:quiz`, `bun test:sql`, `bun test:cloud-evidence`, and `bun test:validators`; they passed.
+- Ran `bun build`; it passed with Vite's non-failing large DuckDB-WASM chunk warning.
+- Ran `CI=true bun install --frozen-lockfile`; the sandboxed run failed with `ENOTFOUND package registry`, then the approved network run passed. The first plain `bun install --frozen-lockfile` attempt also failed because bun refused a non-TTY module purge without `CI=true`.
 - Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL tests, cloud-evidence tests, validator tests, production build, and static-link validation passed.
-- Temporarily changed `challenges/manifests/first-banking-dataset.yaml` to reference `dataset_version: v9.9.9`; `pnpm validate:manifests` failed with the expected missing dataset reference error. Restored the manifest and reran `pnpm validate:manifests`; it passed.
-- Ran `GITHUB_PAGES_BASE=/looker-bi-gym/ pnpm build`; it passed.
-- Ran `GITHUB_PAGES_BASE=/looker-bi-gym/ pnpm validate:static-links`; it passed.
-- Reran default `pnpm build` and `pnpm validate:static-links`; both passed.
+- Temporarily changed `challenges/manifests/first-banking-dataset.yaml` to reference `dataset_version: v9.9.9`; `bun validate:manifests` failed with the expected missing dataset reference error. Restored the manifest and reran `bun validate:manifests`; it passed.
+- Ran `GITHUB_PAGES_BASE=/looker-bi-gym/ bun build`; it passed.
+- Ran `GITHUB_PAGES_BASE=/looker-bi-gym/ bun validate:static-links`; it passed.
+- Reran default `bun build` and `bun validate:static-links`; both passed.
 - Updated Task 012 with implementation and verification notes. Live GitHub Pages URL and deep-link verification remain pending until the workflow runs in GitHub.
 
 - Started and completed Task 011.
@@ -244,8 +259,8 @@
 - Added validation-only draft manifest `challenges/drafts/minimal-authoring-draft.yaml` created from the guide.
 - Updated `app/scripts/validate-challenge-manifests.ts` so `challenges/drafts/` YAML files are schema-validated and included in unique-ID checks, but only `challenges/manifests/` files are emitted to ignored `app/src/generated/challengeCatalog.json`.
 - Updated `challenges/README.md` to link the authoring guide and explain draft validation behavior.
-- Ran `pnpm validate:manifests`; it passed with the draft included.
-- Ran `pnpm build`; it passed with draft validation in the build path.
+- Ran `bun validate:manifests`; it passed with the draft included.
+- Ran `bun build`; it passed with draft validation in the build path.
 - Verified with `rg` that the draft ID is absent from the generated browser catalog.
 - Verified with `rg` that the guide links to dataset, regulation, task, tutorial, and manifest-schema references.
 - Verified with `rg` that the guide includes required safety and required-tools policy language.
@@ -272,11 +287,11 @@
 - The cloud-evidence page renders challenge instructions, evidence fields, credential-boundary questions, validation results, local completion flags, and a visible separation between mechanically verified and self-attested evidence.
 - Expanded the challenge manifest schema and shared manifest types for richer evidence fields and cloud-evidence check types.
 - Updated `challenges/manifests/looker-studio-evidence.yaml` into `030 - Looker Studio Evidence Pattern`.
-- Added `app/scripts/test-cloud-evidence.ts` and wired `pnpm test:cloud-evidence` into root/app scripts and `make test` / `make check`.
-- Ran `pnpm validate:manifests`; it passed.
-- Ran `pnpm test:cloud-evidence`; it passed.
-- Ran `pnpm typecheck`; the first attempt failed because a test fixture accessed `control_result` through dot notation and did not narrow an optional indexed value. Updated the test to use bracket access and explicit narrowing, then it passed.
-- Ran `pnpm lint`; the first attempt failed because of unnecessary parse-result conditionals and a possible undefined string concatenation in the CSV parser. Updated the parser/test structure, then it passed.
+- Added `app/scripts/test-cloud-evidence.ts` and wired `bun test:cloud-evidence` into root/app scripts and `make test` / `make check`.
+- Ran `bun validate:manifests`; it passed.
+- Ran `bun test:cloud-evidence`; it passed.
+- Ran `bun typecheck`; the first attempt failed because a test fixture accessed `control_result` through dot notation and did not narrow an optional indexed value. Updated the test to use bracket access and explicit narrowing, then it passed.
+- Ran `bun lint`; the first attempt failed because of unnecessary parse-result conditionals and a possible undefined string concatenation in the CSV parser. Updated the parser/test structure, then it passed.
 - Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL tests, cloud-evidence tests, validator tests, and production build passed.
 - The production build still reports Vite's non-failing large DuckDB-WASM chunk warning.
 - Verified by source inspection that cloud-evidence processing added no network calls and uses local React state plus the existing local progress storage only.
@@ -305,18 +320,18 @@
 - Expanded `app/scripts/test-sql.ts` so it runs manifest-backed known-good and known-bad SQL fixtures for:
   - `first-banking-dataset`
   - `account-owner-fanout`
-- Ran `pnpm validate:manifests`; it passed.
-- Ran `pnpm test:quiz`; it passed.
-- Ran `pnpm test:validators`; it passed.
-- Ran `pnpm test:sql`; the first attempt failed because DuckDB aggregate `SUM` values were not plain numeric values in the Node test runtime.
+- Ran `bun validate:manifests`; it passed.
+- Ran `bun test:quiz`; it passed.
+- Ran `bun test:validators`; it passed.
+- Ran `bun test:sql`; the first attempt failed because DuckDB aggregate `SUM` values were not plain numeric values in the Node test runtime.
 - Updated the fanout starter and SQL fixtures to cast aggregate totals to `DOUBLE`.
-- Reran `pnpm test:sql`; it passed.
-- Ran `pnpm lint`; the first attempt failed while testing a broader validator numeric coercion change, then passed after removing that unnecessary validator change and casting fanout aggregates explicitly.
-- Ran `pnpm typecheck`; it passed.
+- Reran `bun test:sql`; it passed.
+- Ran `bun lint`; the first attempt failed while testing a broader validator numeric coercion change, then passed after removing that unnecessary validator change and casting fanout aggregates explicitly.
+- Ran `bun typecheck`; it passed.
 - Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL tests, validator tests, and production build passed.
 - The production build still reports Vite's non-failing large DuckDB-WASM chunk warning.
-- Tried `pnpm preview` in the sandbox; it failed with `listen EPERM: operation not permitted 127.0.0.1:4173`.
-- Reran `pnpm preview` with approval; Vite preview served the built app at `http://127.0.0.1:4173/`.
+- Tried `bun preview` in the sandbox; it failed with `listen EPERM: operation not permitted 127.0.0.1:4173`.
+- Reran `bun preview` with approval; Vite preview served the built app at `http://127.0.0.1:4173/`.
 - Launched headless Chrome with approval for built-site verification.
 - Ran a Chrome DevTools Protocol verification against the built preview:
   - completed `000 - Orientation Quiz`
@@ -350,13 +365,13 @@
 - Expanded the challenge manifest schema with `scalar-aggregate` and `sensitive-field-exclusion` check types.
 - Added validator and progress fixtures in `app/scripts/test-validators.ts`.
 - Added `test:validators` scripts and Makefile target.
-- Ran `pnpm test:validators`; it passed.
-- Ran `pnpm typecheck`; it passed after removing a node-test import path that pulled Vite browser-only types into the node TypeScript project.
-- Ran `pnpm lint`; it passed.
+- Ran `bun test:validators`; it passed.
+- Ran `bun typecheck`; it passed after removing a node-test import path that pulled Vite browser-only types into the node TypeScript project.
+- Ran `bun lint`; it passed.
 - Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL tests, validator tests, and production build passed.
 - The production build still reports Vite's non-failing large DuckDB-WASM chunk warning.
-- Tried `pnpm dev` in the sandbox; it failed with `listen EPERM: operation not permitted 127.0.0.1:5173`.
-- Reran `pnpm dev` with approval; Vite started at `http://127.0.0.1:5173/`.
+- Tried `bun dev` in the sandbox; it failed with `listen EPERM: operation not permitted 127.0.0.1:5173`.
+- Reran `bun dev` with approval; Vite started at `http://127.0.0.1:5173/`.
 - Confirmed the dev server returned HTTP 200 with an approved local `curl`.
 - Ran a headless Chrome verification through the Chrome DevTools protocol:
   - completed the orientation quiz
@@ -370,11 +385,11 @@
 - Updated Tasks 006 and 007 to close the prior manual refresh verification gaps.
 - Updated Task 008 with completion notes.
 
-- Retried `pnpm dev`; the sandboxed run still failed with `listen EPERM: operation not permitted 127.0.0.1:5173`.
-- Reran `pnpm dev` with approval; Vite started at `http://127.0.0.1:5173/`.
+- Retried `bun dev`; the sandboxed run still failed with `listen EPERM: operation not permitted 127.0.0.1:5173`.
+- Reran `bun dev` with approval; Vite started at `http://127.0.0.1:5173/`.
 - Checked for existing browser automation tooling:
-  - `pnpm exec playwright --version` failed because Playwright is not installed.
-  - `pnpm exec vitest --version` failed because Vitest is not installed.
+  - `bun exec playwright --version` failed because Playwright is not installed.
+  - `bun exec vitest --version` failed because Vitest is not installed.
 - Confirmed the dev server was no longer reachable after the session ended.
 - Added Git discipline to `AGENTS.md`: keep `.gitignore` current and commit after each completed task.
 - Expanded `.gitignore` with coverage and local environment file exclusions.
@@ -436,7 +451,7 @@
   - `rg -n "Before starting any task|After finishing or pausing any task|BUGS.md" AGENTS.md tasks/README.md`
 - Added Task 001 verification notes and marked it complete.
 - Started and completed Task 002.
-- Added root `package.json`, `pnpm-workspace.yaml`, and `.gitignore`.
+- Added root `package.json`, `legacy workspace file`, and `.gitignore`.
 - Created the static app under `app/`:
   - `app/package.json`
   - `app/index.html`
@@ -449,11 +464,11 @@
   - `app/README.md`
 - Built a React + TypeScript + Vite shell with hash routes for Home, Docs, Regulations, Tutorials, Challenges, and Settings.
 - Added visible UI statements for synthetic data, browser-local state, no backend, no credentials, and explicit optional-tool requirements.
-- Installed `pnpm@10.12.1` globally because `pnpm` and `corepack` were not available on PATH.
-- Ran `pnpm install`; the first sandboxed attempt failed with `ENOTFOUND registry.npmjs.org`, then the approved network run succeeded.
-- Ran `pnpm typecheck`; initial run failed because `vite.config.ts` needed Node type definitions. Added `@types/node` and reran successfully.
-- Ran `pnpm build`; it passed.
-- Ran `pnpm preview`; the sandboxed attempt failed with `listen EPERM` on localhost, then the approved run served the app at `http://127.0.0.1:4173/`.
+- Installed `Bun` globally because `bun` and `corepack` were not available on PATH.
+- Ran `bun install`; the first sandboxed attempt failed with `ENOTFOUND package registry`, then the approved network run succeeded.
+- Ran `bun typecheck`; initial run failed because `vite.config.ts` needed Node type definitions. Added `@types/node` and reran successfully.
+- Ran `bun build`; it passed.
+- Ran `bun preview`; the sandboxed attempt failed with `listen EPERM` on localhost, then the approved run served the app at `http://127.0.0.1:4173/`.
 - Changed the default production Vite base path from `/looker-bi-gym/` to relative `./` after local preview showed absolute project-path assets were awkward to verify locally. `GITHUB_PAGES_BASE` remains available for deployments that require absolute asset URLs.
 - Verified served HTML and built JS assets returned HTTP 200 from the local preview server.
 - Started and completed Task 003.
@@ -473,24 +488,24 @@
   - zero warnings
 - Tightened TypeScript compiler settings with additional strict flags including `exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`, and `noPropertyAccessFromIndexSignature`.
 - Added root/app `lint` and `check` scripts.
-- Queried npm registry live for current top-level package versions and updated exact pins:
+- Queried package registry live for current top-level package versions and updated exact pins:
   - `react@19.2.5`
   - `react-dom@19.2.5`
   - `vite@8.0.10`
   - `@vitejs/plugin-react@6.0.1`
   - `typescript@6.0.3`
-  - `pnpm@10.33.3`
+  - `Bun`
   - plus current direct lint/type packages used by app/tooling code.
 - Moved build/tooling imports to top-level `devDependencies` and kept runtime imports in top-level `dependencies`.
 - Verified every external package imported by app source, Vite config, or ESLint config is directly declared in `app/package.json`.
-- Ran `pnpm check`; lint, typecheck, and build passed.
-- Ran `pnpm outdated --recursive`; no outdated top-level packages were reported.
+- Ran `bun check`; lint, typecheck, and build passed.
+- Ran `bun outdated --recursive`; no outdated top-level packages were reported.
 
 ## Tried And Failed
 
-- The first `pnpm install` attempt failed in the sandbox because registry DNS/network access was blocked. Reran with approval and succeeded.
-- The first `pnpm typecheck` attempt failed because `vite.config.ts` referenced `process.env` without Node types. Added `@types/node` and succeeded.
-- The first `pnpm preview` attempt failed in the sandbox because localhost binding was blocked. Reran with approval and succeeded.
+- The first `bun install` attempt failed in the sandbox because registry DNS/network access was blocked. Reran with approval and succeeded.
+- The first `bun typecheck` attempt failed because `vite.config.ts` referenced `process.env` without Node types. Added `@types/node` and succeeded.
+- The first `bun preview` attempt failed in the sandbox because localhost binding was blocked. Reran with approval and succeeded.
 - The initial absolute GitHub Pages base path made Vite preview serve awkward asset URLs locally. Switched the default build base to relative paths and documented the override.
 - Initial strict lint/typecheck runs surfaced issues with optional properties, nullable checks, broad environment access, and TypeScript project scoping. Fixed the code/config instead of relaxing the rules.
 - Initial large patch for the plan/task additions failed because one context block in `PLAN_BI_TUTORIAL_APP.md` did not match exactly. Reapplied the changes in smaller patches successfully.
@@ -511,26 +526,26 @@
 - Added TypeScript manifest validation/generation script at `app/scripts/validate-challenge-manifests.ts`.
 - Added root and app `validate:manifests` scripts.
 - Updated the app Challenges page to render from generated manifests instead of hard-coded placeholder challenge cards.
-- Added direct app dev dependencies for validation tooling after live npm registry checks:
+- Added direct app dev dependencies for validation tooling after live package registry checks:
   - `ajv@8.20.0`
   - `tsx@4.21.0`
   - `yaml@2.8.4`
-- Updated `pnpm-lock.yaml` with `pnpm install`.
-- Ran `pnpm validate:manifests`; it passed and regenerated the challenge catalog.
-- Ran `pnpm check`; lint, typecheck, manifest validation, and Vite build passed.
+- Updated `legacy lockfile` with `bun install`.
+- Ran `bun validate:manifests`; it passed and regenerated the challenge catalog.
+- Ran `bun check`; lint, typecheck, manifest validation, and Vite build passed.
 - Confirmed built assets and generated catalog contain the three example challenge titles.
 - Confirmed generated manifests include required fields and `required_tools`.
 
 ## Task 004 Tried And Failed
 
-- The first `pnpm view ajv version && pnpm view yaml version && pnpm view tsx version` attempt failed in the sandbox with `ENOTFOUND registry.npmjs.org`. Reran with approved network access and confirmed current exact versions.
-- The first `pnpm install` attempt failed because pnpm could not purge modules without a TTY.
-- The `CI=true pnpm install` attempt failed because CI mode enabled frozen lockfile checks after package metadata changed.
-- The `CI=true pnpm install --no-frozen-lockfile` attempt failed in the sandbox with registry DNS errors. Reran with approved network access and succeeded.
-- The first `pnpm validate:manifests` attempt failed because the `tsx` CLI opened an IPC pipe blocked by the sandbox. Switched the script to `node --import tsx scripts/validate-challenge-manifests.ts`, which runs in the sandbox.
+- The first `bun view ajv version && bun view yaml version && bun view tsx version` attempt failed in the sandbox with `ENOTFOUND package registry`. Reran with approved network access and confirmed current exact versions.
+- The first `bun install` attempt failed because bun could not purge modules without a TTY.
+- The `CI=true bun install` attempt failed because CI mode enabled frozen lockfile checks after package metadata changed.
+- The `CI=true bun install --no-frozen-lockfile` attempt failed in the sandbox with registry DNS errors. Reran with approved network access and succeeded.
+- The first `bun validate:manifests` attempt failed because the `tsx` CLI opened an IPC pipe blocked by the sandbox. Switched the script to `node --import tsx scripts/validate-challenge-manifests.ts`, which runs in the sandbox.
 - The first direct validator run exposed Ajv strict schema handling for union `type` arrays. Enabled `allowUnionTypes` explicitly.
-- The first `pnpm check` attempt failed lint because the validator function was typed too loosely around `validate.errors`. Switched to Ajv's `ValidateFunction`.
-- The second `pnpm check` attempt failed typecheck because the parsed JSON Schema was still `unknown`. Typed that boundary as Ajv's `AnySchema`.
+- The first `bun check` attempt failed lint because the validator function was typed too loosely around `validate.errors`. Switched to Ajv's `ValidateFunction`.
+- The second `bun check` attempt failed typecheck because the parsed JSON Schema was still `unknown`. Typed that boundary as Ajv's `AnySchema`.
 
 ## Task 005 - Synthetic Dataset Seed
 
@@ -557,19 +572,19 @@
   - Semi-additive daily balance snapshots.
 - Added `app/scripts/validate-datasets.ts`.
 - Added root and app `validate:datasets` scripts.
-- Updated app build to run `pnpm validate:manifests`, `pnpm validate:datasets`, typecheck, and Vite build.
+- Updated app build to run `bun validate:manifests`, `bun validate:datasets`, typecheck, and Vite build.
 - Aligned `challenges/manifests/first-banking-dataset.yaml` with the final seed table names:
   - `account_owners`
   - `account_daily_balances`
 - Regenerated `app/src/generated/challengeCatalog.json`.
-- Ran `pnpm validate:datasets`; it passed.
-- Ran `pnpm validate:manifests`; it passed after manifest alignment.
-- Ran `pnpm check`; lint, typecheck, manifest validation, dataset validation, and Vite build passed.
+- Ran `bun validate:datasets`; it passed.
+- Ran `bun validate:manifests`; it passed after manifest alignment.
+- Ran `bun check`; lint, typecheck, manifest validation, dataset validation, and Vite build passed.
 
 ## Task 005 Tried And Failed
 
-- The first `pnpm validate:datasets` run failed because `A1006` had balances but no owner row, so the naive owner join dropped that account and produced `159800` instead of the expected `164800`. Added owner `C0008` for `A1006` and updated the owner row count.
-- The first `pnpm check` after adding dataset validation failed lint on a nested readonly array type in `validate-datasets.ts`. Changed it to `ReadonlyArray<Readonly<Record<string, string>>>`.
+- The first `bun validate:datasets` run failed because `A1006` had balances but no owner row, so the naive owner join dropped that account and produced `159800` instead of the expected `164800`. Added owner `C0008` for `A1006` and updated the owner row count.
+- The first `bun check` after adding dataset validation failed lint on a nested readonly array type in `validate-datasets.ts`. Changed it to `ReadonlyArray<Readonly<Record<string, string>>>`.
 
 ## Task 006 - Quiz Challenge Runtime
 
@@ -582,21 +597,21 @@
 - Added `app/scripts/test-quiz.ts` for deterministic quiz evaluator tests.
 - Added root and app `test:quiz` scripts.
 - Updated the orientation quiz manifest with select-all and numeric questions so all supported quiz answer types are represented.
-- Regenerated `app/src/generated/challengeCatalog.json` with `pnpm validate:manifests`.
+- Regenerated `app/src/generated/challengeCatalog.json` with `bun validate:manifests`.
 - Updated the Challenges page so cards link to `#/challenges/{challenge-id}` detail routes.
 - Added a quiz challenge detail renderer for `quiz` manifests.
 - Added browser-local answer state and per-question feedback.
 - Added a narrow quiz completion store in browser `localStorage` under `looker-bi-gym.quiz-progress.v1`.
 - Added a non-quiz challenge detail placeholder for later runtime tasks.
-- Ran `pnpm test:quiz`; it passed.
-- Ran `pnpm validate:manifests`; it passed.
-- Ran `pnpm check`; lint, typecheck, manifest validation, dataset validation, and Vite build passed.
+- Ran `bun test:quiz`; it passed.
+- Ran `bun validate:manifests`; it passed.
+- Ran `bun check`; lint, typecheck, manifest validation, dataset validation, and Vite build passed.
 
 ## Task 006 Tried And Failed
 
-- The first `pnpm check` after adding quiz UI failed lint because `Array.isArray` narrowed a quiz response to an unsafe array type. Reworked the helper to narrow the `QuizResponse` union without unsafe array return.
-- `pnpm dev` failed in the sandbox with `listen EPERM: operation not permitted 127.0.0.1:5173`.
-- An escalated `pnpm dev` request was rejected by the environment, so manual browser completion and refresh verification could not be run in this turn.
+- The first `bun check` after adding quiz UI failed lint because `Array.isArray` narrowed a quiz response to an unsafe array type. Reworked the helper to narrow the `QuizResponse` union without unsafe array return.
+- `bun dev` failed in the sandbox with `listen EPERM: operation not permitted 127.0.0.1:5173`.
+- An escalated `bun dev` request was rejected by the environment, so manual browser completion and refresh verification could not be run in this turn.
 
 ## Task 007 - Browser SQL Runtime
 
@@ -610,13 +625,13 @@
 - Added `app/scripts/test-sql.ts` for offline SQL smoke tests using the node-blocking DuckDB-WASM bindings.
 - Added root and app `test:sql` scripts.
 - Added the `@duckdb/duckdb-wasm` dependency.
-- Ran `pnpm test:sql`; it passed.
-- Ran `pnpm test:quiz`; it passed.
-- Ran `pnpm check`; lint, typecheck, manifest validation, dataset validation, and Vite build passed.
+- Ran `bun test:sql`; it passed.
+- Ran `bun test:quiz`; it passed.
+- Ran `bun check`; lint, typecheck, manifest validation, dataset validation, and Vite build passed.
 
 ## Task 007 Tried And Failed
 
-- The first `pnpm test:sql` run failed because the node-blocking bindings needed an explicit instantiate step before `connect()`. Added the instantiate call and reran successfully.
-- The first `pnpm check` after adding the SQL runtime failed lint on array type conventions, direct React state updates in an effect, and object stringification. Tightened the types, removed the effect-local loading reset, and switched the result formatter to explicit primitive handling.
-- `pnpm dev` still cannot bind `127.0.0.1:5173` in the sandbox, so manual browser refresh verification remains pending.
-- The escalated `pnpm dev` request was rejected by the environment, so the browser refresh check could not be run here.
+- The first `bun test:sql` run failed because the node-blocking bindings needed an explicit instantiate step before `connect()`. Added the instantiate call and reran successfully.
+- The first `bun check` after adding the SQL runtime failed lint on array type conventions, direct React state updates in an effect, and object stringification. Tightened the types, removed the effect-local loading reset, and switched the result formatter to explicit primitive handling.
+- `bun dev` still cannot bind `127.0.0.1:5173` in the sandbox, so manual browser refresh verification remains pending.
+- The escalated `bun dev` request was rejected by the environment, so the browser refresh check could not be run here.

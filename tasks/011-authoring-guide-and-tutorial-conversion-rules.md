@@ -47,8 +47,8 @@ Document how to add new tutorials and convert existing markdown tutorials into c
 
 ## Verification Notes
 
-- `pnpm validate:manifests` passed with the draft manifest included in validation.
-- `pnpm build` passed with draft validation included in the build path.
+- `bun validate:manifests` passed with the draft manifest included in validation.
+- `bun build` passed with draft validation included in the build path.
 - `make check` passed, including manifest validation, dataset validation, lint, typecheck, quiz tests, SQL tests, cloud-evidence tests, validator tests, and production build.
 - Verified with `rg` that the guide links to dataset, regulation, task, tutorial, and manifest-schema references.
 - Verified with `rg` that the guide explicitly warns against real banking data, credentials, secrets, API keys, esoteric tooling, highly platform-specific tooling, and missing `required_tools` policy language.

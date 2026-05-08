@@ -1,9 +1,9 @@
-import * as duckdb from '@duckdb/duckdb-wasm';
-import duckdbEhWasmUrl from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url';
-import duckdbEhWorkerUrl from '@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?url';
-import duckdbMvpWasmUrl from '@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url';
-import duckdbMvpWorkerUrl from '@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?url';
-import { seedDataset } from './seedDataset';
+import * as duckdb from "@duckdb/duckdb-wasm";
+import duckdbEhWasmUrl from "@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url";
+import duckdbEhWorkerUrl from "@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?url";
+import duckdbMvpWasmUrl from "@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url";
+import duckdbMvpWorkerUrl from "@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?url";
+import { seedDataset } from "./seedDataset";
 
 type ArrowFieldLike = {
   readonly name: string;
@@ -48,7 +48,10 @@ type DuckDbLike = {
 };
 
 type DuckDbAsyncLike = DuckDbLike & {
-  readonly instantiate: (mainModule: string, pthreadWorker?: string) => Promise<void>;
+  readonly instantiate: (
+    mainModule: string,
+    pthreadWorker?: string,
+  ) => Promise<void>;
 };
 
 export type SqlRuntime = {
@@ -74,39 +77,43 @@ const manualBundles: duckdb.DuckDBBundles = {
 let runtimePromise: Promise<SqlRuntime> | undefined;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
-  return value !== null && typeof value === 'object' && !Array.isArray(value);
+  return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
 function getRecordString(value: Record<string, unknown>, key: string): string {
   const fieldValue = value[key];
 
-  if (typeof fieldValue === 'string') {
+  if (typeof fieldValue === "string") {
     return fieldValue;
   }
 
   if (
-    typeof fieldValue === 'number' ||
-    typeof fieldValue === 'bigint' ||
-    typeof fieldValue === 'boolean'
+    typeof fieldValue === "number" ||
+    typeof fieldValue === "bigint" ||
+    typeof fieldValue === "boolean"
   ) {
     return String(fieldValue);
   }
 
-  if (fieldValue === null || fieldValue === undefined || typeof fieldValue === 'object') {
-    return '';
+  if (
+    fieldValue === null ||
+    fieldValue === undefined ||
+    typeof fieldValue === "object"
+  ) {
+    return "";
   }
 
-  return '';
+  return "";
 }
 
 function getRecordNumber(value: Record<string, unknown>, key: string): number {
   const fieldValue = value[key];
 
-  if (typeof fieldValue === 'number') {
+  if (typeof fieldValue === "number") {
     return fieldValue;
   }
 
-  if (typeof fieldValue === 'bigint') {
+  if (typeof fieldValue === "bigint") {
     return Number(fieldValue);
   }
 
@@ -115,7 +122,7 @@ function getRecordNumber(value: Record<string, unknown>, key: string): number {
 }
 
 function normalizeSql(sql: string): string {
-  return sql.trim().replace(/;+\s*$/, '');
+  return sql.trim().replace(/;+\s*$/, "");
 }
 
 function buildPreviewQuery(sql: string): string {
@@ -126,8 +133,14 @@ async function createDuckDb(): Promise<DuckDbLike> {
   const bundle = await duckdb.selectBundle(manualBundles);
   const worker = new Worker(bundle.mainWorker ?? duckdbEhWorkerUrl);
   const logger = new duckdb.ConsoleLogger();
-  const database = new duckdb.AsyncDuckDB(logger, worker) as unknown as DuckDbAsyncLike;
-  await database.instantiate(bundle.mainModule, bundle.pthreadWorker ?? undefined);
+  const database = new duckdb.AsyncDuckDB(
+    logger,
+    worker,
+  ) as unknown as DuckDbAsyncLike;
+  await database.instantiate(
+    bundle.mainModule,
+    bundle.pthreadWorker ?? undefined,
+  );
   return database;
 }
 
@@ -145,15 +158,21 @@ async function loadSeedTables(
         `CREATE OR REPLACE TABLE "${table.tableName}" AS SELECT * FROM read_csv_auto('${registeredPath}', header=true);`,
       );
 
-      const schemaResult = await connection.query(`PRAGMA table_info('${table.tableName}');`);
-      const columns = schemaResult.toArray().map((row) => getRecordString(row.toJSON(), 'name'));
+      const schemaResult = await connection.query(
+        `PRAGMA table_info('${table.tableName}');`,
+      );
+      const columns = schemaResult
+        .toArray()
+        .map((row) => getRecordString(row.toJSON(), "name"));
 
       const countResult = await connection.query(
         `SELECT count(*) AS row_count FROM "${table.tableName}";`,
       );
       const countRows = countResult.toArray();
       const firstRow = countRows[0]?.toJSON();
-      const rowCount = isRecord(firstRow) ? getRecordNumber(firstRow, 'row_count') : 0;
+      const rowCount = isRecord(firstRow)
+        ? getRecordNumber(firstRow, "row_count")
+        : 0;
 
       tableSchemas.push({
         tableName: table.tableName,
@@ -213,5 +232,5 @@ export async function runSqlPreview(
 
 export function isSqlPreviewSupported(sql: string): boolean {
   const normalized = normalizeSql(sql).toLowerCase();
-  return normalized.startsWith('select') || normalized.startsWith('with');
+  return normalized.startsWith("select") || normalized.startsWith("with");
 }

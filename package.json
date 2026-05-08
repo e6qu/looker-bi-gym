@@ -12,6 +12,8 @@
     "build": "bun run --filter @looker-bi-gym/app build",
     "check": "bun run --filter @looker-bi-gym/app check",
     "lint": "bun run --filter @looker-bi-gym/app lint",
+    "format": "bun run --filter @looker-bi-gym/app format",
+    "format:check": "bun run --filter @looker-bi-gym/app format:check",
     "test:quiz": "bun run --filter @looker-bi-gym/app test:quiz",
     "test:sql": "bun run --filter @looker-bi-gym/app test:sql",
     "test:fixtures": "bun run --filter @looker-bi-gym/app test:fixtures",

@@ -51,33 +51,33 @@ Use `capstone` when completion depends on multiple artifacts from earlier challe
 
 Every manifest must include:
 
-| Field | Rule |
-| --- | --- |
-| `id` | Stable kebab-case identifier used by routes, progress, flags, and fixtures. Do not rename after release. |
-| `version` | Challenge contract version in `vMAJOR.MINOR.PATCH` format. Bump when instructions, checks, flags, expected outputs, required evidence, required tools, or pinned dataset versions change. |
-| `title` | Human-readable title, usually prefixed with the sequence number. |
-| `area` | One of the schema areas: orientation/source data, warehouse/metrics, dashboard design, governance/operations, or capstone. |
-| `mode` | One of `quiz`, `browser-sql`, `browser-config`, `cloud-evidence`, or `capstone`. |
-| `difficulty` | `intro`, `beginner`, `intermediate`, `advanced`, or `capstone`. |
-| `estimated_minutes` | Realistic learner time from 1 to 480 minutes. |
-| `prerequisites` | Challenge IDs that should be complete first, or `[]`. |
-| `business_scenario` | Banking BI scenario with enough context to make the task realistic. |
-| `regulatory_context` | Any relevant tags from `BNR`, `DORA`, `EBA`, `FGDB`, `GDPR`, `PSD2`, or `Romania Law 190`. Use an empty list only when no tag matters. |
-| `inputs` | Datasets, tables, markdown, browser forms, or cloud UI sources. Include grain, date semantics, dataset version, and sensitive fields where relevant. |
-| `outputs` | The artifact the learner creates, such as `answer-set`, `sql-result`, `sql-text`, `dashboard-evidence`, `metric-contract`, or `written-note`. |
-| `checks` | Deterministic or manual checks tied to outputs or evidence. Required checks gate completion unless marked advisory. |
-| `questions` | At least one question. Use supported runtime types for released challenges unless the mode has custom handling. |
-| `required_tools` | `none` for browser-only work, otherwise an exact tool array. |
-| `flag` | Local flag ID and criteria. Criteria must match what the app or documented review can verify. |
+| Field                | Rule                                                                                                                                                                                      |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                 | Stable kebab-case identifier used by routes, progress, flags, and fixtures. Do not rename after release.                                                                                  |
+| `version`            | Challenge contract version in `vMAJOR.MINOR.PATCH` format. Bump when instructions, checks, flags, expected outputs, required evidence, required tools, or pinned dataset versions change. |
+| `title`              | Human-readable title, usually prefixed with the sequence number.                                                                                                                          |
+| `area`               | One of the schema areas: orientation/source data, warehouse/metrics, dashboard design, governance/operations, or capstone.                                                                |
+| `mode`               | One of `quiz`, `browser-sql`, `browser-config`, `cloud-evidence`, or `capstone`.                                                                                                          |
+| `difficulty`         | `intro`, `beginner`, `intermediate`, `advanced`, or `capstone`.                                                                                                                           |
+| `estimated_minutes`  | Realistic learner time from 1 to 480 minutes.                                                                                                                                             |
+| `prerequisites`      | Challenge IDs that should be complete first, or `[]`.                                                                                                                                     |
+| `business_scenario`  | Banking BI scenario with enough context to make the task realistic.                                                                                                                       |
+| `regulatory_context` | Any relevant tags from `BNR`, `DORA`, `EBA`, `FGDB`, `GDPR`, `PSD2`, or `Romania Law 190`. Use an empty list only when no tag matters.                                                    |
+| `inputs`             | Datasets, tables, markdown, browser forms, or cloud UI sources. Include grain, date semantics, dataset version, and sensitive fields where relevant.                                      |
+| `outputs`            | The artifact the learner creates, such as `answer-set`, `sql-result`, `sql-text`, `dashboard-evidence`, `metric-contract`, or `written-note`.                                             |
+| `checks`             | Deterministic or manual checks tied to outputs or evidence. Required checks gate completion unless marked advisory.                                                                       |
+| `questions`          | At least one question. Use supported runtime types for released challenges unless the mode has custom handling.                                                                           |
+| `required_tools`     | `none` for browser-only work, otherwise an exact tool array.                                                                                                                              |
+| `flag`               | Local flag ID and criteria. Criteria must match what the app or documented review can verify.                                                                                             |
 
 Optional fields:
 
-| Field | Rule |
-| --- | --- |
-| `hints` | Staged help, with `level` from 1 to 5. Do not reveal the full solution in the first hint. |
-| `evidence` | Required for most cloud-evidence challenges. Describe the pasted value and whether it is self-attested. |
-| `rubric` | Use for manual-review or capstone scoring notes. |
-| `next_challenges` | Challenge IDs that continue the path. |
+| Field             | Rule                                                                                                    |
+| ----------------- | ------------------------------------------------------------------------------------------------------- |
+| `hints`           | Staged help, with `level` from 1 to 5. Do not reveal the full solution in the first hint.               |
+| `evidence`        | Required for most cloud-evidence challenges. Describe the pasted value and whether it is self-attested. |
+| `rubric`          | Use for manual-review or capstone scoring notes.                                                        |
+| `next_challenges` | Challenge IDs that continue the path.                                                                   |
 
 ## Required Tools Policy
 
@@ -142,26 +142,26 @@ Quiz checks use `quiz-answer`; the quiz runtime currently supports `multiple-cho
 
 Browser SQL result validators:
 
-| Check type | Expected shape |
-| --- | --- |
-| `required-column` | String or string array of result columns that must exist. |
-| `forbidden-column` | String or string array of result columns that must not exist. |
-| `row-count` | Integer for exact count, or `{ operator: equals|at-least|at-most, value: integer }`. |
-| `unique-key` | String or string array of columns that must uniquely identify rows. |
-| `aggregate-total` | `{ column, value, tolerance }` checked against one result row. |
-| `scalar-aggregate` | Same shape as `aggregate-total`; use for one-row aggregate outputs. |
+| Check type                  | Expected shape                                                                                 |
+| --------------------------- | ---------------------------------------------------------------------------------------------- | -------- | --------------------------- |
+| `required-column`           | String or string array of result columns that must exist.                                      |
+| `forbidden-column`          | String or string array of result columns that must not exist.                                  |
+| `row-count`                 | Integer for exact count, or `{ operator: equals                                                | at-least | at-most, value: integer }`. |
+| `unique-key`                | String or string array of columns that must uniquely identify rows.                            |
+| `aggregate-total`           | `{ column, value, tolerance }` checked against one result row.                                 |
+| `scalar-aggregate`          | Same shape as `aggregate-total`; use for one-row aggregate outputs.                            |
 | `sensitive-field-exclusion` | String array of forbidden sensitive fields, combined with sensitive fields declared on inputs. |
 
 Cloud evidence validators:
 
-| Check type | Expected shape |
-| --- | --- |
-| `sql-text-contains` | String or string array that pasted SQL must contain. |
-| `tabular-required-columns` | String array of required CSV/JSON evidence columns. |
-| `numeric-range` | `{ min, max }` with at least one bound. |
-| `report-url-format` | `{ require_https: boolean, allowed_hosts: [...] }`. |
-| `checklist-confirmed` | `true` when the learner must confirm an inspectable condition. |
-| `evidence-format` | String or string array that text evidence must mention. |
+| Check type                 | Expected shape                                                 |
+| -------------------------- | -------------------------------------------------------------- |
+| `sql-text-contains`        | String or string array that pasted SQL must contain.           |
+| `tabular-required-columns` | String array of required CSV/JSON evidence columns.            |
+| `numeric-range`            | `{ min, max }` with at least one bound.                        |
+| `report-url-format`        | `{ require_https: boolean, allowed_hosts: [...] }`.            |
+| `checklist-confirmed`      | `true` when the learner must confirm an inspectable condition. |
+| `evidence-format`          | String or string array that text evidence must mention.        |
 
 Schema-only or future/manual checks include `reconciliation`, `manual-review`, and some question types such as `matching` and `short-evidence`. Do not rely on them as the only release gate until a runtime or manual procedure is documented in the task file.
 
