@@ -65,6 +65,7 @@ jobs:
         run: bun run test:validators
 
       - name: Install Playwright Browser
+        working-directory: app
         run: bunx playwright install --with-deps chromium
 
       - name: Test Rendered UI

@@ -9,6 +9,7 @@
 - Ran `bun run lint`; it passed.
 - Ran `bun run test:e2e` with approved local preview binding; all 5 rendered UI tests passed without the previous warning lines.
 - Ran final `bun run check` with approved local preview binding; it passed without the previous warning lines.
+- Checked failed GitHub Actions log; CI installed Playwright Chromium from the repository root, which resolved the wrong Playwright browser revision. Updated CI and Pages workflow Playwright install steps to run from `app/`, matching the pinned app Playwright dependency.
 
 ## 2026-05-09
 
