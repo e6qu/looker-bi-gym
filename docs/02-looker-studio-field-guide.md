@@ -2,6 +2,8 @@
 
 Looker Studio is a reporting and dashboarding tool that can connect directly to BigQuery. It is useful for quick, shareable, low-cost dashboards, especially when the data has already been modeled for BI.
 
+Training boundary: credential and sharing examples are technical BI learning notes, not privacy, compliance, security, legal, regulatory, accounting, or model-risk advice. Validate production choices with the appropriate institutional teams.
+
 ## Core Objects
 
 Connector:

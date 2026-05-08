@@ -2,6 +2,8 @@
 
 Area: B - Warehouse Modeling And Metrics
 
+Synthetic-data boundary: reproduce blend and fanout examples on synthetic banking sources only. Do not use real or masked production banking data.
+
 Builds on:
 
 - [02 - Build A BI-Friendly Model](02-build-a-bi-friendly-model.md)

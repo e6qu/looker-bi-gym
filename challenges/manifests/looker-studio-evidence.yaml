@@ -1,4 +1,5 @@
 id: looker-studio-evidence
+version: v0.1.0
 title: 030 - Looker Studio Evidence Pattern
 area: looker-studio-and-dashboard-design
 mode: cloud-evidence
@@ -6,7 +7,7 @@ difficulty: intermediate
 estimated_minutes: 35
 prerequisites:
   - first-banking-dataset
-business_scenario: Practice collecting inspectable evidence from a browser-based BI workflow without storing credentials in the app.
+business_scenario: Practice collecting inspectable evidence from a browser-based synthetic BI workflow without storing credentials in the app.
 regulatory_context:
   - BNR
   - GDPR

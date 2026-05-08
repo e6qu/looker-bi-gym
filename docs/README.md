@@ -13,6 +13,9 @@ Start here:
 - [08 - EU And Romanian Regulatory Context](08-eu-romania-regulatory-context.md): EU/Romanian banking, privacy, AML, payments, DORA, reporting, and deposit-guarantee topics for BI.
 - [09 - GitHub Pages Deployment](09-github-pages-deployment.md): CI, Pages publishing, base-path behavior, and deployment verification.
 - [10 - App Quality And Browser QA](10-app-quality-browser-qa.md): keyboard, responsive, compatibility, and network-boundary checks for the static app.
+- [11 - Content QA Checklist](11-content-qa-checklist.md): repeatable checks for synthetic-data language, required tools, regulation links, disclaimers, and Markdown links.
+- [Release Versioning](../VERSIONING.md): app/content, challenge, dataset, and regulation-brief version policy.
+- [Changelog](../CHANGELOG.md): tracked release contents and known verification gaps.
 
 The docs are literature notes and synthesis, not copied article archives. Official Google sources are the authority for product behavior; banking/regulatory sources are contextual anchors, not implementation advice. Community sources are used to identify recurring field problems.
 

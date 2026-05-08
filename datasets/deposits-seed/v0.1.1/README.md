@@ -1,6 +1,6 @@
 # Deposits Seed v0.1.1
 
-This is a synthetic changed-output fixture for dataset versioning tests. It is not used by released browser challenges.
+This is a synthetic changed-output fixture for dataset versioning tests. It is not derived from real bank data and is not used by released browser challenges.
 
 `v0.1.1` copies `v0.1.0` and adds one later balance snapshot date, `2026-04-01`, to `account_daily_balances.csv`.
 

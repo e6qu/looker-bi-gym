@@ -32,9 +32,10 @@ import {
   resetLearnerProgress,
   writeLearnerProgress,
 } from './progress';
+import { getRegulatoryContextReference } from './regulatoryContext';
+import { appVersion, contentVersion, formatVersionLabel } from './release';
 import { getSqlRuntime, isSqlPreviewSupported, runSqlPreview } from './sqlRuntime';
 import { evaluateSqlResultChecks } from './validators';
-import appPackage from '../package.json';
 import type { JSX } from 'react';
 import type { ChallengeManifest } from './challengeTypes';
 import type { CloudEvidenceAnswerState, CloudEvidenceValue } from './cloudEvidence';
@@ -77,8 +78,6 @@ const contentRouteIds: ReadonlySet<RouteId> = new Set<RouteId>([
   'regulations',
   'tutorials',
 ]);
-const appVersion = appPackage.version;
-const contentVersion = appPackage.version;
 
 const principles: readonly string[] = [
   'Static GitHub Pages app',
@@ -144,6 +143,10 @@ function ChallengeList({
             <div>
               <dt>Time</dt>
               <dd>{challenge.estimated_minutes} min</dd>
+            </div>
+            <div>
+              <dt>Version</dt>
+              <dd>{challenge.version}</dd>
             </div>
             <div>
               <dt>Tools</dt>
@@ -243,6 +246,10 @@ function ChallengeInstructions({
 }: {
   readonly challenge: ChallengeManifest;
 }): JSX.Element {
+  const regulatoryReferences = challenge.regulatory_context
+    .map((tag) => getRegulatoryContextReference(tag))
+    .filter((reference) => reference !== undefined);
+
   return (
     <section className="challengeInstructions" aria-label="Challenge instructions">
       <div>
@@ -293,6 +300,24 @@ function ChallengeInstructions({
             ))}
           </ul>
         </section>
+
+        {regulatoryReferences.length > 0 ? (
+          <section>
+            <h2>Regulatory Context</h2>
+            <ul className="regulatoryContextList">
+              {regulatoryReferences.map((reference) => (
+                <li key={reference.tag}>
+                  <a href={reference.href}>{reference.tag}</a>
+                  <span>{reference.label}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="instructionNote">
+              Training context only; validate production interpretation with the appropriate
+              institutional teams.
+            </p>
+          </section>
+        ) : null}
       </div>
 
       {challenge.hints !== undefined && challenge.hints.length > 0 ? (
@@ -369,6 +394,10 @@ function QuizChallengePage({
           <div>
             <dt>Tools</dt>
             <dd>{formatRequiredTools(challenge.required_tools)}</dd>
+          </div>
+          <div>
+            <dt>Version</dt>
+            <dd>{challenge.version}</dd>
           </div>
           <div>
             <dt>Status</dt>
@@ -514,6 +543,10 @@ function UnsupportedChallengePage({
         <div>
           <dt>Tools</dt>
           <dd>{formatRequiredTools(challenge.required_tools)}</dd>
+        </div>
+        <div>
+          <dt>Version</dt>
+          <dd>{challenge.version}</dd>
         </div>
       </dl>
     </section>
@@ -791,6 +824,10 @@ function CloudEvidencePage({
           <div>
             <dt>Tools</dt>
             <dd>{formatRequiredTools(challenge.required_tools)}</dd>
+          </div>
+          <div>
+            <dt>Version</dt>
+            <dd>{challenge.version}</dd>
           </div>
           <div>
             <dt>Status</dt>
@@ -1092,6 +1129,10 @@ function SqlChallengePage({
           <div>
             <strong>Tools</strong>
             <span>{formatRequiredTools(challenge.required_tools)}</span>
+          </div>
+          <div>
+            <strong>Version</strong>
+            <span>{challenge.version}</span>
           </div>
           <div>
             <strong>Loaded dataset</strong>
@@ -1585,6 +1626,10 @@ function SettingsPage(): JSX.Element {
           <p>Local browser storage only. Nothing is transmitted by this static app.</p>
         </div>
         <div>
+          <h3>Release</h3>
+          <p>{formatVersionLabel()}</p>
+        </div>
+        <div>
           <h3>Tools</h3>
           <p>
             The default path requires no learner-installed tools. Optional tools must be
@@ -1756,6 +1801,10 @@ export function App(): JSX.Element {
         </div>
         <AppPage route={activeRoute} />
       </main>
+      <footer className="appFooter">
+        <span>{formatVersionLabel()}</span>
+        <span>Synthetic training content only.</span>
+      </footer>
     </div>
   );
 }

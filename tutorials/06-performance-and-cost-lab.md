@@ -2,6 +2,8 @@
 
 Area: C - Looker Studio Dashboards
 
+Synthetic-data boundary: run performance and cost examples on synthetic banking sources and generated job metadata only. Do not use real or masked production banking data.
+
 Builds on:
 
 - [03 - First Executive Dashboard](03-first-executive-dashboard.md)

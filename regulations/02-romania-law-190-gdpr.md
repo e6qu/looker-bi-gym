@@ -1,5 +1,7 @@
 # 02 - Romania Law 190/2018 For GDPR Implementation
 
+Training boundary: this brief is technical orientation for synthetic BI training, not legal, regulatory, accounting, privacy, compliance, or model-risk advice. Validate production interpretations with the bank's institutional teams.
+
 ## Coordinates
 
 - Jurisdiction: Romania.

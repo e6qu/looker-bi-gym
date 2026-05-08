@@ -1,4 +1,5 @@
 id: account-owner-fanout
+version: v0.1.0
 title: 020 - Account Owner Fanout CTF
 area: warehouse-modeling-and-metrics
 mode: browser-sql
@@ -6,7 +7,7 @@ difficulty: beginner
 estimated_minutes: 30
 prerequisites:
   - first-banking-dataset
-business_scenario: Prove how a naive balance-to-owner join overstates latest deposit balances, then return a reconciled one-row result that keeps account-date grain intact.
+business_scenario: Prove how a naive balance-to-owner join overstates latest synthetic deposit balances, then return a reconciled one-row result that keeps account-date grain intact.
 regulatory_context:
   - BNR
   - FGDB
@@ -15,7 +16,7 @@ required_tools: none
 inputs:
   - id: deposits_seed
     type: dataset
-    description: Static deposits dataset with daily balance snapshots and many-to-many account ownership rows.
+    description: Static synthetic deposits dataset with daily balance snapshots and many-to-many account ownership rows.
     dataset_id: deposits-seed
     dataset_version: v0.1.0
     tables:

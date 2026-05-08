@@ -2,6 +2,8 @@
 
 Sources were reviewed on 2026-05-05. Official Google documentation is authoritative for product behavior. Community sources are included for recurring patterns and pain points.
 
+Training boundary: banking and regulatory source links are contextual anchors for technical learning, not implementation advice or legal, regulatory, accounting, privacy, compliance, or model-risk advice.
+
 ## Google: Looker Studio
 
 - Looker Studio data sources: https://cloud.google.com/looker/docs/studio/about-data-sources

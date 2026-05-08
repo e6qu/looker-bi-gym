@@ -45,6 +45,7 @@ assert.equal(evaluateQuestion(numericQuestion, '3.2').isCorrect, false);
 
 const challenge: ChallengeManifest = {
   id: 'quiz-test',
+  version: 'v0.1.0',
   title: 'Quiz Test',
   area: 'orientation-and-source-data',
   mode: 'quiz',

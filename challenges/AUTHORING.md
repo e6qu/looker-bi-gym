@@ -54,6 +54,7 @@ Every manifest must include:
 | Field | Rule |
 | --- | --- |
 | `id` | Stable kebab-case identifier used by routes, progress, flags, and fixtures. Do not rename after release. |
+| `version` | Challenge contract version in `vMAJOR.MINOR.PATCH` format. Bump when instructions, checks, flags, expected outputs, required evidence, required tools, or pinned dataset versions change. |
 | `title` | Human-readable title, usually prefixed with the sequence number. |
 | `area` | One of the schema areas: orientation/source data, warehouse/metrics, dashboard design, governance/operations, or capstone. |
 | `mode` | One of `quiz`, `browser-sql`, `browser-config`, `cloud-evidence`, or `capstone`. |
@@ -201,6 +202,7 @@ When converting a markdown tutorial into a challenge:
 
 ```yaml
 id: example-orientation-check
+version: v0.1.0
 title: 000 - Example Orientation Check
 area: orientation-and-source-data
 mode: quiz
@@ -247,6 +249,7 @@ flag:
 
 ```yaml
 id: example-balance-profile
+version: v0.1.0
 title: 010 - Example Balance Profile
 area: orientation-and-source-data
 mode: browser-sql
@@ -311,6 +314,7 @@ flag:
 
 ```yaml
 id: example-dashboard-evidence
+version: v0.1.0
 title: 030 - Example Dashboard Evidence
 area: looker-studio-and-dashboard-design
 mode: cloud-evidence

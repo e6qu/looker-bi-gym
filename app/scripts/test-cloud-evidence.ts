@@ -8,6 +8,7 @@ import type { CloudEvidenceAnswerState } from '../src/cloudEvidence';
 
 const challenge: ChallengeManifest = {
   id: 'cloud-evidence-test',
+  version: 'v0.1.0',
   title: 'Cloud Evidence Test',
   area: 'looker-studio-and-dashboard-design',
   mode: 'cloud-evidence',

@@ -22,6 +22,7 @@ export type ProgressExportDataset = {
 
 export type ProgressExportChallenge = {
   readonly challenge_id: string;
+  readonly challenge_version: string | null;
   readonly title: string | null;
   readonly mode: ChallengeManifest['mode'] | null;
   readonly completed_at: string;
@@ -224,6 +225,7 @@ export function buildLearnerProgressExport(
 
       return {
         challenge_id: challengeId,
+        challenge_version: challenge?.version ?? null,
         title: challenge?.title ?? null,
         mode: challenge?.mode ?? null,
         completed_at: challengeProgress.completedAt,

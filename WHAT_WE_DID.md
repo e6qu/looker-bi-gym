@@ -1,6 +1,57 @@
 # What We Did
 
+## 2026-05-09
+
+- Started and completed Task 018 implementation.
+- Set the first tracked app/content release version to `0.1.0` in root and app package metadata.
+- Added `VERSIONING.md` with app/content, challenge catalog, dataset, regulation-brief, and release-checklist policy.
+- Added `CHANGELOG.md` with the `0.1.0` release contents, verification gates, known verification gaps, and breaking-change notes.
+- Added `app/src/release.ts` so the static app exposes app version, content version, and optional `VITE_BUILD_REF` build reference.
+- Updated the app footer and Settings page to display app/content/build metadata.
+- Required top-level challenge `version` metadata in `challenges/schema/challenge-manifest.schema.json`.
+- Added `version: v0.1.0` to released challenge manifests and the validation-only draft manifest.
+- Added challenge versions to challenge list cards, challenge detail pages, and progress export completed-challenge entries.
+- Updated progress export tests for `0.1.0` and challenge version metadata.
+- Updated quiz, validator, and cloud-evidence test challenge fixtures to include challenge versions.
+- Updated `challenges/AUTHORING.md`, `app/README.md`, and `docs/README.md` for release metadata and links.
+- Ran `pnpm validate:manifests`; it passed.
+- Ran `pnpm validate:datasets`; it passed.
+- Ran `pnpm test:progress-export`; it passed.
+- Ran `pnpm test:content-qa`; it passed.
+- Ran `pnpm typecheck`; it initially failed because `VITE_BUILD_REF` needed indexed access under `noPropertyAccessFromIndexSignature`.
+- Ran `pnpm lint`; it initially failed on unsafe env assignment in `app/src/release.ts`.
+- Fixed release env handling by reading `VITE_BUILD_REF` through indexed access and narrowing it from `unknown`.
+- Reran `pnpm typecheck`; it passed.
+- Reran `pnpm lint`; it passed.
+- Ran `pnpm build`; it passed with Vite's existing non-failing DuckDB-WASM large chunk warning.
+- Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL smoke tests, solution fixture golden tests, cloud-evidence tests, progress-export tests, content QA, validator tests, production build, and static-link validation passed.
+- Checked ignored generated artifacts: `app/dist/`, `app/src/generated/challengeCatalog.json`, and `node_modules/` remain ignored; no WASM runtime artifacts are listed as normal git changes.
+- Updated Task 018 with completion and verification notes.
+- Reran `pnpm test:content-qa` after updating continuity/task Markdown; it passed.
+- Committed the completed Task 017 and Task 018 changes with message `Complete content QA and release versioning`.
+
 ## 2026-05-06
+
+- Started and completed Task 017 implementation.
+- Added `docs/11-content-qa-checklist.md` and linked it from `docs/README.md`.
+- Added `app/src/regulatoryContext.ts` with regulation brief links for BNR, DORA, EBA, FGDB, GDPR, PSD2, and Romania Law 190.
+- Updated challenge instructions in `app/src/App.tsx` and `app/src/styles.css` so regulatory-context tags render as links to the relevant regulation briefs with a visible training-context note.
+- Tightened challenge copy in `account-owner-fanout.yaml` and `looker-studio-evidence.yaml` so the synthetic-data boundary is explicit.
+- Added training-boundary disclaimers to every individual regulation brief and tightened the regulations index disclaimer to include model-risk advice.
+- Added training-boundary notes to docs that discuss credentials, warehouse access, regulatory sources, or production-style controls.
+- Added synthetic-data boundary notes to tutorial files that did not previously state the boundary directly.
+- Updated `datasets/deposits-seed/v0.1.1/README.md` to state that the changed-output fixture is not derived from real bank data.
+- Added `app/scripts/test-content-qa.ts`, which validates required-tool declarations, optional-tool boundary language, regulatory-context link coverage, regulation disclaimer language, tutorial synthetic-data language, dataset synthetic-only README/metadata language, and internal Markdown links.
+- Added `pnpm test:content-qa` at root and app levels.
+- Added Makefile `test-content-qa` and included it in `make test` / `make check`.
+- Added a CI workflow step for `pnpm test:content-qa`.
+- Ran `pnpm test:content-qa`; the first run failed because the new check rejected "no Google Cloud CLI" wording, so the assertion was tightened to block required CLI/key wording while allowing explicit no-CLI boundaries.
+- Ran `pnpm test:content-qa`; the second run failed because `regulations/README.md` did not include the exact model-risk disclaimer boundary, so the disclaimer was updated and the test reran successfully.
+- Ran text-search checks for tutorial synthetic-data language and regulation disclaimer language; no gaps remained.
+- Ran `pnpm validate:manifests`, `pnpm typecheck`, `pnpm lint`, and `pnpm build`; they passed.
+- Ran `make check`; manifest validation, dataset validation, lint, typecheck, quiz tests, SQL smoke tests, solution fixture golden tests, cloud-evidence tests, progress-export tests, content QA, validator tests, production build, and static-link validation passed.
+- The production build still reports Vite's existing non-failing large DuckDB-WASM chunk warning.
+- Updated Task 017 with completion and verification notes.
 
 - Started and completed Task 016 implementation.
 - Added `looker-bi-gym.progress-export.v1` via `buildLearnerProgressExport` in `app/src/progress.ts`.

@@ -1,5 +1,7 @@
 # 09 - Romania BNR Law 312/2004
 
+Training boundary: this brief is technical orientation for synthetic BI training, not legal, regulatory, accounting, privacy, compliance, or model-risk advice. Validate production interpretations with the bank's institutional teams.
+
 ## Coordinates
 
 - Jurisdiction: Romania.

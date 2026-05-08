@@ -63,6 +63,9 @@ jobs:
       - name: Test Progress Export
         run: pnpm test:progress-export
 
+      - name: Test Content QA
+        run: pnpm test:content-qa
+
       - name: Test Browser Validators
         run: pnpm test:validators
 

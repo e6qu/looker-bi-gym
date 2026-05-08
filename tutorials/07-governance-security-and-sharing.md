@@ -2,6 +2,8 @@
 
 Area: D - Governance, Security, And Operations
 
+Synthetic-data boundary: governance and sharing exercises use synthetic banking sources only. Do not use real or masked production banking data.
+
 Builds on:
 
 - [02 - Build A BI-Friendly Model](02-build-a-bi-friendly-model.md)

@@ -6,6 +6,7 @@
   "additionalProperties": false,
   "required": [
     "id",
+    "version",
     "title",
     "area",
     "mode",
@@ -26,6 +27,11 @@
       "type": "string",
       "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
       "description": "Stable challenge identifier used for routes, local progress, flags, and fixture references."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Challenge contract version. Bump when learner-visible instructions, checks, flags, expected outputs, or required evidence changes."
     },
     "title": {
       "type": "string",

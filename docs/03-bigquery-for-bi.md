@@ -2,6 +2,8 @@
 
 BigQuery is well suited to BI because it stores large analytical datasets, executes SQL at scale, supports views and materialized views, integrates with Looker Studio and Looker, and exposes job metadata for cost/performance monitoring.
 
+Training boundary: warehouse, access, cost, and monitoring examples are technical BI learning notes, not privacy, compliance, security, legal, regulatory, accounting, or model-risk advice. Validate production choices with the appropriate institutional teams.
+
 ## Serving-Layer Pattern
 
 A BI-friendly BigQuery project should separate layers:

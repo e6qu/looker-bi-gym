@@ -2,6 +2,8 @@
 
 Area: C - Looker Studio Dashboards
 
+Synthetic-data boundary: build the dashboard from predefined synthetic banking serving sources only. Do not use real or masked production banking data.
+
 Builds on:
 
 - [02 - Build A BI-Friendly Model](02-build-a-bi-friendly-model.md)

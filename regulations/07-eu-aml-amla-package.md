@@ -1,5 +1,7 @@
 # 07 - EU AML Package And AMLA
 
+Training boundary: this brief is technical orientation for synthetic BI training, not legal, regulatory, accounting, privacy, compliance, or model-risk advice. Validate production interpretations with the bank's institutional teams.
+
 ## Coordinates
 
 - Jurisdiction: European Union.

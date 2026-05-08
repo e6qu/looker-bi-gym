@@ -1,5 +1,7 @@
 # 11 - BCBS 239 Risk Data Aggregation And Reporting
 
+Training boundary: this brief is technical orientation for synthetic BI training, not legal, regulatory, accounting, privacy, compliance, or model-risk advice. Validate production interpretations with the bank's institutional teams.
+
 ## Coordinates
 
 - Framework: Basel Committee on Banking Supervision, Principles for effective risk data aggregation and risk reporting.

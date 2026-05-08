@@ -1,5 +1,7 @@
 # 05 - EBA Supervisory Reporting, COREP, FINREP, Pillar 3
 
+Training boundary: this brief is technical orientation for synthetic BI training, not legal, regulatory, accounting, privacy, compliance, or model-risk advice. Validate production interpretations with the bank's institutional teams.
+
 ## Coordinates
 
 - Jurisdiction: European Union.

@@ -31,6 +31,7 @@ class MemoryStorage implements BrowserStorage {
 
 const challenge: ChallengeManifest = {
   id: 'validator-test',
+  version: 'v0.1.0',
   title: 'Validator Test',
   area: 'orientation-and-source-data',
   mode: 'browser-sql',

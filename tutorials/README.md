@@ -2,6 +2,8 @@
 
 The tutorial sequence is now layered: each task consumes predefined synthetic banking sources, produces a reusable artifact, and becomes the prerequisite for later work.
 
+Training boundary: use synthetic training data only. These tutorials are technical learning material, not legal, regulatory, accounting, privacy, compliance, or model-risk advice.
+
 Start with the shared contracts:
 
 - [Data Sources](data-sources.md): canonical synthetic schemas, grains, sensitive fields, and target marts.

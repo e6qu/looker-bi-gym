@@ -99,6 +99,7 @@ export type ChallengeRubricItem = {
 
 export type ChallengeManifest = {
   readonly id: string;
+  readonly version: string;
   readonly title: string;
   readonly area: ChallengeArea;
   readonly mode: ChallengeMode;

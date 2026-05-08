@@ -27,6 +27,7 @@ class MemoryStorage implements BrowserStorage {
 
 const challenge: ChallengeManifest = {
   id: 'first-banking-dataset',
+  version: 'v0.1.0',
   title: '010 - First Banking Dataset Inspection',
   area: 'orientation-and-source-data',
   mode: 'browser-sql',
@@ -91,8 +92,8 @@ const progressExport = buildLearnerProgressExport(
   readLearnerProgress(storage),
   [challenge],
   {
-    appVersion: '0.0.0',
-    contentVersion: '0.0.0',
+    appVersion: '0.1.0',
+    contentVersion: '0.1.0',
     exportedAt: '2026-05-06T10:00:00.000Z',
     learnerNotes: 'Reviewed by learner.',
   },
@@ -100,8 +101,8 @@ const progressExport = buildLearnerProgressExport(
 
 assert.equal(progressExport.format, 'looker-bi-gym.progress-export.v1');
 assert.equal(progressExport.exported_at, '2026-05-06T10:00:00.000Z');
-assert.equal(progressExport.app_version, '0.0.0');
-assert.equal(progressExport.content_version, '0.0.0');
+assert.equal(progressExport.app_version, '0.1.0');
+assert.equal(progressExport.content_version, '0.1.0');
 assert.deepEqual(progressExport.completed_challenge_ids, [challenge.id]);
 assert.equal(progressExport.completed_challenges.length, 1);
 const exportedChallenge = progressExport.completed_challenges[0];
@@ -111,6 +112,7 @@ if (exportedChallenge === undefined) {
 }
 
 assert.equal(exportedChallenge.challenge_id, challenge.id);
+assert.equal(exportedChallenge.challenge_version, challenge.version);
 assert.equal(exportedChallenge.flag, challenge.flag.id);
 assert.equal(exportedChallenge.completed_at, '2026-05-06T09:30:00.000Z');
 assert.deepEqual(exportedChallenge.dataset_versions, [

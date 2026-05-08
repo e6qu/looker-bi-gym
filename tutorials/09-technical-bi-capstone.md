@@ -2,6 +2,8 @@
 
 Area: E - Capstone
 
+Synthetic-data boundary: the capstone must use synthetic banking sources only. Do not use real or masked production banking data.
+
 Builds on:
 
 - All previous tutorials.

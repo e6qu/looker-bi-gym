@@ -2,6 +2,8 @@
 
 Area: B - Warehouse Modeling And Metrics
 
+Synthetic-data boundary: use the predefined synthetic banking schemas only. Do not use real or masked production banking data.
+
 Builds on:
 
 - [00 - Orientation And Stack](00-orientation-and-stack.md)

@@ -2,7 +2,7 @@
 
 This directory summarizes major regulations and supervisory frameworks that a BI developer building banking, finance, risk, compliance, or back-office reporting should keep in mind.
 
-These files are technical orientation notes, not legal, regulatory, accounting, privacy, or compliance advice. Before building production reports, validate every interpretation with the bank's Legal, Compliance, Risk, Finance, Data Protection Officer, and local regulatory reporting teams.
+These files are technical orientation notes, not legal, regulatory, accounting, privacy, compliance, or model-risk advice. Before building production reports, validate every interpretation with the bank's Legal, Compliance, Risk, Finance, Data Protection Officer, and local regulatory reporting teams.
 
 ## How To Use These Notes
 

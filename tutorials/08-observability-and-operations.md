@@ -2,6 +2,8 @@
 
 Area: D - Governance, Security, And Operations
 
+Synthetic-data boundary: observability and operations examples use synthetic banking sources and synthetic monitoring metadata only. Do not use real or masked production banking data.
+
 Builds on:
 
 - [06 - Performance And Cost Lab](06-performance-and-cost-lab.md)
