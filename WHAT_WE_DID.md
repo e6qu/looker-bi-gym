@@ -2,6 +2,16 @@
 
 ## 2026-05-09
 
+- Fixed remaining local warnings after the PR was opened.
+- Added `app/scripts/test-e2e.ts` to run Playwright with `NO_COLOR` removed from the spawned environment, eliminating the Node `NO_COLOR`/`FORCE_COLOR` warning during rendered UI tests.
+- Raised Vite `chunkSizeWarningLimit` to `1024` KiB so expected DuckDB-WASM worker chunks no longer emit the non-actionable large-chunk warning.
+- Ran `bun run typecheck`; it passed.
+- Ran `bun run lint`; it passed.
+- Ran `bun run test:e2e` with approved local preview binding; all 5 rendered UI tests passed without the previous warning lines.
+- Ran final `bun run check` with approved local preview binding; it passed without the previous warning lines.
+
+## 2026-05-09
+
 - Switched active repository tooling from pnpm to Bun only after user direction.
 - Updated root and app package scripts to use `bun run`, added root workspaces to `package.json`, removed `pnpm-lock.yaml` and `pnpm-workspace.yaml`, and generated committed `bun.lock`.
 - Removed `tsx` as a direct app dev dependency because Bun now runs TypeScript scripts directly.

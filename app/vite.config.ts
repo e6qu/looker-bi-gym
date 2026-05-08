@@ -15,6 +15,7 @@ export default defineConfig(({ command }) => ({
   base: command === 'serve' ? '/' : getBuildBase(),
   plugins: [react()],
   build: {
+    chunkSizeWarningLimit: 1024,
     outDir: 'dist',
     sourcemap: true,
   },

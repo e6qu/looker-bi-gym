@@ -14,7 +14,7 @@
     "test:cloud-evidence": "bun run scripts/test-cloud-evidence.ts",
     "test:progress-export": "bun run scripts/test-progress-export.ts",
     "test:content-qa": "bun run scripts/test-content-qa.ts",
-    "test:e2e": "playwright test",
+    "test:e2e": "bun run scripts/test-e2e.ts",
     "test:validators": "bun run scripts/test-validators.ts",
     "validate:datasets": "bun run scripts/validate-datasets.ts",
     "validate:manifests": "bun run scripts/validate-challenge-manifests.ts",
