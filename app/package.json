@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --config configs/vite.config.ts --host 127.0.0.1",
     "build": "bun run validate:manifests && bun run validate:datasets && bun run typecheck && vite build --config configs/vite.config.ts",
-    "check": "bun run validate:manifests && bun run lint && bun run typecheck && bun run validate:datasets && bun run test:quiz && bun run test:sql && bun run test:fixtures && bun run test:cloud-evidence && bun run test:progress-export && bun run test:content-qa && bun run test:validators && bun run test:e2e && vite build --config configs/vite.config.ts && bun run validate:static-links",
+    "check": "bun run validate:manifests && bun run lint && bun run typecheck && bun run validate:datasets && bun run test:quiz && bun run test:sql && bun run test:fixtures && bun run test:cloud-evidence && bun run test:progress-export && bun run test:content-qa && bun run test:platform-boundary && bun run test:validators && bun run test:e2e && vite build --config configs/vite.config.ts && bun run validate:static-links",
     "lint": "bun run validate:manifests && eslint --config configs/eslint.config.ts . --max-warnings 0",
     "format": "prettier --write .. --ignore-path ../.prettierignore",
     "format:check": "prettier --check .. --ignore-path ../.prettierignore",
@@ -16,6 +16,7 @@
     "test:cloud-evidence": "bun run scripts/test-cloud-evidence.ts",
     "test:progress-export": "bun run scripts/test-progress-export.ts",
     "test:content-qa": "bun run scripts/test-content-qa.ts",
+    "test:platform-boundary": "bun run scripts/test-platform-boundary.ts",
     "test:e2e": "bun run scripts/test-e2e.ts",
     "test:validators": "bun run scripts/test-validators.ts",
     "validate:datasets": "bun run scripts/validate-datasets.ts",

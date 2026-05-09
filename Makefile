@@ -1,6 +1,6 @@
 BUN ?= bun
 
-.PHONY: help install lint typecheck format format-check validate validate-manifests validate-datasets validate-static-links test test-quiz test-sql test-fixtures test-cloud-evidence test-progress-export test-content-qa test-e2e test-validators build check dev preview
+.PHONY: help install lint typecheck format format-check validate validate-manifests validate-datasets validate-static-links test test-quiz test-sql test-fixtures test-cloud-evidence test-progress-export test-content-qa test-platform-boundary test-e2e test-validators build check dev preview
 
 help:
 	@printf '%s\n' \
@@ -21,6 +21,7 @@ help:
 		'  test-cloud-evidence Run cloud evidence parser and validator tests' \
 		'  test-progress-export Run progress export structure tests' \
 		'  test-content-qa     Run content QA checks' \
+		'  test-platform-boundary Run frontend-only architecture checks' \
 		'  test-e2e            Run Playwright rendered UI tests' \
 		'  test-validators     Run browser validator tests' \
 		'  build               Build the static app' \
@@ -54,7 +55,7 @@ validate-datasets:
 validate-static-links:
 	$(BUN) run validate:static-links
 
-test: test-quiz test-sql test-fixtures test-cloud-evidence test-progress-export test-content-qa test-validators test-e2e
+test: test-quiz test-sql test-fixtures test-cloud-evidence test-progress-export test-content-qa test-platform-boundary test-validators test-e2e
 
 test-quiz:
 	$(BUN) run test:quiz
@@ -73,6 +74,9 @@ test-progress-export:
 
 test-content-qa:
 	$(BUN) run test:content-qa
+
+test-platform-boundary:
+	$(BUN) run test:platform-boundary
 
 test-e2e:
 	$(BUN) run test:e2e

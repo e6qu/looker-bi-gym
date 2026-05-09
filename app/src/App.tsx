@@ -28,9 +28,9 @@ import {
   getCompletedChallengeIds,
   getPassedQuestionIds,
   maybeCreateLocalFlag,
-  readLearnerProgress,
-  resetLearnerProgress,
-  writeLearnerProgress,
+  readBrowserLearnerProgress,
+  resetBrowserLearnerProgress,
+  writeBrowserLearnerProgress,
 } from "./progress";
 import { getRegulatoryContextReference } from "./regulatoryContext";
 import { appVersion, contentVersion, formatVersionLabel } from "./release";
@@ -47,7 +47,10 @@ import type {
   CloudEvidenceValue,
 } from "./cloudEvidence";
 import type { ContentDocument, ContentSectionId } from "./content";
-import type { LearnerProgressState } from "./progress";
+import type {
+  BrowserProgressPersistence,
+  LearnerProgressState,
+} from "./progress";
 import type { QuizAnswerState, QuizResponse } from "./quiz";
 import type { SqlQueryResult, SqlTableSchema } from "./sqlRuntime";
 import type { ValidationEvaluation } from "./validators";
@@ -89,10 +92,18 @@ const contentRouteIds: ReadonlySet<RouteId> = new Set<RouteId>([
 const principles: readonly string[] = [
   "Static GitHub Pages app",
   "No backend or credentials",
+  "Browser-local storage and cookie state",
   "Synthetic banking datasets only",
   "Default learner path runs in the browser",
   "Optional tools are listed per tutorial",
 ];
+
+function getBrowserProgressPersistence(): BrowserProgressPersistence {
+  return {
+    storage: window.localStorage,
+    cookies: document,
+  };
+}
 
 function isRouteId(value: string | undefined): value is RouteId {
   return value !== undefined && routes.some((route) => route.id === value);
@@ -1690,7 +1701,7 @@ function ChallengesPage({
   readonly challengeId?: string;
 }): JSX.Element {
   const [progress, setProgress] = useState<LearnerProgressState>(() =>
-    readLearnerProgress(window.localStorage),
+    readBrowserLearnerProgress(getBrowserProgressPersistence()),
   );
   const completedChallengeIds = useMemo(
     () => getCompletedChallengeIds(progress),
@@ -1711,7 +1722,10 @@ function ChallengesPage({
         passedCheckIds,
         passedQuestionIds,
       });
-      writeLearnerProgress(nextProgress, window.localStorage);
+      writeBrowserLearnerProgress(
+        nextProgress,
+        getBrowserProgressPersistence(),
+      );
       return nextProgress;
     });
   }
@@ -1786,7 +1800,7 @@ function ChallengesPage({
 function SettingsPage(): JSX.Element {
   const [resetMessage, setResetMessage] = useState<string>("");
   const [progress, setProgress] = useState<LearnerProgressState>(() =>
-    readLearnerProgress(window.localStorage),
+    readBrowserLearnerProgress(getBrowserProgressPersistence()),
   );
   const [learnerNotes, setLearnerNotes] = useState<string>("");
   const [exportMessage, setExportMessage] = useState<string>("");
@@ -1805,7 +1819,7 @@ function SettingsPage(): JSX.Element {
   );
 
   function resetProgress(): void {
-    setProgress(resetLearnerProgress(window.localStorage));
+    setProgress(resetBrowserLearnerProgress(getBrowserProgressPersistence()));
     setResetMessage("Local progress has been reset in this browser.");
     setExportMessage("");
   }
@@ -1831,15 +1845,15 @@ function SettingsPage(): JSX.Element {
     <section className="page settingsPage" aria-labelledby="settings-title">
       <PageTitle
         title="Settings"
-        description="Learner state remains browser-local. Export creates a user-controlled JSON file; reset clears challenge completion and local flags from this browser."
+        description="Learner state remains browser-local in localStorage and a same-site cookie. Export creates a user-controlled JSON file; reset clears challenge completion and local flags from this browser."
         id="settings-title"
       />
       <div className="settingsPanel">
         <div>
           <h3>Storage</h3>
           <p>
-            Local browser storage only. Nothing is transmitted by this static
-            app.
+            Local browser storage plus a same-site cookie. Nothing is
+            transmitted by this static app, and there is no backend session.
           </p>
         </div>
         <div>
@@ -1908,8 +1922,8 @@ function SettingsPage(): JSX.Element {
           <h3>Progress</h3>
           <p>
             Completion flags and challenge state are stored only in local
-            browser storage. Reset does not delete exported JSON files that
-            already exist outside the browser.
+            browser storage and the same-site progress cookie. Reset does not
+            delete exported JSON files that already exist outside the browser.
           </p>
         </div>
         <button type="button" onClick={resetProgress}>

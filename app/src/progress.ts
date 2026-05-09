@@ -43,6 +43,8 @@ export type LearnerProgressExport = {
   readonly privacy: {
     readonly created_locally: true;
     readonly backend_required: false;
+    readonly state_scope: "browser-only";
+    readonly storage_mediums: readonly ["localStorage", "same-site-cookie"];
     readonly includes_credentials: false;
     readonly includes_real_banking_data: false;
     readonly includes_raw_answers: false;
@@ -64,8 +66,25 @@ export type BrowserStorage = {
   readonly removeItem: (key: string) => void;
 };
 
+export type BrowserCookieStore = {
+  cookie: string;
+};
+
+export type BrowserProgressPersistence = {
+  readonly storage: BrowserStorage;
+  readonly cookies: BrowserCookieStore;
+};
+
+export const browserProgressStorageKeys = {
+  localStorage: "looker-bi-gym.progress.v1",
+  legacyQuizLocalStorage: "looker-bi-gym.quiz-progress.v1",
+  cookie: "looker-bi-gym-progress-v1",
+} as const;
+
 const progressStorageKey = "looker-bi-gym.progress.v1";
 const legacyQuizProgressStorageKey = "looker-bi-gym.quiz-progress.v1";
+const progressCookieName = browserProgressStorageKeys.cookie;
+const progressCookieMaxAgeSeconds = 60 * 60 * 24 * 365;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -111,6 +130,65 @@ function readJsonStorage(storage: BrowserStorage, key: string): unknown {
   } catch {
     return undefined;
   }
+}
+
+function readCookieValue(
+  cookies: BrowserCookieStore,
+  key: string,
+): string | undefined {
+  const cookiePairs = cookies.cookie
+    .split(";")
+    .map((cookie) => cookie.trim())
+    .filter((cookie) => cookie.length > 0);
+
+  for (const cookiePair of cookiePairs) {
+    const separatorIndex = cookiePair.indexOf("=");
+
+    if (separatorIndex <= 0) {
+      continue;
+    }
+
+    const cookieName = cookiePair.slice(0, separatorIndex);
+    const cookieValue = cookiePair.slice(separatorIndex + 1);
+
+    if (cookieName === key) {
+      try {
+        return decodeURIComponent(cookieValue);
+      } catch {
+        return undefined;
+      }
+    }
+  }
+
+  return undefined;
+}
+
+function readJsonCookie(cookies: BrowserCookieStore, key: string): unknown {
+  const storedValue = readCookieValue(cookies, key);
+
+  if (storedValue === undefined) {
+    return undefined;
+  }
+
+  try {
+    return JSON.parse(storedValue) as unknown;
+  } catch {
+    return undefined;
+  }
+}
+
+function writeCookieValue(
+  cookies: BrowserCookieStore,
+  key: string,
+  value: string,
+): void {
+  cookies.cookie = `${key}=${encodeURIComponent(
+    value,
+  )}; Max-Age=${progressCookieMaxAgeSeconds}; Path=/; SameSite=Lax`;
+}
+
+function removeCookieValue(cookies: BrowserCookieStore, key: string): void {
+  cookies.cookie = `${key}=; Max-Age=0; Path=/; SameSite=Lax`;
 }
 
 function readLegacyQuizProgress(
@@ -174,11 +252,49 @@ export function readLearnerProgress(
   };
 }
 
+export function readBrowserLearnerProgress(
+  persistence: BrowserProgressPersistence,
+): LearnerProgressState {
+  const parsedLocalProgress = readJsonStorage(
+    persistence.storage,
+    progressStorageKey,
+  );
+
+  if (isLearnerProgressState(parsedLocalProgress)) {
+    return parsedLocalProgress;
+  }
+
+  const parsedCookieProgress = readJsonCookie(
+    persistence.cookies,
+    progressCookieName,
+  );
+
+  if (isLearnerProgressState(parsedCookieProgress)) {
+    writeLearnerProgress(parsedCookieProgress, persistence.storage);
+    return parsedCookieProgress;
+  }
+
+  return {
+    version: 1,
+    challenges: readLegacyQuizProgress(persistence.storage),
+  };
+}
+
 export function writeLearnerProgress(
   progress: LearnerProgressState,
   storage: BrowserStorage,
 ): void {
   storage.setItem(progressStorageKey, JSON.stringify(progress));
+}
+
+export function writeBrowserLearnerProgress(
+  progress: LearnerProgressState,
+  persistence: BrowserProgressPersistence,
+): void {
+  const serializedProgress = JSON.stringify(progress);
+
+  persistence.storage.setItem(progressStorageKey, serializedProgress);
+  writeCookieValue(persistence.cookies, progressCookieName, serializedProgress);
 }
 
 export function completeChallenge(
@@ -199,6 +315,15 @@ export function resetLearnerProgress(
 ): LearnerProgressState {
   storage.removeItem(progressStorageKey);
   storage.removeItem(legacyQuizProgressStorageKey);
+  return { version: 1, challenges: {} };
+}
+
+export function resetBrowserLearnerProgress(
+  persistence: BrowserProgressPersistence,
+): LearnerProgressState {
+  persistence.storage.removeItem(progressStorageKey);
+  persistence.storage.removeItem(legacyQuizProgressStorageKey);
+  removeCookieValue(persistence.cookies, progressCookieName);
   return { version: 1, challenges: {} };
 }
 
@@ -268,6 +393,8 @@ export function buildLearnerProgressExport(
     privacy: {
       created_locally: true,
       backend_required: false,
+      state_scope: "browser-only",
+      storage_mediums: ["localStorage", "same-site-cookie"],
       includes_credentials: false,
       includes_real_banking_data: false,
       includes_raw_answers: false,

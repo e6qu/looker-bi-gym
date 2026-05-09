@@ -1,6 +1,6 @@
 # GitHub Pages Deployment
 
-This project deploys as a static GitHub Pages app. There is no backend, credential exchange, server-side validation, analytics beacon, or learner-data upload in the default path.
+This project deploys as a static GitHub Pages app. The exercises are frontend-only: there is no backend account system, server session, API database, credential exchange, server-side validation, analytics beacon, or learner-data upload in the default path. Challenge state stays in browser-local storage and a same-site progress cookie.
 
 ## Workflows
 
@@ -19,7 +19,7 @@ Pages deployment is defined in `.github/workflows/pages.yml`. It runs on pushes 
 
 ## Repository Setup
 
-In GitHub repository settings, configure Pages to use GitHub Actions as the source. The deployment job grants only the Pages permissions required for publishing.
+In GitHub repository settings, configure Pages to use GitHub Actions as the source before the first deployment. The deployment workflow grants only the Pages permissions required for publishing.
 
 The default production Vite base path is relative. That keeps the built app portable across project Pages paths such as `/looker-bi-gym/` and user or organization Pages roots.
 

@@ -14,6 +14,7 @@ Start here:
 - [09 - GitHub Pages Deployment](09-github-pages-deployment.md): CI, Pages publishing, base-path behavior, and deployment verification.
 - [10 - App Quality And Browser QA](10-app-quality-browser-qa.md): keyboard, responsive, compatibility, and network-boundary checks for the static app.
 - [11 - Content QA Checklist](11-content-qa-checklist.md): repeatable checks for synthetic-data language, required tools, regulation links, disclaimers, and Markdown links.
+- [12 - Test Pyramid](12-test-pyramid.md): frontend-only architecture checks, domain tests, content contracts, and Playwright rendered user flows.
 - [Release Versioning](../VERSIONING.md): app/content, challenge, dataset, and regulation-brief version policy.
 - [Changelog](../CHANGELOG.md): tracked release contents and known verification gaps.
 

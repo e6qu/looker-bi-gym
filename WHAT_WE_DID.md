@@ -2,6 +2,39 @@
 
 ## 2026-05-09
 
+- Investigated the failed post-merge `Deploy GitHub Pages` run. The build/test gate passed, but `actions/configure-pages@v6` failed with `Get Pages site failed ... Not Found` because the repository did not yet have a Pages site enabled.
+- Enabled GitHub Pages for workflow deployments through the GitHub API. The Pages site is now configured at `https://e6qu.github.io/looker-bi-gym/` with HTTPS enforced and `build_type: workflow`.
+- Reran the failed post-merge Pages workflow after enabling Pages; the rerun passed, including Configure GitHub Pages, artifact upload, and Deploy To GitHub Pages.
+- Verified `https://e6qu.github.io/looker-bi-gym/` returns HTTP 200.
+- Added top-level `pages: write` and `id-token: write` permissions to the Pages workflow so the build job can configure/upload Pages artifacts with the same explicit permissions model as the deploy job.
+- Implemented the frontend-only state boundary instead of only documenting it:
+  - progress still writes to browser `localStorage`;
+  - progress is mirrored to a same-site browser cookie for local recovery;
+  - reading progress restores `localStorage` from the cookie if local storage was cleared;
+  - reset clears both `localStorage` and the progress cookie;
+  - progress exports declare browser-only state scope and storage media.
+- Added `bun run test:platform-boundary` to block backend/session/network APIs in app source and to verify the documented test pyramid remains wired into `bun run check`.
+- Added `docs/12-test-pyramid.md` and linked it from the docs index.
+- Expanded Playwright from rendered route checks to rendered user-flow tests:
+  - navigate from Home to Challenges and complete the orientation quiz;
+  - verify progress in `localStorage` and the same-site cookie;
+  - clear `localStorage` and verify Settings recovers progress from the cookie;
+  - reset progress and verify both storage surfaces clear;
+  - run the browser SQL challenge, answer its grain question, and earn the local flag;
+  - complete the cloud-evidence challenge without backend calls or credentials;
+  - assert no unexpected external network requests during learner flows.
+- Ran `bun run test:progress-export`; it passed.
+- Ran `bun run test:platform-boundary`; it passed.
+- Ran `bun run lint`; it passed.
+- Ran `bun run typecheck`; it passed.
+- Ran `bun run test:e2e` with approved local preview binding; all 8 rendered user-flow tests passed.
+- Ran `bun run format:check`; it passed.
+- Ran `bun run check` with approved local preview binding; it passed, including the new platform-boundary test, all 8 Playwright rendered user-flow tests, production build, and static-link validation.
+- Opened PR #2: `https://github.com/e6qu/looker-bi-gym/pull/2`.
+- GitHub CI for PR #2 passed: `Validate, Test, And Build`.
+
+## 2026-05-09
+
 - Moved app tool configs into typed TypeScript files under `app/configs/` and updated Vite, ESLint, Playwright, scripts, and node tsconfig paths accordingly.
 - Replaced the deprecated TypeScript ESLint config helper with ESLint's supported `defineConfig`.
 - Added Prettier as the repository formatter with `bun run format`, `bun run format:check`, and matching Makefile targets.
