@@ -250,14 +250,10 @@ test.describe("rendered UI", () => {
     await page.getByRole("link", { name: "Challenges" }).click();
     await page.getByRole("link", { name: /000 - Orientation Quiz/u }).click();
 
+    await page.getByLabel("A virtual table defined by a SQL query.").check();
     await page
       .getByLabel(
-        "In the learner browser through DuckDB compiled to WebAssembly.",
-      )
-      .check();
-    await page
-      .getByLabel(
-        "Progress stays in browser-local origin storage with a same-site cookie fallback.",
+        "It connects external data to charts and provides the report field schema.",
       )
       .check();
     await page.getByLabel("account_id").check();

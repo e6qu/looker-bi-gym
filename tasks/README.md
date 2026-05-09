@@ -30,6 +30,7 @@ Task order:
 - [024 - Deterministic Local Dataset Packs](024-deterministic-local-dataset-packs.md)
 - [025 - Real Tutorial Instruction Packs](025-real-tutorial-instruction-packs.md)
 - [026 - Challenge Grading Contract Expansion](026-challenge-grading-contract-expansion.md)
+- [027 - Source-Backed BI Fact Database](027-source-backed-bi-fact-database.md)
 
 Completion rule:
 

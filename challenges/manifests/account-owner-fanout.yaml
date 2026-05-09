@@ -120,9 +120,9 @@ questions:
     prompt: How many RON/EUR ledger units does the naive owner join overstate on the latest date?
     answer: 69100
     tolerance: 0
-    explanation: FACT-DUCKDB-WASM-BROWSER lets the app verify this locally; the latest-date correct total is 95700 and the naive owner-joined total is 164800.
+    explanation: FACT-BI-FANOUT-JOIN-RISK explains why the owner join can duplicate balance facts; the latest-date correct total is 95700 and the naive owner-joined total is 164800.
     source_facts:
-      - FACT-DUCKDB-WASM-BROWSER
+      - FACT-BI-FANOUT-JOIN-RISK
   - id: q_deposit_guarantee_grain
     type: multiple-choice
     prompt: Which grain does FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK imply for a future deposit-guarantee coverage metric?
@@ -145,7 +145,7 @@ lesson_steps:
     why_it_matters: Many-to-many ownership rows can multiply semi-additive balance facts.
     failure_mode: Summing ledger_balance after joining account_owners treats each owner row as another balance.
     source_facts:
-      - FACT-DUCKDB-WASM-BROWSER
+      - FACT-BI-FANOUT-JOIN-RISK
   - id: preserve_latest_account_grain
     title: Preserve latest account-date grain first
     instruction: Filter account_daily_balances to the latest business_date and calculate the correct total before joining ownership rows.
@@ -154,6 +154,7 @@ lesson_steps:
     failure_mode: Grouping after the owner join hides the duplication inside plausible-looking totals.
     source_facts:
       - FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK
+      - FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT
   - id: reconcile_fanout_delta
     title: Reconcile the fanout delta
     instruction: Return latest_balance_date, correct_ledger_total, naive_joined_total, fanout_delta, and overstatement_pct in one row.
@@ -161,7 +162,7 @@ lesson_steps:
     why_it_matters: A CTF-style proof should show both the wrong number and the reconciled correct number.
     failure_mode: Reporting only the corrected total misses the teachable evidence of how the error happened.
     source_facts:
-      - FACT-DUCKDB-WASM-BROWSER
+      - FACT-BI-FANOUT-JOIN-RISK
   - id: connect_to_serving_views
     title: Connect the fix to serving-view design
     instruction: Note that a dashboard should consume a curated serving view after grain-safe logic is defined upstream.

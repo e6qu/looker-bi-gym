@@ -41,6 +41,7 @@ const markdownRoots = [
 const disclaimerPattern =
   /not legal, regulatory, accounting, privacy, compliance, or model-risk advice/u;
 const sourceFactIdPattern = /`(FACT-[A-Z0-9]+(?:-[A-Z0-9]+)*)`/gu;
+const sourceFactHeadingPattern = /^### (FACT-[A-Z0-9]+(?:-[A-Z0-9]+)*)$/gmu;
 const releasedTutorialFiles = new Set([
   "00-orientation-and-stack.md",
   "01-connect-public-data.md",
@@ -179,6 +180,12 @@ async function readFactRegister(): Promise<FactRegister> {
     const source = await readFile(factPath, "utf8");
 
     for (const match of source.matchAll(sourceFactIdPattern)) {
+      if (match[1] !== undefined) {
+        factIds.add(match[1]);
+      }
+    }
+
+    for (const match of source.matchAll(sourceFactHeadingPattern)) {
       if (match[1] !== undefined) {
         factIds.add(match[1]);
       }

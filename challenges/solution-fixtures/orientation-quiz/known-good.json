@@ -5,8 +5,8 @@
   "kind": "known-good",
   "description": "Correct orientation quiz answers for the synthetic-data and browser-first training boundary.",
   "answers": {
-    "q_duckdb_wasm": "browser_wasm",
-    "q_progress_storage": "local_origin_storage",
+    "q_bigquery_logical_view": "sql_defined_virtual_table",
+    "q_looker_data_source": "conduit_schema",
     "q_data_minimisation": ["account_id", "customer_id", "synthetic_iban"],
     "q_deposit_guarantee_amount": "100000"
   },

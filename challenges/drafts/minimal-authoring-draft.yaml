@@ -52,9 +52,9 @@ questions:
       - id: api_key
         label: API keys for validation.
     answer: none
-    explanation: FACT-WEB-LOCALSTORAGE-PERSISTENCE describes browser-local state; credentials, secrets, API keys, and tokens must not be collected or stored.
+    explanation: FACT-LOOKER-STUDIO-CREDENTIALS describes data credential scope; credentials, secrets, API keys, and tokens must not be collected or stored in challenge evidence.
     source_facts:
-      - FACT-WEB-LOCALSTORAGE-PERSISTENCE
+      - FACT-LOOKER-STUDIO-CREDENTIALS
 flag:
   id: flag-minimal-authoring-draft
   criteria:

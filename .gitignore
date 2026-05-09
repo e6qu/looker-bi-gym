@@ -7,6 +7,7 @@ test-results/
 .vite/
 app/.vite/
 app/src/generated/*.json
+app/src/generated/*.sqlite
 app/src/generated/*.ts
 app/src/generated/*.tsx
 *.wasm

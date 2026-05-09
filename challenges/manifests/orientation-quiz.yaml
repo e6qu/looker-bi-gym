@@ -22,16 +22,16 @@ outputs:
     type: answer-set
     description: Browser-local answers to orientation and synthetic-data questions.
 checks:
-  - id: browser_sql_runtime
+  - id: bigquery_view_contract
     type: quiz-answer
-    description: Learner confirms DuckDB-WASM runs SQL locally in the browser.
-    target: q_duckdb_wasm
-    expected: browser_wasm
-  - id: progress_storage
+    description: Learner identifies BigQuery logical views as SQL-defined virtual tables.
+    target: q_bigquery_logical_view
+    expected: sql_defined_virtual_table
+  - id: looker_data_source_contract
     type: quiz-answer
-    description: Learner identifies browser-local progress storage behavior.
-    target: q_progress_storage
-    expected: local_origin_storage
+    description: Learner identifies the role of a Looker Studio data source.
+    target: q_looker_data_source
+    expected: conduit_schema
   - id: sensitive_fields
     type: quiz-answer
     description: Learner identifies fields that should be excluded from serving outputs under the data minimisation checkpoint.
@@ -46,23 +46,24 @@ checks:
     target: q_deposit_guarantee_amount
     expected: 100000
 lesson_steps:
-  - id: open_runtime_boundary
-    title: Confirm where SQL runs
-    instruction: Open the challenge page and read the browser SQL runtime note before answering; the learner path uses DuckDB-WASM in the browser, not a backend grading service.
-    expected_result: You can state that challenge SQL runs locally against small synthetic CSV data.
-    why_it_matters: A frontend-only BI training app must not imply that learner answers or datasets are uploaded to a server.
-    failure_mode: Assuming there is hidden server-side grading would hide the privacy and reproducibility boundary.
+  - id: identify_bigquery_view_contract
+    title: Identify the serving-view contract
+    instruction: Read the BigQuery view facts and identify the object that stores reusable SQL as a virtual table for dashboard serving.
+    expected_result: You can state that a BigQuery logical view is SQL-defined and queried like a table.
+    why_it_matters: Banking BI tutorials need governed serving models before dashboard charts.
+    failure_mode: Treating an ad hoc chart calculation as the governed source leaves metric logic duplicated across reports.
     source_facts:
-      - FACT-DUCKDB-WASM-BROWSER
-  - id: inspect_progress_storage
-    title: Confirm progress storage
-    instruction: Open Settings after a challenge attempt and inspect the local progress preview; progress is kept in browser storage and mirrored to a same-site cookie fallback.
-    expected_result: Progress is visible only in this browser origin until reset or cleared by the learner.
-    why_it_matters: The static app has no backend account, server session, or analytics upload path.
-    failure_mode: Treating the cookie as a server session would misstate the architecture.
+      - FACT-BIGQUERY-LOGICAL-VIEW
+      - FACT-BIGQUERY-VIEW-SCOPE
+  - id: identify_looker_data_source
+    title: Identify the Looker Studio data-source layer
+    instruction: Read the Looker Studio data-source facts and identify what layer provides report charts with fields and connection behavior.
+    expected_result: You can state that a data source is the conduit and schema layer between external data and charts.
+    why_it_matters: Banking dashboards should inspect field definitions, aggregation defaults, and credentials before chart building.
+    failure_mode: Building directly from fields without checking the data-source layer can hide wrong aggregation or access behavior.
     source_facts:
-      - FACT-WEB-LOCALSTORAGE-PERSISTENCE
-      - FACT-WEB-COOKIE-SYNC
+      - FACT-LOOKER-STUDIO-DATA-SOURCE
+      - FACT-LOOKER-STUDIO-DIMENSIONS-METRICS
   - id: apply_data_minimisation
     title: Apply data minimisation to outputs
     instruction: Review the seed dataset sensitive fields and choose which raw identifiers do not belong in BI serving outputs.
@@ -82,35 +83,34 @@ lesson_steps:
       - FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK
       - FACT-DGSD-100K-EU
 questions:
-  - id: q_duckdb_wasm
+  - id: q_bigquery_logical_view
     type: multiple-choice
-    prompt: According to FACT-DUCKDB-WASM-BROWSER, where does this app run browser SQL challenge queries?
+    prompt: According to FACT-BIGQUERY-LOGICAL-VIEW, what is a BigQuery logical view?
     options:
-      - id: browser_wasm
-        label: In the learner browser through DuckDB compiled to WebAssembly.
-      - id: backend_database
-        label: In a server-side training database controlled by the app.
-      - id: cloud_cli
-        label: In the Google Cloud CLI installed on the learner machine.
-    answer: browser_wasm
-    explanation: FACT-DUCKDB-WASM-BROWSER anchors the local runtime boundary; SQL validation is browser-local over small synthetic data.
+      - id: sql_defined_virtual_table
+        label: A virtual table defined by a SQL query.
+      - id: uploaded_spreadsheet
+        label: A spreadsheet uploaded into Looker Studio.
+      - id: mutable_staging_table
+        label: A mutable staging table updated by dashboard users.
+    answer: sql_defined_virtual_table
+    explanation: FACT-BIGQUERY-LOGICAL-VIEW anchors the serving-view concept because the view is a virtual table defined by SQL.
     source_facts:
-      - FACT-DUCKDB-WASM-BROWSER
-  - id: q_progress_storage
+      - FACT-BIGQUERY-LOGICAL-VIEW
+  - id: q_looker_data_source
     type: multiple-choice
-    prompt: Which progress statement matches FACT-WEB-LOCALSTORAGE-PERSISTENCE and FACT-WEB-COOKIE-SYNC?
+    prompt: According to FACT-LOOKER-STUDIO-DATA-SOURCE, what role does a Looker Studio data source play?
     options:
-      - id: local_origin_storage
-        label: Progress stays in browser-local origin storage with a same-site cookie fallback.
-      - id: server_session
-        label: Progress is recovered from a backend session when the learner signs in.
-      - id: analytics_profile
-        label: Progress is reconstructed from analytics events sent by the app.
-    answer: local_origin_storage
-    explanation: FACT-WEB-LOCALSTORAGE-PERSISTENCE and FACT-WEB-COOKIE-SYNC describe local browser storage surfaces, not backend sessions.
+      - id: conduit_schema
+        label: It connects external data to charts and provides the report field schema.
+      - id: browser_cache
+        label: It stores browser-local learner progress.
+      - id: legal_opinion
+        label: It determines whether a banking dashboard is compliant.
+    answer: conduit_schema
+    explanation: FACT-LOOKER-STUDIO-DATA-SOURCE describes the data source as the conduit and schema layer for report charts.
     source_facts:
-      - FACT-WEB-LOCALSTORAGE-PERSISTENCE
-      - FACT-WEB-COOKIE-SYNC
+      - FACT-LOOKER-STUDIO-DATA-SOURCE
   - id: q_data_minimisation
     type: select-all
     prompt: Under FACT-GDPR-DATA-MINIMISATION, which seed fields should be excluded from a dashboard serving output unless there is a specific purpose?

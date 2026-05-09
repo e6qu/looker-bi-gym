@@ -1,7 +1,7 @@
 # Source Fact Register
 
-This directory is the local fact and source-card corpus for fact-backed tutorials,
-quiz questions, challenge checks, and dataset design. It stores short, cited
+This directory is the local fact and source-card corpus for fact-backed banking
+BI tutorials, quiz questions, and challenge design. It stores short, cited
 source notes and derived training facts; it does not mirror full external
 documents.
 
@@ -16,12 +16,12 @@ privacy, compliance, or model-risk advice.
   deposit guarantee facts and banking-domain grain implications.
 - [bi-platforms-bigquery-looker-studio.md](bi-platforms-bigquery-looker-studio.md):
   BigQuery, Looker Studio, serving views, credentials, blends, and performance.
-- [browser-runtime-storage.md](browser-runtime-storage.md): DuckDB-WASM,
-  browser storage, cookies, and local validation boundaries.
+- [bi-modeling-banking.md](bi-modeling-banking.md): BI grain, aggregation,
+  fanout, semi-additive balances, date semantics, and reconciliation.
 - [governance-reporting-operations.md](governance-reporting-operations.md):
   DORA, EBA reporting frameworks, validation rules, and operational evidence.
-- [project-architecture.md](project-architecture.md): facts derived from this
-  repository's source code, manifests, validators, and fixtures.
+- [banking-deposits-us.md](banking-deposits-us.md): US FDIC deposit insurance
+  facts for banking BI comparison with EU/Romanian deposit guarantee concepts.
 
 ## Fact Format
 
@@ -31,7 +31,8 @@ Each fact should use this shape:
 ### FACT-AREA-STABLE-ID
 
 - Statement: One verifiable assertion.
-- Source: Official docs, official law, local source code, or another fact.
+- Source: Official docs, official law, recognized BI literature, or another
+  fact.
 - Source quote: Short quote or exact identifier from the source.
 - Derived implication: What this means for tutorials, datasets, checks, or UI.
 - Related facts: Cross-links to nearby fact IDs.
@@ -40,9 +41,9 @@ Each fact should use this shape:
 ## Authoring Contract
 
 - Every fact-backed tutorial step should cite one or more `FACT-*` IDs.
-- Every quiz question about regulation, platform behavior, data privacy, storage,
-  BI tooling, datasets, or grading should cite one or more `FACT-*` IDs in the
-  manifest or lesson notes.
+- Every quiz question about regulation, platform behavior, data privacy, banking
+  BI semantics, source systems, or BI tooling should cite one or more `FACT-*`
+  IDs in the manifest or lesson notes.
 - The prompt should ask about a concrete consequence of the source fact.
 - The explanation should identify the source fact, the learner action, and the
   specific mistake the wrong answers represent.
@@ -51,22 +52,19 @@ Each fact should use this shape:
 
 ## Existing Challenge Usage
 
-- Orientation uses `FACT-DUCKDB-WASM-BROWSER`,
-  `FACT-WEB-LOCALSTORAGE-PERSISTENCE`, `FACT-WEB-COOKIE-SYNC`,
-  `FACT-GDPR-DATA-MINIMISATION`,
-  `FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK`, and `FACT-DGSD-100K-EU`.
+- Orientation uses `FACT-GDPR-DATA-MINIMISATION`,
+  `FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK`, `FACT-DGSD-100K-EU`,
+  `FACT-BIGQUERY-LOGICAL-VIEW`, and `FACT-LOOKER-STUDIO-DATA-SOURCE`.
 - Dataset inspection uses `FACT-GDPR-PERSONAL-DATA`,
-  `FACT-GDPR-DATA-MINIMISATION`,
-  `FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK`, and
-  `FACT-DUCKDB-WASM-BROWSER`.
+  `FACT-GDPR-DATA-MINIMISATION`, `FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION`,
+  and `FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK`.
 - Fanout uses `FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK`,
-  `FACT-DUCKDB-WASM-BROWSER`, `FACT-BIGQUERY-LOGICAL-VIEW`, and
-  `FACT-BIGQUERY-VIEW-SCOPE`.
+  `FACT-BI-FANOUT-JOIN-RISK`, `FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT`,
+  `FACT-BIGQUERY-LOGICAL-VIEW`, and `FACT-BIGQUERY-VIEW-SCOPE`.
 - Looker Studio evidence uses `FACT-LOOKER-STUDIO-DATA-SOURCE`,
   `FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE`,
   `FACT-LOOKER-STUDIO-CREDENTIALS`, `FACT-BIGQUERY-VIEW-SCOPE`,
-  `FACT-BIGQUERY-LOGICAL-VIEW`, `FACT-BIGQUERY-VIEW-LIMITATIONS`, and
-  `FACT-WEB-LOCALSTORAGE-PERSISTENCE`.
+  `FACT-BIGQUERY-LOGICAL-VIEW`, and `FACT-BIGQUERY-VIEW-LIMITATIONS`.
 
 ## Expansion Rule
 
