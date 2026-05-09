@@ -2,11 +2,11 @@
 
 ## Immediate Next Step
 
-Numbered tasks 001 through 022 are implemented locally on branch `fact-backed-tutorials`.
+Numbered tasks 001 through 022 are implemented on branch `fact-backed-tutorials` in PR #3.
 
 Next implementation step:
 
-- Push branch `fact-backed-tutorials`, open one PR, and verify PR CI; local `bun run test:e2e` and `bun run check` pass with the approved preview bind.
+- Review and merge PR #3: `https://github.com/e6qu/looker-bi-gym/pull/3`. Local `bun run test:e2e`, local `bun run check`, and PR CI pass.
 
 Preservation and verification steps:
 
@@ -28,4 +28,4 @@ Preservation and verification steps:
 
 ## Upcoming Tasks
 
-- Open and verify the single PR for Tasks 019 through 022.
+- Merge PR #3, then verify post-merge CI and Pages deployment.

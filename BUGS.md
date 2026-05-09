@@ -14,7 +14,7 @@ No known app bugs after the Bun-only tooling, typed config, formatting, rendered
 - Reproduction steps: Read `tutorials/00-orientation-and-stack.md` and `challenges/manifests/orientation-quiz.yaml`.
 - Suspected cause: Early tasks prioritized runtime, verification, and platform boundaries before full instructional depth.
 - Fix plan: Complete Tasks 020, 021, and 022.
-- Status: fixed by Tasks 020, 021, and 022; local `bun run check` passes and PR CI still needs to run.
+- Status: fixed by Tasks 020, 021, and 022; local `bun run check` and PR #3 CI pass.
 
 ## Follow-Up Verification Gaps
 

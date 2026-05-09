@@ -34,6 +34,10 @@
 - Ran `bun run test:sql`; it passed.
 - Ran `bun run validate:static-links`; it passed.
 - Ran full `bun run check` with approved local preview binding; it passed, including all validation scripts, content QA, platform-boundary checks, all 8 Playwright rendered user-flow tests, production build, and static-link validation.
+- Committed the implementation as `f606cae Implement fact-backed tutorial flows`.
+- Pushed branch `fact-backed-tutorials`.
+- Opened PR #3: `https://github.com/e6qu/looker-bi-gym/pull/3`.
+- Watched PR #3 checks; `Validate, Test, And Build` passed in GitHub Actions.
 
 ## 2026-05-09
 

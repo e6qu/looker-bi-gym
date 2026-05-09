@@ -8,7 +8,7 @@ Planning, documentation, task tracking, continuity protocol, the static app skel
 
 ## Active Task
 
-Active task: none. Numbered tasks 001 through 022 are implemented locally on branch `fact-backed-tutorials`.
+Active task: none. Numbered tasks 001 through 022 are implemented on branch `fact-backed-tutorials` in PR #3.
 
 ## Current Decisions
 
@@ -102,4 +102,4 @@ None known.
 
 ## Confidence
 
-High for planning direction, task structure, the app skeleton, Markdown content loading, challenge manifest validation, draft validation, dataset-reference validation, the initial deposits dataset, dataset versioning policy, changed-output dataset simulation, automated quiz grading, the browser SQL runtime, browser validators, local flags, browser-local progress/cookie fallback, reset behavior, progress export/completion evidence, the first browser challenges, the cloud-evidence pattern, the authoring guide, solution fixture golden coverage, content QA/disclaimer coverage, release versioning/change log, Bun-only tooling, typed config layout, Prettier formatting gate, test-pyramid coverage, Playwright rendered user-flow coverage, the Makefile check harness, CI/Pages workflow structure, live GitHub Pages reachability, post-merge workflow health, Chrome app quality smoke coverage, the source-fact-backed tutorial plan, and local full-check verification for Tasks 020 through 022. Medium for PR CI until it runs, and for Safari verification until remote automation is explicitly enabled or a manual Safari pass is completed.
+High for planning direction, task structure, the app skeleton, Markdown content loading, challenge manifest validation, draft validation, dataset-reference validation, the initial deposits dataset, dataset versioning policy, changed-output dataset simulation, automated quiz grading, the browser SQL runtime, browser validators, local flags, browser-local progress/cookie fallback, reset behavior, progress export/completion evidence, the first browser challenges, the cloud-evidence pattern, the authoring guide, solution fixture golden coverage, content QA/disclaimer coverage, release versioning/change log, Bun-only tooling, typed config layout, Prettier formatting gate, test-pyramid coverage, Playwright rendered user-flow coverage, the Makefile check harness, CI/Pages workflow structure, live GitHub Pages reachability, post-merge workflow health, Chrome app quality smoke coverage, the source-fact-backed tutorial plan, local full-check verification for Tasks 020 through 022, and PR #3 CI. Medium for Safari verification until remote automation is explicitly enabled or a manual Safari pass is completed.
