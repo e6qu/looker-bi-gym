@@ -6,7 +6,7 @@ Numbered tasks 001 through 023 are implemented. PR #3 was merged.
 
 Next implementation step:
 
-- Open a PR for branch `rich-fact-corpus-plan`, then continue with [024 - Deterministic Local Dataset Packs](tasks/024-deterministic-local-dataset-packs.md).
+- Review and merge PR #4: `https://github.com/e6qu/looker-bi-gym/pull/4`. Then continue with [024 - Deterministic Local Dataset Packs](tasks/024-deterministic-local-dataset-packs.md).
 
 Preservation and verification steps:
 
@@ -29,7 +29,7 @@ Preservation and verification steps:
 
 ## Upcoming Tasks
 
-- Open and verify the Task 023 PR.
+- Merge PR #4, then verify post-merge CI and Pages deployment.
 - [024 - Deterministic Local Dataset Packs](tasks/024-deterministic-local-dataset-packs.md)
 - [025 - Real Tutorial Instruction Packs](tasks/025-real-tutorial-instruction-packs.md)
 - [026 - Challenge Grading Contract Expansion](tasks/026-challenge-grading-contract-expansion.md)
