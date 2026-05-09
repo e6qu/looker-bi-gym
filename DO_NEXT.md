@@ -2,11 +2,11 @@
 
 ## Immediate Next Step
 
-Numbered tasks 001 through 022 are implemented on branch `fact-backed-tutorials` in PR #3.
+Numbered tasks 001 through 023 are implemented. PR #3 was merged.
 
 Next implementation step:
 
-- Review and merge PR #3: `https://github.com/e6qu/looker-bi-gym/pull/3`. Local `bun run test:e2e`, local `bun run check`, and PR CI pass.
+- Review and merge PR #4: `https://github.com/e6qu/looker-bi-gym/pull/4`. Then continue with [024 - Deterministic Local Dataset Packs](tasks/024-deterministic-local-dataset-packs.md).
 
 Preservation and verification steps:
 
@@ -25,7 +25,11 @@ Preservation and verification steps:
 - Preserve the Task 018 release boundary: `CHANGELOG.md`, `VERSIONING.md`, app/content version display, challenge versions, fixture tests, content QA, rendered UI tests, and generated-artifact review must stay aligned.
 - Preserve the Task 019 fact-backed instruction boundary: source facts belong in `docs/facts/README.md`, and future regulation/product/browser-storage/BI-tooling questions should cite fact IDs.
 - Preserve the Task 020-022 instruction boundary: released manifests need rendered `lesson_steps`; released questions and steps need known `source_facts`; released tutorial Markdown needs Source Facts, Steps, Checkpoints, and Common Failure Modes sections.
+- Preserve the Task 023 fact corpus boundary: area files under `docs/facts/` store local source cards, short quotes, derived implications, and cross-linked `FACT-*` IDs; avoid copying full external pages.
 
 ## Upcoming Tasks
 
-- Merge PR #3, then verify post-merge CI and Pages deployment.
+- Merge PR #4, then verify post-merge CI and Pages deployment.
+- [024 - Deterministic Local Dataset Packs](tasks/024-deterministic-local-dataset-packs.md)
+- [025 - Real Tutorial Instruction Packs](tasks/025-real-tutorial-instruction-packs.md)
+- [026 - Challenge Grading Contract Expansion](tasks/026-challenge-grading-contract-expansion.md)

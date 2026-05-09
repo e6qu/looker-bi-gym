@@ -7,13 +7,19 @@ All notable release changes are recorded here.
 ### Added
 
 - Source fact register for fact-backed tutorial steps and quiz questions.
+- Area-organized fact corpus under `docs/facts/` with short source quotes,
+  cross-links, and project-architecture facts.
 - Rendered challenge lesson steps with instructions, checkpoints, failure modes,
   and source fact IDs.
 - Content QA enforcement for source fact references and step-by-step tutorial
   sections.
+- Future tasks for deterministic local dataset packs, real tutorial instruction
+  packs, and expanded grading contracts.
 
 ### Changed
 
+- Replaced the old early-execution `PLAN.md` sequence with current baseline,
+  clarifications, and future phases.
 - Rewrote the released tutorial Markdown path as concrete browser-first lessons.
 - Replaced generic challenge questions with fact-backed questions tied to
   regulation, product documentation, browser storage, and synthetic dataset

@@ -2,6 +2,32 @@
 
 ## 2026-05-09
 
+- Confirmed PR #3 was merged into `main`, switched to `main`, pulled the merged baseline, and created branch `rich-fact-corpus-plan`.
+- Started and completed Task 023 implementation.
+- Replaced the single-table fact register with area-organized fact files under `docs/facts/`:
+  - `privacy-gdpr.md`;
+  - `banking-deposits-romania-eu.md`;
+  - `bi-platforms-bigquery-looker-studio.md`;
+  - `browser-runtime-storage.md`;
+  - `governance-reporting-operations.md`;
+  - `project-architecture.md`.
+- Expanded the fact corpus with official-source and source-code-backed facts for GDPR, FGDB/DGSD deposit guarantee semantics, BigQuery views/jobs/materialized views, Looker Studio data sources/calculated fields/credentials/blends, DuckDB-WASM/browser SQL behavior, DORA/EBA reporting and operations, and local project architecture/dataset/fixture behavior.
+- Preserved existing fact IDs already referenced by released manifests.
+- Updated content QA so the fact register is collected from every Markdown file under `docs/facts/`.
+- Rewrote `PLAN.md` to remove the old scaffold-era immediate execution order and replace it with current baseline, clarifications, and future phases for literature/facts, deterministic local datasets, real tutorial packs, grading contracts, and release discipline.
+- Added Tasks 023 through 026 for literature/fact corpus expansion, deterministic local dataset packs, real tutorial instruction packs, and challenge grading contract expansion.
+- Ran `bun run format:check`; it passed.
+- Ran `bun run test:content-qa`; it passed.
+- Ran `bun run validate:manifests`; it passed.
+- Ran `bun run typecheck`; it passed.
+- Ran `bun run lint`; it passed.
+- Committed the Task 023 changes as `7a9cc0f Expand local fact corpus and future plan`.
+- Pushed branch `rich-fact-corpus-plan`.
+- Opened PR #4: `https://github.com/e6qu/looker-bi-gym/pull/4`.
+- Watched PR #4 checks; `Validate, Test, And Build` passed in GitHub Actions.
+
+## 2026-05-09
+
 - Started and completed Tasks 020, 021, and 022 implementation on branch `fact-backed-tutorials`.
 - Added `lesson_steps` and question `source_facts` to the challenge manifest schema and TypeScript challenge types.
 - Rendered step-by-step challenge lessons in the app with instruction, expected checkpoint, why-it-matters text, common failure mode, and source fact links.
