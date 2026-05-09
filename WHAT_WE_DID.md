@@ -2,6 +2,22 @@
 
 ## 2026-05-09
 
+- Started and completed Task 019 planning/fact-register work after identifying that the current tutorials and quiz prompts are too generic.
+- Added `docs/facts/README.md` as the source fact register for fact-backed tutorials and quiz questions, with official/primary source links for GDPR, FGDB/DGSD, DORA, EBA reporting frameworks, BigQuery views, Looker Studio data sources/calculated fields/credentials, DuckDB-WASM, `localStorage`, and cookies.
+- Linked the source fact register from `docs/README.md`.
+- Expanded `PLAN_BI_TUTORIAL_TUTORIALS.md` so released lessons require step-by-step learner actions, expected checkpoints, common failure modes, browser-local verification, and cited source fact IDs.
+- Updated `docs/11-content-qa-checklist.md` with the new fact-backed tutorial/question expectations.
+- Added Tasks 020 through 022 for step-by-step tutorial rewrites, fact-backed question rewrites, and content QA automation.
+- Recorded the generic-instruction gap as `CONTENT-2026-05-09-001` in `BUGS.md`.
+- Ran `bun run format:check`; it initially failed on Markdown formatting in `docs/facts/README.md` and `PLAN_BI_TUTORIAL_TUTORIALS.md`.
+- Ran `bun run format`; it fixed the Markdown formatting.
+- Reran `bun run format:check`; it passed.
+- Ran `bun run test:content-qa`; it passed.
+- Ran `bun run validate:manifests`; it passed.
+- Ran `bun run typecheck`; it passed.
+
+## 2026-05-09
+
 - Investigated the failed post-merge `Deploy GitHub Pages` run. The build/test gate passed, but `actions/configure-pages@v6` failed with `Get Pages site failed ... Not Found` because the repository did not yet have a Pages site enabled.
 - Enabled GitHub Pages for workflow deployments through the GitHub API. The Pages site is now configured at `https://e6qu.github.io/looker-bi-gym/` with HTTPS enforced and `build_type: workflow`.
 - Reran the failed post-merge Pages workflow after enabling Pages; the rerun passed, including Configure GitHub Pages, artifact upload, and Deploy To GitHub Pages.

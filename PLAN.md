@@ -51,5 +51,6 @@ The plan and task list are expected to evolve. After each task, review whether i
 9. Add solution fixtures and golden validation tests.
 10. Add CI and GitHub Pages publishing.
 11. Add dataset expansion/versioning, progress export, content QA, and release tracking.
+12. Replace generic tutorials and quizzes with source-fact-backed, step-by-step lessons.
 
 See [tasks/README.md](tasks/README.md) for the detailed task list.
