@@ -169,15 +169,19 @@ async function readMarkdownFiles(): Promise<MarkdownFile[]> {
 }
 
 async function readFactRegister(): Promise<FactRegister> {
-  const source = await readFile(
-    join(repoRoot, "docs", "facts", "README.md"),
-    "utf8",
+  const factPaths = await listFiles(
+    join(repoRoot, "docs", "facts"),
+    new Set([".md"]),
   );
   const factIds = new Set<string>();
 
-  for (const match of source.matchAll(sourceFactIdPattern)) {
-    if (match[1] !== undefined) {
-      factIds.add(match[1]);
+  for (const factPath of factPaths) {
+    const source = await readFile(factPath, "utf8");
+
+    for (const match of source.matchAll(sourceFactIdPattern)) {
+      if (match[1] !== undefined) {
+        factIds.add(match[1]);
+      }
     }
   }
 
