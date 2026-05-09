@@ -12,7 +12,8 @@
     "dashboard_checklist": true
   },
   "answers": {
-    "q_credentials": "no_credentials"
+    "q_credentials": "no_credentials",
+    "q_calculated_field_scope": "data_source_or_upstream"
   },
   "expected": {
     "required_passed": true

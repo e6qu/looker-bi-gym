@@ -701,8 +701,54 @@ h3 {
 
 .instructionBlock p,
 .instructionGrid li,
-.challengeInstructions details {
+.challengeInstructions details,
+.lessonSteps dd,
+.lessonSteps li > p {
   color: var(--muted);
+}
+
+.lessonSteps {
+  display: grid;
+  gap: 14px;
+}
+
+.lessonSteps ol {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding-left: 22px;
+}
+
+.lessonSteps li {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+}
+
+.lessonSteps dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.lessonSteps dt {
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.sourceFactList {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.sourceFactList span {
+  color: var(--text);
+  font-weight: 800;
 }
 
 .regulatoryContextList {
@@ -1368,6 +1414,7 @@ h3 {
   .contentPage,
   .challengeDetailMeta,
   .instructionGrid,
+  .lessonSteps dl,
   .sqlChallengeLayout,
   .sqlChallengeSummary,
   .cloudEvidenceLayout,

@@ -2,54 +2,62 @@
 
 Area: C - Looker Studio Dashboards
 
-Synthetic-data boundary: build the dashboard from predefined synthetic banking serving sources only. Do not use real or masked production banking data.
+Synthetic-data boundary: dashboard pages must use synthetic serving views only.
+Do not paste real production screenshots, URLs, credentials, or customer data
+into the repo.
 
 Builds on:
 
+- [01 - Connect Predefined Banking Data](01-connect-public-data.md)
 - [02 - Build A BI-Friendly Model](02-build-a-bi-friendly-model.md)
-- [04 - Metrics And Calculated Fields](04-metrics-and-calculated-fields.md)
 
-Input sources:
-
-- `serve.exec_monthly_bank_kpis`
-- `serve.deposit_daily_branch_product`
-- `serve.credit_risk_monthly_portfolio`
+Required tools: optional Looker Studio browser UI.
 
 Produces:
 
-- Executive Looker Studio page.
-- `notes/03-executive-dashboard-definition.md`
+- Executive KPI report page.
+- `notes/03-dashboard-definition.md`
 
-## Problem
+## Source Facts
 
-Create a dashboard page that answers one executive question without overwhelming the viewer.
+- `FACT-LOOKER-STUDIO-DATA-SOURCE`
+- `FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE`
+- `FACT-BIGQUERY-VIEW-SCOPE`
+- `FACT-GDPR-DATA-MINIMISATION`
 
-## Outcome
+## Goal
 
-You can design a decision-oriented dashboard with KPI cards, trends, breakdowns, and filters.
+Build an executive dashboard from curated serving fields, not from raw banking
+tables or one-off chart logic.
 
-## Example Question
+## Steps
 
-"Are deposit balances, loan delinquency, and operational backlog moving outside plan, and which regions or product families are driving the variance?"
+1. Open the Looker Studio report created in tutorial 01.
+2. Confirm the data source points to a synthetic serving view and does not expose
+   account/customer identifiers.
+3. Add scorecards for latest deposit total and account count.
+4. Add a time series by `business_date` and a table grouped by branch or
+   currency.
+5. Put metric definitions in the data source or upstream serving view. Use a
+   chart-specific calculated field only for throwaway visual formatting.
+6. Add visible freshness text: latest balance date and source cutoff.
 
-## Tasks
+## Checkpoints
 
-- Define 3-5 primary KPIs, such as total deposits, average daily balance, 30+ DPD exposure rate, open case backlog, and reconciliation break value.
-- Build a BigQuery serving view at daily or month-end grain depending on the metric.
-- Connect Looker Studio to the serving view.
-- Add KPI cards with comparison periods.
-- Add trend and breakdown charts.
-- Add date, region, branch, legal entity, product, and business-line controls.
-- Add text documentation for definitions and freshness.
+- Each chart uses the same curated data source.
+- Metric definitions can be found outside a single chart.
+- The page displays a source freshness label.
+- Sensitive identifiers are absent from the visible fields and charts.
 
-## Investigation Questions
+## Common Failure Modes
 
-- Does every chart support the core question?
-- Is the dashboard grain appropriate?
-- Are numerator and denominator definitions visible?
-- What chart can be removed without losing decision value?
-- Are balance and exposure metrics treated as snapshots rather than flows?
+- Creating a metric in one chart and silently using a different formula in
+  another chart.
+- Hiding freshness and making stale synthetic data look current.
+- Adding raw account/customer fields to make debugging easier and forgetting to
+  remove them.
 
 ## Deliverable
 
-A one-page executive dashboard and `notes/03-executive-dashboard-definition.md`.
+Create `notes/03-dashboard-definition.md` with the dashboard fields, metric
+definitions, freshness label, and sensitive-field exclusion evidence.

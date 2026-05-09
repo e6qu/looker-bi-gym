@@ -9,7 +9,8 @@
   "sql_file": "known-bad-naive-owner-fanout.sql",
   "answers": {
     "q_safe_grain": "account_latest_date",
-    "q_delta": "69100"
+    "q_delta": "69100",
+    "q_deposit_guarantee_grain": "depositor_bank"
   },
   "expected": {
     "required_passed": false,

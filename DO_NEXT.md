@@ -2,11 +2,11 @@
 
 ## Immediate Next Step
 
-Numbered tasks 001 through 019 are complete locally.
+Numbered tasks 001 through 022 are implemented locally on branch `fact-backed-tutorials`.
 
 Next implementation step:
 
-- Start [020 - Step-By-Step Tutorial Rewrite](tasks/020-step-by-step-tutorial-rewrite.md): replace the released tutorial outlines with explicit actions, expected checkpoints, common failure modes, and source fact IDs from [docs/facts/README.md](docs/facts/README.md).
+- Push branch `fact-backed-tutorials`, open one PR, and verify PR CI; local `bun run test:e2e` and `bun run check` pass with the approved preview bind.
 
 Preservation and verification steps:
 
@@ -24,9 +24,8 @@ Preservation and verification steps:
 - Preserve the rendered UI boundary: `bun run test:e2e` must keep the real built app, responsive layout, challenge pages, DuckDB-WASM SQL execution, cloud-evidence controls, Settings export metadata, and overflow checks covered.
 - Preserve the Task 018 release boundary: `CHANGELOG.md`, `VERSIONING.md`, app/content version display, challenge versions, fixture tests, content QA, rendered UI tests, and generated-artifact review must stay aligned.
 - Preserve the Task 019 fact-backed instruction boundary: source facts belong in `docs/facts/README.md`, and future regulation/product/browser-storage/BI-tooling questions should cite fact IDs.
+- Preserve the Task 020-022 instruction boundary: released manifests need rendered `lesson_steps`; released questions and steps need known `source_facts`; released tutorial Markdown needs Source Facts, Steps, Checkpoints, and Common Failure Modes sections.
 
 ## Upcoming Tasks
 
-- [020 - Step-By-Step Tutorial Rewrite](tasks/020-step-by-step-tutorial-rewrite.md)
-- [021 - Fact-Backed Question Rewrite](tasks/021-fact-backed-question-rewrite.md)
-- [022 - Fact-Backed Content QA Automation](tasks/022-fact-backed-content-qa-automation.md)
+- Open and verify the single PR for Tasks 019 through 022.

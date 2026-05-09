@@ -1,6 +1,6 @@
 # 022 - Fact-Backed Content QA Automation
 
-Status: planned.
+Status: complete on 2026-05-09.
 
 ## Goal
 
@@ -31,3 +31,13 @@ broken fact references cannot be released accidentally.
 - `bun run test:content-qa`
 - `bun run test:platform-boundary`
 - `bun run check`
+
+## Notes
+
+- Content QA now extracts fact IDs from `docs/facts/README.md`.
+- Challenge lesson steps and questions must cite known source facts.
+- Released challenges must include step-by-step lesson steps.
+- Released tutorial Markdown files must include `## Source Facts`, `## Steps`,
+  `## Checkpoints`, and `## Common Failure Modes`.
+- Existing required-tool, synthetic-data, regulatory disclaimer, dataset, and
+  Markdown-link checks remain active.

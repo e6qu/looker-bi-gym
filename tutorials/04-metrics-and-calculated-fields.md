@@ -2,52 +2,62 @@
 
 Area: B - Warehouse Modeling And Metrics
 
-Synthetic-data boundary: implement metric examples on synthetic banking sources only. Do not use real or masked production banking data.
+Synthetic-data boundary: define metrics over synthetic data only. Do not use
+real balances, real customer attributes, or production regulatory outputs.
 
 Builds on:
 
 - [02 - Build A BI-Friendly Model](02-build-a-bi-friendly-model.md)
+- [03 - First Executive Dashboard](03-first-executive-dashboard.md)
 
-Input sources:
-
-- `mart.fct_account_daily_balances`
-- `mart.fct_posted_transactions`
-- `raw_lending.loans`
-- `raw_lending.loan_monthly_snapshots`
-- `raw_fincrime.aml_alerts`
-- `raw_ops.cases`
+Required tools: browser SQL path first; optional BigQuery and Looker Studio
+browser UI for applied work.
 
 Produces:
 
 - `metrics/banking_metric_contracts.md`
-- `serve.exec_monthly_bank_kpis`
-- `serve.credit_risk_monthly_portfolio`
-- `serve.aml_alert_queue_daily`
+- Updated serving views or data-source calculated fields.
 
-## Problem
+## Source Facts
 
-Looker Studio calculated fields can be useful, but metric logic can drift or aggregate incorrectly.
+- `FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE`
+- `FACT-BIGQUERY-LOGICAL-VIEW`
+- `FACT-BIGQUERY-VIEW-SCOPE`
+- `FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK`
 
-## Outcome
+## Goal
 
-You can distinguish row-level calculations, aggregate calculations, and warehouse-defined metrics.
+Decide where each metric belongs: upstream serving SQL, reusable data-source
+field, or one-chart visual calculation.
 
-## Tasks
+## Steps
 
-- Create base columns for transaction value, active accounts, total exposure, delinquent exposure, closed alerts, false positive alerts, and open cases.
-- Define ratios such as delinquency rate, alert false positive rate, SLA breach rate, authorization approval rate, and average daily balance.
-- Implement each metric once in BigQuery SQL and once as a Looker Studio calculated field.
-- Compare outputs across date/category grains.
-- Document which implementation is safer.
+1. Pick three synthetic metrics: latest ledger total, account count, and average
+   balance by branch.
+2. For each metric, write owner, grain, formula, allowed dimensions, freshness,
+   and regulatory-context tags.
+3. Put reusable business logic in a serving view or shared data-source field.
+4. Reserve chart-specific calculated fields for visual formatting, not governed
+   metric definitions.
+5. For any deposit guarantee example, write the grain as depositor-bank before
+   calculating coverage.
+6. Compare one chart using the shared metric with a deliberately different
+   chart-only formula and record the risk.
 
-## Investigation Questions
+## Checkpoints
 
-- When does `AVG(row_ratio)` differ from `SUM(numerator) / SUM(denominator)`?
-- Which calculated fields are reusable?
-- Which chart-level fields are hidden maintenance risk?
-- How does Looker Studio type inference affect output?
-- Which metrics are balances/snapshots and should not be summed across time?
+- Every metric contract has grain and formula.
+- Reusable metrics are not hidden in a single chart.
+- Deposit guarantee examples do not use account-balance rows as the final
+  coverage grain.
+
+## Common Failure Modes
+
+- Defining the same metric differently in two charts.
+- Treating semi-additive balances as additive across dates.
+- Using account-owner join rows as if they were depositor-bank rows.
 
 ## Deliverable
 
-`metrics/banking_metric_contracts.md` with 5-10 metrics and a comparison table showing BigQuery vs Looker Studio calculations.
+Create `metrics/banking_metric_contracts.md` with metric contracts and the chosen
+implementation location for each calculation.

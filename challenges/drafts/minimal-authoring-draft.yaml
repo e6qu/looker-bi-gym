@@ -1,5 +1,5 @@
 id: minimal-authoring-draft
-version: v0.1.0
+version: v0.1.1
 title: 011 - Minimal Authoring Draft
 area: orientation-and-source-data
 mode: quiz
@@ -40,7 +40,9 @@ questions:
       - id: masked_real_data
         label: Masked real banking data.
     answer: synthetic_only
-    explanation: The project prohibits real banking data, including masked production samples.
+    explanation: FACT-GDPR-PERSONAL-DATA is one reason the project prohibits real banking data, including masked production samples.
+    source_facts:
+      - FACT-GDPR-PERSONAL-DATA
   - id: q_credentials
     type: multiple-choice
     prompt: Which credentials may be collected by the static app?
@@ -50,7 +52,9 @@ questions:
       - id: api_key
         label: API keys for validation.
     answer: none
-    explanation: Credentials, secrets, API keys, and tokens must not be collected or stored.
+    explanation: FACT-WEB-LOCALSTORAGE-PERSISTENCE describes browser-local state; credentials, secrets, API keys, and tokens must not be collected or stored.
+    source_facts:
+      - FACT-WEB-LOCALSTORAGE-PERSISTENCE
 flag:
   id: flag-minimal-authoring-draft
   criteria:

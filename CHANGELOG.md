@@ -2,6 +2,24 @@
 
 All notable release changes are recorded here.
 
+## Unreleased
+
+### Added
+
+- Source fact register for fact-backed tutorial steps and quiz questions.
+- Rendered challenge lesson steps with instructions, checkpoints, failure modes,
+  and source fact IDs.
+- Content QA enforcement for source fact references and step-by-step tutorial
+  sections.
+
+### Changed
+
+- Rewrote the released tutorial Markdown path as concrete browser-first lessons.
+- Replaced generic challenge questions with fact-backed questions tied to
+  regulation, product documentation, browser storage, and synthetic dataset
+  checkpoints.
+- Bumped released challenge contracts to `v0.2.0`.
+
 ## 0.1.0 - 2026-05-09
 
 Initial static training release.

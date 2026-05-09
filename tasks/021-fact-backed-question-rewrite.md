@@ -1,6 +1,6 @@
 # 021 - Fact-Backed Question Rewrite
 
-Status: planned.
+Status: complete on 2026-05-09.
 
 ## Goal
 
@@ -38,3 +38,12 @@ docs, or synthetic dataset outputs.
 - `bun run test:content-qa`
 - `bun run test:e2e`
 - `bun run check`
+
+## Notes
+
+- Added `source_facts` to released challenge questions and rewrote prompts around
+  DuckDB-WASM, browser-local storage, GDPR minimisation, FGDB/EU deposit
+  guarantee ceiling, BigQuery logical views, Looker Studio data sources,
+  calculated field scope, and credential boundaries.
+- Updated solution fixtures and Playwright user-flow inputs for changed answers.
+- Bumped released challenge contracts to `v0.2.0`.

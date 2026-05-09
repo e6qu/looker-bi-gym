@@ -2,58 +2,62 @@
 
 Area: D - Governance, Security, And Operations
 
-Synthetic-data boundary: governance and sharing exercises use synthetic banking sources only. Do not use real or masked production banking data.
+Synthetic-data boundary: masking, access, and sharing exercises use synthetic
+records only. Do not include real personal data, credentials, private report
+URLs, or production policy text.
 
 Builds on:
 
 - [02 - Build A BI-Friendly Model](02-build-a-bi-friendly-model.md)
-- [04 - Metrics And Calculated Fields](04-metrics-and-calculated-fields.md)
-- [Regulation Briefs](../regulations/README.md)
+- [03 - First Executive Dashboard](03-first-executive-dashboard.md)
 
-Input sources:
-
-- `mart.dim_customer_masked`
-- `mart.dim_account_masked`
-- `mart.fct_account_daily_balances`
-- `mart.fct_aml_alerts`
-- `serve.exec_monthly_bank_kpis`
-- `serve.aml_alert_queue_daily`
+Required tools: browser docs path first; optional Looker Studio browser UI.
 
 Produces:
 
-- Access-safe serving views.
+- Access-safe serving view plan.
 - `serve.reg_context_register`
-- `notes/07-governance-security-design.md`
+- `notes/07-governance-sharing.md`
 
-## Problem
+## Source Facts
 
-BI reports often need broad sharing without broad access to raw data.
+- `FACT-GDPR-PERSONAL-DATA`
+- `FACT-GDPR-DATA-MINIMISATION`
+- `FACT-GDPR-PROCESSING-PRINCIPLES`
+- `FACT-LOOKER-STUDIO-CREDENTIALS`
+- `FACT-BIGQUERY-VIEW-SCOPE`
 
-## Outcome
+## Goal
 
-You can choose credentials and BigQuery access controls appropriate to a dashboard audience.
+Define what the dashboard is allowed to expose and how viewers receive access
+without turning the training app into a credential store.
 
-## Tasks
+## Steps
 
-- Create a safe serving dataset.
-- Create an authorized view that excludes sensitive customer, account, credit, and investigation fields.
-- Add a row-level policy or simulate regional, branch, or legal-entity filtering if permissions allow.
-- Add column masking or document the required setup for customer identifiers, account numbers, tax identifiers, and credit attributes.
-- Connect Looker Studio using appropriate credentials.
-- Test report behavior as a viewer.
-- Document sharing and ownership choices.
-- Add EU/Romania context tags to the report, such as GDPR, Law 190/2018, BNR, ONPCSB, DORA, PSD2, or FGDB where applicable.
+1. List every serving field visible in the executive dashboard.
+2. Mark each field as aggregate, dimension, masked identifier, or prohibited raw
+   identifier.
+3. Remove or mask fields that are not needed for the dashboard purpose.
+4. For each page, record a regulatory-context tag and the source fact that
+   explains the control.
+5. Inspect Looker Studio data credentials and record the sharing implication
+   without storing tokens or keys.
+6. Draft `serve.reg_context_register` with dashboard page, metric, source fact,
+   owner, and review date.
 
-## Investigation Questions
+## Checkpoints
 
-- Should this report use owner, viewer, or service account credentials?
-- Can a viewer access source tables directly?
-- What data is visible in report metadata?
-- Who owns the report if the author leaves?
-- Which banking data is too sensitive for Looker Studio report-level modeling?
-- Does GDPR-style data minimisation change what fields should be present in the serving table?
-- Does the report need Romanian national identification number handling constraints?
+- Raw account/customer identifiers are not visible in serving outputs.
+- Credential behavior is documented as a Looker Studio data-source setting.
+- The regulation-context register links each control to a source fact.
+
+## Common Failure Modes
+
+- Sharing a report safely but leaving unsafe fields in the data source.
+- Treating pseudonymized or synthetic identifiers as automatically safe.
+- Pasting credentials or private report URLs into evidence notes.
 
 ## Deliverable
 
-`notes/07-governance-security-design.md` plus a governance checklist for the demo dashboard.
+Create `notes/07-governance-sharing.md` and a draft `serve.reg_context_register`
+layout.

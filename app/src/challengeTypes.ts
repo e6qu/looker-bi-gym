@@ -60,6 +60,17 @@ export type ChallengeQuestion = {
   readonly answer?: unknown;
   readonly tolerance?: number;
   readonly explanation?: string;
+  readonly source_facts?: readonly string[];
+};
+
+export type ChallengeLessonStep = {
+  readonly id: string;
+  readonly title: string;
+  readonly instruction: string;
+  readonly expected_result: string;
+  readonly why_it_matters: string;
+  readonly failure_mode: string;
+  readonly source_facts: readonly string[];
 };
 
 export type ChallengeTool = {
@@ -112,6 +123,7 @@ export type ChallengeManifest = {
   readonly outputs: readonly ChallengeOutput[];
   readonly checks: readonly ChallengeCheck[];
   readonly questions: readonly ChallengeQuestion[];
+  readonly lesson_steps?: readonly ChallengeLessonStep[];
   readonly required_tools: ChallengeRequiredTools;
   readonly flag: ChallengeFlag;
   readonly hints?: readonly ChallengeHint[];

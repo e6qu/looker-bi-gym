@@ -8,7 +8,12 @@
   "dataset_version": "v0.1.0",
   "sql_file": "known-good.sql",
   "answers": {
-    "q_balance_grain": "account_day"
+    "q_balance_grain": "account_day",
+    "q_profile_output_minimisation": [
+      "account_id",
+      "customer_id",
+      "synthetic_iban"
+    ]
   },
   "expected": {
     "required_passed": true

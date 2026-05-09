@@ -1,6 +1,6 @@
 # 020 - Step-By-Step Tutorial Rewrite
 
-Status: planned.
+Status: complete on 2026-05-09.
 
 ## Goal
 
@@ -38,3 +38,13 @@ of generic outlines.
 - `bun run validate:manifests`
 - `bun run test:e2e`
 - `bun run check`
+
+## Notes
+
+- Rewrote released tutorial Markdown files `00` through `09` with source facts,
+  concrete steps, checkpoints, common failure modes, and deliverables.
+- Added rendered `lesson_steps` to released challenge manifests so the app itself
+  now shows step-by-step work, expected checkpoints, why-it-matters notes, and
+  common failure modes.
+- Updated content routing so nested docs such as `docs/facts/README.md` render
+  in the static app.

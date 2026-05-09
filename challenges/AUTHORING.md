@@ -11,6 +11,7 @@ Start from these references:
 - [Solution fixtures](solution-fixtures/) for release-ready known-good and known-bad validator coverage.
 - [Deposits seed dataset](../datasets/deposits-seed/v0.1.0/README.md) and [dataset metadata](../datasets/deposits-seed/v0.1.0/metadata.json).
 - [Tutorial data-source contract](../tutorials/data-sources.md) and [tutorial index](../tutorials/README.md).
+- [Source fact register](../docs/facts/README.md) for fact-backed tutorial steps and quiz questions.
 - [Regulation briefs](../regulations/README.md) for EU/Romanian context notes.
 
 These materials are technical training content, not legal, regulatory, accounting, privacy, compliance, or model-risk advice.
@@ -18,7 +19,7 @@ These materials are technical training content, not legal, regulatory, accountin
 ## Authoring Flow
 
 1. Pick a learning objective and challenge mode.
-2. Declare the input data grain, sensitive fields, date semantics, outputs, checks, questions, required tools, and flag criteria.
+2. Declare the input data grain, sensitive fields, date semantics, step-by-step lesson work, outputs, checks, questions, source fact IDs, required tools, and flag criteria.
 3. Author YAML in `challenges/manifests/` for a released challenge, or `challenges/drafts/` for a validation-only draft.
 4. Add or update solution fixtures and tests when the challenge uses SQL, validators, cloud evidence, or a new dataset expectation.
 5. Run `bun run validate:manifests`, `bun run validate:datasets` when datasets are referenced, and `make check` before considering the task done.
@@ -66,7 +67,8 @@ Every manifest must include:
 | `inputs`             | Datasets, tables, markdown, browser forms, or cloud UI sources. Include grain, date semantics, dataset version, and sensitive fields where relevant.                                      |
 | `outputs`            | The artifact the learner creates, such as `answer-set`, `sql-result`, `sql-text`, `dashboard-evidence`, `metric-contract`, or `written-note`.                                             |
 | `checks`             | Deterministic or manual checks tied to outputs or evidence. Required checks gate completion unless marked advisory.                                                                       |
-| `questions`          | At least one question. Use supported runtime types for released challenges unless the mode has custom handling.                                                                           |
+| `questions`          | At least one question. Use supported runtime types for released challenges unless the mode has custom handling. Every released question needs `source_facts`.                             |
+| `lesson_steps`       | Step-by-step instruction rendered in the app. Released challenges need concrete actions, expected results, failure modes, and `source_facts`.                                             |
 | `required_tools`     | `none` for browser-only work, otherwise an exact tool array.                                                                                                                              |
 | `flag`               | Local flag ID and criteria. Criteria must match what the app or documented review can verify.                                                                                             |
 
@@ -98,6 +100,30 @@ required_tools:
 ```
 
 For required tools, include `version` or a version range when tool behavior matters. Include platform notes for operating-system differences. Reject tools that are uncommon, paid-only, vendor-locked without a browser alternative, hard to install cross-platform, or unnecessary for the learning objective.
+
+## Source Facts And Lesson Steps
+
+Use `source_facts` for every released question and every `lesson_steps` entry.
+Fact IDs must exist in [docs/facts/README.md](../docs/facts/README.md).
+
+Good fact-backed prompts ask for a concrete source consequence:
+
+- where DuckDB-WASM runs;
+- which fields are excluded by data minimisation;
+- what the FGDB/EU deposit guarantee ceiling is;
+- which Looker Studio credential model affects data visibility;
+- what BigQuery logical views can and cannot do.
+
+Avoid prompts that only ask what the project prefers unless the answer is also
+implemented by the app or tied to a source fact.
+
+Each lesson step needs:
+
+- `instruction`: what the learner opens, runs, selects, pastes, checks, or compares;
+- `expected_result`: exact result shape, value, or observable checkpoint;
+- `why_it_matters`: the BI or governance reason;
+- `failure_mode`: the realistic mistake this step prevents;
+- `source_facts`: one or more source fact IDs.
 
 ## Dataset Reference
 
@@ -238,7 +264,18 @@ questions:
       - id: production_extract
         label: A masked production extract.
     answer: synthetic_only
-    explanation: Real banking data is not allowed in this repository.
+    explanation: FACT-GDPR-PERSONAL-DATA is one source-backed reason to avoid real banking data in challenge files.
+    source_facts:
+      - FACT-GDPR-PERSONAL-DATA
+lesson_steps:
+  - id: confirm_data_boundary
+    title: Confirm the data boundary
+    instruction: Read the challenge inputs and choose the data type allowed in challenge files.
+    expected_result: The answer is synthetic training data only.
+    why_it_matters: Training files must not contain real or re-identifiable banking records.
+    failure_mode: Treating masked production extracts as safe training files.
+    source_facts:
+      - FACT-GDPR-PERSONAL-DATA
 flag:
   id: flag-example-orientation-check
   criteria:
