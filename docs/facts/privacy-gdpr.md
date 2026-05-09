@@ -27,7 +27,7 @@ advice.
 - Derived implication: Tutorials should not teach that masked account numbers or
   synthetic national IDs are automatically safe for broad dashboards.
 - Related facts: [`FACT-GDPR-PERSONAL-DATA`](#fact-gdpr-personal-data),
-  [`FACT-DATASET-SENSITIVE-FIELDS-DECLARED`](project-architecture.md#fact-dataset-sensitive-fields-declared).
+  [`FACT-BIGQUERY-AUTHORIZED-VIEW-ACCESS-CONTROL`](bi-platforms-bigquery-looker-studio.md#fact-bigquery-authorized-view-access-control).
 
 ### FACT-GDPR-ANONYMISED-IRREVERSIBLE
 
@@ -49,7 +49,7 @@ advice.
 - Derived implication: Challenge checks should reject unnecessary `customer_id`,
   `account_id`, and `synthetic_iban` columns in dashboard serving outputs.
 - Related facts: [`FACT-BIGQUERY-VIEW-SCOPE`](bi-platforms-bigquery-looker-studio.md#fact-bigquery-view-scope),
-  [`FACT-APP-SENSITIVE-EXCLUSION-CHECKS`](project-architecture.md#fact-app-sensitive-exclusion-checks).
+  [`FACT-BIGQUERY-SELECT-LIST-NARROWING`](bi-modeling-banking.md#fact-bigquery-select-list-narrowing).
 
 ### FACT-GDPR-PROCESSING-PRINCIPLES
 
@@ -70,10 +70,11 @@ advice.
   data.
 - Source: [European Commission, Data protection explained](https://commission.europa.eu/law/law-topic/data-protection/data-protection-explained_en).
 - Source quote: "a cookie ID".
-- Derived implication: The app's progress cookie must remain same-site,
-  local-recovery state, not learner tracking or analytics identity.
-- Related facts: [`FACT-WEB-COOKIE-SYNC`](browser-runtime-storage.md#fact-web-cookie-sync),
-  [`FACT-APP-PROGRESS-LOCAL-ONLY`](project-architecture.md#fact-app-progress-local-only).
+- Derived implication: Banking BI tutorials should treat browser identifiers,
+  analytics IDs, and dashboard usage identifiers as potentially personal data
+  when designing observability examples.
+- Related facts: [`FACT-GDPR-PERSONAL-DATA`](#fact-gdpr-personal-data),
+  [`FACT-LOOKER-STUDIO-CREDENTIALS`](bi-platforms-bigquery-looker-studio.md#fact-looker-studio-credentials).
 
 ### FACT-GDPR-ACCOUNTABILITY
 
@@ -85,4 +86,75 @@ advice.
   metric contracts, fact IDs, and validation evidence rather than only final
   dashboard screenshots.
 - Related facts: [`FACT-EBA-DPM-VALIDATION-RULES`](governance-reporting-operations.md#fact-eba-dpm-validation-rules),
-  [`FACT-CHALLENGE-SOLUTION-FIXTURES`](project-architecture.md#fact-challenge-solution-fixtures).
+  [`FACT-DORA-ICT-RISK-FRAMEWORK`](governance-reporting-operations.md#fact-dora-ict-risk-framework).
+
+### FACT-GDPR-PURPOSE-LIMITATION
+
+- Statement: GDPR Article 5 requires personal data to be collected for
+  specified, explicit, and legitimate purposes and not further processed in an
+  incompatible way.
+- Source: [`SRC-GDPR-ELI-2016-679`](../../sources/law/eu-gdpr.md#src-gdpr-eli-2016-679);
+  [`SRC-GDPR-EC-MINIMISATION`](../../sources/law/eu-gdpr.md#src-gdpr-ec-minimisation).
+- Source quote: "specified, explicit and legitimate purposes".
+- Derived implication: BI exercises should ask learners to state the dashboard
+  purpose before choosing identifiers, dimensions, and retention evidence.
+- Related facts: [`FACT-GDPR-DATA-MINIMISATION`](#fact-gdpr-data-minimisation),
+  [`FACT-BIGQUERY-VIEW-SCOPE`](bi-platforms-bigquery-looker-studio.md#fact-bigquery-view-scope).
+
+### FACT-GDPR-ACCURACY
+
+- Statement: GDPR Article 5 includes an accuracy principle requiring personal
+  data to be accurate and kept up to date where needed.
+- Source: [`SRC-GDPR-ELI-2016-679`](../../sources/law/eu-gdpr.md#src-gdpr-eli-2016-679).
+- Source quote: "accurate and, where necessary, kept up to date".
+- Derived implication: Banking BI lessons should include freshness and
+  reconciliation checks before presenting learner outputs as usable evidence.
+- Related facts: [`FACT-DORA-DATA-CONFIDENTIALITY-INTEGRITY`](governance-reporting-operations.md#fact-dora-data-confidentiality-integrity),
+  [`FACT-BI-RECONCILIATION-WINDOWS`](bi-modeling-banking.md#fact-bi-reconciliation-windows).
+
+### FACT-GDPR-STORAGE-LIMITATION
+
+- Statement: GDPR Article 5 includes storage limitation: personal data should
+  not permit identification for longer than necessary for the processing purpose.
+- Source: [`SRC-GDPR-ELI-2016-679`](../../sources/law/eu-gdpr.md#src-gdpr-eli-2016-679).
+- Source quote: "no longer than is necessary".
+- Derived implication: Progress exports and challenge evidence should avoid
+  retaining raw answers, credentials, or pasted cloud evidence.
+- Related facts: [`FACT-LOOKER-STUDIO-CREDENTIALS`](bi-platforms-bigquery-looker-studio.md#fact-looker-studio-credentials),
+  [`FACT-GDPR-DATA-MINIMISATION`](#fact-gdpr-data-minimisation).
+
+### FACT-GDPR-INTEGRITY-CONFIDENTIALITY
+
+- Statement: GDPR Article 5 includes integrity and confidentiality through
+  security against unauthorised processing and accidental loss, destruction, or
+  damage.
+- Source: [`SRC-GDPR-ELI-2016-679`](../../sources/law/eu-gdpr.md#src-gdpr-eli-2016-679).
+- Source quote: "integrity and confidentiality".
+- Derived implication: Tutorials should frame access control, field exclusion,
+  and local-only evidence as part of BI delivery quality, not as optional polish.
+- Related facts: [`FACT-DORA-DATA-CONFIDENTIALITY-INTEGRITY`](governance-reporting-operations.md#fact-dora-data-confidentiality-integrity),
+  [`FACT-LOOKER-STUDIO-CREDENTIALS`](bi-platforms-bigquery-looker-studio.md#fact-looker-studio-credentials).
+
+### FACT-GDPR-SECURITY-PROCESSING
+
+- Statement: GDPR Article 32 requires security measures appropriate to the risk,
+  including technical and organisational measures.
+- Source: [`SRC-GDPR-ELI-2016-679`](../../sources/law/eu-gdpr.md#src-gdpr-eli-2016-679).
+- Source quote: "appropriate technical and organisational measures".
+- Derived implication: Cloud-applied BI challenges should ask for access,
+  dependency, and credential-boundary evidence without collecting credentials in
+  the static app.
+- Related facts: [`FACT-BIGQUERY-AUTHORIZED-VIEW-ACCESS-CONTROL`](bi-platforms-bigquery-looker-studio.md#fact-bigquery-authorized-view-access-control),
+  [`FACT-LOOKER-STUDIO-OWNER-CREDENTIALS-RISK`](bi-platforms-bigquery-looker-studio.md#fact-looker-studio-owner-credentials-risk).
+
+### FACT-GDPR-SPECIAL-CATEGORIES
+
+- Statement: GDPR Article 9 gives special-category personal data separate
+  handling rules, including data revealing racial or ethnic origin, political
+  opinions, religious beliefs, health, or biometric identifiers.
+- Source: [`SRC-GDPR-ELI-2016-679`](../../sources/law/eu-gdpr.md#src-gdpr-eli-2016-679).
+- Source quote: "special categories of personal data".
+- Derived implication: Synthetic banking datasets should not introduce
+  unnecessary protected-category fields for BI practice scenarios.
+- Related facts: [`FACT-GDPR-DATA-MINIMISATION`](#fact-gdpr-data-minimisation),
+  [`FACT-BIGQUERY-SELECT-LIST-NARROWING`](bi-modeling-banking.md#fact-bigquery-select-list-narrowing).

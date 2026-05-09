@@ -1,5 +1,41 @@
 # What We Did
 
+## 2026-05-10
+
+- Resumed Task 027 wrap-up after sandbox git-index writes were blocked on
+  2026-05-09.
+- Reviewed the staged working tree and continuity files before committing.
+
+## 2026-05-09
+
+- Confirmed PR #4 was merged, switched to branch `source-backed-fact-database`, and implemented Task 027.
+- Removed app/runtime/project-specific learner facts from `docs/facts/` and redirected challenge/tutorial source facts toward BigQuery, Looker Studio, banking BI modeling, and official banking/regulatory sources.
+- Added `sources/` source cards for GDPR, DGSD, DORA, FGDB, EBA, FDIC, BigQuery, Looker Studio, and dimensional-modeling literature.
+- Added sanitized, complete article HTML snapshots for core BigQuery and Looker Studio documentation under `sources/platforms/bigquery/full/` and `sources/platforms/looker-studio/full/`.
+- Added `bun run sources:snapshot` to refresh permissively licensed official Google Cloud documentation snapshots with attribution and sanitizer rules.
+- Added `docs/facts/bi-modeling-banking.md` and `docs/facts/banking-deposits-us.md`.
+- Expanded and corrected facts for BigQuery views, jobs, aggregates, approximate aggregates, window functions, date functions, join/performance practices, Looker Studio data sources, calculated fields, credentials, blends, aggregation, dimensions, banking BI grain, fanout, semi-additive balances, date-role separation, EU/Romanian deposit guarantee, and US FDIC insurance grain.
+- Added typed Bun SQLite facts database tooling:
+  - `app/scripts/fact-database.ts`;
+  - `app/scripts/build-fact-database.ts`;
+  - `app/scripts/test-fact-database.ts`;
+  - `app/scripts/bun-sqlite.d.ts`.
+- The facts database builds `sources`, `source_documents`, `facts`, `fact_sources`, and `fact_links`, and fails on missing source links or broken related-fact IDs.
+- Added `test:facts-db`, `facts:build-db`, and `sources:snapshot` scripts and included `test:facts-db` in `bun run check` and `make test`.
+- Updated orientation, dataset inspection, fanout, and Looker evidence manifests away from app-runtime facts and toward BI/platform/domain facts.
+- Updated orientation solution fixture and Playwright orientation flow to match the new BigQuery/Looker quiz.
+- Updated `.gitignore` to ignore generated SQLite databases and `.prettierignore` to skip downloaded source snapshots.
+- Ran `bun run --filter @looker-bi-gym/app sources:snapshot`; the first sandboxed run failed on network access, then the escalated run downloaded snapshots successfully.
+- Ran `bun run --filter @looker-bi-gym/app test:facts-db`; it initially caught an unsupported project-specific fact and missing source-card entries for full Looker snapshots, then passed after fixes.
+- Ran `bun run --filter @looker-bi-gym/app validate:manifests`; it initially caught a YAML colon issue in an explanation, then passed.
+- Ran `bun run --filter @looker-bi-gym/app test:content-qa`; it initially exposed fact-register heading parsing that missed a self-only fact, then passed after the parser was fixed.
+- Ran `bun run --filter @looker-bi-gym/app test:fixtures`; it passed.
+- Ran `bun run --filter @looker-bi-gym/app typecheck`; it initially failed because Bun SQLite module types were not declared for TypeScript, then passed after adding local strong typings.
+- Ran `bun run --filter @looker-bi-gym/app lint`; it initially found strict typing/lint issues in the new database scripts, then passed after fixes.
+- Ran `bun run --filter @looker-bi-gym/app format`, then `bun run --filter @looker-bi-gym/app format:check`; formatting passed.
+- Ran a source scan for obvious secrets in `sources`, facts, challenges, tutorials, and scripts; only deliberate credential-warning text and sanitizer regexes matched.
+- Ran full `bun run check`; the first sandboxed run failed because Vite preview could not bind `127.0.0.1:4173`; the escalated rerun then found the stale Playwright orientation labels, those were fixed, and the final escalated `bun run check` passed with all 8 Playwright tests.
+
 ## 2026-05-09
 
 - Confirmed PR #3 was merged into `main`, switched to `main`, pulled the merged baseline, and created branch `rich-fact-corpus-plan`.

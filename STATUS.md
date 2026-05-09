@@ -1,14 +1,14 @@
 # Status
 
-Last updated: 2026-05-09
+Last updated: 2026-05-10
 
 ## Current State
 
-Planning, documentation, task tracking, continuity protocol, the static app skeleton, Markdown content navigation, challenge manifest validation/catalog generation, the first synthetic deposits dataset, dataset versioning policy, a changed-output dataset simulation, the quiz challenge runtime, the browser SQL runtime, reusable browser validators, local flags, browser-local progress storage with same-site cookie fallback, reset controls, the first three browser-verifiable challenges, the first cloud-evidence challenge pattern, the challenge authoring guide, CI validation, GitHub Pages deployment workflows, the app quality/accessibility pass, solution fixture golden tests, local progress export/completion evidence, the content QA/regulatory disclaimer pass, release versioning/change log, Bun-only repository tooling, typed TypeScript config files under `app/configs/`, Prettier formatting gates, a documented/enforced test pyramid, Playwright rendered user-flow tests, a source-fact register for fact-backed tutorials and quiz questions, rendered step-by-step challenge lesson steps, fact-backed challenge questions, rewritten step-by-step tutorial Markdown, and content QA enforcement for source facts are in place. PR #3 was merged. Task 023 is implemented on branch `rich-fact-corpus-plan` in PR #4 with an area-organized fact corpus and an updated plan for local deterministic datasets, real tutorial packs, and grading contracts. Tasks 001 through 023 are complete except for Safari second-browser smoke verification from Task 013, which requires the user to explicitly enable Safari remote automation or perform a manual Safari pass. Local `bun run test:e2e` and full `bun run check` passed for PR #3; focused Task 023 gates and PR #4 CI pass. Git discipline requires `.gitignore` maintenance, no committed rebuildable artifacts, no committed WASM runtime artifacts, and a commit after each completed task. A root `Makefile` exposes the repository checks, formatting, and tests through `make` targets.
+Planning, documentation, task tracking, continuity protocol, the static app skeleton, Markdown content navigation, challenge manifest validation/catalog generation, the first synthetic deposits dataset, dataset versioning policy, a changed-output dataset simulation, the quiz challenge runtime, the browser SQL runtime, reusable browser validators, local flags, browser-local progress storage with same-site cookie fallback, reset controls, the first three browser-verifiable challenges, the first cloud-evidence challenge pattern, the challenge authoring guide, CI validation, GitHub Pages deployment workflows, the app quality/accessibility pass, solution fixture golden tests, local progress export/completion evidence, the content QA/regulatory disclaimer pass, release versioning/change log, Bun-only repository tooling, typed TypeScript config files under `app/configs/`, Prettier formatting gates, a documented/enforced test pyramid, Playwright rendered user-flow tests, a source-fact register for fact-backed tutorials and quiz questions, rendered step-by-step challenge lesson steps, fact-backed challenge questions, rewritten step-by-step tutorial Markdown, content QA enforcement for source facts, area-organized banking BI facts, downloaded BigQuery/Looker Studio official documentation snapshots, and a local SQLite facts database builder/test are in place. PR #3 and PR #4 were merged. Tasks 001 through 027 are complete except for Safari second-browser smoke verification from Task 013, which requires the user to explicitly enable Safari remote automation or perform a manual Safari pass. Full `bun run check` passed on 2026-05-09 after updating the orientation Playwright flow. Git discipline requires `.gitignore` maintenance, no committed rebuildable artifacts, no committed WASM runtime artifacts, and a commit after each completed task. A root `Makefile` exposes the repository checks, formatting, and tests through `make` targets.
 
 ## Active Task
 
-Active task: none. Numbered tasks 001 through 023 are implemented. Next planned task: 024 - Deterministic Local Dataset Packs.
+Active task: none. Numbered tasks 001 through 027 are implemented. Next planned task: 024 - Deterministic Local Dataset Packs, with Task 027 now adding the source-backed facts database needed by later tutorial and dataset work.
 
 ## Current Decisions
 
@@ -22,9 +22,13 @@ Active task: none. Numbered tasks 001 through 023 are implemented. Next planned 
 - Strong TypeScript and type-aware ESLint gates are required for app code.
 - App tool configs live in `app/configs/` as TypeScript and are included in `tsconfig.node.json`.
 - Prettier is the repository formatter; `bun run format:check` must pass with `bun run lint`, `bun run typecheck`, and `bun run check`.
-- Source-backed tutorial and quiz facts live in `docs/facts/README.md`; regulation, platform, browser-storage, and BI-tooling questions should cite fact IDs.
+- Source-backed tutorial and quiz facts live under `docs/facts/`; regulation, banking, BigQuery, Looker Studio, and BI-tooling questions should cite fact IDs.
 - Source facts are organized by area files under `docs/facts/`; content QA reads all fact Markdown files, not only the index.
-- Local literature means source cards, short quotes, citations, derived implications, and cross-linked facts, not full mirrored copies of external web pages.
+- `sources/` stores source cards and permissively licensed complete official documentation snapshots used by the fact corpus.
+- BigQuery and Looker Studio official documentation snapshots are stored as sanitized article HTML inside Markdown files under `sources/platforms/*/full/`.
+- Non-permissive BI literature remains source-card-and-short-quote only unless the source license allows full snapshots.
+- App-specific implementation facts are not learner facts; the corpus should focus on banking BI, BigQuery, Looker Studio, and official regulatory/banking source material.
+- `bun run test:facts-db` builds a local SQLite facts database from `sources/` and `docs/facts/` and validates source/fact links.
 - Future challenge datasets must be fully local and deterministic: committed synthetic files or committed deterministic generators, metadata, control totals, known traps, and fixture coverage.
 - Released tutorials are not considered instruction-complete if they only list generic tasks or investigation questions; they need explicit learner actions, expected checkpoints, failure modes, and fact-backed explanations.
 - Released challenge manifests include rendered `lesson_steps`; every released question and lesson step must cite known `source_facts`.

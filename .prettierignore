@@ -3,6 +3,7 @@ node_modules
 app/node_modules
 app/dist
 app/src/generated
+sources/platforms/*/full
 app/test-results
 coverage
 playwright-report

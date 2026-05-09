@@ -23,7 +23,8 @@ Produces:
 
 ## Source Facts
 
-- `FACT-DUCKDB-WASM-BROWSER`
+- `FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION`
+- `FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT`
 - `FACT-GDPR-PERSONAL-DATA`
 - `FACT-GDPR-DATA-MINIMISATION`
 - `FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK`
@@ -51,6 +52,8 @@ changing metric grain or exposing unnecessary identifiers.
 ## Checkpoints
 
 - `account_daily_balances` grain is documented as account-date snapshot grain.
+- Daily balances are treated as semi-additive snapshots rather than additive
+  event rows across time.
 - Sensitive fields are marked for exclusion or masking in serving outputs.
 - The note separates account-date balance grain from depositor-bank guarantee
   grain.

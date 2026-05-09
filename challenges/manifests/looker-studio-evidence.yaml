@@ -140,7 +140,7 @@ lesson_steps:
     failure_mode: Pasting service keys or OAuth tokens into a static training app would violate the frontend-only boundary.
     source_facts:
       - FACT-LOOKER-STUDIO-CREDENTIALS
-      - FACT-WEB-LOCALSTORAGE-PERSISTENCE
+      - FACT-GDPR-SECURITY-PROCESSING
 evidence:
   - id: serving_sql
     type: pasted-sql

@@ -94,9 +94,9 @@ questions:
       - id: branch_month
         label: One row per branch per month.
     answer: account_day
-    explanation: FACT-DUCKDB-WASM-BROWSER supports inspecting this locally, and the dataset checkpoint proves daily balances are account-date snapshots.
+    explanation: FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION is why the profile must first preserve the account-date snapshot grain before totals are trusted.
     source_facts:
-      - FACT-DUCKDB-WASM-BROWSER
+      - FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION
   - id: q_profile_output_minimisation
     type: select-all
     prompt: Which raw identifiers should stay out of the one-row profile result under FACT-GDPR-DATA-MINIMISATION?
@@ -125,7 +125,7 @@ lesson_steps:
     why_it_matters: Knowing table purpose before joining prevents accidental grain changes in BI metrics.
     failure_mode: Starting with an ownership join makes the profile look richer but can multiply balances later.
     source_facts:
-      - FACT-DUCKDB-WASM-BROWSER
+      - FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION
   - id: run_profile_query
     title: Run the one-row profile query
     instruction: Run the starter SQL and confirm it returns row_count, currency_count, branch_count, and latest_balance_date.
@@ -133,7 +133,7 @@ lesson_steps:
     why_it_matters: A one-row profile creates a control point before any dashboard or serving-view work.
     failure_mode: Grouping by account_id returns many rows and leaks a sensitive identifier.
     source_facts:
-      - FACT-DUCKDB-WASM-BROWSER
+      - FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION
       - FACT-GDPR-DATA-MINIMISATION
   - id: confirm_minimised_output
     title: Confirm the output is minimised
