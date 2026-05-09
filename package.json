@@ -20,6 +20,7 @@
     "test:cloud-evidence": "bun run --filter @looker-bi-gym/app test:cloud-evidence",
     "test:progress-export": "bun run --filter @looker-bi-gym/app test:progress-export",
     "test:content-qa": "bun run --filter @looker-bi-gym/app test:content-qa",
+    "test:platform-boundary": "bun run --filter @looker-bi-gym/app test:platform-boundary",
     "test:e2e": "bun run --filter @looker-bi-gym/app test:e2e",
     "test:validators": "bun run --filter @looker-bi-gym/app test:validators",
     "validate:datasets": "bun run --filter @looker-bi-gym/app validate:datasets",

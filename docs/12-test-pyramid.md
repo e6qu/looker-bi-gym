@@ -1,0 +1,41 @@
+# Test Pyramid
+
+The release gate uses a browser-first test pyramid for a static frontend app.
+
+## Static Architecture Boundary
+
+`bun run test:platform-boundary` scans app source for backend-style browser APIs and fails if the app introduces network/session surfaces such as `fetch`, `XMLHttpRequest`, `WebSocket`, `EventSource`, `sendBeacon`, service workers, `sessionStorage`, or IndexedDB.
+
+The allowed state surfaces are browser-local only:
+
+- `localStorage` for challenge progress.
+- A same-site progress cookie that mirrors the same completion state.
+- User-triggered JSON export from Settings.
+
+The app has no backend account system, server session, API database, server-side grading, analytics beacon, or learner-data upload.
+
+## Domain And Contract Tests
+
+The lower and middle layers run deterministic checks without a browser:
+
+- `bun run test:quiz` covers quiz answer evaluation.
+- `bun run test:sql` covers DuckDB-WASM SQL loading and query behavior.
+- `bun run test:validators` covers browser challenge validators.
+- `bun run test:cloud-evidence` covers local evidence parsing and validation.
+- `bun run test:progress-export` covers browser-local progress, cookie fallback, reset, and export boundaries.
+- `bun run test:fixtures` covers known-good and known-bad challenge solution fixtures.
+- `bun run test:content-qa` covers required-tool declarations, synthetic-data boundaries, regulatory links, disclaimers, and Markdown links.
+
+## Rendered User Flows
+
+`bun run test:e2e` uses Playwright against the built static app. These tests follow learner workflows through the UI:
+
+- Start from the home page, navigate to Challenges, complete the orientation quiz, and verify browser-local progress is stored in `localStorage` and the same-site cookie.
+- Clear `localStorage`, reload from the cookie mirror, and verify Settings still shows completion evidence.
+- Run the browser SQL challenge, answer its grain question, and verify a local flag is produced.
+- Fill cloud-evidence fields, answer the credential boundary question, and verify local completion without backend calls.
+- Check responsive routes, rendered UI structure, nonblank screenshots, no horizontal overflow, and control text fit.
+
+## Full Gate
+
+`bun run check` is the merge gate. It runs validation, strict lint, TypeScript checks, domain tests, contract tests, architecture-boundary tests, rendered user-flow tests, production build, and static-link validation.

@@ -1,13 +1,18 @@
 import assert from "node:assert/strict";
 import {
+  browserProgressStorageKeys,
   buildLearnerProgressExport,
   completeChallenge,
-  readLearnerProgress,
-  resetLearnerProgress,
-  writeLearnerProgress,
+  readBrowserLearnerProgress,
+  resetBrowserLearnerProgress,
+  writeBrowserLearnerProgress,
 } from "../src/progress";
 import type { ChallengeManifest } from "../src/challengeTypes";
-import type { BrowserStorage } from "../src/progress";
+import type {
+  BrowserCookieStore,
+  BrowserProgressPersistence,
+  BrowserStorage,
+} from "../src/progress";
 
 class MemoryStorage implements BrowserStorage {
   readonly values = new Map<string, string>();
@@ -22,6 +27,44 @@ class MemoryStorage implements BrowserStorage {
 
   removeItem(key: string): void {
     this.values.delete(key);
+  }
+}
+
+class MemoryCookieStore implements BrowserCookieStore {
+  readonly values = new Map<string, string>();
+
+  get cookie(): string {
+    return Array.from(this.values.entries())
+      .map(([key, value]) => `${key}=${value}`)
+      .join("; ");
+  }
+
+  set cookie(value: string) {
+    const segments = value.split(";").map((segment) => segment.trim());
+    const cookiePair = segments[0];
+
+    if (cookiePair === undefined) {
+      return;
+    }
+
+    const separatorIndex = cookiePair.indexOf("=");
+
+    if (separatorIndex <= 0) {
+      return;
+    }
+
+    const key = cookiePair.slice(0, separatorIndex);
+    const cookieValue = cookiePair.slice(separatorIndex + 1);
+    const maxAge = segments.find((segment) =>
+      segment.toLowerCase().startsWith("max-age="),
+    );
+
+    if (maxAge === "Max-Age=0") {
+      this.values.delete(key);
+      return;
+    }
+
+    this.values.set(key, cookieValue);
   }
 }
 
@@ -77,19 +120,25 @@ const challenge: ChallengeManifest = {
   },
 };
 
-const storage = new MemoryStorage();
-const completedProgress = completeChallenge(readLearnerProgress(storage), {
-  challengeId: challenge.id,
-  flag: challenge.flag.id,
-  passedCheckIds: ["required_columns"],
-  passedQuestionIds: ["q_grain"],
-  completedAt: "2026-05-06T09:30:00.000Z",
-});
+const persistence: BrowserProgressPersistence = {
+  storage: new MemoryStorage(),
+  cookies: new MemoryCookieStore(),
+};
+const completedProgress = completeChallenge(
+  readBrowserLearnerProgress(persistence),
+  {
+    challengeId: challenge.id,
+    flag: challenge.flag.id,
+    passedCheckIds: ["required_columns"],
+    passedQuestionIds: ["q_grain"],
+    completedAt: "2026-05-06T09:30:00.000Z",
+  },
+);
 
-writeLearnerProgress(completedProgress, storage);
+writeBrowserLearnerProgress(completedProgress, persistence);
 
 const progressExport = buildLearnerProgressExport(
-  readLearnerProgress(storage),
+  readBrowserLearnerProgress(persistence),
   [challenge],
   {
     appVersion: "0.1.0",
@@ -127,14 +176,18 @@ assert.equal(progressExport.learner_notes, "Reviewed by learner.");
 assert.deepEqual(progressExport.privacy, {
   created_locally: true,
   backend_required: false,
+  state_scope: "browser-only",
+  storage_mediums: ["localStorage", "same-site-cookie"],
   includes_credentials: false,
   includes_real_banking_data: false,
   includes_raw_answers: false,
 });
 
 const exportedJson = JSON.stringify(progressExport);
-assert.equal(exportedJson.includes("looker-bi-gym.progress.v1"), false);
-assert.equal(exportedJson.includes("localStorage"), false);
+assert.equal(
+  exportedJson.includes(browserProgressStorageKeys.localStorage),
+  false,
+);
 assert.equal(exportedJson.includes("password"), false);
 assert.equal(exportedJson.includes("api_key"), false);
 assert.equal(exportedJson.includes("oauth"), false);
@@ -143,9 +196,26 @@ assert.equal(exportedJson.includes("synthetic_iban"), false);
 assert.equal(exportedJson.includes("customer_id"), false);
 assert.equal(exportedJson.includes("account_day"), false);
 
-const resetProgress = resetLearnerProgress(storage);
+const persistedCookie = persistence.cookies.cookie;
+persistence.storage.removeItem(browserProgressStorageKeys.localStorage);
+assert.equal(
+  readBrowserLearnerProgress(persistence).challenges[challenge.id]?.flag,
+  challenge.flag.id,
+);
+assert.notEqual(persistedCookie, "");
+assert.equal(
+  persistence.storage.getItem(browserProgressStorageKeys.localStorage) === null,
+  false,
+);
+
+const resetProgress = resetBrowserLearnerProgress(persistence);
 assert.deepEqual(resetProgress.challenges, {});
 assert.deepEqual(progressExport.completed_challenge_ids, [challenge.id]);
+assert.equal(
+  persistence.storage.getItem(browserProgressStorageKeys.localStorage),
+  null,
+);
+assert.equal(persistence.cookies.cookie, "");
 
 const notesFreeExport = buildLearnerProgressExport(
   completedProgress,

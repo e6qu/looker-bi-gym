@@ -33,7 +33,7 @@ The repository uses GitHub Actions with Bun for CI and Pages publishing:
 - `.github/workflows/ci.yml` installs dependencies, validates manifests and datasets, runs lint/typecheck/tests, runs Playwright rendered UI tests, builds the app, and checks the built `index.html` asset references.
 - `.github/workflows/pages.yml` repeats the same build gate, uploads `app/dist`, and deploys it to the `github-pages` environment.
 
-In the GitHub repository settings, set Pages source to GitHub Actions. The default workflow build uses relative production asset paths, which works for project Pages and user/organization Pages. If a deployment needs absolute asset paths, set `GITHUB_PAGES_BASE` for the build step, for example:
+In the GitHub repository settings, set Pages source to GitHub Actions before the first deployment. The default workflow build uses relative production asset paths, which works for project Pages and user/organization Pages. If a deployment needs absolute asset paths, set `GITHUB_PAGES_BASE` for the build step, for example:
 
 ```sh
 GITHUB_PAGES_BASE=/looker-bi-gym/ bun run build
@@ -47,9 +47,9 @@ After deployment, verify:
 
 ## Runtime Boundary
 
-The app is static and browser-hosted. It does not require a backend, credentials, user tracking, Google Cloud CLI, BigQuery CLI, Python, or Docker for the default learner path. Datasets and challenge content must remain synthetic.
+The exercises are frontend-only. The app is static and browser-hosted, with no backend account system, server session, API database, credential exchange, or server-side grading. It does not require credentials, user tracking, Google Cloud CLI, BigQuery CLI, Python, or Docker for the default learner path. Datasets and challenge content must remain synthetic.
 
-No third-party analytics, telemetry beacon, session replay, advertising tag, or learner-data upload is enabled by default. Browser-only challenge answers, local flags, and reset state stay in `localStorage` on the learner's device.
+No third-party analytics, telemetry beacon, session replay, advertising tag, or learner-data upload is enabled by default. Browser-only challenge answers, local flags, and reset state stay in browser-controlled storage on the learner's device. This release uses `localStorage` for challenge progress and mirrors progress to a same-site browser cookie so state can be recovered if `localStorage` is cleared while the browser cookie remains. The cookie is frontend state only; it is not a backend login, analytics identifier, or server session.
 
 ## Version And Build Metadata
 

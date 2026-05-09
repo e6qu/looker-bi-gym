@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { browserProgressStorageKeys } from "../src/progress";
 import type { Locator, Page } from "@playwright/test";
 
 const responsiveRoutes = [
@@ -70,6 +71,24 @@ async function expectNonBlankScreenshot(page: Page): Promise<void> {
     screenshot.byteLength,
     "viewport screenshot should contain rendered pixels",
   ).toBeGreaterThan(20_000);
+}
+
+function collectUnexpectedNetworkRequests(page: Page): string[] {
+  const unexpectedRequests: string[] = [];
+
+  page.on("request", (request) => {
+    const requestUrl = new URL(request.url());
+
+    if (
+      (requestUrl.protocol === "http:" || requestUrl.protocol === "https:") &&
+      requestUrl.hostname !== "127.0.0.1" &&
+      requestUrl.hostname !== "localhost"
+    ) {
+      unexpectedRequests.push(request.url());
+    }
+  });
+
+  return unexpectedRequests;
 }
 
 test.describe("rendered UI", () => {
@@ -219,5 +238,151 @@ test.describe("rendered UI", () => {
     await expect(
       page.getByRole("button", { name: "Reset Progress" }),
     ).toBeVisible();
+  });
+
+  test("learner completes orientation quiz and state survives localStorage loss through the same-site cookie", async ({
+    page,
+  }) => {
+    const unexpectedRequests = collectUnexpectedNetworkRequests(page);
+
+    await page.goto("/#/home");
+    await page.getByRole("link", { name: "Challenges" }).click();
+    await page.getByRole("link", { name: /000 - Orientation Quiz/u }).click();
+
+    await page
+      .getByLabel("Small synthetic banking data created for training.")
+      .check();
+    await page.getByLabel("none").check();
+    await page.getByLabel("account_id").check();
+    await page.getByLabel("customer_id").check();
+    await page.getByLabel("synthetic_iban").check();
+    await page.getByLabel("Numeric answer for question 4").fill("3");
+    await page.getByRole("button", { name: "Check Answers" }).click();
+
+    await expect(
+      page.getByText("Challenge complete. Flag: flag-orientation-quiz"),
+    ).toBeVisible();
+
+    const persistedProgress = await page.evaluate(
+      (key) => window.localStorage.getItem(key),
+      browserProgressStorageKeys.localStorage,
+    );
+    const persistedCookie = await page.evaluate(() => document.cookie);
+
+    expect(persistedProgress).toContain("orientation-quiz");
+    expect(persistedCookie).toContain(browserProgressStorageKeys.cookie);
+
+    await page.evaluate(
+      (key) => window.localStorage.removeItem(key),
+      browserProgressStorageKeys.localStorage,
+    );
+    await page.goto("/#/settings");
+
+    await expect(page.getByLabel("Progress export JSON preview")).toContainText(
+      "orientation-quiz",
+    );
+    await expect
+      .poll(() =>
+        page.evaluate(
+          (key) => window.localStorage.getItem(key),
+          browserProgressStorageKeys.localStorage,
+        ),
+      )
+      .not.toBeNull();
+
+    await page.getByRole("button", { name: "Reset Progress" }).click();
+    await expect(
+      page.getByText("Local progress has been reset in this browser."),
+    ).toBeVisible();
+    await expect(
+      page.getByLabel("Progress export JSON preview"),
+    ).not.toContainText("orientation-quiz");
+    await expect
+      .poll(() =>
+        page.evaluate(
+          (key) => window.localStorage.getItem(key),
+          browserProgressStorageKeys.localStorage,
+        ),
+      )
+      .toBeNull();
+    await expect
+      .poll(() => page.evaluate(() => document.cookie))
+      .not.toContain(browserProgressStorageKeys.cookie);
+
+    expect(unexpectedRequests).toEqual([]);
+  });
+
+  test("learner runs browser SQL challenge and earns the local flag", async ({
+    page,
+  }) => {
+    const unexpectedRequests = collectUnexpectedNetworkRequests(page);
+
+    await page.goto("/#/challenges");
+    await page
+      .getByRole("link", { name: /010 - First Banking Dataset Inspection/u })
+      .click();
+
+    const runButton = page.getByRole("button", { name: "Run Query" });
+    await expect(runButton).toBeEnabled({ timeout: 30_000 });
+    await runButton.click();
+
+    const resultTable = page.getByRole("table", { name: "SQL query result" });
+    await expect(resultTable).toBeVisible({ timeout: 20_000 });
+    await expect(resultTable.getByRole("cell", { name: "18" })).toBeVisible();
+
+    await page.getByLabel("One row per account per balance date.").check();
+    await expect(
+      page.getByText("Challenge complete. Flag: flag-first-banking-dataset"),
+    ).toBeVisible();
+    await expect
+      .poll(() =>
+        page.evaluate(
+          (key) => window.localStorage.getItem(key),
+          browserProgressStorageKeys.localStorage,
+        ),
+      )
+      .toContain("first-banking-dataset");
+
+    expect(unexpectedRequests).toEqual([]);
+  });
+
+  test("learner completes cloud evidence flow without backend calls or credentials", async ({
+    page,
+  }) => {
+    const unexpectedRequests = collectUnexpectedNetworkRequests(page);
+
+    await page.goto("/#/challenges/looker-studio-evidence");
+
+    await page.getByLabel("Serving view SQL")
+      .fill(`CREATE OR REPLACE VIEW serving_deposit_dashboard AS
+SELECT business_date, currency_code, SUM(ledger_balance) AS ledger_total
+FROM account_daily_balances
+GROUP BY business_date, currency_code;`);
+    await page
+      .getByLabel("Pasted control result")
+      .fill("business_date,currency_code,ledger_total\n2026-03-31,RON,95700");
+    await page.getByLabel("Visible latest-day total").fill("95700");
+    await page
+      .getByLabel("Report URL")
+      .fill("https://lookerstudio.google.com/reporting/example");
+    await page.getByLabel("Dashboard confirmation").check();
+    await page.getByLabel("No cloud credentials or tokens.").check();
+
+    await expect(
+      page.getByText("Challenge complete. Flag: flag-looker-studio-evidence"),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 2, name: "Credential boundary" }),
+    ).toBeVisible();
+    await expect
+      .poll(() =>
+        page.evaluate(
+          (key) => window.localStorage.getItem(key),
+          browserProgressStorageKeys.localStorage,
+        ),
+      )
+      .toContain("looker-studio-evidence");
+
+    expect(unexpectedRequests).toEqual([]);
   });
 });
