@@ -32,6 +32,10 @@
 - Ran `bun run check` with approved local preview binding; it passed, including the new platform-boundary test, all 8 Playwright rendered user-flow tests, production build, and static-link validation.
 - Opened PR #2: `https://github.com/e6qu/looker-bi-gym/pull/2`.
 - GitHub CI for PR #2 passed: `Validate, Test, And Build`.
+- PR #2 was merged into `main`.
+- Verified post-merge `main` CI passed: `https://github.com/e6qu/looker-bi-gym/actions/runs/25599622925`.
+- Verified post-merge `main` Pages deployment passed: `https://github.com/e6qu/looker-bi-gym/actions/runs/25599622931`.
+- Verified the live Pages URL returns HTTP 200 after the post-merge deployment: `https://e6qu.github.io/looker-bi-gym/`.
 
 ## 2026-05-09
 

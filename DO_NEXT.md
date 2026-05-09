@@ -6,7 +6,6 @@ Numbered tasks 001 through 018 are complete locally.
 
 Next verification steps:
 
-- After this Pages fix PR merges and the GitHub Actions workflows run on `main`, verify `https://e6qu.github.io/looker-bi-gym/` and hash deep links.
 - If a Safari pass is required before release, ask the user to explicitly enable Safari "Allow remote automation" or perform the manual Safari QA checklist in `docs/10-app-quality-browser-qa.md`.
 - Keep rebuildable generated outputs ignored; regenerate them from committed source instead of committing them.
 - Keep DuckDB-WASM runtime files supplied by dependencies/local build output, not committed binary artifacts.
