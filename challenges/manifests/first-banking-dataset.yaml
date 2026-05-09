@@ -1,5 +1,5 @@
 id: first-banking-dataset
-version: v0.1.0
+version: v0.2.0
 title: 010 - First Banking Dataset Inspection
 area: orientation-and-source-data
 mode: browser-sql
@@ -85,7 +85,7 @@ checks:
 questions:
   - id: q_balance_grain
     type: multiple-choice
-    prompt: What is the intended grain of the account_daily_balances table?
+    prompt: After running the profile query, what grain must be preserved for account_daily_balances before producing a one-row BI profile?
     options:
       - id: account_day
         label: One row per account per balance date.
@@ -94,7 +94,64 @@ questions:
       - id: branch_month
         label: One row per branch per month.
     answer: account_day
-    explanation: Daily balances are semi-additive snapshots at account-date grain.
+    explanation: FACT-DUCKDB-WASM-BROWSER supports inspecting this locally, and the dataset checkpoint proves daily balances are account-date snapshots.
+    source_facts:
+      - FACT-DUCKDB-WASM-BROWSER
+  - id: q_profile_output_minimisation
+    type: select-all
+    prompt: Which raw identifiers should stay out of the one-row profile result under FACT-GDPR-DATA-MINIMISATION?
+    options:
+      - id: account_id
+        label: account_id
+      - id: customer_id
+        label: customer_id
+      - id: branch_count
+        label: branch_count
+      - id: synthetic_iban
+        label: synthetic_iban
+    answer:
+      - account_id
+      - customer_id
+      - synthetic_iban
+    explanation: FACT-GDPR-DATA-MINIMISATION makes branch_count acceptable for the profile, while unnecessary account/customer/IBAN identifiers stay out.
+    source_facts:
+      - FACT-GDPR-PERSONAL-DATA
+      - FACT-GDPR-DATA-MINIMISATION
+lesson_steps:
+  - id: inspect_schema
+    title: Inspect the loaded synthetic tables
+    instruction: Open the challenge and read the schema cards for branches, accounts, account_owners, and account_daily_balances before running SQL.
+    expected_result: You can identify account_daily_balances as the balance snapshot table and account_owners as the many-to-many ownership table.
+    why_it_matters: Knowing table purpose before joining prevents accidental grain changes in BI metrics.
+    failure_mode: Starting with an ownership join makes the profile look richer but can multiply balances later.
+    source_facts:
+      - FACT-DUCKDB-WASM-BROWSER
+  - id: run_profile_query
+    title: Run the one-row profile query
+    instruction: Run the starter SQL and confirm it returns row_count, currency_count, branch_count, and latest_balance_date.
+    expected_result: The result has one row, row_count 18, two currencies, three branches, and the latest balance date.
+    why_it_matters: A one-row profile creates a control point before any dashboard or serving-view work.
+    failure_mode: Grouping by account_id returns many rows and leaks a sensitive identifier.
+    source_facts:
+      - FACT-DUCKDB-WASM-BROWSER
+      - FACT-GDPR-DATA-MINIMISATION
+  - id: confirm_minimised_output
+    title: Confirm the output is minimised
+    instruction: Check that the result columns do not include account_id, customer_id, or synthetic_iban.
+    expected_result: Only aggregate/profile columns appear in the output.
+    why_it_matters: BI serving outputs should include only fields needed for the stated purpose.
+    failure_mode: Including raw IDs in a dashboard profile creates unnecessary re-identification habits.
+    source_facts:
+      - FACT-GDPR-PERSONAL-DATA
+      - FACT-GDPR-DATA-MINIMISATION
+  - id: record_deposit_context
+    title: Record the depositor-bank grain warning
+    instruction: Note that deposit-guarantee coverage is a depositor-bank concept and is not the same as this account-date balance profile.
+    expected_result: Your notes distinguish account-date balance grain from depositor-bank guarantee grain.
+    why_it_matters: Later exercises need this distinction to avoid using account totals as guarantee coverage.
+    failure_mode: Treating every account balance as a separate guaranteed depositor balance overstates coverage semantics.
+    source_facts:
+      - FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK
 flag:
   id: flag-first-banking-dataset
   criteria:

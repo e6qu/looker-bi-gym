@@ -2,51 +2,60 @@
 
 Area: C - Looker Studio Dashboards
 
-Synthetic-data boundary: run performance and cost examples on synthetic banking sources and generated job metadata only. Do not use real or masked production banking data.
+Synthetic-data boundary: measure query behavior on synthetic demo sources only.
+Do not inspect or export production billing, jobs, user, or customer data.
 
 Builds on:
 
 - [03 - First Executive Dashboard](03-first-executive-dashboard.md)
+- [04 - Metrics And Calculated Fields](04-metrics-and-calculated-fields.md)
 
-Input sources:
-
-- `mart.fct_posted_transactions`
-- `mart.fct_account_daily_balances`
-- `serve.deposit_daily_branch_product`
-- BigQuery `INFORMATION_SCHEMA.JOBS`
+Required tools: optional BigQuery and Looker Studio browser UI.
 
 Produces:
 
 - `serve.bi_ops_cost_daily`
-- `notes/06-performance-cost-report.md`
+- `notes/06-performance-cost-findings.md`
 
-## Problem
+## Source Facts
 
-Banking BI dashboards can become expensive when many users and charts query large transaction, balance, alert, or case tables repeatedly.
+- `FACT-BIGQUERY-LOGICAL-VIEW`
+- `FACT-BIGQUERY-VIEW-LIMITATIONS`
+- `FACT-LOOKER-STUDIO-DATA-SOURCE`
+- `FACT-DORA-ICT-RISK-FRAMEWORK`
 
-## Outcome
+## Goal
 
-You can measure Looker Studio-generated BigQuery jobs and reduce query cost through modeling and caching.
+Measure how dashboard design affects query work and document an operational
+control for BI refresh/cost behavior.
 
-## Tasks
+## Steps
 
-- Build a deliberately inefficient dashboard page over a detailed banking table, such as posted transactions or alert events.
-- Record load time and BigQuery bytes billed.
-- Identify Looker Studio jobs in `INFORMATION_SCHEMA.JOBS`.
-- Add partition filters and reduce chart fields.
-- Create a summary table or materialized view at account-day, product-day, branch-day, or month-end portfolio grain.
-- Repoint the dashboard to the optimized serving object.
-- Compare cost and latency.
+1. Open the executive dashboard and load the page once with default filters.
+2. In BigQuery browser UI, inspect job metadata available to your sandbox
+   project; do not export private user/job evidence.
+3. Record how many chart queries ran and which data source they used.
+4. Compare a dashboard backed by raw or broad fields with one backed by a
+   narrower serving view.
+5. Write a synthetic `serve.bi_ops_cost_daily` design with date, report name,
+   data source, query count, bytes processed, and owner team.
+6. Add a control recommendation: stable serving views, fewer unused fields, and
+   documented owners.
 
-## Investigation Questions
+## Checkpoints
 
-- Which chart is most expensive?
-- Does the date filter prune partitions?
-- Are custom SQL queries hiding repeated work?
-- Would BI Engine help this workload?
-- What freshness interval is acceptable?
-- What dimensions are unnecessary for the report audience and should be removed from the serving table?
+- Your note identifies which report/data source produced the measured jobs.
+- The optimized path uses a curated serving view.
+- The control recommendation names an owner and refresh/cost evidence.
+
+## Common Failure Modes
+
+- Treating Looker Studio performance as only a visual design issue.
+- Measuring jobs without tying them back to a dashboard source.
+- Recording private billing or user details instead of synthetic/sandbox
+  evidence.
 
 ## Deliverable
 
-`notes/06-performance-cost-report.md` with before/after bytes billed, load time, query count, and recommended dashboard limits.
+Create `notes/06-performance-cost-findings.md` and a draft schema for
+`serve.bi_ops_cost_daily`.

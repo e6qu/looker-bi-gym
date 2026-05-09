@@ -2,56 +2,63 @@
 
 Area: D - Governance, Security, And Operations
 
-Synthetic-data boundary: observability and operations examples use synthetic banking sources and synthetic monitoring metadata only. Do not use real or masked production banking data.
+Synthetic-data boundary: operational evidence is synthetic or sandbox-only. Do
+not copy production incident records, job logs, reconciliation breaks, or user
+data into this repo.
 
 Builds on:
 
 - [06 - Performance And Cost Lab](06-performance-and-cost-lab.md)
 - [07 - Governance, Security, And Sharing](07-governance-security-and-sharing.md)
 
-Input sources:
-
-- BigQuery `INFORMATION_SCHEMA.JOBS`
-- `serve.*` refresh metadata.
-- `raw_ops.reconciliation_breaks`
-- `raw_ops.cases`
-- `serve.reg_context_register`
+Required tools: browser docs path first; optional BigQuery and Looker Studio
+browser UI.
 
 Produces:
 
-- BI operations Looker Studio page.
-- Freshness/reconciliation monitoring views.
-- DORA-style BI dependency and incident register.
-- `notes/08-bi-operations-runbook.md`
+- BI dependency register.
+- Freshness/reconciliation monitoring design.
+- `notes/08-bi-operations.md`
 
-## Problem
+## Source Facts
 
-A banking dashboard is a production artifact. Owners need to know when it is stale, expensive, broken, unused, unreconciled, or accessed by the wrong audience.
+- `FACT-DORA-ICT-RISK-FRAMEWORK`
+- `FACT-DORA-ICT-IDENTIFICATION`
+- `FACT-EBA-DPM-VALIDATION-RULES`
+- `FACT-BIGQUERY-LOGICAL-VIEW`
 
-## Outcome
+## Goal
 
-You can build a monitoring view for BI jobs, freshness, and dashboard usage signals.
+Treat the dashboard as an operated BI product with dependencies, owners,
+freshness, reconciliation, and validation evidence.
 
-## Tasks
+## Steps
 
-- Query `INFORMATION_SCHEMA.JOBS` for recent Looker Studio jobs.
-- Extract report and data source IDs from labels where available.
-- Aggregate bytes billed by report, user, and day.
-- Create freshness and reconciliation checks for serving tables.
-- Create a basic cost-monitoring Looker Studio dashboard.
-- Define an incident checklist for broken, stale, unreconciled, or over-shared dashboards.
-- Add a DORA-style operational-resilience view for BI-critical datasets, jobs, third-party dependencies, incidents, and recovery evidence.
+1. List the dashboard, serving views, source tables, scheduled refreshes, and
+   owner teams.
+2. Classify each dependency as data source, transformation, report, evidence
+   control, or downstream consumer.
+3. Add freshness fields: source cutoff timestamp, refresh timestamp, expected
+   SLA, and status.
+4. Add reconciliation fields: control total, dashboard total, delta, tolerance,
+   owner, and signoff status.
+5. For regulatory-reporting-inspired examples, note which validation rule or
+   reference date a data point would need.
+6. Define what incident evidence should be kept locally in training notes.
 
-## Investigation Questions
+## Checkpoints
 
-- Which report is most expensive?
-- Which users or data sources generate the most queries?
-- Are cache hits visible?
-- How will owners be alerted about stale data?
-- Which dashboards should be deprecated?
-- Which dashboards require maker/checker review evidence?
-- Which dashboards support regulatory reporting or DORA/PSD2/AML/GDPR evidence and therefore need stronger retention?
+- Every dashboard dependency has an owner.
+- Freshness and reconciliation controls have expected values and tolerances.
+- The note distinguishes BI operational evidence from legal/regulatory advice.
+
+## Common Failure Modes
+
+- Monitoring only dashboard uptime while ignoring source-table freshness.
+- Keeping validation rules in prose without data-point or reference-date fields.
+- Copying real incident or reconciliation records into training notes.
 
 ## Deliverable
 
-A BI operations dashboard and `notes/08-bi-operations-runbook.md` for cost, freshness, reconciliation, DORA-style resilience, and access issues.
+Create `notes/08-bi-operations.md` with the dependency register and the
+freshness/reconciliation control design.

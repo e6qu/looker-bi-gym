@@ -30,6 +30,21 @@ Each tutorial should:
 - Produce a local flag after completion.
 - Encourage AI use while still requiring the learner to understand and verify results.
 
+The current curriculum must now move from topic outlines to explicit instruction. A
+tutorial is not release-ready if it only lists tasks or generic investigation
+questions. It must teach the learner what to inspect, what to type or build, what
+result to compare, and which fact-backed rule explains the checkpoint.
+
+Fact-backed instruction rules:
+
+- External facts live in [docs/facts/README.md](docs/facts/README.md).
+- Regulation, platform, browser-storage, and BI-tooling questions cite fact IDs.
+- Quiz prompts ask about a concrete source-backed consequence.
+- Explanations name the fact ID and the practical mistake it prevents.
+- Wrong options should represent realistic misconceptions, not throwaway answers.
+- Tutorials should quote sparingly and link to the source; source facts are
+  paraphrased in the register for maintainability.
+
 ## Tutorial Areas
 
 Area A - Orientation And Source Data:
@@ -125,6 +140,17 @@ Each tutorial should include:
 - Hints.
 - AI usage guidance.
 - Completion notes.
+
+Step-by-step lesson sections should include:
+
+- Source facts used.
+- What the learner should open.
+- Exact action or query to run.
+- Expected result shape or value range.
+- Why the checkpoint matters for banking BI.
+- Common failure mode.
+- Browser-local verification.
+- Follow-up quiz question IDs.
 
 ## Standard Challenge Manifest Fields
 
@@ -241,6 +267,17 @@ Question checks:
 - Match regulation to BI implication.
 - Identify unsafe field.
 
+Fact-backed question checks:
+
+- Every question about legislation, regulation, product behavior, or platform
+  architecture has one or more source fact IDs.
+- The expected answer is recoverable from the cited source or from an instruction
+  step that cites the source.
+- Numeric questions should be derived from the synthetic dataset or from explicit
+  source values such as the FGDB/EU deposit guarantee ceiling.
+- No released quiz should ask only "what is this project preference?" unless the
+  preference is part of the platform boundary and is checked by app behavior.
+
 Golden solution checks:
 
 - Each released challenge should have at least one known-good fixture.
@@ -258,6 +295,37 @@ Challenge 000 - Orientation Quiz:
 Challenge 010 - First Banking Dataset:
 
 - Mode: `browser-sql`.
+- Rewrite target: a guided inspection lesson with table previews, row-count SQL,
+  distinct branch/currency checks, sensitive-field exclusion, GDPR data
+  minimisation fact references, and an FGDB depositor-bank grain warning.
+
+Challenge 020 - Account Owner Fanout CTF:
+
+- Mode: `browser-sql`.
+- Rewrite target: a guided fanout proof with a naive query, a corrected
+  account-date-grain query, a reconciliation delta, and fact-backed questions
+  about deposit guarantee grain and BI serving views.
+
+Challenge 030 - Looker Studio Evidence Pattern:
+
+- Mode: `cloud-evidence`.
+- Rewrite target: browser-only optional cloud instructions with explicit BigQuery
+  view limits, Looker Studio data-source inspection, calculated-field scope,
+  credential model checks, and local-only evidence handling.
+
+## Step-By-Step Rewrite Roadmap
+
+Task 019 creates the source fact register and the authoring contract.
+
+Task 020 rewrites the released browser-first lessons so each page has executable
+steps, expected checkpoints, failure modes, and source fact references.
+
+Task 021 rewrites quiz and challenge questions so every regulation, product,
+browser storage, or BI-tooling question is fact-backed and tied to source IDs.
+
+Task 022 adds automated content QA so generic prompts, missing fact references,
+and broken source-fact links are caught before release.
+
 - Goal: inspect predefined account/balance data and answer basic grain questions.
 
 Challenge 020 - Account Owner Fanout CTF:

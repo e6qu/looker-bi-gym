@@ -1,5 +1,5 @@
 id: account-owner-fanout
-version: v0.1.0
+version: v0.2.0
 title: 020 - Account Owner Fanout CTF
 area: warehouse-modeling-and-metrics
 mode: browser-sql
@@ -112,13 +112,65 @@ questions:
       - id: branch_all_dates
         label: One row per branch across all dates.
     answer: account_latest_date
-    explanation: Balance snapshots must be summarized at account-date grain before ownership joins are used for diagnostics.
+    explanation: FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK is why ownership analysis must be deliberate; balance snapshots must first stay at account-latest-date grain.
+    source_facts:
+      - FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK
   - id: q_delta
     type: numeric
     prompt: How many RON/EUR ledger units does the naive owner join overstate on the latest date?
     answer: 69100
     tolerance: 0
-    explanation: The latest-date correct total is 95700, while the naive owner-joined total is 164800.
+    explanation: FACT-DUCKDB-WASM-BROWSER lets the app verify this locally; the latest-date correct total is 95700 and the naive owner-joined total is 164800.
+    source_facts:
+      - FACT-DUCKDB-WASM-BROWSER
+  - id: q_deposit_guarantee_grain
+    type: multiple-choice
+    prompt: Which grain does FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK imply for a future deposit-guarantee coverage metric?
+    options:
+      - id: depositor_bank
+        label: One depositor per bank, after resolving ownership.
+      - id: account_balance
+        label: One account balance row per business date.
+      - id: owner_joined_balance
+        label: One row per account-owner join result.
+    answer: depositor_bank
+    explanation: FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK says the ceiling is per depositor per bank, so account-owner join rows are not the final coverage grain.
+    source_facts:
+      - FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK
+lesson_steps:
+  - id: run_naive_join
+    title: Run the naive owner join mentally before trusting it
+    instruction: Inspect account_owners and account_daily_balances, then compare the owner-joined total with the account-grain total in one SQL result.
+    expected_result: The naive owner-joined total is 164800 while the correct latest account-grain total is 95700.
+    why_it_matters: Many-to-many ownership rows can multiply semi-additive balance facts.
+    failure_mode: Summing ledger_balance after joining account_owners treats each owner row as another balance.
+    source_facts:
+      - FACT-DUCKDB-WASM-BROWSER
+  - id: preserve_latest_account_grain
+    title: Preserve latest account-date grain first
+    instruction: Filter account_daily_balances to the latest business_date and calculate the correct total before joining ownership rows.
+    expected_result: correct_ledger_total remains 95700.
+    why_it_matters: Snapshot balances are safe to sum across accounts for one date, not after a join that changes row count.
+    failure_mode: Grouping after the owner join hides the duplication inside plausible-looking totals.
+    source_facts:
+      - FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK
+  - id: reconcile_fanout_delta
+    title: Reconcile the fanout delta
+    instruction: Return latest_balance_date, correct_ledger_total, naive_joined_total, fanout_delta, and overstatement_pct in one row.
+    expected_result: fanout_delta is 69100 and overstatement_pct is 72.20.
+    why_it_matters: A CTF-style proof should show both the wrong number and the reconciled correct number.
+    failure_mode: Reporting only the corrected total misses the teachable evidence of how the error happened.
+    source_facts:
+      - FACT-DUCKDB-WASM-BROWSER
+  - id: connect_to_serving_views
+    title: Connect the fix to serving-view design
+    instruction: Note that a dashboard should consume a curated serving view after grain-safe logic is defined upstream.
+    expected_result: Your fix can be described as a serving-view rule, not a one-off chart calculation.
+    why_it_matters: BigQuery logical views can centralize reusable SQL for dashboard sources.
+    failure_mode: Fixing the total only in a chart leaves the same join trap available to the next report.
+    source_facts:
+      - FACT-BIGQUERY-LOGICAL-VIEW
+      - FACT-BIGQUERY-VIEW-SCOPE
 flag:
   id: flag-account-owner-fanout
   criteria:

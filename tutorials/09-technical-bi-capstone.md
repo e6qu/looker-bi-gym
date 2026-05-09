@@ -2,67 +2,70 @@
 
 Area: E - Capstone
 
-Synthetic-data boundary: the capstone must use synthetic banking sources only. Do not use real or masked production banking data.
+Synthetic-data boundary: the capstone uses committed synthetic datasets,
+synthetic evidence, and browser-local completion state only. Do not use real
+banking data, credentials, private customer screenshots, or production exports.
 
-Builds on:
+Builds on all previous tutorials.
 
-- All previous tutorials.
-
-Input sources:
-
-- All `mart.*` and `serve.*` objects produced in Areas B-D.
-- `metrics/banking_metric_contracts.md`
-- `serve.reg_context_register`
-- Notes and runbooks from tutorials 00-08.
+Required tools: browser-first challenge path; optional BigQuery and Looker Studio
+browser UI for the applied track.
 
 Produces:
 
-- Multi-page Looker Studio report.
-- `README.md` or `notes/09-capstone-readme.md`
-- Final architecture, metric, security, operations, and regulation-context inventory.
+- Multi-page banking BI product.
+- Metric contracts.
+- Serving-view inventory.
+- Regulation-context register.
+- Operations evidence register.
 
-## Problem
+## Source Facts
 
-Design and deliver a small but production-shaped BI product using BigQuery and Looker Studio.
+- `FACT-GDPR-DATA-MINIMISATION`
+- `FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK`
+- `FACT-BIGQUERY-VIEW-SCOPE`
+- `FACT-LOOKER-STUDIO-DATA-SOURCE`
+- `FACT-LOOKER-STUDIO-CREDENTIALS`
+- `FACT-DORA-ICT-RISK-FRAMEWORK`
+- `FACT-DORA-ICT-IDENTIFICATION`
 
-## Outcome
+## Goal
 
-You can apply modeling, metrics, dashboard design, performance, governance, and observability in one coherent demo.
+Assemble a production-shaped but synthetic banking BI product whose metrics,
+data sources, governance controls, and operations evidence are inspectable.
 
-## Capstone Brief
+## Steps
 
-Build a retail-bank technical BI product for four audiences:
+1. Create an executive page from curated serving views.
+2. Create a deposits page that preserves account-date balance grain and records
+   depositor-bank grain caveats for guarantee-style analysis.
+3. Create a governance page listing sensitive fields, masking/exclusion choices,
+   and source fact IDs.
+4. Create an operations page with freshness, reconciliation, dependencies, owner
+   teams, and incident-evidence placeholders.
+5. Review every report data source and credential mode.
+6. Export browser-local completion evidence from Settings and confirm it contains
+   challenge IDs, versions, timestamps, and local flags without raw answers or
+   credentials.
 
-- Executive: monthly balance sheet, risk, and operations KPI performance.
-- Finance/Treasury: GL reconciliation, deposit trends, and liquidity proxy reporting.
-- Credit Risk: portfolio exposure, delinquency, charge-off, and allowance-input monitoring.
-- Compliance/Operations: AML/fraud alert queues, complaints, reconciliation breaks, and SLA breaches.
-- EU/Romania overlay: one page or appendix showing how selected metrics map to COREP/FINREP/Pillar 3, DORA, PSD2 fraud, AML/CFT, GDPR, BNR, ONPCSB, or FGDB topics.
+## Checkpoints
 
-## Required Components
+- Every dashboard page uses a curated serving source.
+- Every metric has a contract with grain, formula, owner, and allowed dimensions.
+- Sensitive fields are excluded or masked.
+- Operations evidence names dependencies, owners, freshness, and reconciliation
+  controls.
+- The exported completion evidence stays local and credential-free.
 
-- BigQuery raw/staging/mart/serving layers.
-- Declared grain for every fact and serving table.
-- Metric contracts for core KPIs.
-- One Looker Studio report with at least four pages.
-- BigQuery summary tables or materialized views for performance.
-- Access/governance notes.
-- Monitoring queries for Looker Studio jobs.
-- Final README explaining how to reproduce and evaluate the project.
-- Synthetic data only, with documented masking and access-control assumptions.
-- EU/Romania regulatory-context register for every dashboard page.
+## Common Failure Modes
 
-## Investigation Questions
-
-- Which metrics are shared across audiences?
-- Which serving tables are audience-specific?
-- What is the acceptable freshness for each page?
-- What dashboard cost is acceptable?
-- What access model prevents raw-data leakage?
-- Which outputs need reconciliation evidence and maker/checker signoff?
-- Which analytics are descriptive BI versus model outputs subject to model-risk governance?
-- Which pages support EU or Romanian regulatory workflows, and what evidence must they retain?
+- Creating a visually polished dashboard with no metric contracts.
+- Mixing chart-only calculations with governed metrics.
+- Leaving credential, ownership, or freshness behavior undocumented.
+- Treating source fact IDs as decoration instead of linking them to actual
+  controls.
 
 ## Deliverable
 
-A complete banking-oriented demo project suitable for portfolio review or internal technical BI training, documented in `notes/09-capstone-readme.md`.
+Create a capstone README with dashboard pages, serving views, metric contracts,
+regulation-context links, operations evidence, and the local progress export.

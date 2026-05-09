@@ -15,7 +15,7 @@ export type ContentSection = {
   readonly documents: readonly ContentDocument[];
 };
 
-const rawDocs = import.meta.glob<string>("../../docs/*.md", {
+const rawDocs = import.meta.glob<string>("../../docs/**/*.md", {
   eager: true,
   import: "default",
   query: "?raw",
@@ -50,9 +50,13 @@ function toDocuments(
   section: ContentSectionId,
   files: Readonly<Record<string, string>>,
 ): ContentDocument[] {
+  const sectionPrefix = `../../${section}/`;
+
   return Object.entries(files)
     .map(([importPath, markdown]) => {
-      const maybeFileName = importPath.split("/").at(-1);
+      const maybeFileName = importPath.startsWith(sectionPrefix)
+        ? importPath.slice(sectionPrefix.length)
+        : importPath.split("/").at(-1);
       const fileName = maybeFileName ?? importPath;
       return {
         section,

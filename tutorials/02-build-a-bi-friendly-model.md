@@ -2,62 +2,69 @@
 
 Area: B - Warehouse Modeling And Metrics
 
-Synthetic-data boundary: use the predefined synthetic banking schemas only. Do not use real or masked production banking data.
+Synthetic-data boundary: use the predefined synthetic banking schemas only. Do
+not use real or masked production banking data.
 
 Builds on:
 
 - [00 - Orientation And Stack](00-orientation-and-stack.md)
+- [01 - Connect Predefined Banking Data](01-connect-public-data.md)
 - [Data Sources](data-sources.md)
 
-Input sources:
-
-- `raw_ref.calendar`
-- `raw_ref.legal_entities`
-- `raw_ref.branches`
-- `raw_ref.products`
-- `raw_party.customers`
-- `raw_deposits.accounts`
-- `raw_deposits.account_owners`
-- `raw_deposits.account_daily_balances`
-- Optional: `raw_payments.posted_transactions`
+Required tools: browser SQL challenge path first; optional BigQuery browser UI
+for the cloud-applied version.
 
 Produces:
 
-- `mart.dim_date`
-- `mart.dim_customer_masked`
-- `mart.dim_account_masked`
-- `mart.dim_product`
-- `mart.dim_branch`
-- `mart.fct_account_daily_balances`
-- Optional: `mart.fct_posted_transactions`
+- Declared grains for dimensions and facts.
+- `mart.fct_account_daily_balances` design.
+- `mart.dim_account_masked`, `mart.dim_branch`, and `mart.dim_product` design.
 - `notes/02-grain-declarations.md`
 
-## Problem
+## Source Facts
 
-Raw tables are rarely ideal for dashboards. Build a simple dimensional model that declares grain and separates facts from dimensions.
+- `FACT-DUCKDB-WASM-BROWSER`
+- `FACT-GDPR-PERSONAL-DATA`
+- `FACT-GDPR-DATA-MINIMISATION`
+- `FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK`
 
-## Outcome
+## Goal
 
-You can design a star schema and explain why it is easier for BI than a raw operational schema.
+Turn raw-shaped deposits tables into BI-friendly facts and dimensions without
+changing metric grain or exposing unnecessary identifiers.
 
-## Tasks
+## Steps
 
-- Choose a banking demo domain: deposits, consumer loans, card transactions, AML/fraud alerts, GL reconciliation, complaints, or back-office case operations.
-- Define the business process.
-- Declare the fact-table grain.
-- Identify dimensions and facts.
-- Create BigQuery views or tables for one fact and three dimensions.
-- Add a `dim_date` or date spine if useful.
+1. Open `#/challenges/first-banking-dataset`.
+2. Inspect the schema cards before running SQL. Identify `accounts`,
+   `account_owners`, and `account_daily_balances`.
+3. Run the profile query and confirm it returns one row with row count, currency
+   count, branch count, and latest balance date.
+4. Write `notes/02-grain-declarations.md` with one line per table: table name,
+   grain, primary key, sensitive fields, and safe dashboard fields.
+5. Design `mart.fct_account_daily_balances` at one row per account per balance
+   date. Keep raw identifiers out of the serving layer unless explicitly needed
+   for a restricted lesson.
+6. Add a warning that `account_owners` is many-to-many and must not be joined to
+   balances before preserving balance grain.
 
-## Investigation Questions
+## Checkpoints
 
-- What is one row in each table?
-- Which facts are additive?
-- Which metrics are ratios?
-- Which dimensions are safe to group by?
-- What joins can create fanout?
-- Which date column drives reporting: transaction, posting, effective, value, or month-end date?
+- `account_daily_balances` grain is documented as account-date snapshot grain.
+- Sensitive fields are marked for exclusion or masking in serving outputs.
+- The note separates account-date balance grain from depositor-bank guarantee
+  grain.
+- The browser SQL challenge displays `flag-first-banking-dataset`.
+
+## Common Failure Modes
+
+- Grouping the profile by `account_id` and turning one output row into account
+  rows.
+- Treating daily balance snapshots as additive across time.
+- Joining `account_owners` before calculating account-grain balances.
+- Calling a masked identifier safe just because the dataset is synthetic.
 
 ## Deliverable
 
-SQL files or saved BigQuery views for the listed `mart.*` objects, plus `notes/02-grain-declarations.md`.
+Complete `010 - First Banking Dataset Inspection` and create
+`notes/02-grain-declarations.md` with grain, sensitivity, and date semantics.

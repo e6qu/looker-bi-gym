@@ -2,45 +2,65 @@
 
 Area: A - Orientation And Source Data
 
+Synthetic-data boundary: use synthetic training data only. Do not use real,
+masked, anonymized, or production-derived banking data.
+
 Builds on: none.
 
-Input sources: documentation only.
+Required tools: browser only.
 
 Produces:
 
-- `notes/00-stack-decisions.md`
-- Selected GCP project, region, and naming conventions.
-- Initial regulatory-context tags for the demo.
+- Completed `000 - Orientation Quiz`.
+- `notes/00-stack-decisions.md`, if you are keeping external notes.
 
-## Problem
+## Source Facts
 
-Understand what role each tool plays in a BigQuery + Looker Studio banking BI project and avoid confusing Looker Studio with Looker.
+- `FACT-DUCKDB-WASM-BROWSER`
+- `FACT-WEB-LOCALSTORAGE-PERSISTENCE`
+- `FACT-WEB-COOKIE-SYNC`
+- `FACT-GDPR-PERSONAL-DATA`
+- `FACT-GDPR-DATA-MINIMISATION`
+- `FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK`
+- `FACT-DGSD-100K-EU`
 
-## Outcome
+## Goal
 
-You can explain the architecture, name the project layers, identify where banking metric logic should live, and describe why real bank data must not be used in the demo repo.
+Confirm the runtime, storage, data, and regulatory-context boundaries before you
+touch any banking BI examples.
 
-## Tasks
+## Steps
 
-- Create a GCP project or choose an existing sandbox project.
-- Enable BigQuery.
-- Open Looker Studio and inspect reports, data sources, connectors, and templates.
-- Read [docs/00-research-map.md](../docs/00-research-map.md).
-- Read [docs/07-banking-domain-guide.md](../docs/07-banking-domain-guide.md).
-- Read [docs/08-eu-romania-regulatory-context.md](../docs/08-eu-romania-regulatory-context.md).
-- Skim [regulations/README.md](../regulations/README.md) and choose the regulation briefs relevant to the dashboard you will build.
-- Read [tutorials/data-sources.md](data-sources.md) and [tutorials/curriculum.md](curriculum.md).
-- Write a short architecture note: synthetic raw banking data -> BigQuery models -> governed serving views -> Looker Studio report.
+1. Open `#/challenges/orientation-quiz`.
+2. Read the scenario and the step-by-step work section.
+3. Confirm that SQL practice runs in the browser through DuckDB-WASM, not
+   through a backend grading database.
+4. Open Settings in another tab or after completion and inspect the progress
+   preview. Confirm that progress is browser-local and can be reset.
+5. Review the seed sensitive fields: `account_id`, `customer_id`, and
+   `synthetic_iban`.
+6. Answer the data-minimisation question by selecting the raw identifiers that
+   should not appear in serving outputs.
+7. Answer the deposit-guarantee ceiling question using the FGDB/EU fact IDs.
 
-## Investigation Questions
+## Checkpoints
 
-- What should BigQuery do?
-- What should Looker Studio do?
-- What would Looker/LookML add that Looker Studio does not provide?
-- Where will this project define governed metrics?
-- Which banking data types must be masked, excluded, or simulated?
-- Which EU/Romanian regulatory contexts might apply to this dashboard: COREP/FINREP/Pillar 3, DORA, PSD2, AML/CFT, GDPR, BNR reporting, ONPCSB workflow, or FGDB deposit guarantee?
+- The quiz completes locally and displays `flag-orientation-quiz`.
+- You can explain that browser SQL uses DuckDB-WASM and synthetic CSV data.
+- You can explain that progress uses `localStorage` plus a same-site cookie
+  fallback, not a backend account.
+- You can name the EUR 100,000 deposit guarantee ceiling and distinguish it from
+  an account balance total.
+
+## Common Failure Modes
+
+- Treating a same-site cookie as a server session.
+- Assuming browser SQL results are sent to a hosted grading service.
+- Selecting branch geography as sensitive while missing account/customer
+  identifiers.
+- Confusing account-balance grain with depositor-bank guarantee grain.
 
 ## Deliverable
 
-Create `notes/00-stack-decisions.md` with the chosen project, region, naming conventions, BI architecture assumptions, synthetic-data boundaries, and banking governance assumptions.
+Complete the browser quiz. Optional note: record the runtime, storage, synthetic
+data, and depositor-bank grain assumptions in `notes/00-stack-decisions.md`.

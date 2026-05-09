@@ -185,6 +185,7 @@ test.describe("rendered UI", () => {
       }),
     ).toBeVisible();
     await expect(page.getByLabel("SQL query")).toBeVisible();
+    await expect(page.getByText("Step-by-step work")).toBeVisible();
 
     const runButton = page.getByRole("button", { name: "Run Query" });
     await expect(runButton).toBeEnabled({ timeout: 30_000 });
@@ -250,13 +251,19 @@ test.describe("rendered UI", () => {
     await page.getByRole("link", { name: /000 - Orientation Quiz/u }).click();
 
     await page
-      .getByLabel("Small synthetic banking data created for training.")
+      .getByLabel(
+        "In the learner browser through DuckDB compiled to WebAssembly.",
+      )
       .check();
-    await page.getByLabel("none").check();
+    await page
+      .getByLabel(
+        "Progress stays in browser-local origin storage with a same-site cookie fallback.",
+      )
+      .check();
     await page.getByLabel("account_id").check();
     await page.getByLabel("customer_id").check();
     await page.getByLabel("synthetic_iban").check();
-    await page.getByLabel("Numeric answer for question 4").fill("3");
+    await page.getByLabel("Numeric answer for question 4").fill("100000");
     await page.getByRole("button", { name: "Check Answers" }).click();
 
     await expect(
@@ -331,6 +338,9 @@ test.describe("rendered UI", () => {
     await expect(resultTable.getByRole("cell", { name: "18" })).toBeVisible();
 
     await page.getByLabel("One row per account per balance date.").check();
+    await page.getByLabel("account_id").check();
+    await page.getByLabel("customer_id").check();
+    await page.getByLabel("synthetic_iban").check();
     await expect(
       page.getByText("Challenge complete. Flag: flag-first-banking-dataset"),
     ).toBeVisible();
@@ -367,6 +377,9 @@ GROUP BY business_date, currency_code;`);
       .fill("https://lookerstudio.google.com/reporting/example");
     await page.getByLabel("Dashboard confirmation").check();
     await page.getByLabel("No cloud credentials or tokens.").check();
+    await page
+      .getByLabel("In the shared data source or upstream serving view.")
+      .check();
 
     await expect(
       page.getByText("Challenge complete. Flag: flag-looker-studio-evidence"),

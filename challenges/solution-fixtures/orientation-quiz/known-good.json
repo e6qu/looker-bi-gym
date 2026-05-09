@@ -5,10 +5,10 @@
   "kind": "known-good",
   "description": "Correct orientation quiz answers for the synthetic-data and browser-first training boundary.",
   "answers": {
-    "q_synthetic_data": "synthetic_only",
-    "q_required_tools": "none",
-    "q_sensitive_fields": ["account_id", "customer_id", "synthetic_iban"],
-    "q_supported_types": "3"
+    "q_duckdb_wasm": "browser_wasm",
+    "q_progress_storage": "local_origin_storage",
+    "q_data_minimisation": ["account_id", "customer_id", "synthetic_iban"],
+    "q_deposit_guarantee_amount": "100000"
   },
   "expected": {
     "required_passed": true

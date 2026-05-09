@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import {
   contentSections,
   getDefaultDocument,
@@ -349,6 +349,39 @@ function ChallengeInstructions({
         ) : null}
       </div>
 
+      {challenge.lesson_steps !== undefined &&
+      challenge.lesson_steps.length > 0 ? (
+        <section className="lessonSteps" aria-label="Lesson steps">
+          <div>
+            <p className="eyebrow">Lesson</p>
+            <h2>Step-by-step work</h2>
+          </div>
+          <ol>
+            {challenge.lesson_steps.map((step) => (
+              <li key={step.id}>
+                <strong>{step.title}</strong>
+                <p>{step.instruction}</p>
+                <dl>
+                  <div>
+                    <dt>Expected checkpoint</dt>
+                    <dd>{step.expected_result}</dd>
+                  </div>
+                  <div>
+                    <dt>Why it matters</dt>
+                    <dd>{step.why_it_matters}</dd>
+                  </div>
+                  <div>
+                    <dt>Common failure mode</dt>
+                    <dd>{step.failure_mode}</dd>
+                  </div>
+                </dl>
+                <SourceFactList sourceFacts={step.source_facts} />
+              </li>
+            ))}
+          </ol>
+        </section>
+      ) : null}
+
       {challenge.hints !== undefined && challenge.hints.length > 0 ? (
         <details>
           <summary>Hints</summary>
@@ -360,6 +393,28 @@ function ChallengeInstructions({
         </details>
       ) : null}
     </section>
+  );
+}
+
+function SourceFactList({
+  sourceFacts,
+}: {
+  readonly sourceFacts: readonly string[] | undefined;
+}): JSX.Element | null {
+  if (sourceFacts === undefined || sourceFacts.length === 0) {
+    return null;
+  }
+
+  return (
+    <p className="sourceFactList">
+      <span>Source facts:</span>{" "}
+      {sourceFacts.map((sourceFact, index) => (
+        <Fragment key={sourceFact}>
+          <a href="#/docs/facts/README.md">{sourceFact}</a>
+          {index < sourceFacts.length - 1 ? ", " : ""}
+        </Fragment>
+      ))}
+    </p>
   );
 }
 
@@ -465,6 +520,7 @@ function QuizChallengePage({
                 <span>Question {index + 1}</span>
                 {question.prompt}
               </legend>
+              <SourceFactList sourceFacts={question.source_facts} />
 
               {question.type === "multiple-choice" &&
               question.options !== undefined ? (
@@ -1019,6 +1075,7 @@ function CloudEvidencePage({
                     <span>Question {index + 1}</span>
                     {question.prompt}
                   </legend>
+                  <SourceFactList sourceFacts={question.source_facts} />
 
                   {question.type === "multiple-choice" &&
                   question.options !== undefined ? (
@@ -1392,6 +1449,7 @@ function SqlChallengePage({
                     <span>Question {index + 1}</span>
                     {question.prompt}
                   </legend>
+                  <SourceFactList sourceFacts={question.source_facts} />
 
                   {question.type === "multiple-choice" &&
                   question.options !== undefined ? (

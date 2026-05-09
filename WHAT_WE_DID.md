@@ -2,6 +2,61 @@
 
 ## 2026-05-09
 
+- Started and completed Tasks 020, 021, and 022 implementation on branch `fact-backed-tutorials`.
+- Added `lesson_steps` and question `source_facts` to the challenge manifest schema and TypeScript challenge types.
+- Rendered step-by-step challenge lessons in the app with instruction, expected checkpoint, why-it-matters text, common failure mode, and source fact links.
+- Updated challenge question rendering to display source fact IDs.
+- Updated app Markdown content loading so nested docs such as `docs/facts/README.md` are available in the static docs catalog.
+- Rewrote released challenge manifests with fact-backed lesson steps and questions for DuckDB-WASM, browser-local storage, GDPR minimisation, FGDB/EU deposit guarantee amount/grain, BigQuery logical views, Looker Studio data sources/calculated fields/credentials, and local-only cloud evidence.
+- Bumped released challenge versions to `v0.2.0` and updated the draft challenge version to `v0.1.1`.
+- Updated known-good and known-bad solution fixtures for changed question IDs and answers.
+- Rewrote released tutorial Markdown files `00` through `09` with Source Facts, Steps, Checkpoints, Common Failure Modes, and concrete deliverables.
+- Extended content QA to parse the source fact register, validate known source fact IDs, require source facts on released challenge questions and lesson steps, require released challenge lesson steps, and require step/checkpoint/failure-mode sections in released tutorial Markdown.
+- Updated `challenges/AUTHORING.md`, `docs/11-content-qa-checklist.md`, and `CHANGELOG.md` for the fact-backed instruction contract.
+- Updated Playwright user-flow tests for the rewritten quiz and challenge questions.
+- Ran `bun run validate:manifests`; it passed.
+- Ran `bun run test:fixtures`; it passed.
+- Ran `bun run typecheck`; it passed.
+- Ran `bun run test:content-qa`; it initially caught an overly narrow executable-action assertion, the rule was fixed, and the rerun passed.
+- Ran `bun run test:quiz`; it passed.
+- Ran `bun run test:platform-boundary`; it passed.
+- Ran `bun run lint`; it passed.
+- Ran `bun run format:check`; it initially failed on formatting in `app/scripts/test-content-qa.ts` and `challenges/AUTHORING.md`.
+- Ran `bun run format`; it fixed formatting.
+- Reran `bun run format:check`; it passed.
+- Ran `bun run test:e2e`; it initially failed because the sandbox blocked Vite preview from binding `127.0.0.1:4173`.
+- After explicit user approval for local preview binding, reran `bun run test:e2e`; all 8 Playwright rendered user-flow tests passed.
+- Ran `bun run build`; it passed.
+- Ran `bun run test:validators`; it passed.
+- Ran `bun run test:cloud-evidence`; it passed.
+- Ran `bun run test:progress-export`; it passed.
+- Ran `bun run validate:datasets`; it passed.
+- Ran `bun run test:sql`; it passed.
+- Ran `bun run validate:static-links`; it passed.
+- Ran full `bun run check` with approved local preview binding; it passed, including all validation scripts, content QA, platform-boundary checks, all 8 Playwright rendered user-flow tests, production build, and static-link validation.
+- Committed the implementation as `f606cae Implement fact-backed tutorial flows`.
+- Pushed branch `fact-backed-tutorials`.
+- Opened PR #3: `https://github.com/e6qu/looker-bi-gym/pull/3`.
+- Watched PR #3 checks; `Validate, Test, And Build` passed in GitHub Actions.
+
+## 2026-05-09
+
+- Started and completed Task 019 planning/fact-register work after identifying that the current tutorials and quiz prompts are too generic.
+- Added `docs/facts/README.md` as the source fact register for fact-backed tutorials and quiz questions, with official/primary source links for GDPR, FGDB/DGSD, DORA, EBA reporting frameworks, BigQuery views, Looker Studio data sources/calculated fields/credentials, DuckDB-WASM, `localStorage`, and cookies.
+- Linked the source fact register from `docs/README.md`.
+- Expanded `PLAN_BI_TUTORIAL_TUTORIALS.md` so released lessons require step-by-step learner actions, expected checkpoints, common failure modes, browser-local verification, and cited source fact IDs.
+- Updated `docs/11-content-qa-checklist.md` with the new fact-backed tutorial/question expectations.
+- Added Tasks 020 through 022 for step-by-step tutorial rewrites, fact-backed question rewrites, and content QA automation.
+- Recorded the generic-instruction gap as `CONTENT-2026-05-09-001` in `BUGS.md`.
+- Ran `bun run format:check`; it initially failed on Markdown formatting in `docs/facts/README.md` and `PLAN_BI_TUTORIAL_TUTORIALS.md`.
+- Ran `bun run format`; it fixed the Markdown formatting.
+- Reran `bun run format:check`; it passed.
+- Ran `bun run test:content-qa`; it passed.
+- Ran `bun run validate:manifests`; it passed.
+- Ran `bun run typecheck`; it passed.
+
+## 2026-05-09
+
 - Investigated the failed post-merge `Deploy GitHub Pages` run. The build/test gate passed, but `actions/configure-pages@v6` failed with `Get Pages site failed ... Not Found` because the repository did not yet have a Pages site enabled.
 - Enabled GitHub Pages for workflow deployments through the GitHub API. The Pages site is now configured at `https://e6qu.github.io/looker-bi-gym/` with HTTPS enforced and `build_type: workflow`.
 - Reran the failed post-merge Pages workflow after enabling Pages; the rerun passed, including Configure GitHub Pages, artifact upload, and Deploy To GitHub Pages.

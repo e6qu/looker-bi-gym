@@ -20,6 +20,8 @@ type MarkdownFile = {
   readonly source: string;
 };
 
+type FactRegister = ReadonlySet<string>;
+
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const appRoot = join(scriptDir, "..");
 const repoRoot = join(appRoot, "..");
@@ -38,6 +40,19 @@ const markdownRoots = [
 ].map((path) => join(repoRoot, path));
 const disclaimerPattern =
   /not legal, regulatory, accounting, privacy, compliance, or model-risk advice/u;
+const sourceFactIdPattern = /`(FACT-[A-Z0-9]+(?:-[A-Z0-9]+)*)`/gu;
+const releasedTutorialFiles = new Set([
+  "00-orientation-and-stack.md",
+  "01-connect-public-data.md",
+  "02-build-a-bi-friendly-model.md",
+  "03-first-executive-dashboard.md",
+  "04-metrics-and-calculated-fields.md",
+  "05-blending-vs-upstream-joins.md",
+  "06-performance-and-cost-lab.md",
+  "07-governance-security-and-sharing.md",
+  "08-observability-and-operations.md",
+  "09-technical-bi-capstone.md",
+]);
 
 function isExternalLink(target: string): boolean {
   return /^(?:https?:|mailto:|data:|#)/u.test(target);
@@ -153,6 +168,42 @@ async function readMarkdownFiles(): Promise<MarkdownFile[]> {
   );
 }
 
+async function readFactRegister(): Promise<FactRegister> {
+  const source = await readFile(
+    join(repoRoot, "docs", "facts", "README.md"),
+    "utf8",
+  );
+  const factIds = new Set<string>();
+
+  for (const match of source.matchAll(sourceFactIdPattern)) {
+    if (match[1] !== undefined) {
+      factIds.add(match[1]);
+    }
+  }
+
+  assert.ok(factIds.size > 0, "Source fact register must contain fact IDs.");
+
+  return factIds;
+}
+
+function assertKnownSourceFacts(
+  sourceFacts: readonly string[] | undefined,
+  factRegister: FactRegister,
+  context: string,
+): void {
+  assert.ok(
+    sourceFacts !== undefined && sourceFacts.length > 0,
+    `${context} must cite at least one source fact ID.`,
+  );
+
+  for (const sourceFact of sourceFacts) {
+    assert.ok(
+      factRegister.has(sourceFact),
+      `${context} references unknown source fact ${sourceFact}.`,
+    );
+  }
+}
+
 async function assertMarkdownLinksResolve(
   markdownFiles: readonly MarkdownFile[],
 ): Promise<void> {
@@ -255,6 +306,7 @@ async function assertRegulatoryContextLinks(
 
 function assertChallengeContentBoundaries(
   manifests: readonly ChallengeManifest[],
+  factRegister: FactRegister,
 ): void {
   for (const challenge of manifests) {
     assertRequiredTools(challenge.required_tools, challenge.id);
@@ -271,11 +323,46 @@ function assertChallengeContentBoundaries(
         `${challenge.id} must state that credentials are not collected.`,
       );
     }
+
+    if (!challenge.id.endsWith("-draft")) {
+      assert.ok(
+        challenge.lesson_steps !== undefined &&
+          challenge.lesson_steps.length >= 3,
+        `${challenge.id} must include at least three step-by-step lesson steps.`,
+      );
+    }
+
+    for (const step of challenge.lesson_steps ?? []) {
+      assertKnownSourceFacts(
+        step.source_facts,
+        factRegister,
+        `${challenge.id}:${step.id}`,
+      );
+      assert.match(
+        `${step.instruction} ${step.expected_result} ${step.failure_mode}`,
+        /open|run|query|select|paste|check|inspect|confirm|create|compare|filter|record|write|define|list|mark|remove|add|review|note|return|build/iu,
+        `${challenge.id}:${step.id} must describe an executable learner action.`,
+      );
+    }
+
+    for (const question of challenge.questions) {
+      assertKnownSourceFacts(
+        question.source_facts,
+        factRegister,
+        `${challenge.id}:${question.id}`,
+      );
+      assert.match(
+        question.explanation ?? "",
+        /FACT-[A-Z0-9]+(?:-[A-Z0-9]+)*/u,
+        `${challenge.id}:${question.id} explanation must name a source fact ID.`,
+      );
+    }
   }
 }
 
 function assertMarkdownBoundaryLanguage(
   markdownFiles: readonly MarkdownFile[],
+  factRegister: FactRegister,
 ): void {
   for (const markdownFile of markdownFiles) {
     if (markdownFile.path.includes(`${repoRoot}/regulations/`)) {
@@ -292,15 +379,49 @@ function assertMarkdownBoundaryLanguage(
         /synthetic/iu,
         `${markdownFile.path} must state the synthetic-data boundary.`,
       );
+
+      const fileName = markdownFile.path.split("/").at(-1);
+
+      if (fileName !== undefined && releasedTutorialFiles.has(fileName)) {
+        for (const requiredHeading of [
+          "## Source Facts",
+          "## Steps",
+          "## Checkpoints",
+          "## Common Failure Modes",
+        ]) {
+          assert.ok(
+            markdownFile.source.includes(requiredHeading),
+            `${markdownFile.path} must include ${requiredHeading}.`,
+          );
+        }
+
+        const factIds = Array.from(
+          markdownFile.source.matchAll(sourceFactIdPattern),
+          (match) => match[1],
+        ).filter((factId): factId is string => factId !== undefined);
+
+        assert.ok(
+          factIds.length > 0,
+          `${markdownFile.path} must cite source fact IDs.`,
+        );
+
+        for (const factId of factIds) {
+          assert.ok(
+            factRegister.has(factId),
+            `${markdownFile.path} references unknown source fact ${factId}.`,
+          );
+        }
+      }
     }
   }
 }
 
+const factRegister = await readFactRegister();
 const manifests = await readChallengeManifests();
 const markdownFiles = await readMarkdownFiles();
 
-assertChallengeContentBoundaries(manifests);
+assertChallengeContentBoundaries(manifests, factRegister);
 await assertRegulatoryContextLinks(manifests);
-assertMarkdownBoundaryLanguage(markdownFiles);
+assertMarkdownBoundaryLanguage(markdownFiles, factRegister);
 await assertDatasetBoundaries();
 await assertMarkdownLinksResolve(markdownFiles);

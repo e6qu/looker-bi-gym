@@ -2,58 +2,61 @@
 
 Area: B - Warehouse Modeling And Metrics
 
-Synthetic-data boundary: reproduce blend and fanout examples on synthetic banking sources only. Do not use real or masked production banking data.
+Synthetic-data boundary: reproduce blend and fanout examples on synthetic banking
+sources only. Do not use real or masked production banking data.
 
 Builds on:
 
 - [02 - Build A BI-Friendly Model](02-build-a-bi-friendly-model.md)
 - [04 - Metrics And Calculated Fields](04-metrics-and-calculated-fields.md)
 
-Input sources:
-
-- `raw_lending.loans`
-- `raw_lending.loan_monthly_snapshots`
-- `raw_deposits.account_owners`
-- `mart.dim_customer_masked`
-- `serve.credit_risk_monthly_portfolio`
+Required tools: browser SQL path first; optional Looker Studio browser UI.
 
 Produces:
 
-- Incorrect blend example in Looker Studio.
-- Corrected upstream BigQuery view: `serve.credit_risk_monthly_portfolio`.
+- Completed `020 - Account Owner Fanout CTF`.
 - `notes/05-grain-and-fanout-findings.md`
 
-## Problem
+## Source Facts
 
-Looker Studio blends are easy to create but can cause wrong totals, slow dashboards, and non-reusable logic.
+- `FACT-DUCKDB-WASM-BROWSER`
+- `FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK`
+- `FACT-BIGQUERY-LOGICAL-VIEW`
+- `FACT-BIGQUERY-VIEW-SCOPE`
 
-## Outcome
+## Goal
 
-You can reproduce a blending issue and solve it by moving the join into BigQuery.
+Prove a grain/fanout error with numbers, then move the safe logic upstream so a
+dashboard cannot repeat the mistake.
 
-## Scenario
+## Steps
 
-Loan balances exist by account/month-end. Delinquency events exist by account/event date. You need 30+ DPD exposure rate by product, branch, and month-end.
+1. Open `#/challenges/account-owner-fanout`.
+2. Inspect `account_daily_balances` and `account_owners`.
+3. Run the fanout proof query and confirm the one-row result contains
+   `correct_ledger_total`, `naive_joined_total`, `fanout_delta`, and
+   `overstatement_pct`.
+4. Record that latest account-grain total is 95700 and naive owner-joined total
+   is 164800.
+5. Explain why deposit-guarantee coverage must later resolve to depositor-bank
+   grain rather than account-owner join rows.
+6. Write the corrected logic as a serving-view rule so charts consume a safe
+   source.
 
-## Tasks
+## Checkpoints
 
-- Create or select two tables at different grains.
-- Blend them in Looker Studio on account and date.
-- Build 30+ DPD exposure rate.
-- Inspect duplicated exposure, totals, date mismatches, and null rows.
-- Rebuild the join in BigQuery at account/month-end grain.
-- Reconnect Looker Studio to the curated view.
-- Compare correctness, performance, and maintainability.
+- `fanout_delta` is 69100.
+- `overstatement_pct` is 72.20.
+- The challenge displays `flag-account-owner-fanout`.
+- Your note names the upstream serving-view pattern as the reusable fix.
 
-## Investigation Questions
+## Common Failure Modes
 
-- What grain is each source before blending?
-- Which join type did the blend use?
-- Did any metric get duplicated?
-- How many fields are included in the blend but not charted?
-- Which approach is easier to test?
-- Does the event date align to the reporting month-end cut?
+- Joining owners before calculating latest account balances.
+- Returning only the corrected total and not proving the wrong total.
+- Fixing the metric in one chart while leaving raw join paths available.
 
 ## Deliverable
 
-`notes/05-grain-and-fanout-findings.md` explaining the blend issue, the BigQuery fix, and the recommended pattern.
+Create `notes/05-grain-and-fanout-findings.md` with the naive query result, the
+corrected query result, the delta, and the serving-view recommendation.

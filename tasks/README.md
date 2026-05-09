@@ -22,6 +22,10 @@ Task order:
 - [016 - Progress Export And Completion Evidence](016-progress-export-and-completion-evidence.md)
 - [017 - Content QA And Regulatory Disclaimer Pass](017-content-qa-and-regulatory-disclaimer-pass.md)
 - [018 - Release Versioning And Change Log](018-release-versioning-and-change-log.md)
+- [019 - Source Fact Register And Instruction Plan](019-source-fact-register-and-instruction-plan.md)
+- [020 - Step-By-Step Tutorial Rewrite](020-step-by-step-tutorial-rewrite.md)
+- [021 - Fact-Backed Question Rewrite](021-fact-backed-question-rewrite.md)
+- [022 - Fact-Backed Content QA Automation](022-fact-backed-content-qa-automation.md)
 
 Completion rule:
 

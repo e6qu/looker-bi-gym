@@ -1,5 +1,5 @@
 id: looker-studio-evidence
-version: v0.1.0
+version: v0.2.0
 title: 030 - Looker Studio Evidence Pattern
 area: looker-studio-and-dashboard-design
 mode: cloud-evidence
@@ -78,7 +78,7 @@ checks:
 questions:
   - id: q_credentials
     type: multiple-choice
-    prompt: What should the static app store for this cloud evidence task?
+    prompt: Under FACT-LOOKER-STUDIO-CREDENTIALS, what should this static app store for the cloud evidence task?
     options:
       - id: no_credentials
         label: No cloud credentials or tokens.
@@ -87,7 +87,60 @@ questions:
       - id: oauth_token
         label: A pasted OAuth access token.
     answer: no_credentials
-    explanation: Cloud work happens outside the static app; credentials must not be collected or stored.
+    explanation: FACT-LOOKER-STUDIO-CREDENTIALS belongs in Looker Studio data-source configuration, while the static app collects only local evidence text.
+    source_facts:
+      - FACT-LOOKER-STUDIO-CREDENTIALS
+  - id: q_calculated_field_scope
+    type: multiple-choice
+    prompt: According to FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE, where is reusable dashboard metric logic safer than a single-chart field?
+    options:
+      - id: data_source_or_upstream
+        label: In the shared data source or upstream serving view.
+      - id: single_chart
+        label: Only inside one chart-specific calculated field.
+      - id: browser_cookie
+        label: In a browser cookie mirrored by the app.
+    answer: data_source_or_upstream
+    explanation: FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE distinguishes reusable data-source fields from chart-only fields; governed metrics should not hide in one chart.
+    source_facts:
+      - FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE
+      - FACT-BIGQUERY-VIEW-SCOPE
+lesson_steps:
+  - id: define_serving_view
+    title: Define the serving view SQL
+    instruction: Paste SQL that creates or selects a serving_deposit_dashboard view using account_daily_balances and returning business_date, currency_code, and ledger_total.
+    expected_result: The SQL text contains serving_deposit_dashboard, account_daily_balances, business_date, currency_code, and ledger_total.
+    why_it_matters: A logical view is a reusable SQL-defined source for dashboard charts.
+    failure_mode: Building charts from ad hoc raw table fields spreads metric logic across the report.
+    source_facts:
+      - FACT-BIGQUERY-LOGICAL-VIEW
+      - FACT-BIGQUERY-VIEW-SCOPE
+  - id: check_view_limitations
+    title: Check view constraints before treating it as dynamic input
+    instruction: Confirm that a BigQuery logical view is read-only, same-location with referenced tables, and cannot use query parameters.
+    expected_result: Your evidence note does not rely on runtime view parameters or cross-location source tables.
+    why_it_matters: Cloud-applied BI instructions should teach operational constraints, not just happy-path SQL.
+    failure_mode: Designing a dashboard that assumes parameterized logical views creates an implementation mismatch.
+    source_facts:
+      - FACT-BIGQUERY-VIEW-LIMITATIONS
+  - id: inspect_looker_data_source
+    title: Inspect the Looker Studio data source
+    instruction: In the optional browser UI track, connect Looker Studio to the serving view and inspect the data source field schema before building charts.
+    expected_result: The data source exposes business_date, currency_code, and ledger_total as the chart field schema.
+    why_it_matters: Looker Studio reports consume fields through a data source, so field type and credential checks happen there.
+    failure_mode: Dragging charts without inspecting the data source can hide wrong field types or unsafe credentials.
+    source_facts:
+      - FACT-LOOKER-STUDIO-DATA-SOURCE
+      - FACT-LOOKER-STUDIO-CREDENTIALS
+  - id: keep_evidence_local
+    title: Keep evidence local and credential-free
+    instruction: Paste only inspectable SQL, small CSV/JSON control output, a report URL format, and the checklist confirmation; do not paste tokens, keys, credentials, or real banking data.
+    expected_result: The app validates local evidence shape and never receives cloud credentials.
+    why_it_matters: The static app can verify evidence text without becoming a credential or backend evidence store.
+    failure_mode: Pasting service keys or OAuth tokens into a static training app would violate the frontend-only boundary.
+    source_facts:
+      - FACT-LOOKER-STUDIO-CREDENTIALS
+      - FACT-WEB-LOCALSTORAGE-PERSISTENCE
 evidence:
   - id: serving_sql
     type: pasted-sql
