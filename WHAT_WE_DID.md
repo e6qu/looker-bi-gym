@@ -4,6 +4,8 @@
 
 - Investigated the failed post-merge `Deploy GitHub Pages` run. The build/test gate passed, but `actions/configure-pages@v6` failed with `Get Pages site failed ... Not Found` because the repository did not yet have a Pages site enabled.
 - Enabled GitHub Pages for workflow deployments through the GitHub API. The Pages site is now configured at `https://e6qu.github.io/looker-bi-gym/` with HTTPS enforced and `build_type: workflow`.
+- Reran the failed post-merge Pages workflow after enabling Pages; the rerun passed, including Configure GitHub Pages, artifact upload, and Deploy To GitHub Pages.
+- Verified `https://e6qu.github.io/looker-bi-gym/` returns HTTP 200.
 - Added top-level `pages: write` and `id-token: write` permissions to the Pages workflow so the build job can configure/upload Pages artifacts with the same explicit permissions model as the deploy job.
 - Implemented the frontend-only state boundary instead of only documenting it:
   - progress still writes to browser `localStorage`;
@@ -28,6 +30,8 @@
 - Ran `bun run test:e2e` with approved local preview binding; all 8 rendered user-flow tests passed.
 - Ran `bun run format:check`; it passed.
 - Ran `bun run check` with approved local preview binding; it passed, including the new platform-boundary test, all 8 Playwright rendered user-flow tests, production build, and static-link validation.
+- Opened PR #2: `https://github.com/e6qu/looker-bi-gym/pull/2`.
+- GitHub CI for PR #2 passed: `Validate, Test, And Build`.
 
 ## 2026-05-09
 
