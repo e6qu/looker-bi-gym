@@ -5,6 +5,18 @@
 - Resumed Task 027 wrap-up after sandbox git-index writes were blocked on
   2026-05-09.
 - Reviewed the staged working tree and continuity files before committing.
+- Committed Task 027 as `4efd833 Add source-backed banking BI fact database`.
+- Pushed branch `source-backed-fact-database` and opened PR #5:
+  `https://github.com/e6qu/looker-bi-gym/pull/5`.
+- Confirmed PR #5 CI passed before merge.
+- After the user merged PR #5, switched to `main`, pulled merge commit
+  `c444172005e0d9c2a391d1e9c93b3ebae85cd3d3`, and verified the post-merge
+  state.
+- Watched post-merge CI run `25613823169`; `Validate, Test, And Build` passed.
+- Checked post-merge GitHub Pages deployment run `25613823160`; it completed
+  successfully.
+- Ran `curl -I https://e6qu.github.io/looker-bi-gym/`; the deployed app returned
+  HTTP 200.
 
 ## 2026-05-09
 

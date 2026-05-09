@@ -2,7 +2,7 @@
 
 ## Immediate Next Step
 
-Numbered tasks 001 through 027 are implemented. PR #3 and PR #4 were merged.
+Numbered tasks 001 through 027 are implemented. PR #3, PR #4, and PR #5 were merged. Post-merge CI and GitHub Pages deployment for PR #5 passed, and the live Pages URL returned HTTP 200.
 
 Next implementation step:
 
