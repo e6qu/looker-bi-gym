@@ -5,7 +5,7 @@ Last updated: 2026-05-10
 ## Current Branch And PR
 
 - Current branch: `realignment-continuity-layout`, based on `origin/main`.
-- Current PR: not opened yet in this session.
+- Current PR: #19, `https://github.com/e6qu/looker-bi-gym/pull/19`.
 - Last merged PR observed on `origin/main`: PR #18,
   `bd27014 Improve flashcard study workflow (#18)`.
 - Main-branch CI, Pages deployment, and live URL for `bd27014` have not been
@@ -55,6 +55,8 @@ Local verification passed on 2026-05-10:
 
 The first sandboxed `bun run check` failed only when Vite preview could not
 bind `127.0.0.1:4173`; the approved rerun passed with all 12 Playwright tests.
+Branch `realignment-continuity-layout` was pushed and PR #19 was opened after
+these checks.
 
 ## Confidence
 

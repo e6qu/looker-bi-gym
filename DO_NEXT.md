@@ -11,6 +11,9 @@
    gh pr list --state open --limit 10
    ```
 
+   Expected active PR for this branch: #19,
+   `https://github.com/e6qu/looker-bi-gym/pull/19`.
+
 3. If continuing this realignment PR, inspect:
    - `README.md`
    - `docs/14-platform-components.md`
