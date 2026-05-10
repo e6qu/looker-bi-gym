@@ -5,7 +5,7 @@ Last updated: 2026-05-10
 ## Current Branch And PR
 
 - Current branch: `phase-2-content-schema-catalogs`, based on `origin/main`.
-- Current PR: not opened yet in this local state.
+- Current PR: #20, `https://github.com/e6qu/looker-bi-gym/pull/20`.
 - PR #19, `https://github.com/e6qu/looker-bi-gym/pull/19`, is merged at
   `1484ca1159f494421ab857107ef4d49d017fdd00`.
 - Main CI for `1484ca1` passed:
