@@ -14,6 +14,15 @@ Builds on:
 Required tools: browser docs path first; optional BigQuery and Looker Studio
 browser UI.
 
+Objective: treat a dashboard as an operated BI product with dependencies,
+owners, freshness, reconciliation, and validation evidence.
+
+After this tutorial, you will be able to:
+
+- Build a BI dependency register.
+- Define freshness and reconciliation controls.
+- Describe operational evidence without copying production records.
+
 Produces:
 
 - BI dependency register.

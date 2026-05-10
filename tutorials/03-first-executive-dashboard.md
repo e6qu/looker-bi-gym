@@ -13,6 +13,15 @@ Builds on:
 
 Required tools: optional Looker Studio browser UI.
 
+Objective: build an executive dashboard shape from curated serving fields, not
+from raw banking tables or hidden one-chart logic.
+
+After this tutorial, you will be able to:
+
+- Choose dashboard fields from a curated serving source.
+- Keep reusable metric definitions outside one-off chart formulas.
+- Add freshness and sensitive-field evidence to a dashboard note.
+
 Produces:
 
 - Executive KPI report page.

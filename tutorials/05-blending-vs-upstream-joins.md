@@ -12,6 +12,15 @@ Builds on:
 
 Required tools: browser SQL path first; optional Looker Studio browser UI.
 
+Objective: prove a grain/fanout error with numbers, then move the safe logic
+upstream so a dashboard cannot repeat the mistake.
+
+After this tutorial, you will be able to:
+
+- Reproduce a many-to-many fanout overstatement.
+- Compare naive and corrected balance totals.
+- Explain why the repair belongs in serving SQL or shared data-source logic.
+
 Produces:
 
 - Completed `020 - Account Owner Fanout CTF`.

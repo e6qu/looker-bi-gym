@@ -2,6 +2,16 @@
 
 Each tutorial is a learning task that builds on previous artifacts. The goal is not to create disconnected dashboards; the goal is to build a small banking BI platform incrementally.
 
+Objective: see how the browser-first tasks, optional applied-track tutorials,
+and capstone artifacts fit into one learning progression.
+
+After this page, you will be able to:
+
+- Identify which artifacts unlock later tutorial areas.
+- Separate browser-first work from optional Google Cloud and Looker Studio UI
+  work.
+- Use the curriculum map to choose what to revisit before quiz or exam mode.
+
 ## Area A - Orientation And Source Data
 
 ### 00 - Orientation And Stack
@@ -13,14 +23,16 @@ Input:
 Produces:
 
 - `notes/00-stack-decisions.md`
-- Selected GCP project/region/naming conventions.
+- Browser-only training boundary notes.
+- Optional GCP project/region/naming conventions if you later use the cloud
+  applied track.
 - Chosen regulatory-context tags.
 
 Unlocks:
 
 - All later tutorials.
 
-### 01 - Connect Predefined Banking Data
+### 01 - Connect Predefined Synthetic Banking Data
 
 Input:
 

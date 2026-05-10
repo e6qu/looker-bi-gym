@@ -1,6 +1,36 @@
 # Predefined Synthetic Banking Data Sources
 
-This project uses synthetic banking data only. The source schemas below are the canonical inputs for tutorials. Do not use real customer, account, transaction, employee, complaint, AML, fraud, or regulatory data in this repo.
+This project uses synthetic banking data only. Do not use real customer,
+account, transaction, employee, complaint, AML, fraud, or regulatory data in
+this learning path.
+
+Objective: understand which synthetic tables are available in the browser today
+and which warehouse objects are applied-track design targets.
+
+After this page, you will be able to:
+
+- Name the browser-loaded tables used by the current SQL challenges.
+- Avoid writing tutorial steps against tables that are only design targets.
+- Explain the intended raw, staging, mart, serving, and operations layers.
+
+## Available In The Browser Now
+
+The browser challenges currently load these committed synthetic datasets:
+
+- `deposits-seed/v0.1.0`: `branches`, `products`, `accounts`,
+  `account_owners`, and `account_daily_balances`.
+- `lending-month-end/v0.1.0`: loan snapshot, collateral, property valuation,
+  location-band, and Romania HPI context tables used by the month-end challenge.
+
+Use those table names in the browser SQL challenges.
+
+## Warehouse Design Targets
+
+The schemas below are design targets for the optional applied warehouse track.
+They explain where the learning path is going, but they are not all loaded into
+DuckDB-WASM today. Treat `raw_*`, `stg_*`, `mart_*`, `serve_*`, and `ops_*`
+objects as modeling names you will design toward unless a challenge explicitly
+lists the table in its schema browser.
 
 ## Dataset Layers
 

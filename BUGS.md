@@ -73,10 +73,16 @@ No known app bugs after the Bun-only tooling, typed config, formatting, rendered
   the user approved Playwright/Vite local port binding. The browser-config
   metric-contract path now has unit, fixture, derived-expectation, content QA,
   type/lint, Playwright, and production-build coverage.
-- After PR #10 is merged, perform an actual deployed GitHub Pages UI
-  click-through with screenshots and real control interactions across the main
-  learner flows. Do not treat local build success or CI success as a visual
-  deployment smoke test.
+- Post-merge PR #10 GitHub Actions and GitHub Pages deployment passed for merge
+  commit `cf8a6bd6b6bb4353bf2f5a15a59e0a4c031d5d59`, and the deployed Pages URL
+  returned HTTP 200 on 2026-05-10. A manual deployed UI click-through covered
+  home desktop/mobile, challenge catalog, metric-contract completion,
+  learner-task pages, browser-SQL completion, cloud-evidence completion, and
+  Settings export/reset surfaces. Screenshots are stored locally under ignored
+  `screenshots/post-merge-pr10/`.
+- During the PR #10 manual review, `LT-DQ-005` expected 13 snapshot rows and 6
+  latest rows, but the committed lending CSV has 11 snapshot rows and 5 latest
+  rows. The follow-up branch corrects the learner-facing checkpoint and table.
 - JSON import is planned but not implemented. Current Settings supports JSON
   export and reset only. Future import must stay browser-local and validate the
   `looker-bi-gym.progress-export.v1` structure before applying state.

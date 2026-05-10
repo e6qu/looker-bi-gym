@@ -53,6 +53,9 @@ State:
 
 - `localStorage` for lightweight progress, completed flags, and answers.
 - IndexedDB later if saved SQL, uploaded evidence, or larger cached data becomes necessary.
+- Future flashcard spaced-repetition state should also be browser-local and
+  exportable/importable as a single JSON file; it is not part of the current
+  post-merge cleanup phase.
 
 CI/CD:
 
@@ -70,6 +73,8 @@ Tooling decisions:
 - Published datasets are copied into the static app during build.
 - Challenge manifests are authored as YAML and validated/generated into browser-loadable JSON.
 - Progress export/import is not required for the first skeleton but is a planned feature.
+- Flashcard state export/import is a future feature after tutorial, quiz, and
+  exam foundations stabilize.
 - Offline support after first load is not required for the first skeleton but may be added later.
 
 Planning rule:
@@ -192,7 +197,24 @@ Should:
 - Store draft SQL per challenge.
 - Store last validator output.
 - Export/import progress file.
+- Export/import flashcard spaced-repetition state as one JSON file later.
 - Show curriculum completion by area.
+
+### Flashcards And Spaced Repetition
+
+Future scope, not current phase:
+
+- Render topic-separated flashcard decks from committed content.
+- Provide study/review/browse views, due-card counts, and deck progress.
+- Implement a typed, deterministic Anki-style spaced repetition scheduler in the
+  browser.
+- Record timestamped review events and due timestamps in the browser-local
+  flashcard state.
+- Store review state locally and keep it separate from committed deck content.
+- Export/import flashcard review state as one JSON file with local validation
+  and preview before apply.
+- Keep the same frontend-only, no-credentials, no-backend, no-tracking boundary
+  as challenge progress.
 
 ### Privacy And Security
 

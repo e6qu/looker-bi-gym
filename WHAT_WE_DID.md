@@ -1174,3 +1174,88 @@
   the command started. After the user explicitly approved continuing, reran
   `bun run check`; it passed, including all 8 Playwright rendered UI tests,
   production build, and static-link validation.
+
+## PR #10 Post-Merge Verification And Follow-Up
+
+- Confirmed PR #10 was merged into `main` on 2026-05-10 at merge commit
+  `cf8a6bd6b6bb4353bf2f5a15a59e0a4c031d5d59`.
+- Confirmed main CI run `25628794041` passed:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25628794041`.
+- Confirmed main GitHub Pages deployment run `25628794045` passed:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25628794045`.
+- Confirmed the live Pages app returned HTTP 200 at
+  `https://e6qu.github.io/looker-bi-gym/`.
+- Created follow-up branch `record-pr10-postmerge` from updated `main`; no
+  work was pushed to `main`.
+- Ran deployed UI click-through scripts against the live GitHub Pages app and
+  saved screenshots locally under ignored `screenshots/post-merge-pr10/`.
+- Manually reviewed screenshots for:
+  - desktop and mobile home rendering;
+  - challenge catalog and `050 - Deposit Metric Contract Review`;
+  - metric-contract completion with local flag;
+  - learner task rendering;
+  - browser-SQL chart rendering and completed SQL flag path;
+  - cloud-evidence completion;
+  - Settings export/reset UI and local JSON preview.
+- Asked subagent `019e11e5-8c33-7ea3-b8a4-7cab11969cbf` for learner-flow and
+  exam feedback. Key findings:
+  - the main browser-first learner path needed to be more visible;
+  - optional cloud/applied-track pages needed clearer labeling;
+  - `tutorials/data-sources.md` overmixed available browser tables and planned
+    warehouse design targets;
+  - `LT-SQL-003` omitted required expected-result columns;
+  - `LT-DQ-005` and `LT-SQL-003` referenced the wrong challenge title;
+  - some learner-facing text still sounded like implementation notes;
+  - the Looker Studio evidence challenge needed clearer "local format evidence"
+    wording.
+- Updated tutorial pages so tutorial-like content has a top `Objective:` and
+  "After this tutorial/task/recipe/page, you will be able to:" block.
+- Added a visible browser-first path in `tutorials/README.md`:
+  orientation, LT-BI-001, LT-BI-002, LT-SQL-003, LT-LOOKER-004, LT-DQ-005,
+  quiz bank, and exam mode.
+- Added rendered learner-facing pages for:
+  - `tutorials/quiz-bank.md`
+  - `tutorials/exam-mode.md`
+- Clarified that the 00-09 tutorial sequence includes reference/applied-track
+  material and that the browser-first path is the main GitHub Pages learner
+  sequence.
+- Split `tutorials/data-sources.md` between browser-loaded tables available now
+  and warehouse design targets.
+- Corrected `LT-SQL-003` expected-result table to include
+  `stage3_principal_total` and `latest_property_valuation_total_eur`.
+- Corrected `LT-DQ-005` expected snapshot control output to match the committed
+  lending CSV: `snapshot_row_count = 11` and
+  `latest_snapshot_row_count = 5`.
+- Renamed learner-facing `Solution Notes` sections to `Answer Reference` and
+  replaced "fixture-backed repair query" wording with "checked repair query".
+- Clarified `030 - Looker Studio Evidence Pattern` as a local evidence-pattern
+  simulation unless the learner also completes the optional Looker Studio
+  recipe.
+- Added rendered-route Playwright coverage for `#/tutorials/quiz-bank.md` and
+  `#/tutorials/exam-mode.md`.
+- Expanded `bun run test:content-qa` so learner tasks must include the
+  objective/outcome block and `Answer Reference`.
+- Updated continuity docs and `tasks/026-challenge-grading-contract-expansion.md`
+  with the post-merge verification state.
+- Committed the follow-up work as `1758111 Polish post-merge learner flows`.
+- Pushed branch `record-pr10-postmerge`.
+- Opened PR #11: `https://github.com/e6qu/looker-bi-gym/pull/11`.
+- Confirmed PR #11 CI run `25629294229` passed in 1m33s.
+- After the current PR #11 verification was done, added future-only planning for
+  Task 029 - Flashcards And Spaced Repetition. This records topic-separated
+  flashcard decks, an Anki-style browser scheduler, browser-local review state,
+  explicit review/due datetime timestamps, and single-JSON flashcard state
+  export/import as a later phase, not current implementation scope.
+- Ran and passed:
+  - `bun run validate:manifests`
+  - `bun run test:content-qa`
+  - `bun run format`
+  - `bun run check` after allowing Vite preview port binding for Playwright.
+
+## PR #10 Post-Merge Tried And Failed
+
+- The first `bun run check` attempt failed when Playwright tried to start Vite
+  preview because the sandbox blocked binding `127.0.0.1:4173` with
+  `listen EPERM`. Reran the same command with local port binding allowed; it
+  passed, including all 9 Playwright rendered UI tests, production build, and
+  static-link validation.

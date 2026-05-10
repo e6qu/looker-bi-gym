@@ -6,6 +6,15 @@ Area: BigQuery and SQL mechanics. Timebox: 15-20 minutes. Dataset:
 Objective: create a report-serving result that separates latest month-end
 exposure from invalid time sums and valuation freshness controls.
 
+After this task, you will be able to:
+
+- Filter semi-additive lending exposure to the selected month-end before
+  aggregation.
+- Return a currency-level serving result with reconciliation and valuation
+  freshness controls.
+- Exclude loan, borrower, contract, and property identifiers from a dashboard
+  output.
+
 Training boundary: use synthetic training data only. This task is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
@@ -100,10 +109,10 @@ ORDER BY lt.currency_code;
 
 4. Verify the expected result:
 
-| latest_as_of_date | currency_code | latest_principal_total | naive_time_sum_total | time_sum_delta | non_month_end_snapshot_count | stale_collateral_valuation_count | latest_romania_hpi_2015_100 |
-| ----------------- | ------------- | ---------------------- | -------------------- | -------------- | ---------------------------- | -------------------------------- | --------------------------- |
-| 2026-03-31        | EUR           | 55000                  | 112000               | 57000          | 1                            | 3                                | 164.82                      |
-| 2026-03-31        | RON           | 396000                 | 915000               | 519000         | 1                            | 3                                | 164.82                      |
+| latest_as_of_date | currency_code | latest_principal_total | naive_time_sum_total | time_sum_delta | non_month_end_snapshot_count | stage3_principal_total | latest_property_valuation_total_eur | stale_collateral_valuation_count | latest_romania_hpi_2015_100 |
+| ----------------- | ------------- | ---------------------- | -------------------- | -------------- | ---------------------------- | ---------------------- | ----------------------------------- | -------------------------------- | --------------------------- |
+| 2026-03-31        | EUR           | 55000                  | 112000               | 57000          | 1                            | 0                      | 11801400                            | 3                                | 164.82                      |
+| 2026-03-31        | RON           | 396000                 | 915000               | 519000         | 1                            | 29500                  | 11801400                            | 3                                | 164.82                      |
 
 5. Answer the challenge questions on semi-additive snapshots, date checks, and
    output minimisation.
@@ -135,9 +144,9 @@ as a control but unacceptable as a dashboard KPI.
 
 ## End Challenge
 
-Capture the local flag for `040 - Lending Month-End Snapshot CTF`.
+Capture the local flag for `024 - Lending Month-End Snapshots`.
 
-## Solution Notes
+## Answer Reference
 
-The known-good fixture is
+The reviewer reference is
 [`challenges/solution-fixtures/lending-month-end-snapshots/known-good.sql`](../../challenges/solution-fixtures/lending-month-end-snapshots/known-good.sql).

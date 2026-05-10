@@ -6,6 +6,15 @@ Area: Looker Studio mechanics. Timebox: 15-20 minutes. Dataset:
 Objective: turn a browser-verified SQL result into a narrow, report-ready data
 source design for Looker Studio without collecting credentials in this app.
 
+After this task, you will be able to:
+
+- Describe the report-ready data-source layer between SQL and Looker Studio
+  charts.
+- Record synthetic evidence without pasting credentials or private exports into
+  the app.
+- Distinguish a format-verified local evidence pattern from a manually verified
+  Looker Studio report.
+
 Training boundary: use synthetic training data only. This task is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
@@ -23,6 +32,8 @@ model-risk advice.
 - Complete [LT-BI-001](lt-bi-001-profile-dataset-grain.md) and
   [LT-BI-002](lt-bi-002-detect-fanout.md).
 - Open `#/challenges/looker-studio-evidence`.
+- Treat this as a local evidence-pattern simulation unless you also complete
+  the optional Looker Studio recipe.
 
 ## Steps
 
@@ -90,9 +101,12 @@ adds between the source query and chart fields.
 
 ## End Challenge
 
-Capture the local flag for `030 - Looker Studio Evidence Pattern`.
+Capture the local flag for `030 - Looker Studio Evidence Pattern`. The flag
+means the local evidence format passed; it does not prove that a live Looker
+Studio report was reviewed unless you completed the optional recipe and checked
+your own report.
 
-## Solution Notes
+## Answer Reference
 
 The released challenge manifest is
 [`challenges/manifests/looker-studio-evidence.yaml`](../../challenges/manifests/looker-studio-evidence.yaml).

@@ -11,6 +11,18 @@ Builds on all previous tutorials.
 Required tools: browser-first challenge path; optional BigQuery and Looker Studio
 browser UI for the applied track.
 
+Objective: assemble a production-shaped but synthetic banking BI product whose
+metrics, data sources, governance controls, and operations evidence are
+inspectable.
+
+After this tutorial, you will be able to:
+
+- Organize a multi-page BI product around governed serving sources.
+- Link metric contracts, source facts, sensitive-field controls, and operations
+  evidence.
+- Export browser-local completion evidence without raw answers, credentials, or
+  private data.
+
 Produces:
 
 - Multi-page banking BI product.
@@ -31,8 +43,8 @@ Produces:
 
 ## Goal
 
-Assemble a production-shaped but synthetic banking BI product whose metrics,
-data sources, governance controls, and operations evidence are inspectable.
+Create a capstone package that a reviewer can inspect for metric definitions,
+data-source boundaries, governance controls, and operational readiness.
 
 ## Steps
 

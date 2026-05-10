@@ -6,6 +6,13 @@ Area: BI fundamentals. Timebox: 15-20 minutes. Dataset:
 Objective: prove the row grain and safe profile metrics before building any
 dashboard from the synthetic deposits dataset.
 
+After this task, you will be able to:
+
+- Identify row grain before writing a dashboard query.
+- Produce a safe aggregate profile without account or customer identifiers.
+- Explain why balance snapshots are not summed across dates as current-balance
+  KPIs.
+
 Training boundary: use synthetic training data only. This task is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
@@ -99,9 +106,9 @@ Capture the local flag for `010 - First Banking Dataset Inspection`. The
 expected flag is shown only after the browser SQL checks and fact-backed
 questions pass.
 
-## Solution Notes
+## Answer Reference
 
-The known-good fixture for this learner task is
+The reviewer reference for this learner task is
 [`challenges/solution-fixtures/first-banking-dataset/known-good.sql`](../../challenges/solution-fixtures/first-banking-dataset/known-good.sql).
 The released challenge manifest is
 [`challenges/manifests/first-banking-dataset.yaml`](../../challenges/manifests/first-banking-dataset.yaml).

@@ -6,6 +6,8 @@ const responsiveRoutes = [
   "/#/home",
   "/#/docs/README.md",
   "/#/tutorials/learner-tasks/lt-bi-001-profile-dataset-grain.md",
+  "/#/tutorials/quiz-bank.md",
+  "/#/tutorials/exam-mode.md",
   "/#/challenges",
   "/#/challenges/first-banking-dataset",
   "/#/challenges/deposit-metric-contract",

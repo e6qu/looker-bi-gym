@@ -1905,12 +1905,12 @@ function HomePage(): JSX.Element {
 
       <div className="splitLayout">
         <section aria-labelledby="current-track">
-          <h2 id="current-track">Current Track</h2>
+          <h2 id="current-track">Learning Path</h2>
           <p>
-            The app shell now loads existing Markdown source material. Challenge
-            manifests, datasets, DuckDB-WASM SQL execution, browser validators,
-            and local progress flags are in place for the first browser
-            challenges.
+            Start with the browser-only tutorials and challenges, then use the
+            optional Looker Studio recipe when you want to apply the same metric
+            and evidence patterns in a reporting tool. Your progress and flags
+            stay in this browser.
           </p>
         </section>
         <section aria-labelledby="safety-note">
@@ -1952,7 +1952,7 @@ function ContentPage({
     <section className="contentPage" aria-labelledby={`${sectionId}-title`}>
       <aside className="documentNav" aria-label={`${section.label} documents`}>
         <div>
-          <p className="eyebrow">Markdown catalog</p>
+          <p className="eyebrow">Lessons</p>
           <h2 id={`${sectionId}-title`}>{section.label}</h2>
           <p>{section.description}</p>
         </div>
@@ -2040,7 +2040,7 @@ function ChallengesPage({
         </a>
         <PageTitle
           title="Challenge Not Found"
-          description="The requested challenge is not available in the generated static catalog."
+          description="The requested challenge is not available in the current challenge catalog."
           id="missing-challenge-title"
         />
       </section>
@@ -2099,7 +2099,7 @@ function ChallengesPage({
     <section className="page" aria-labelledby="challenges-title">
       <PageTitle
         title="Challenges"
-        description="Challenge modes are loaded from validated static manifests. No backend calls or hidden server checks are required."
+        description="Practice modes run from offline challenge definitions. No backend calls or hidden server checks are required."
         id="challenges-title"
       />
       <ChallengeList
@@ -2214,8 +2214,8 @@ function SettingsPage(): JSX.Element {
           <div>
             <h3>Preview</h3>
             <p>
-              Import is not implemented in this static release. Review this
-              local JSON before sharing it for completion evidence.
+              Import is not available in this release. Review this local JSON
+              before sharing it for completion evidence.
             </p>
           </div>
           <textarea

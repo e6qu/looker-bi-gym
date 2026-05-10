@@ -100,6 +100,8 @@ const releasedTutorialFiles = new Set([
   "08-observability-and-operations.md",
   "09-technical-bi-capstone.md",
 ]);
+const tutorialObjectivePattern =
+  /After this (?:tutorial|task|recipe|page), you will be able to:/u;
 
 function isExternalLink(target: string): boolean {
   return /^(?:https?:|mailto:|data:|#)/u.test(target);
@@ -546,7 +548,7 @@ function assertMarkdownBoundaryLanguage(
           "## Common Failure Modes",
           "## Self-Assessment",
           "## End Challenge",
-          "## Solution Notes",
+          "## Answer Reference",
         ]) {
           assert.ok(
             markdownFile.source.includes(requiredHeading),
@@ -558,6 +560,11 @@ function assertMarkdownBoundaryLanguage(
           markdownFile.source,
           /Objective:/u,
           `${markdownFile.path} must define an objective.`,
+        );
+        assert.match(
+          markdownFile.source,
+          tutorialObjectivePattern,
+          `${markdownFile.path} must state what the learner can do after the task.`,
         );
         assert.match(
           markdownFile.source,
@@ -591,6 +598,23 @@ function assertMarkdownBoundaryLanguage(
             `${markdownFile.path} references unknown source fact ${factId}.`,
           );
         }
+      }
+
+      const isTutorialMarkdown =
+        !markdownFile.path.endsWith("/tutorials/README.md") &&
+        !markdownFile.path.endsWith("/tutorials/learner-tasks/README.md");
+
+      if (isTutorialMarkdown) {
+        assert.match(
+          markdownFile.source,
+          /Objective:/u,
+          `${markdownFile.path} must define a learner-facing objective.`,
+        );
+        assert.match(
+          markdownFile.source,
+          tutorialObjectivePattern,
+          `${markdownFile.path} must state what the learner can do after it.`,
+        );
       }
     }
   }

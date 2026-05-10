@@ -13,6 +13,15 @@ Builds on:
 
 Required tools: browser docs path first; optional Looker Studio browser UI.
 
+Objective: define what a banking BI dashboard is allowed to expose and how
+access should be documented without turning the app into a credential store.
+
+After this tutorial, you will be able to:
+
+- Classify serving fields by sensitivity and dashboard purpose.
+- Record Looker Studio credential behavior safely.
+- Link governance controls to source facts and regulatory context.
+
 Produces:
 
 - Access-safe serving view plan.

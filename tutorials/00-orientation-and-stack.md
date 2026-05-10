@@ -9,6 +9,16 @@ Builds on: none.
 
 Required tools: browser only.
 
+Objective: confirm the static-app, browser-storage, synthetic-data, BigQuery,
+Looker Studio, and regulatory-context boundaries before starting banking BI
+work.
+
+After this tutorial, you will be able to:
+
+- Explain why the default path runs fully in the browser.
+- Identify the sensitive fields that should stay out of BI serving outputs.
+- Distinguish account-balance grain from depositor-bank guarantee grain.
+
 Produces:
 
 - Completed `000 - Orientation Quiz`.

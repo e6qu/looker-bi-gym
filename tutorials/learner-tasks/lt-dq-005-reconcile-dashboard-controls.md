@@ -6,6 +6,12 @@ Area: data quality and controls. Timebox: 15-20 minutes. Dataset:
 Objective: add lightweight reconciliation controls to a serving result so a BI
 dashboard can show data-quality risk next to the business metric.
 
+After this task, you will be able to:
+
+- Add aggregate reconciliation controls beside a business metric.
+- Detect non-month-end snapshot rows before they reach a dashboard pack.
+- Explain what a report consumer should do when a control is non-zero.
+
 Training boundary: use synthetic training data only. This task is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
@@ -45,7 +51,7 @@ FROM loan_monthly_snapshots;
 
 | snapshot_row_count | latest_snapshot_row_count | non_month_end_snapshot_count | first_snapshot_date | latest_snapshot_date |
 | ------------------ | ------------------------- | ---------------------------- | ------------------- | -------------------- |
-| 13                 | 6                         | 1                            | 2026-02-15          | 2026-03-31           |
+| 11                 | 5                         | 1                            | 2026-02-15          | 2026-03-31           |
 
 4. Add a note to the serving-result design: `non_month_end_snapshot_count`
    should stay visible to report builders until the upstream data issue is
@@ -56,7 +62,7 @@ FROM loan_monthly_snapshots;
 
 ## Checkpoints
 
-- The latest snapshot row count is `6`.
+- The latest snapshot row count is `5`.
 - The non-month-end count is `1`, caused by a synthetic `2026-02-15` row.
 - The control query returns only aggregate/date fields.
 
@@ -94,10 +100,10 @@ and what a report consumer should do when it is non-zero.
 
 ## End Challenge
 
-Update your answer in `040 - Lending Month-End Snapshot CTF` so the local flag
+Update your answer in `024 - Lending Month-End Snapshots` so the local flag
 is still earned after you can explain the reconciliation controls.
 
-## Solution Notes
+## Answer Reference
 
 The task uses the same released fixture as
 [LT-SQL-003](lt-sql-003-month-end-serving-result.md), plus the focused control
