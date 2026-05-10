@@ -39,7 +39,7 @@ Last updated: 2026-05-10
   - Severity: high.
   - Description: Claude CLI formal review is required before any phase can be
     marked complete. Non-TUI `claude --print` works for a tiny prompt, but the
-    Task 034 formal review hung with no output and was stopped.
+    Task 034 and Task 035 formal reviews hung with no output and were stopped.
   - Fix plan: Retry only with a known-good non-hanging formal review path, or
     use an explicitly accepted alternate formal review process and record the
     result in continuity docs.

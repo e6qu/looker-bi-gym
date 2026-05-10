@@ -1,5 +1,55 @@
 # What We Did
 
+## 2026-05-10 - Phase 3 Facts DB App Workspace
+
+- Verified PR #20 post-merge state:
+  - PR #20 was squash-merged at
+    `1539350e05f58de84ac94db4c44e6c0702f83a6e`.
+  - Main CI passed for `1539350`.
+  - GitHub Pages workflow passed for `1539350`.
+  - Live Pages URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200.
+- Confirmed there were no open PRs before starting the Phase 3 branch.
+- Created branch `phase-3-facts-db-app` from verified `main`.
+- Added `_development/tasks/035-facts-db-app-workspace.md`.
+- Added the top-level Bun workspace package `facts-db-app`.
+- Moved the fact database library from `app/scripts/fact-database.ts` to
+  `facts-db-app/src/fact-database.ts`.
+- Moved the fact database CLI from `app/scripts/build-fact-database.ts` to
+  `facts-db-app/src/cli.ts`.
+- Moved the fact database test from `app/scripts/test-fact-database.ts` to
+  `facts-db-app/tests/test-fact-database.ts`.
+- Added `facts-db-app/package.json`, `facts-db-app/tsconfig.json`,
+  `facts-db-app/README.md`, and a local `bun:sqlite` declaration so the
+  package typechecks independently.
+- Updated root and app package scripts so `test:facts-db` and `facts:build-db`
+  run through the workspace package.
+- Updated root `typecheck` and `check` so the `facts-db-app` package typechecks
+  before app verification.
+- Updated app-side LLM workbench and quiz fact-grounding scripts to import fact
+  cards and source cards from `facts-db-app`.
+- Updated platform documentation to describe `facts-db-app` as local
+  development tooling, not a web UI or backend.
+- Verification passed:
+  - `bun run test:facts-db`;
+  - `bun run facts:build-db`;
+  - `bun run test:quiz-facts-db`;
+  - `bun run test:llm-workbench`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:platform-boundary`;
+  - `bun run format:check`;
+  - `bun run check` after approved local Vite preview binding, with all 12
+    Playwright tests passing.
+- Failed/blocked attempts recorded:
+  - first sandboxed `bun run check` reached Playwright but Vite preview could
+    not bind `127.0.0.1:4173`;
+  - the Task 035 formal Claude CLI review used non-TUI
+    `claude --print --permission-mode plan --output-format text ...`, produced
+    no output for over 40 seconds, and was terminated.
+- Committed `4832312 Add facts db app workspace`.
+- Pushed branch `phase-3-facts-db-app` and opened PR #21:
+  `https://github.com/e6qu/looker-bi-gym/pull/21`.
+
 ## 2026-05-10 - Phase 2 Content Schema And Generated Catalogs
 
 - Added `PLAN.md` Phase 9 - Curriculum Completeness And External Verification,

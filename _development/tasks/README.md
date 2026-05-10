@@ -43,6 +43,7 @@ Task order:
 - [032 - Expanded Flashcard Coverage](032-expanded-flashcard-coverage.md)
 - [033 - Flashcard Study Usability](033-flashcard-study-usability.md)
 - [034 - Content Schema And Generated Catalogs](034-content-schema-and-generated-catalogs.md)
+- [035 - Facts DB App Workspace](035-facts-db-app-workspace.md)
 
 Completion rule:
 

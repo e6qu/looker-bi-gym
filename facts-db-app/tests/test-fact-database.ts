@@ -3,15 +3,15 @@ import { Database } from "bun:sqlite";
 import { dirname, join } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
-import { buildFactDatabase } from "./fact-database";
+import { buildFactDatabase } from "../src/fact-database";
 
 type CountRow = {
   readonly count: number;
 };
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
-const appRoot = join(scriptDir, "..");
-const repoRoot = join(appRoot, "..");
+const packageRoot = join(scriptDir, "..");
+const repoRoot = join(packageRoot, "..");
 const outputPath = join(tmpdir(), "looker-bi-gym-facts.sqlite");
 
 const summary = await buildFactDatabase({ repoRoot, outputPath });

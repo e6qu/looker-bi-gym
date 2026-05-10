@@ -5,14 +5,15 @@
   "type": "module",
   "packageManager": "bun@1.3.10",
   "workspaces": [
-    "app"
+    "app",
+    "facts-db-app"
   ],
   "scripts": {
     "dev": "bun run --filter @looker-bi-gym/app dev",
     "build": "bun run --filter @looker-bi-gym/app build",
     "content:generate": "bun run --filter @looker-bi-gym/app content:generate",
     "content:check": "bun run --filter @looker-bi-gym/app content:check",
-    "check": "bun run --filter @looker-bi-gym/app check",
+    "check": "bun run --filter facts-db-app typecheck && bun run --filter @looker-bi-gym/app check",
     "lint": "bun run --filter @looker-bi-gym/app lint",
     "format": "bun run --filter @looker-bi-gym/app format",
     "format:check": "bun run --filter @looker-bi-gym/app format:check",
@@ -26,10 +27,10 @@
     "test:flashcards": "bun run --filter @looker-bi-gym/app test:flashcards",
     "test:quiz-facts-db": "bun run --filter @looker-bi-gym/app test:quiz-facts-db",
     "test:content-qa": "bun run --filter @looker-bi-gym/app test:content-qa",
-    "test:facts-db": "bun run --filter @looker-bi-gym/app test:facts-db",
+    "test:facts-db": "bun run --filter facts-db-app test",
     "test:llm-workbench": "bun run --filter @looker-bi-gym/app test:llm-workbench",
     "sources:snapshot": "bun run --filter @looker-bi-gym/app sources:snapshot",
-    "facts:build-db": "bun run --filter @looker-bi-gym/app facts:build-db",
+    "facts:build-db": "bun run --filter facts-db-app build-db",
     "questions:context": "bun run --filter @looker-bi-gym/app questions:context",
     "questions:generate:codex": "bun run --filter @looker-bi-gym/app questions:generate:codex",
     "questions:generate:claude": "bun run --filter @looker-bi-gym/app questions:generate:claude",
@@ -44,7 +45,7 @@
     "validate:datasets": "bun run --filter @looker-bi-gym/app validate:datasets",
     "validate:manifests": "bun run --filter @looker-bi-gym/app validate:manifests",
     "validate:static-links": "bun run --filter @looker-bi-gym/app validate:static-links",
-    "typecheck": "bun run --filter @looker-bi-gym/app typecheck",
+    "typecheck": "bun run --filter facts-db-app typecheck && bun run --filter @looker-bi-gym/app typecheck",
     "preview": "bun run --filter @looker-bi-gym/app preview"
   }
 }
