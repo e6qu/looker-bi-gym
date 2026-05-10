@@ -78,13 +78,13 @@ The first platform release and PR #3 established:
 - Dreaming is currently manual only through `make` targets. Do not enable an
   automatic 3-6 hour background scheduler until a later explicit task designs
   permissions, artifact review, cost controls, and merge discipline.
-- Tutorial tasks must have an explicit overall learning objective. The
+- Learner tasks must have an explicit overall learning objective. The
   objective should explain what the learner will be able to do and how it fits
   the broader data-analyst-to-banking-BI path.
-- Tutorial tasks should be grouped by learning area and timeboxed to roughly
-  15-20 focused minutes. Each task should include step-by-step instructions,
-  verification checkpoints, a meaningful visualization or reporting step where
-  appropriate, self-assessment, and an end challenge.
+- Learner tasks should be grouped by learning area and timeboxed to roughly
+  15-20 focused minutes. Each learner task should include step-by-step
+  instructions, verification checkpoints, a meaningful visualization or reporting
+  step where appropriate, self-assessment, and an end challenge.
 - Early tutorial work should prioritize BI mechanics and Looker/BigQuery
   behavior over legal theory or specific market-condition expertise. Banking
   and real-estate data provide realistic context, not the main first-pass
@@ -97,12 +97,19 @@ The first platform release and PR #3 established:
 - Quiz content should use a separate quiz-bank format instead of overloading
   challenge manifests. The first quiz bank should support one mixed
   approximately 20-minute quiz organized internally by `easy`, `medium`, and
-  `hard`, with recommended tutorial task links, source facts, answers,
+  `hard`, with recommended learner-task links, source facts, answers,
   explanations, and self-assessment notes.
 - Exam mode should start as independent optional challenge cards, not a timed
   enforced browser exam. Each exam challenge can be up to roughly 2 hours, is
   user-selected, and is self-assessed at first with as much deterministic
   verification as the current static app can support.
+- Terminology must stay precise:
+  - `implementation tasks` are numbered repository work items under `tasks/*.md`
+    such as Task 024 and Task 025;
+  - `learner tasks` are curriculum exercise units shown to learners in the app
+    or tutorial content.
+    Do not use unqualified "task" when it could confuse implementation work with
+    learner-facing curriculum.
 
 ## Future Phases
 
@@ -151,11 +158,11 @@ Replace remaining sketch-like lessons with full lesson packs:
   - Looker Studio mechanics;
   - data quality and controls;
   - banking BI applications as realistic context.
-- Several complete 15-20 minute tasks across multiple areas in the next PR #6
-  continuation, not only a schema proof of concept.
-- Each task includes an objective, prerequisites, input dataset, exact learner
-  steps, verification checkpoints, visualization/reporting action, optional
-  recipe pointer, self-assessment, and a CTF-style end challenge.
+- Several complete 15-20 minute learner tasks across multiple areas in the next
+  PR #6 continuation, not only a schema proof of concept.
+- Each learner task includes an objective, prerequisites, input dataset, exact
+  learner steps, verification checkpoints, visualization/reporting action,
+  optional recipe pointer, self-assessment, and a CTF-style end challenge.
 - Narrative lesson page.
 - Browser-rendered challenge lesson steps.
 - Exact SQL/evidence snippets.

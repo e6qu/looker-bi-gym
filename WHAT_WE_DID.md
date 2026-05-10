@@ -4,12 +4,14 @@
 
 - Discussed and pinned the next PR #6 tutorial direction after the dataset and
   LLM workbench expansion:
-  - add the Task 025 tutorial model to PR #6 instead of waiting for a separate
-    PR;
-  - implement several complete tasks across multiple areas, not only one schema
-    or placeholder proof of concept;
-  - each task should be 15-20 focused minutes with an overall learning objective
-    that is part of the learning path;
+  - add implementation Task 025's learner-facing tutorial model to PR #6 instead
+    of waiting for a separate PR;
+  - explicitly distinguish implementation tasks under `tasks/*.md` from learner
+    tasks shown to learners in the app/tutorials;
+  - implement several complete learner tasks across multiple areas, not only one
+    schema or placeholder proof of concept;
+  - each learner task should be 15-20 focused minutes with an overall learning
+    objective that is part of the learning path;
   - prioritize BI mechanics and Looker/BigQuery behavior for a data analyst
     moving into BI and banking;
   - keep banking and real-estate details as realistic context, not the main
@@ -25,7 +27,7 @@
     `zsh`;
   - use a separate quiz-bank format instead of overloading challenge manifests;
   - first quiz target is one mixed approximately 20-minute quiz organized by
-    `easy`, `medium`, and `hard`, with recommended tutorial task IDs,
+    `easy`, `medium`, and `hard`, with recommended learner-task IDs,
     `source_facts`, answers, explanations, estimated seconds, and
     self-assessment notes;
   - exam mode should begin as untimed independent challenge cards up to roughly
@@ -45,6 +47,10 @@
   - `PLAN.md` now records the task/quiz/exam/recipe/visualization decisions;
   - `AGENTS.md` now cross-links the continuity docs and gives a compact PR #6
     implementation guide.
+- After the user warned not to confuse implementation work items with
+  learner-facing curriculum units, updated the continuity language:
+  - `implementation tasks` means numbered repo work under `tasks/*.md`;
+  - `learner tasks` means tutorial/app exercise units for learners.
 
 - Continued PR #6 after the user requested larger deterministic datasets,
   Romania-only real-estate prices/location context, official historical/current

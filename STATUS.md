@@ -8,7 +8,7 @@ Planning, documentation, task tracking, continuity protocol, the static app skel
 
 ## Active Task
 
-Active task: continue PR #6 on branch `deterministic-local-dataset-packs` by adding the agreed Task 025 tutorial-task model into the same PR. Task 024 dataset work is implemented, expanded, locally verified, pushed, and CI-passing at commit `cc1957e7fc1ce8d771b0a07e14c903703d853717`; the next PR #6 slice is several complete 15-20 minute tutorial tasks across areas, separate quiz-bank structure, optional Looker Studio recipes after tutorials, task progress semantics, and useful in-app result visualization.
+Active implementation task: continue PR #6 on branch `deterministic-local-dataset-packs` by adding implementation Task 025's learner-task model into the same PR. Implementation Task 024 dataset work is implemented, expanded, locally verified, pushed, and CI-passing at commit `cc1957e7fc1ce8d771b0a07e14c903703d853717`; the next PR #6 slice is several complete 15-20 minute learner tasks across areas, separate quiz-bank structure, optional Looker Studio recipes after tutorials, learner-task progress semantics, and useful in-app result visualization.
 
 ## Current Decisions
 
@@ -35,11 +35,12 @@ Active task: continue PR #6 on branch `deterministic-local-dataset-packs` by add
 - Browser SQL challenges now load the dataset declared by their manifest input instead of assuming only `deposits-seed/v0.1.0`.
 - Released tutorials are not considered instruction-complete if they only list generic tasks or investigation questions; they need explicit learner actions, expected checkpoints, failure modes, and fact-backed explanations.
 - The next tutorial model is area-grouped, objective-driven, and mechanics-first for a data analyst moving into BI and banking. Initial areas are BI fundamentals, BigQuery/SQL for BI, Looker Studio mechanics, data quality and controls, and banking BI applications as context.
-- Each tutorial task should take about 15-20 focused minutes and include an objective, prerequisites, input dataset, step-by-step instructions, verification checkpoints, visualization/reporting action, optional recipe pointer, self-assessment, and a CTF-style end challenge.
+- Terminology is explicit: `implementation tasks` are numbered repo work items under `tasks/*.md`; `learner tasks` are curriculum exercise units rendered in tutorials/app flows.
+- Each learner task should take about 15-20 focused minutes and include an objective, prerequisites, input dataset, step-by-step instructions, verification checkpoints, visualization/reporting action, optional recipe pointer, self-assessment, and a CTF-style end challenge.
 - In-app visualization should be useful, not a placeholder: attach a result visualization panel to SQL task/challenge pages when a result has at least one dimension-like column and one numeric column, starting with simple table/bar-chart views.
 - Looker Studio recipes belong in a separate section after tutorials. They should be manual browser-driven recipes first; do not add AWS CLI, Google CLI, or shell upload scripts for the early path.
 - If learner-facing scripts are later added, they must be uncomplicated, ShellCheck-verified, work on macOS and Linux, and work from both `bash` and `zsh`.
-- The first quiz-bank model should be separate from challenge manifests, answerable in about 20 minutes, organized by `easy`, `medium`, and `hard`, and include recommended tutorial tasks, source facts, answers, explanations, and self-assessment notes.
+- The first quiz-bank model should be separate from challenge manifests, answerable in about 20 minutes, organized by `easy`, `medium`, and `hard`, and include recommended learner tasks, source facts, answers, explanations, and self-assessment notes.
 - Exam mode should start as untimed, independent challenge cards that a learner can choose from, each up to roughly 2 hours, with self-assessment first and deterministic verification where feasible.
 - Released challenge manifests include rendered `lesson_steps`; every released question and lesson step must cite known `source_facts`.
 - Released challenge contracts changed to `v0.2.0` for the fact-backed instruction rewrite.

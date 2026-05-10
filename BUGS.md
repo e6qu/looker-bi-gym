@@ -20,8 +20,8 @@ No known app bugs after the Bun-only tooling, typed config, formatting, rendered
 - Date found: 2026-05-10.
 - Area: tutorial structure, quiz structure, visualization, and exam model.
 - Severity: medium.
-- Description: The next curriculum shape is not yet implemented as
-  area-grouped 15-20 minute tutorial tasks with explicit objectives,
+- Description: The next curriculum shape is not yet implemented as area-grouped
+  15-20 minute learner tasks with explicit objectives,
   checkpoints, visualization/reporting actions, self-assessment, and end
   challenges. There is also not yet a separate quiz-bank format, recipe section,
   or exam-card model.
@@ -30,11 +30,11 @@ No known app bugs after the Bun-only tooling, typed config, formatting, rendered
   step-by-step actions, verification, visualization/reporting, self-assessment,
   and a CTF-style end challenge. Quiz content is separate from challenge
   manifests, answerable in about 20 minutes, grouped by easy/medium/hard, and
-  links to recommended tutorial tasks. Recipes live after tutorials and exam
+  links to recommended learner tasks. Recipes live after tutorials and exam
   mode is represented as untimed independent challenge cards.
 - Actual behavior: Existing tutorials and challenge lesson steps are useful but
-  do not yet implement the agreed task-pack, quiz-bank, recipe, and exam-card
-  model.
+  do not yet implement the agreed learner-task pack, quiz-bank, recipe, and
+  exam-card model.
 - Reproduction steps: Read `PLAN.md`, `tutorials/`, and
   `challenges/manifests/`; there is no structured `tutorials/tasks/` or
   `quizzes/` model yet and no in-app SQL result visualization panel.

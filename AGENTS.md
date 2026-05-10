@@ -91,16 +91,24 @@ or challenge behavior:
 - `WHAT_WE_DID.md`: commands run, fixes tried, what worked, and what failed.
 - `BUGS.md`: known defects and follow-up verification gaps.
 - `tasks/024-deterministic-local-dataset-packs.md`: current PR #6 dataset work.
-- `tasks/025-real-tutorial-instruction-packs.md`: next tutorial-task work.
+- `tasks/025-real-tutorial-instruction-packs.md`: next implementation task for
+  learner-facing tutorial work.
 - `docs/13-llm-question-and-dreaming-workbench.md`: manual LLM generation,
   review, refinement, and dreaming boundaries.
 
-For PR #6 continuation, implement several complete 15-20 minute tutorial tasks
-across multiple areas, not placeholder examples. Each task needs an objective,
-steps, checkpoints, visualization/reporting action, self-assessment, and an end
-challenge. Keep the first pass mechanics-first for a data analyst moving into BI
-and banking: BI fundamentals, BigQuery/SQL for BI, Looker Studio mechanics, data
-quality controls, and banking context only where it makes the mechanics real.
+Terminology matters:
+
+- `implementation tasks` are numbered repository work items under `tasks/*.md`;
+- `learner tasks` are curriculum exercise units shown to learners in tutorials
+  or app flows.
+
+For PR #6 continuation, implementation Task 025 should add several complete
+15-20 minute learner tasks across multiple areas, not placeholder examples. Each
+learner task needs an objective, steps, checkpoints, visualization/reporting
+action, self-assessment, and an end challenge. Keep the first pass
+mechanics-first for a data analyst moving into BI and banking: BI fundamentals,
+BigQuery/SQL for BI, Looker Studio mechanics, data quality controls, and banking
+context only where it makes the mechanics real.
 
 Use a separate quiz-bank format for mixed 20-minute quizzes organized by
 difficulty. Keep Looker Studio recipes after the tutorials as optional

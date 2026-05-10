@@ -13,19 +13,22 @@ Current implementation step:
   passed on 2026-05-10 after the expansion.
 - PR #6 is mergeable and GitHub Actions `Validate, Test, And Build` passed for
   commit `cc1957e7fc1ce8d771b0a07e14c903703d853717` on 2026-05-10.
-- The user explicitly wants the next Task 025 tutorial-model work added to PR
-  #6 before merge.
+- The user explicitly wants implementation Task 025's learner-facing tutorial
+  model added to PR #6 before merge.
+- Keep terminology precise: `implementation tasks` are numbered repo work items
+  under `tasks/*.md`; `learner tasks` are curriculum exercise units shown to
+  learners.
 
 Next implementation step inside PR #6:
 
-1. Update or add tutorial task content/schema for several complete 15-20 minute
-   tasks across multiple areas:
+1. Update or add learner-task content/schema for several complete 15-20 minute
+   learner tasks across multiple areas:
    - BI fundamentals;
    - BigQuery/SQL for BI;
    - Looker Studio mechanics;
    - data quality and controls;
    - banking BI applications as realistic context, not legal/market theory.
-2. Each task must include:
+2. Each learner task must include:
    - overall learning objective;
    - prerequisites;
    - input dataset;
@@ -43,7 +46,7 @@ Next implementation step inside PR #6:
    visualization work.
 5. Add a separate quiz-bank format rather than overloading challenge manifests.
    First quiz target: one mixed approximately 20-minute quiz, internally grouped
-   by `easy`, `medium`, and `hard`, with recommended tutorial task IDs,
+   by `easy`, `medium`, and `hard`, with recommended learner-task IDs,
    `source_facts`, answers, explanations, estimated seconds, and
    self-assessment notes.
 6. Add a separate tutorials recipes section for Looker Studio recipes after the

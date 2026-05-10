@@ -2,6 +2,12 @@
 
 Status: planned; next PR #6 continuation.
 
+Terminology:
+
+- This file is an implementation task: a numbered repository work item.
+- The content it asks us to build is a set of learner tasks: curriculum exercise
+  units shown to learners in tutorials or app flows.
+
 ## Goal
 
 Convert the tutorial sequence from good lesson outlines into full reproducible
@@ -11,8 +17,8 @@ fact-backed explanations.
 Current agreed direction:
 
 - Add this work to PR #6 before merge.
-- Build several complete 15-20 minute tasks across multiple areas, not only a
-  schema or placeholder proof of concept.
+- Build several complete 15-20 minute learner tasks across multiple areas, not
+  only a schema or placeholder proof of concept.
 - Target learner: data analyst moving into BI and banking.
 - Prioritize BI mechanics, BigQuery/SQL behavior, Looker Studio mechanics, data
   quality, and controls. Banking and real-estate context should make the work
@@ -22,7 +28,7 @@ Current agreed direction:
 ## Deliverables
 
 - For each released tutorial, add:
-  - area grouping;
+  - learner-task area grouping;
   - overall learning objective;
   - exact learner actions;
   - copyable SQL or evidence examples;
@@ -40,7 +46,7 @@ Current agreed direction:
   deterministic table/bar-chart rendering; avoid placeholder charts.
 - Add a separate quiz-bank format rather than overloading challenge manifests.
   The first quiz should be one mixed approximately 20-minute quiz organized by
-  `easy`, `medium`, and `hard`, with recommended tutorial task IDs,
+  `easy`, `medium`, and `hard`, with recommended learner-task IDs,
   `source_facts`, answers, explanations, estimated seconds, and
   self-assessment notes.
 - Add Looker Studio recipes after tutorials as separate optional recipe content.
@@ -58,9 +64,9 @@ Current agreed direction:
 - Each tutorial has deterministic expected outputs.
 - Every claim about law, platform behavior, browser storage, or dataset behavior
   cites facts from `docs/facts/`.
-- Each task has an objective, steps, checkpoints, visualization/reporting action,
-  self-assessment, and end challenge.
-- Quiz questions link back to recommended tutorial task IDs and source facts.
+- Each learner task has an objective, steps, checkpoints,
+  visualization/reporting action, self-assessment, and end challenge.
+- Quiz questions link back to recommended learner-task IDs and source facts.
 - Recipes are optional and do not require cloud CLI tooling.
 
 ## Tests
