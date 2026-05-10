@@ -73,6 +73,24 @@ export const flashcardDecks: readonly FlashcardDeck[] = [
           "#/tutorials/learner-tasks/lt-bi-002-detect-fanout.md",
         ],
       },
+      {
+        id: "fc-bi-ratio-components",
+        front:
+          "How should a BI model calculate a ratio from additive components?",
+        back: "Aggregate the numerator and denominator at the intended reporting grain first, then divide the two totals.",
+        sourceFacts: ["FACT-BI-RATIO-SUM-COMPONENTS-FIRST"],
+        recommendedPaths: ["#/tutorials/04-metrics-and-calculated-fields.md"],
+      },
+      {
+        id: "fc-bi-count-distinct-grain",
+        front:
+          "What should a distinct-count metric state before it reaches a dashboard?",
+        back: "It should state the entity being counted and the reporting grain, because joins can change the row set being counted.",
+        sourceFacts: ["FACT-BIGQUERY-COUNT-DISTINCT-GRAIN"],
+        recommendedPaths: [
+          "#/tutorials/learner-tasks/lt-bi-002-detect-fanout.md",
+        ],
+      },
     ],
   },
   {
@@ -99,6 +117,24 @@ export const flashcardDecks: readonly FlashcardDeck[] = [
           "#/tutorials/learner-tasks/lt-sql-003-month-end-serving-result.md",
         ],
       },
+      {
+        id: "fc-bigquery-reduce-before-join",
+        front:
+          "What BigQuery SQL pattern reduces fanout risk before joining owner tables?",
+        back: "Reduce or aggregate the many-side table to the target reporting grain before joining it into the metric result.",
+        sourceFacts: ["FACT-BIGQUERY-REDUCE-BEFORE-JOIN"],
+        recommendedPaths: [
+          "#/tutorials/learner-tasks/lt-bi-002-detect-fanout.md",
+        ],
+      },
+      {
+        id: "fc-bigquery-partition-filters",
+        front:
+          "Why should BI queries include partition filters when the table design supports them?",
+        back: "Partition filters limit the scanned data range and make cost/performance behavior easier to reason about.",
+        sourceFacts: ["FACT-BIGQUERY-PARTITION-FILTERS"],
+        recommendedPaths: ["#/tutorials/06-performance-and-cost-lab.md"],
+      },
     ],
   },
   {
@@ -124,6 +160,27 @@ export const flashcardDecks: readonly FlashcardDeck[] = [
         sourceFacts: ["FACT-LOOKER-STUDIO-CREDENTIALS"],
         recommendedPaths: ["#/settings"],
       },
+      {
+        id: "fc-looker-calculated-field-scope",
+        front:
+          "When should a Looker Studio calculated field stay in the report layer?",
+        back: "Use it for presentation-local logic; shared governed metric logic belongs upstream in SQL or a controlled serving view.",
+        sourceFacts: [
+          "FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE",
+          "FACT-BIGQUERY-VIEW-SCOPE",
+        ],
+        recommendedPaths: ["#/tutorials/04-metrics-and-calculated-fields.md"],
+      },
+      {
+        id: "fc-looker-blend-risk",
+        front: "What is the BI risk of using Looker Studio blends casually?",
+        back: "Blend joins can create more rows or restrict available fields, so shared metric joins are usually safer upstream.",
+        sourceFacts: [
+          "FACT-LOOKER-STUDIO-BLEND-MORE-ROWS",
+          "FACT-LOOKER-STUDIO-BLEND-FIELD-SUBSET",
+        ],
+        recommendedPaths: ["#/tutorials/05-blending-vs-upstream-joins.md"],
+      },
     ],
   },
   {
@@ -147,6 +204,28 @@ export const flashcardDecks: readonly FlashcardDeck[] = [
         back: "A report-serving output should avoid unnecessary personal or sensitive fields for the stated purpose.",
         sourceFacts: ["FACT-GDPR-DATA-MINIMISATION"],
         recommendedPaths: ["#/docs/08-eu-romania-regulatory-context.md"],
+      },
+      {
+        id: "fc-controls-dora-inventory",
+        front:
+          "Why does DORA-style ICT risk management matter for BI operations?",
+        back: "A banking BI service needs visibility into ICT assets, data flows, controls, and operational dependencies that support reporting.",
+        sourceFacts: [
+          "FACT-DORA-ICT-RISK-FRAMEWORK",
+          "FACT-DORA-ICT-IDENTIFICATION",
+        ],
+        recommendedPaths: ["#/tutorials/08-observability-and-operations.md"],
+      },
+      {
+        id: "fc-controls-eba-validation",
+        front:
+          "What does an EBA DPM validation-rule mindset teach a BI analyst?",
+        back: "Treat report checks as explicit, versioned validation rules, not as informal dashboard inspection.",
+        sourceFacts: [
+          "FACT-EBA-DPM-VALIDATION-RULES",
+          "FACT-EBA-FRAMEWORK-VERSIONING",
+        ],
+        recommendedPaths: ["#/tutorials/08-observability-and-operations.md"],
       },
     ],
   },
@@ -179,6 +258,27 @@ export const flashcardDecks: readonly FlashcardDeck[] = [
           "#/tutorials/learner-tasks/lt-bi-002-detect-fanout.md",
         ],
       },
+      {
+        id: "fc-dgsd-eu-coverage",
+        front:
+          "What EU-level deposit-guarantee amount should a learner recognize as context?",
+        back: "The EU deposit-guarantee framework uses EUR 100,000 as the harmonized coverage level per depositor.",
+        sourceFacts: [
+          "FACT-DGSD-100K-EU",
+          "FACT-DGSD-COVERAGE-LEVEL-HARMONISED",
+        ],
+        recommendedPaths: ["#/docs/08-eu-romania-regulatory-context.md"],
+      },
+      {
+        id: "fc-fdic-ownership-category",
+        front: "How does FDIC coverage context reinforce BI grain discipline?",
+        back: "FDIC coverage is organized by depositor, insured bank, and ownership category, so the aggregation grain must match the rule being analyzed.",
+        sourceFacts: [
+          "FACT-FDIC-250K-PER-DEPOSITOR-BANK-CATEGORY",
+          "FACT-FDIC-OWNERSHIP-CATEGORIES",
+        ],
+        recommendedPaths: ["#/docs/07-banking-domain-guide.md"],
+      },
     ],
   },
   {
@@ -204,6 +304,222 @@ export const flashcardDecks: readonly FlashcardDeck[] = [
         recommendedPaths: [
           "#/tutorials/learner-tasks/lt-sql-003-month-end-serving-result.md",
         ],
+      },
+      {
+        id: "fc-deposits-fanout-control",
+        front:
+          "What deterministic control should a fanout challenge compare after a risky owner join?",
+        back: "Compare the known account-grain control total with the joined result so the duplicated balance amount is visible.",
+        sourceFacts: ["FACT-DEPOSITS-FANOUT-CONTROL-TOTALS"],
+        recommendedPaths: [
+          "#/tutorials/learner-tasks/lt-bi-002-detect-fanout.md",
+        ],
+      },
+      {
+        id: "fc-real-estate-collateral-grain",
+        front:
+          "What grain should a collateral BI table declare before calculating mortgage exposure metrics?",
+        back: "Declare whether the row represents a property, valuation event, loan-collateral link, or reporting snapshot before aggregating values.",
+        sourceFacts: ["FACT-REAL-ESTATE-COLLATERAL-GRAIN"],
+        recommendedPaths: ["#/docs/facts/real-estate-collateral-romania.md"],
+      },
+    ],
+  },
+  {
+    id: "metric-contracts",
+    title: "Metric Contracts",
+    topic: "Serving views, fields, and contract boundaries",
+    cards: [
+      {
+        id: "fc-contract-view-scope",
+        front:
+          "What boundary should a report-serving BigQuery view provide for BI?",
+        back: "It should expose the intended reporting columns and metric grain rather than every raw operational field.",
+        sourceFacts: [
+          "FACT-BIGQUERY-VIEW-SCOPE",
+          "FACT-BIGQUERY-SELECT-LIST-NARROWING",
+        ],
+        recommendedPaths: [
+          "#/tutorials/learner-tasks/lt-looker-004-report-ready-data-source.md",
+        ],
+      },
+      {
+        id: "fc-contract-looker-field-types",
+        front:
+          "Why should Looker Studio field types be checked before publishing a report?",
+        back: "Field types affect which dimensions, metrics, charts, and calculations are available to the report author.",
+        sourceFacts: [
+          "FACT-LOOKER-STUDIO-FIELD-TYPES",
+          "FACT-LOOKER-STUDIO-DIMENSIONS-METRICS",
+        ],
+        recommendedPaths: [
+          "#/tutorials/learner-tasks/lt-looker-004-report-ready-data-source.md",
+        ],
+      },
+      {
+        id: "fc-contract-aggregation-method",
+        front: "Why is default aggregation part of a BI metric contract?",
+        back: "A numeric field can be summed, counted, averaged, or treated differently; the dashboard must match the metric definition.",
+        sourceFacts: [
+          "FACT-LOOKER-STUDIO-AGGREGATION-METHODS",
+          "FACT-LOOKER-STUDIO-DEFAULT-AGGREGATION",
+        ],
+        recommendedPaths: ["#/tutorials/04-metrics-and-calculated-fields.md"],
+      },
+      {
+        id: "fc-contract-authorized-view",
+        front:
+          "What does an authorized BigQuery view help control in a BI sharing model?",
+        back: "It can expose controlled query results without giving report consumers direct access to every underlying table.",
+        sourceFacts: ["FACT-BIGQUERY-AUTHORIZED-VIEW-ACCESS-CONTROL"],
+        recommendedPaths: ["#/tutorials/07-governance-security-and-sharing.md"],
+      },
+    ],
+  },
+  {
+    id: "performance-operations",
+    title: "Performance And Operations",
+    topic: "Cost, jobs, freshness, and operational evidence",
+    cards: [
+      {
+        id: "fc-performance-view-rerun",
+        front:
+          "What BigQuery view behavior matters for BI performance reviews?",
+        back: "A logical view runs its query when referenced, so repeated dashboards can repeatedly execute the underlying SQL.",
+        sourceFacts: ["FACT-BIGQUERY-VIEW-QUERY-RUNS-EACH-TIME"],
+        recommendedPaths: ["#/tutorials/06-performance-and-cost-lab.md"],
+      },
+      {
+        id: "fc-performance-materialized-view",
+        front:
+          "When can a materialized view help a BI workload more than a logical view?",
+        back: "A materialized view precomputes eligible results, which can reduce repeated query work when its limitations fit the use case.",
+        sourceFacts: [
+          "FACT-BIGQUERY-MATERIALIZED-VIEW-PRECOMPUTED",
+          "FACT-BIGQUERY-MATERIALIZED-VIEW-LIMITATIONS",
+        ],
+        recommendedPaths: ["#/tutorials/06-performance-and-cost-lab.md"],
+      },
+      {
+        id: "fc-performance-job-bytes",
+        front:
+          "What BigQuery job field is useful when reviewing BI query cost behavior?",
+        back: "Bytes processed by jobs gives an observable signal for whether dashboard SQL scans more data than intended.",
+        sourceFacts: ["FACT-BIGQUERY-JOBS-BYTES"],
+        recommendedPaths: ["#/tutorials/06-performance-and-cost-lab.md"],
+      },
+      {
+        id: "fc-operations-reference-date",
+        front: "Why do operations dashboards need explicit reference dates?",
+        back: "Reference dates separate the reporting period from load timing and help users interpret freshness and reconciliation status.",
+        sourceFacts: [
+          "FACT-BI-REFERENCE-DATE-SEPARATION",
+          "FACT-EBA-REFERENCE-DATES",
+        ],
+        recommendedPaths: [
+          "#/tutorials/learner-tasks/lt-dq-005-reconcile-dashboard-controls.md",
+        ],
+      },
+    ],
+  },
+  {
+    id: "privacy-security",
+    title: "Privacy And Security",
+    topic: "Personal data, credentials, and sharing boundaries",
+    cards: [
+      {
+        id: "fc-privacy-personal-data",
+        front:
+          "What privacy question should be asked before adding an identifier to a BI output?",
+        back: "Ask whether the field can identify a person directly or indirectly and whether it is necessary for the reporting purpose.",
+        sourceFacts: ["FACT-GDPR-PERSONAL-DATA", "FACT-GDPR-DATA-MINIMISATION"],
+        recommendedPaths: ["#/tutorials/07-governance-security-and-sharing.md"],
+      },
+      {
+        id: "fc-privacy-pseudonymized",
+        front:
+          "Does pseudonymization automatically make BI data anonymous under GDPR context?",
+        back: "No. Pseudonymized data can still be personal data if re-identification is possible with additional information.",
+        sourceFacts: [
+          "FACT-GDPR-PSEUDONYMIZED-STILL-PERSONAL",
+          "FACT-GDPR-ANONYMISED-IRREVERSIBLE",
+        ],
+        recommendedPaths: ["#/docs/08-eu-romania-regulatory-context.md"],
+      },
+      {
+        id: "fc-security-owner-credentials",
+        front:
+          "What is the Looker Studio owner-credentials risk in shared banking BI reports?",
+        back: "Owner credentials can make viewers see data through the owner's access path, so sharing boundaries must be deliberate.",
+        sourceFacts: [
+          "FACT-LOOKER-STUDIO-OWNER-CREDENTIALS-RISK",
+          "FACT-LOOKER-STUDIO-CREDENTIALS",
+        ],
+        recommendedPaths: ["#/tutorials/07-governance-security-and-sharing.md"],
+      },
+      {
+        id: "fc-security-viewer-credentials",
+        front:
+          "When are viewer credentials useful in a Looker Studio BI sharing model?",
+        back: "Viewer credentials can align report access with each viewer's own permissions when the data source and access model support it.",
+        sourceFacts: [
+          "FACT-LOOKER-STUDIO-VIEWER-CREDENTIALS",
+          "FACT-BIGQUERY-AUTHORIZED-VIEW-ACCESS-CONTROL",
+        ],
+        recommendedPaths: ["#/tutorials/07-governance-security-and-sharing.md"],
+      },
+    ],
+  },
+  {
+    id: "real-estate-collateral",
+    title: "Real Estate Collateral",
+    topic: "Collateral datasets, price context, and valuation dates",
+    cards: [
+      {
+        id: "fc-real-estate-hpi",
+        front:
+          "What does the Eurostat house price index provide for real-estate collateral exercises?",
+        back: "It provides a market-price index context, not a row-level property valuation dataset.",
+        sourceFacts: [
+          "FACT-EUROSTAT-HPI-MARKET-PRICE-INDEX",
+          "FACT-EUROSTAT-HPI-ROMANIA-HISTORICAL-PRESENT",
+        ],
+        recommendedPaths: ["#/docs/facts/real-estate-collateral-romania.md"],
+      },
+      {
+        id: "fc-real-estate-notarial",
+        front:
+          "Why should Romanian notarial studies not be treated as property-level market values?",
+        back: "They provide annual county/context information, not a complete live market-value feed for individual collateral objects.",
+        sourceFacts: [
+          "FACT-ROMANIA-NOTARIAL-STUDIES-NOT-MARKET-VALUE",
+          "FACT-ROMANIA-NOTARIAL-STUDIES-ANNUAL-COUNTY",
+        ],
+        recommendedPaths: ["#/docs/facts/real-estate-collateral-romania.md"],
+      },
+      {
+        id: "fc-real-estate-valuation-date",
+        front:
+          "What date separation matters in a collateral valuation dataset?",
+        back: "Keep valuation date, reporting date, and loan snapshot date distinct so trend and exposure metrics do not mix time meanings.",
+        sourceFacts: [
+          "FACT-REAL-ESTATE-VALUATION-DATE-SEPARATION",
+          "FACT-BI-REFERENCE-DATE-SEPARATION",
+        ],
+        recommendedPaths: [
+          "#/tutorials/learner-tasks/lt-sql-003-month-end-serving-result.md",
+        ],
+      },
+      {
+        id: "fc-real-estate-synthetic-only",
+        front:
+          "Why do practical collateral exercises in this repo use synthetic property rows?",
+        back: "The training app avoids real banking and property data while preserving realistic grains, dates, and controls for BI practice.",
+        sourceFacts: [
+          "FACT-REAL-ESTATE-COLLATERAL-GRAIN",
+          "FACT-LENDING-NON-MONTH-END-SNAPSHOT-COUNT",
+        ],
+        recommendedPaths: ["#/workbench/lending-month-end/v0.1.0"],
       },
     ],
   },

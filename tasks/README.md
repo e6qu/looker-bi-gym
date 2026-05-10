@@ -35,6 +35,7 @@ Task order:
 - [029 - Flashcards And Spaced Repetition](029-flashcards-and-spaced-repetition.md)
 - [030 - Self-Contained Tutorial Workbench](030-self-contained-tutorial-workbench.md)
 - [031 - Browser-Local Progress Import](031-browser-local-progress-import.md)
+- [032 - Expanded Flashcard Coverage](032-expanded-flashcard-coverage.md)
 
 Completion rule:
 

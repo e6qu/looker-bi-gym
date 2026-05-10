@@ -3,24 +3,23 @@
 ## Immediate Next Step
 
 Numbered implementation tasks 001 through 031 are implemented. PR #3 through
-PR #15 were merged. PR #15 merged on 2026-05-10 at merge commit
-`46c98327b2a474bc2631816d7e2ca7fa65bd2fad`.
+PR #16 were merged. PR #16 merged on 2026-05-10 at merge commit
+`6bcf0ba64f9985b98db69ddc178b310707af661c`.
 
 Current implementation step:
 
-- PR #15 (`https://github.com/e6qu/looker-bi-gym/pull/15`) is merged and
+- PR #16 (`https://github.com/e6qu/looker-bi-gym/pull/16`) is merged and
   post-merge verified.
-- Main CI run `25632272955` passed for merge commit
-  `46c98327b2a474bc2631816d7e2ca7fa65bd2fad`.
-- Main GitHub Pages deployment run `25632272956` passed for the same merge
+- Main CI run `25632812238` passed for merge commit
+  `6bcf0ba64f9985b98db69ddc178b310707af661c`.
+- Main GitHub Pages deployment run `25632812244` passed for the same merge
   commit, and `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
-  `last-modified: Sun, 10 May 2026 15:18:13 GMT`.
-- Current branch: `flashcards-spaced-repetition`.
-- Current implementation task: [029 - Flashcards And Spaced Repetition](tasks/029-flashcards-and-spaced-repetition.md).
-- Current branch purpose: add the first `#/flashcards` route with
-  source-fact-backed decks, browser-local timestamped spaced repetition,
-  single-JSON flashcard export/import with validate/preview/apply controls, and
-  CI/test-pyramid coverage.
+  `last-modified: Sun, 10 May 2026 15:43:11 GMT`.
+- Current branch: `expand-flashcard-coverage`.
+- Current implementation task: [032 - Expanded Flashcard Coverage](tasks/032-expanded-flashcard-coverage.md).
+- Current branch purpose: expand the flashcard corpus from the first starter
+  slice to ten topic decks and 40 fact-backed cards, while strengthening
+  `bun run test:flashcards` coverage.
 - Read `README.md`, `docs/14-platform-components.md`, `PLAN.md`, `STATUS.md`,
   `BUGS.md`, `tasks/025-real-tutorial-instruction-packs.md`, and
   `tasks/026-challenge-grading-contract-expansion.md` first.
@@ -28,17 +27,20 @@ Current implementation step:
   under `tasks/*.md`; `learner tasks` are curriculum exercise units shown to
   learners.
 
-Current Task 029 must finish before starting the next item:
+Current Task 032 must finish before starting the next item:
 
 - Keep flashcard state frontend-only: pasted JSON is validated in the browser
   and never uploaded.
 - Keep flashcard state separate from challenge progress.
 - Keep deck cards grounded in known source facts and recommended in-app paths.
 - Keep scheduler timestamps explicit in export/import state.
+- Keep the expanded corpus mechanics-first: BI, BigQuery, Looker Studio,
+  metric-contract, operations, and privacy/security cards should dominate;
+  banking, deposit-guarantee, and real-estate cards provide applied context.
 - Preserve the strict typing boundary: no `any`, `as any`, broad `object` type,
   `as object`, `@ts-ignore`, or `@ts-expect-error`.
 
-Task 029 focused verification passed on 2026-05-10:
+Task 032 verification passed on 2026-05-10:
 
 - `bun run typecheck`
 - `bun run lint`
@@ -46,18 +48,15 @@ Task 029 focused verification passed on 2026-05-10:
 - `bun run test:platform-boundary`
 - `bun run test:e2e` after approved local Playwright/Vite preview port binding,
   including all 12 rendered UI tests
-
 - `bun run check` after approved local Playwright/Vite preview port binding
-  passed, including all 12 rendered UI tests, production build, and static-link
-  validation
 - `git diff --check`
 - type-safety scan across app sources/scripts/tests/configs, with only the
   literal ESLint rule name `@typescript-eslint/no-explicit-any` matching
 
-Recommended next phases after Task 029:
+Recommended next phases after Task 032:
 
-1. Expand flashcards from first slice to full topic coverage across every
-   released tutorial, quiz/exam area, and challenge trap.
+1. Move flashcard deck content to a validated YAML/JSON manifest if continued
+   hand-authoring in TypeScript becomes too noisy.
 2. Richer challenges and datasets: add more deterministic synthetic dataset
    packs and browser-verifiable Looker/BigQuery/BI mechanics challenges, with
    fixtures and source-fact-backed questions.
