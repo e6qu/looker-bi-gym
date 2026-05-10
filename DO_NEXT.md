@@ -2,24 +2,25 @@
 
 ## Immediate Next Step
 
-Numbered implementation tasks 001 through 030 are implemented. PR #3 through
-PR #14 were merged. PR #14 merged on 2026-05-10 at merge commit
-`add376a9b6766871a6b46ed574c547fb322c21e7`.
+Numbered implementation tasks 001 through 031 are implemented. PR #3 through
+PR #15 were merged. PR #15 merged on 2026-05-10 at merge commit
+`46c98327b2a474bc2631816d7e2ca7fa65bd2fad`.
 
 Current implementation step:
 
-- PR #14 (`https://github.com/e6qu/looker-bi-gym/pull/14`) is merged and
+- PR #15 (`https://github.com/e6qu/looker-bi-gym/pull/15`) is merged and
   post-merge verified.
-- Main CI run `25631925236` passed for merge commit
-  `add376a9b6766871a6b46ed574c547fb322c21e7`.
-- Main GitHub Pages deployment run `25631925233` passed for the same merge
+- Main CI run `25632272955` passed for merge commit
+  `46c98327b2a474bc2631816d7e2ca7fa65bd2fad`.
+- Main GitHub Pages deployment run `25632272956` passed for the same merge
   commit, and `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
-  `last-modified: Sun, 10 May 2026 15:01:49 GMT`.
-- Current branch: `browser-progress-import`.
-- Current implementation task: [031 - Browser-Local Progress Import](tasks/031-browser-local-progress-import.md).
-- Current branch purpose: add Settings import for
-  `looker-bi-gym.progress-export.v1` with local validation, preview, apply
-  confirmation, and no upload.
+  `last-modified: Sun, 10 May 2026 15:18:13 GMT`.
+- Current branch: `flashcards-spaced-repetition`.
+- Current implementation task: [029 - Flashcards And Spaced Repetition](tasks/029-flashcards-and-spaced-repetition.md).
+- Current branch purpose: add the first `#/flashcards` route with
+  source-fact-backed decks, browser-local timestamped spaced repetition,
+  single-JSON flashcard export/import with validate/preview/apply controls, and
+  CI/test-pyramid coverage.
 - Read `README.md`, `docs/14-platform-components.md`, `PLAN.md`, `STATUS.md`,
   `BUGS.md`, `tasks/025-real-tutorial-instruction-packs.md`, and
   `tasks/026-challenge-grading-contract-expansion.md` first.
@@ -27,36 +28,36 @@ Current implementation step:
   under `tasks/*.md`; `learner tasks` are curriculum exercise units shown to
   learners.
 
-Current Task 031 must finish before starting the next item:
+Current Task 029 must finish before starting the next item:
 
-- Keep import frontend-only: pasted JSON is validated in the browser and never
-  uploaded.
-- Keep import application explicit: preview before Apply, and write
-  `localStorage` plus same-site cookie only after confirmation.
-- Keep invalid imports rejected when the format, storage version, privacy
-  boundary, completion rows, timestamps, flags, or passed check/question arrays
-  are wrong.
+- Keep flashcard state frontend-only: pasted JSON is validated in the browser
+  and never uploaded.
+- Keep flashcard state separate from challenge progress.
+- Keep deck cards grounded in known source facts and recommended in-app paths.
+- Keep scheduler timestamps explicit in export/import state.
 - Preserve the strict typing boundary: no `any`, `as any`, broad `object` type,
   `as object`, `@ts-ignore`, or `@ts-expect-error`.
 
-Task 031 focused verification passed on 2026-05-10:
+Task 029 focused verification passed on 2026-05-10:
 
 - `bun run typecheck`
 - `bun run lint`
-- `bun run test:progress-export`
-- `bun run test:e2e` after approved local Playwright/Vite preview port binding
+- `bun run test:flashcards`
 - `bun run test:platform-boundary`
-- `bun run check` after approved local Playwright/Vite preview port binding,
-  including all 11 rendered UI tests and production build/static-link checks
+- `bun run test:e2e` after approved local Playwright/Vite preview port binding,
+  including all 12 rendered UI tests
+
+- `bun run check` after approved local Playwright/Vite preview port binding
+  passed, including all 12 rendered UI tests, production build, and static-link
+  validation
 - `git diff --check`
 - type-safety scan across app sources/scripts/tests/configs, with only the
   literal ESLint rule name `@typescript-eslint/no-explicit-any` matching
 
-Recommended next phases after Task 031:
+Recommended next phases after Task 029:
 
-1. Flashcards and spaced repetition: implement Task 029 with topic-separated
-   decks, fact-backed cards, Anki-style timestamps/due dates, and single-JSON
-   flashcard state export/import.
+1. Expand flashcards from first slice to full topic coverage across every
+   released tutorial, quiz/exam area, and challenge trap.
 2. Richer challenges and datasets: add more deterministic synthetic dataset
    packs and browser-verifiable Looker/BigQuery/BI mechanics challenges, with
    fixtures and source-fact-backed questions.
@@ -89,9 +90,9 @@ Preservation and verification steps:
 - Preserve the Task 019 fact-backed instruction boundary: source facts belong in `docs/facts/README.md`, and future regulation/product/browser-storage/BI-tooling questions should cite fact IDs.
 - Preserve the Task 020-022 instruction boundary: released manifests need rendered `lesson_steps`; released questions and steps need known `source_facts`; released tutorial Markdown needs Source Facts, Steps, Checkpoints, and Common Failure Modes sections.
 - Preserve the post-merge tutorial objective boundary: tutorial-like pages should put `Objective:` and an "After this tutorial/task/recipe/page, you will be able to:" block near the top so learners know what skill they are practicing.
-- Preserve the flashcards planning boundary: Task 029 is future scope only until
-  explicitly prioritized. Do not implement flashcard UI, scheduler, deck schema,
-  or flashcard import/export in the PR #11 post-merge cleanup.
+- Preserve the flashcards state boundary: flashcard review state uses
+  `looker-bi-gym.flashcards.v1`, is separate from challenge progress, and stays
+  browser-local with no backend sync or learner-data upload.
 - Preserve the Task 027 fact corpus boundary: learner facts should be banking BI, BigQuery, Looker Studio, and official regulatory/banking facts, not app implementation facts.
 - Preserve downloaded Google Cloud documentation snapshots under `sources/platforms/*/full/` as sanitized article-only Markdown wrappers with attribution.
 - Preserve `bun run test:facts-db` in the check pyramid so fact-source links, fact cross-links, and source snapshots stay queryable through SQLite.
@@ -102,8 +103,8 @@ Preservation and verification steps:
 
 ## Upcoming Tasks
 
-- [024 - Deterministic Local Dataset Packs](tasks/024-deterministic-local-dataset-packs.md)
-- [025 - Real Tutorial Instruction Packs](tasks/025-real-tutorial-instruction-packs.md)
-- [026 - Challenge Grading Contract Expansion](tasks/026-challenge-grading-contract-expansion.md)
-- [028 - Platform Component Organization](tasks/028-platform-component-organization.md)
-- Use the SQLite fact database to draft richer fact-backed questions and tutorial steps.
+- Expand [029 - Flashcards And Spaced Repetition](tasks/029-flashcards-and-spaced-repetition.md) coverage after this first PR.
+- Use the SQLite fact database to draft richer fact-backed questions,
+  flashcards, and tutorial steps.
+- Continue richer browser-verifiable BI/BigQuery/Looker mechanics challenges
+  with deterministic synthetic datasets and fixtures.

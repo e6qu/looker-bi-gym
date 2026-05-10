@@ -117,12 +117,12 @@ The first platform release and PR #3 established:
   enforced browser exam. Each exam challenge can be up to roughly 2 hours, is
   user-selected, and is self-assessed at first with as much deterministic
   verification as the current static app can support.
-- Flashcards are a future learning-mode phase, not part of the current
-  post-merge learner-flow cleanup. The intended shape is topic-separated
-  flashcard decks for all major BI, BigQuery, Looker Studio, data-quality,
-  governance, and banking-context topics, with an Anki-style spaced repetition
-  UI and browser-local flashcard state that can be exported and imported as a
-  single JSON file.
+- Flashcards now have a first browser implementation: topic-separated decks for
+  BI, BigQuery, Looker Studio, controls, banking context, and dataset controls,
+  with an SM-2-inspired spaced repetition UI and browser-local flashcard state
+  that can be exported and imported as a single JSON file. Future work should
+  expand coverage across all released tutorials, quizzes, exams, and challenge
+  traps.
 - JSON export and import are implemented in Settings. Import is a browser-local
   workflow: validate the export format locally, preview imported evidence, apply
   only after user confirmation, and never upload learner data.
@@ -252,10 +252,8 @@ Keep each release reproducible:
 
 ### Phase F - Flashcards And Spaced Repetition
 
-Future phase only; do not implement in the PR #11 post-merge cleanup.
-
-Add flashcards as a first-class learning mode once the tutorial, quiz, and exam
-models are stable:
+First browser slice implemented. Continue expanding flashcards as a first-class
+learning mode as the tutorial, quiz, and exam models grow:
 
 - Create topic-separated decks for BI fundamentals, grain/fanout,
   semi-additive snapshots, BigQuery SQL/view behavior, Looker Studio data-source
@@ -264,25 +262,24 @@ models are stable:
 - Source every non-project-preference card from `docs/facts/` or deterministic
   dataset outputs. Each card should carry source fact IDs and recommended
   tutorial links.
-- Build a browser-local flashcards UI with study, review, due-card, browse, and
-  reset flows.
-- Implement an Anki-style spaced repetition scheduler in the UI. The first
-  implementation can use a simple SM-2-inspired model with ease factor,
-  interval, repetitions, lapses, due date, and timestamped review history, but
-  the scheduler contract should be typed and replaceable.
+- Maintain the browser-local flashcards UI with deck browsing, answer reveal,
+  review buttons, due-card counts, and JSON export/import.
+- Maintain the typed SM-2-inspired scheduler with ease factor, interval,
+  repetitions, lapses, due date, and timestamped review history. Keep the
+  scheduler contract replaceable.
 - Store flashcard progress only in the browser. Do not add a backend, account
   system, analytics, or learner-data upload.
-- Add export/import for flashcard state as one JSON file. Import must validate
-  schema/version locally, preview changes, and apply only after confirmation.
+- Keep export/import for flashcard state as one JSON file. Import must validate
+  schema/version locally and remain explicitly learner-triggered.
 - Keep flashcard content and flashcard review state separate: decks are
   committed curriculum content; learner review state is browser-local and
   user-controlled.
 - Record explicit datetime timestamps for review events, scheduler state
   updates, due dates, imports, and exports so the spaced repetition state is
   inspectable and reproducible after JSON export/import.
-- Add content QA and Playwright coverage before release: deck schema validation,
-  fact-link validation, scheduler tests, JSON import/export tests, responsive UI
-  tests, and no-backend network-boundary tests.
+- Keep content QA and Playwright coverage: deck validation, fact-link
+  validation, scheduler tests, JSON import/export tests, responsive UI tests,
+  and no-backend network-boundary tests.
 
 ## Iteration Rule
 

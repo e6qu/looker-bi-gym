@@ -34,6 +34,7 @@ Current rendered sections:
 - Challenges: generated challenge catalog and challenge detail pages.
 - Quiz: rendered quiz-bank YAML.
 - Exam: rendered exam-card YAML.
+- Flashcards: browser-local topic decks with spaced-repetition review state.
 - Facts: rendered source-fact graph.
 - Regulations: rendered context briefs from `regulations/`.
 - Settings: browser-local state, JSON export, and reset controls.
@@ -48,10 +49,8 @@ Learner-facing content shapes:
   recommended learner tasks.
 - Exam cards: untimed independent longer challenges, up to roughly 2 hours,
   self-assessed at first.
-- Flashcards: future topic-separated recall decks with browser-local
-  Anki-style spaced repetition and JSON state export/import. This is planned
-  after the current tutorial/quiz/exam foundations and is not part of the PR #11
-  implementation phase.
+- Flashcards: topic-separated recall decks with browser-local Anki-style
+  spaced repetition and JSON state export/import.
 
 ## Content Components
 
@@ -122,13 +121,19 @@ Exam cards:
 
 Flashcards:
 
-- Future location: likely `flashcards/` for committed deck content plus app
-  runtime support under `app/src/`.
+- Current route: `#/flashcards`.
+- Current implementation: committed deck content and typed scheduler live in
+  `app/src/flashcards.ts`; the rendered route lives in `app/src/App.tsx`.
 - Role: topic-separated recall and review for facts, BI mechanics, platform
   behavior, tutorial checkpoints, and deterministic dataset outputs.
 - State: browser-local timestamped review state with one JSON export/import
   file.
 - Boundary: no backend, no learner-data upload, and no real banking data.
+- First decks: BI fundamentals, BigQuery/SQL, Looker Studio,
+  controls/governance, banking context, and dataset controls.
+- Verification: `bun run test:flashcards` validates scheduler transitions, deck
+  structure, source fact IDs, and JSON import behavior; Playwright covers a real
+  review flow, export preview, and validate/preview/apply import flow.
 
 ## Data Components
 
@@ -206,15 +211,15 @@ State and export:
 - `app/src/progress.ts`: browser-local progress model, local flags,
   `localStorage`, same-site cookie mirror, reset, JSON export, and JSON import
   validation.
+- `app/src/flashcards.ts`: committed flashcard decks, typed review state,
+  SM-2-inspired scheduler transitions, and flashcard JSON import validation.
 - Storage keys:
   - `looker-bi-gym.progress.v1`;
   - `looker-bi-gym.quiz-progress.v1` for legacy migration;
   - `looker-bi-gym-progress-v1` for the same-site cookie mirror.
+  - `looker-bi-gym.flashcards.v1` for flashcard review state.
 - Export/import format: `looker-bi-gym.progress-export.v1`.
-- Future flashcard state should use a separate versioned local storage key and
-  JSON format so challenge completion state and spaced-repetition state can be
-  imported/exported independently or packaged together later by an explicit
-  task.
+- Flashcard export/import format: `looker-bi-gym.flashcards.v1`.
 
 ## State Model
 
@@ -230,16 +235,20 @@ The canonical state path is browser-local:
    `looker-bi-gym.progress-export.v1` locally, previews imported completion
    evidence, and writes browser-local progress only after user confirmation.
 7. Import never contacts a backend and never uploads learner data.
+8. Flashcard review state uses a separate `localStorage` key and a separate
+   JSON export/import flow on `#/flashcards`; challenge completion state and
+   spaced-repetition state remain independent.
 
-Planned flashcard state behavior:
+Current flashcard state behavior:
 
-- committed deck content is loaded from static files;
+- committed deck content is loaded from app source;
 - per-card review state is stored locally in the browser;
-- export creates one JSON file containing deck versions and review state;
-- import validates schema/version locally, previews additions/replacements, and
-  applies only after confirmation;
-- reset can clear flashcard review state without deleting challenge progress
-  unless the user chooses a broader reset.
+- export creates one JSON file containing the review state format, update time,
+  and per-card review state;
+- import validates schema/version locally, previews the reviewed-card count, and
+  applies only to flashcard state after an explicit learner action;
+- flashcard reset is a follow-up control; challenge progress reset does not
+  implicitly delete flashcard state.
 - review events should store explicit datetime timestamps for rating time,
   previous due timestamp, next due timestamp, and import/export time.
 
@@ -258,6 +267,7 @@ Focused gates:
 - `bun run test:content-qa`;
 - `bun run test:facts-db`;
 - `bun run test:progress-export`;
+- `bun run test:flashcards`;
 - `bun run test:platform-boundary`;
 - `bun run test:e2e`.
 

@@ -13,6 +13,7 @@ const responsiveRoutes = [
   "/#/quiz",
   "/#/exam",
   "/#/facts",
+  "/#/flashcards",
   "/#/facts/fact-deposits-fanout-control-totals",
   "/#/challenges",
   "/#/challenges/first-banking-dataset",
@@ -314,6 +315,43 @@ FROM account_daily_balances;`);
         exact: true,
         name: "loan_monthly_snapshots",
       }),
+    ).toBeVisible();
+  });
+
+  test("flashcards support timestamped spaced repetition state", async ({
+    page,
+  }) => {
+    await page.goto("/#/flashcards");
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Flashcards" }),
+    ).toBeVisible();
+    await expect(page.getByText("BI Fundamentals")).toBeVisible();
+    await page.getByRole("button", { name: "Show Answer" }).click();
+    await expect(page.getByText("Declare the row grain first")).toBeVisible();
+    await page.getByRole("button", { name: "good" }).click();
+    await expect(
+      page.getByLabel("Flashcard state export JSON preview"),
+    ).toContainText("reviewedAt");
+    await expect(
+      page.getByLabel("Flashcard state export JSON preview"),
+    ).toContainText("nextDueAt");
+    const exportJson = await page
+      .getByLabel("Flashcard state export JSON preview")
+      .inputValue();
+
+    await page.evaluate(() => {
+      window.localStorage.removeItem("looker-bi-gym.flashcards.v1");
+    });
+    await page.reload();
+    await page.getByLabel("Flashcard import JSON").fill(exportJson);
+    await page.getByRole("button", { name: "Validate Flashcards" }).click();
+    await expect(
+      page.getByText("Preview ready: 1 reviewed cards"),
+    ).toBeVisible();
+    await page.getByRole("button", { name: "Apply Flashcards" }).click();
+    await expect(
+      page.getByText("Flashcard review state imported locally."),
     ).toBeVisible();
   });
 

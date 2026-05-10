@@ -21,6 +21,16 @@ import {
   getFactHref,
 } from "./factCatalog";
 import {
+  createEmptyFlashcardState,
+  flashcardDecks,
+  flashcardStorageKey,
+  getFlashcardState,
+  parseFlashcardImport,
+  reviewFlashcard,
+  type FlashcardRating,
+  type FlashcardState,
+} from "./flashcards";
+import {
   challengeCatalog,
   formatChallengeArea,
   formatChallengeDifficulty,
@@ -86,6 +96,7 @@ type RouteId =
   | "exam"
   | "facts"
   | "workbench"
+  | "flashcards"
   | "challenges"
   | "settings";
 
@@ -115,6 +126,7 @@ const routes: readonly Route[] = [
   { id: "quiz", label: "Quiz" },
   { id: "exam", label: "Exam" },
   { id: "facts", label: "Facts" },
+  { id: "flashcards", label: "Flashcards" },
   { id: "challenges", label: "Challenges" },
   { id: "settings", label: "Settings" },
 ];
@@ -161,6 +173,23 @@ function getBrowserProgressPersistence(): BrowserProgressPersistence {
     storage: window.localStorage,
     cookies: document,
   };
+}
+
+function readBrowserFlashcardState(): FlashcardState {
+  const storedValue = window.localStorage.getItem(flashcardStorageKey);
+  const fallback = createEmptyFlashcardState(new Date().toISOString());
+
+  if (storedValue === null) {
+    return fallback;
+  }
+
+  const importResult = parseFlashcardImport(storedValue);
+
+  return importResult.status === "valid" ? importResult.state : fallback;
+}
+
+function writeBrowserFlashcardState(state: FlashcardState): void {
+  window.localStorage.setItem(flashcardStorageKey, JSON.stringify(state));
 }
 
 function isRouteId(value: string | undefined): value is RouteId {
@@ -2901,6 +2930,208 @@ function ChallengesPage({
   );
 }
 
+function FlashcardsPage(): JSX.Element {
+  const [state, setState] = useState<FlashcardState>(readBrowserFlashcardState);
+  const [selectedDeckId, setSelectedDeckId] = useState<string>(
+    flashcardDecks[0]?.id ?? "",
+  );
+  const [showBack, setShowBack] = useState<boolean>(false);
+  const [importJson, setImportJson] = useState<string>("");
+  const [importMessage, setImportMessage] = useState<string>("");
+  const [importPreview, setImportPreview] = useState<
+    FlashcardState | undefined
+  >(undefined);
+  const selectedDeck =
+    flashcardDecks.find((deck) => deck.id === selectedDeckId) ??
+    flashcardDecks[0];
+  const nowIso = new Date().toISOString();
+  const dueCards =
+    selectedDeck?.cards.filter(
+      (card) => getFlashcardState(state, card.id, nowIso).dueAt <= nowIso,
+    ) ?? [];
+  const activeCard = dueCards[0] ?? selectedDeck?.cards[0];
+  const exportJson = useMemo(() => JSON.stringify(state, null, 2), [state]);
+
+  function persistState(nextState: FlashcardState): void {
+    setState(nextState);
+    writeBrowserFlashcardState(nextState);
+  }
+
+  function reviewActiveCard(rating: FlashcardRating): void {
+    if (activeCard === undefined) {
+      return;
+    }
+
+    persistState(
+      reviewFlashcard(state, activeCard.id, rating, new Date().toISOString()),
+    );
+    setShowBack(false);
+    setImportMessage("");
+  }
+
+  function validateImport(): void {
+    const result = parseFlashcardImport(importJson);
+
+    if (result.status === "invalid") {
+      setImportMessage(result.message);
+      setImportPreview(undefined);
+      return;
+    }
+
+    setImportPreview(result.state);
+    setImportMessage(
+      "Flashcard import is valid. Review the preview, then apply it locally.",
+    );
+  }
+
+  function applyImport(): void {
+    if (importPreview === undefined) {
+      setImportMessage("Validate flashcard JSON before applying it.");
+      return;
+    }
+
+    persistState(importPreview);
+    setImportPreview(undefined);
+    setImportMessage("Flashcard review state imported locally.");
+  }
+
+  return (
+    <section className="page" aria-labelledby="flashcards-title">
+      <PageTitle
+        title="Flashcards"
+        description="Topic-separated review decks with browser-local Anki-style timestamps, due dates, and JSON state export/import."
+        id="flashcards-title"
+      />
+      <div className="learningPanel">
+        <div className="learningPanelHeader">
+          <div>
+            <h2>Decks</h2>
+            <p>
+              Review state stays in this browser. Each card cites source facts
+              and records timestamped review history.
+            </p>
+          </div>
+          <span className="status statusReady">
+            {flashcardDecks.length} decks
+          </span>
+        </div>
+        <div className="learningMeta">
+          {flashcardDecks.map((deck) => {
+            const dueCount = deck.cards.filter(
+              (card) =>
+                getFlashcardState(state, card.id, nowIso).dueAt <= nowIso,
+            ).length;
+
+            return (
+              <button
+                aria-pressed={deck.id === selectedDeck?.id}
+                key={deck.id}
+                onClick={() => {
+                  setSelectedDeckId(deck.id);
+                  setShowBack(false);
+                }}
+                type="button"
+              >
+                {deck.title} ({dueCount} due)
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {selectedDeck !== undefined && activeCard !== undefined ? (
+        <section className="learningPanel" aria-labelledby="review-card-title">
+          <div className="learningPanelHeader">
+            <div>
+              <p className="eyebrow">{selectedDeck.topic}</p>
+              <h2 id="review-card-title">{activeCard.front}</h2>
+            </div>
+            <span className="status statusReady">{dueCards.length} due</span>
+          </div>
+          {showBack ? (
+            <div className="learningQuestion">
+              <p>{activeCard.back}</p>
+              <SourceFactList sourceFacts={activeCard.sourceFacts} />
+              <div className="settingsButtonRow">
+                {(["again", "hard", "good", "easy"] as const).map((rating) => (
+                  <button
+                    key={rating}
+                    onClick={() => reviewActiveCard(rating)}
+                    type="button"
+                  >
+                    {rating}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <button type="button" onClick={() => setShowBack(true)}>
+              Show Answer
+            </button>
+          )}
+        </section>
+      ) : null}
+
+      <section className="settingsActionPanel progressExportPanel">
+        <div>
+          <h3>Flashcard State</h3>
+          <p>
+            Export or import review state as one JSON document. The JSON
+            includes review timestamps, due dates, intervals, ease factors,
+            repetitions, and lapses.
+          </p>
+        </div>
+        <label className="exportNotesField" htmlFor="flashcard-import-json">
+          <span className="fieldLabel">Flashcard import JSON</span>
+          <textarea
+            id="flashcard-import-json"
+            onChange={(event) => {
+              setImportJson(event.currentTarget.value);
+              setImportPreview(undefined);
+              setImportMessage("");
+            }}
+            value={importJson}
+          />
+        </label>
+        <div className="settingsButtonRow">
+          <button type="button" onClick={validateImport}>
+            Validate Flashcards
+          </button>
+          <button
+            disabled={importPreview === undefined}
+            type="button"
+            onClick={applyImport}
+          >
+            Apply Flashcards
+          </button>
+        </div>
+        {importPreview !== undefined ? (
+          <div className="feedbackBox" role="status">
+            Preview ready: {Object.keys(importPreview.cards).length} reviewed
+            cards from {importPreview.updatedAt}.
+          </div>
+        ) : null}
+        <div className="exportPreview">
+          <div>
+            <h3>Export Preview</h3>
+            <p>Review this local JSON before saving or sharing it.</p>
+          </div>
+          <textarea
+            aria-label="Flashcard state export JSON preview"
+            readOnly
+            value={exportJson}
+          />
+        </div>
+        {importMessage.length > 0 ? (
+          <div className="feedbackBox" role="status">
+            {importMessage}
+          </div>
+        ) : null}
+      </section>
+    </section>
+  );
+}
+
 function SettingsPage(): JSX.Element {
   const [resetMessage, setResetMessage] = useState<string>("");
   const [progress, setProgress] = useState<LearnerProgressState>(() =>
@@ -3190,6 +3421,8 @@ function AppPage({ route }: { readonly route: AppRoute }): JSX.Element {
       return (
         <WorkbenchPage datasetRef={getWorkbenchDatasetRef(route.fileName)} />
       );
+    case "flashcards":
+      return <FlashcardsPage />;
     case "challenges":
       return route.fileName !== undefined ? (
         <ChallengesPage challengeId={route.fileName} />

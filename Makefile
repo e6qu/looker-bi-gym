@@ -1,6 +1,6 @@
 BUN ?= bun
 
-.PHONY: help install lint typecheck format format-check validate validate-manifests validate-datasets validate-static-links test test-quiz test-sql test-fixtures test-derived-expectations test-cloud-evidence test-progress-export test-quiz-facts-db test-content-qa test-facts-db facts-build-db test-llm-workbench test-platform-boundary test-e2e test-validators questions-context questions-generate-codex questions-generate-claude questions-review-codex questions-review-claude dream dream-codex dream-claude build check dev preview
+.PHONY: help install lint typecheck format format-check validate validate-manifests validate-datasets validate-static-links test test-quiz test-sql test-fixtures test-derived-expectations test-cloud-evidence test-progress-export test-flashcards test-quiz-facts-db test-content-qa test-facts-db facts-build-db test-llm-workbench test-platform-boundary test-e2e test-validators questions-context questions-generate-codex questions-generate-claude questions-review-codex questions-review-claude dream dream-codex dream-claude build check dev preview
 
 help:
 	@printf '%s\n' \
@@ -21,6 +21,7 @@ help:
 		'  test-derived-expectations Derive SQL expected values from pinned datasets' \
 		'  test-cloud-evidence Run cloud evidence parser and validator tests' \
 		'  test-progress-export Run progress export structure tests' \
+		'  test-flashcards    Run flashcard spaced repetition tests' \
 		'  test-quiz-facts-db Verify quiz questions against the SQLite fact graph' \
 		'  test-content-qa     Run content QA checks' \
 		'  test-facts-db       Build and validate the SQLite facts database' \
@@ -68,7 +69,7 @@ validate-datasets:
 validate-static-links:
 	$(BUN) run validate:static-links
 
-test: test-quiz test-sql test-fixtures test-derived-expectations test-cloud-evidence test-progress-export test-quiz-facts-db test-content-qa test-facts-db test-llm-workbench test-platform-boundary test-validators test-e2e
+test: test-quiz test-sql test-fixtures test-derived-expectations test-cloud-evidence test-progress-export test-flashcards test-quiz-facts-db test-content-qa test-facts-db test-llm-workbench test-platform-boundary test-validators test-e2e
 
 test-quiz:
 	$(BUN) run test:quiz
@@ -87,6 +88,9 @@ test-cloud-evidence:
 
 test-progress-export:
 	$(BUN) run test:progress-export
+
+test-flashcards:
+	$(BUN) run test:flashcards
 
 test-quiz-facts-db:
 	$(BUN) run test:quiz-facts-db

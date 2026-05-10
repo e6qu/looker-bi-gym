@@ -65,6 +65,21 @@ The Settings page shows a JSON preview before download. Import is browser-local:
 
 Resetting browser progress clears `localStorage` and the same-site progress cookie. Reset does not delete exported JSON files already saved outside the browser.
 
+## Flashcards
+
+The `#/flashcards` route provides topic-separated review decks for BI
+fundamentals, BigQuery/SQL, Looker Studio, governance, banking context, and
+dataset-control traps.
+
+Flashcard review state is separate from challenge progress and uses
+`localStorage` key `looker-bi-gym.flashcards.v1`. Reviews record explicit
+timestamps, due dates, interval days, ease factors, repetitions, lapses, and the
+rating used for each review event. The page can export the flashcard state as a
+single JSON document and can import a pasted `looker-bi-gym.flashcards.v1` JSON
+document locally. No flashcard state is uploaded or synchronized by the app.
+Import is explicit: the learner validates pasted JSON, reviews the local
+preview, and then applies it to browser storage.
+
 ## Browser Compatibility
 
 The target release browsers are current stable Chrome and Safari on desktop, with responsive layouts checked at common desktop, tablet, and narrow mobile widths. DuckDB-WASM SQL challenges require a browser with WebAssembly, Web Worker, Blob URL, and modern ES module support.
