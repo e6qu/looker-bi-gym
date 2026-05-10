@@ -11,6 +11,7 @@ The allowed state surfaces are browser-local only:
 - `localStorage` for challenge progress.
 - A same-site progress cookie that mirrors the same completion state.
 - User-triggered JSON export/import from Settings.
+- Separate browser-local flashcard review state with JSON export/import.
 
 The app has no backend account system, server session, API database, server-side grading, analytics beacon, or learner-data upload.
 
@@ -25,6 +26,9 @@ The lower and middle layers run deterministic checks without a browser:
 - `bun run test:browser-config` covers local JSON config parsing and validation.
 - `bun run test:progress-export` covers browser-local progress, cookie fallback,
   reset, export, import validation, and privacy boundaries.
+- `bun run test:flashcards` covers the flashcard scheduler, timestamped review
+  history, JSON import validation, deck uniqueness, source fact links, and
+  recommended app-route links.
 - `bun run test:quiz-facts-db` builds the SQLite facts database, loads quiz YAML
   into temporary quiz tables, and verifies that quiz source facts resolve to
   sourced fact graph nodes. Numeric quiz answers must be backed by cited fact
@@ -52,6 +56,9 @@ The lower and middle layers run deterministic checks without a browser:
 - Fill cloud-evidence fields, answer the credential boundary question, and verify local completion without backend calls.
 - Validate and apply a pasted progress JSON import in Settings, then verify it
   writes browser-local state.
+- Review a flashcard, record timestamped spaced-repetition state, and verify the
+  flashcard JSON export contains review and due timestamps. Validate and apply
+  that JSON through the flashcard import controls.
 - Fill browser-config metric contract JSON, answer contract questions, and
   verify local completion without backend calls.
 - Render quiz-bank YAML, exam-card YAML, and the in-app fact graph as real

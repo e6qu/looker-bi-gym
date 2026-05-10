@@ -111,6 +111,19 @@ No known app bugs after the Bun-only tooling, typed config, formatting, rendered
   export/import unit tests, Playwright rendered UI import flow,
   platform-boundary checks, and full `bun run check` after approved local
   Playwright/Vite preview port binding.
+- Post-merge PR #15 GitHub Actions and GitHub Pages deployment passed for merge
+  commit `46c98327b2a474bc2631816d7e2ca7fa65bd2fad`, and the deployed Pages URL
+  returned HTTP 200 on 2026-05-10.
+- Task 029 focused verification passed for typecheck, lint, flashcard scheduler
+  and content tests, platform-boundary checks, type-safety scan, and Playwright
+  rendered UI flashcard review flow. The first sandboxed Playwright run could
+  not bind `127.0.0.1:4173`; the approved rerun passed with all 12 rendered UI
+  tests. Full `bun run check` also passed with all 12 rendered UI tests,
+  production build, and static-link validation.
+- Task 029 follow-up: the first flashcard slice has 12 hand-authored cards
+  across six decks. Future work should expand coverage across all released
+  tutorials, quiz/exam areas, and challenge traps; this is an expansion item,
+  not a known broken behavior.
 
 ## Template
 

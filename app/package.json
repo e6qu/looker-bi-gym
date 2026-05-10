@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --config configs/vite.config.ts --host 127.0.0.1",
     "build": "bun run validate:manifests && bun run validate:datasets && bun run typecheck && vite build --config configs/vite.config.ts",
-    "check": "bun run format:check && bun run validate:manifests && bun run lint && bun run typecheck && bun run validate:datasets && bun run test:quiz && bun run test:sql && bun run test:fixtures && bun run test:derived-expectations && bun run test:cloud-evidence && bun run test:browser-config && bun run test:progress-export && bun run test:quiz-facts-db && bun run test:content-qa && bun run test:facts-db && bun run test:llm-workbench && bun run test:platform-boundary && bun run test:validators && bun run test:e2e && vite build --config configs/vite.config.ts && bun run validate:static-links",
+    "check": "bun run format:check && bun run validate:manifests && bun run lint && bun run typecheck && bun run validate:datasets && bun run test:quiz && bun run test:sql && bun run test:fixtures && bun run test:derived-expectations && bun run test:cloud-evidence && bun run test:browser-config && bun run test:progress-export && bun run test:flashcards && bun run test:quiz-facts-db && bun run test:content-qa && bun run test:facts-db && bun run test:llm-workbench && bun run test:platform-boundary && bun run test:validators && bun run test:e2e && vite build --config configs/vite.config.ts && bun run validate:static-links",
     "lint": "bun run validate:manifests && eslint --config configs/eslint.config.ts . --max-warnings 0",
     "format": "prettier --write .. --ignore-path ../.prettierignore",
     "format:check": "prettier --check .. --ignore-path ../.prettierignore",
@@ -17,6 +17,7 @@
     "test:cloud-evidence": "bun run scripts/test-cloud-evidence.ts",
     "test:browser-config": "bun run scripts/test-browser-config.ts",
     "test:progress-export": "bun run scripts/test-progress-export.ts",
+    "test:flashcards": "bun run scripts/test-flashcards.ts",
     "test:quiz-facts-db": "bun run scripts/test-quiz-facts-db.ts",
     "test:content-qa": "bun run scripts/test-content-qa.ts",
     "test:facts-db": "bun run scripts/test-fact-database.ts",

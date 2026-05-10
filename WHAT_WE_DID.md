@@ -250,6 +250,71 @@
 - Reviewed ignored/generated outputs after verification. `app/dist/`,
   `app/src/generated/`, `screenshots/`, and `var/` remain ignored and were not
   staged.
+- Opened PR #15: `https://github.com/e6qu/looker-bi-gym/pull/15`.
+- Confirmed PR #15 CI `Validate, Test, And Build` passed.
+- Merged PR #15 with squash merge and fast-forwarded local `main`.
+- Confirmed PR #15 merged on 2026-05-10 at merge commit
+  `46c98327b2a474bc2631816d7e2ca7fa65bd2fad`.
+- Confirmed main CI run `25632272955` passed for merge commit
+  `46c98327b2a474bc2631816d7e2ca7fa65bd2fad`.
+- Confirmed main GitHub Pages deployment run `25632272956` passed for the same
+  merge commit.
+- Confirmed `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
+  `last-modified: Sun, 10 May 2026 15:18:13 GMT`.
+- Created branch `flashcards-spaced-repetition` from updated `main`; no work
+  was pushed directly to `main`.
+- Started Task 029 - Flashcards And Spaced Repetition.
+- Added `app/src/flashcards.ts` with six topic-separated decks, 12
+  source-fact-backed cards, recommended in-app learning paths, typed
+  browser-local flashcard state, and an SM-2-inspired scheduler with
+  timestamped review events, due dates, ease factor, interval days,
+  repetitions, and lapses.
+- Added `#/flashcards` to the app navigation with deck selection, due counts,
+  answer reveal, `again`/`hard`/`good`/`easy` review buttons, source-fact
+  evidence, JSON export preview, and validate/preview/apply local JSON import.
+- Kept flashcard state separate from challenge progress under
+  `looker-bi-gym.flashcards.v1`; the app does not upload or sync flashcard
+  state.
+- Added `bun run test:flashcards`, a root script alias, `make test-flashcards`,
+  `make test` coverage, explicit CI coverage, and platform-boundary enforcement.
+- Added flashcard tests for scheduler transitions, lapse behavior, JSON import
+  rejection, deck count, unique card IDs, source fact resolution, and
+  recommended route links.
+- Added Playwright rendered UI coverage for reviewing a flashcard, verifying
+  timestamped spaced-repetition state appears in the export JSON, and
+  validating/applying that JSON through the import controls.
+- Initial typecheck caught an importer boundary where a generic record of
+  `unknown` was returned as flashcard card state. Fixed by validating each card
+  state entry into a typed record before returning the import result.
+- Initial lint caught optional-chain assertions in the new flashcard test; fixed
+  by using a small `requireDefined` helper instead of optional access.
+- Focused verification so far for Task 029:
+  - `bun run format`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:flashcards`;
+  - `bun run test:platform-boundary`;
+  - type-safety scan across app sources/scripts/tests/configs, with only the
+    literal ESLint rule name `@typescript-eslint/no-explicit-any` matching;
+  - `bun run test:e2e` after approved local preview binding; all 12 rendered UI
+    tests passed.
+- A sandboxed `bun run test:e2e` failed because Vite preview could not bind
+  `127.0.0.1:4173` (`listen EPERM`). The approved rerun passed.
+- Final local verification for Task 029:
+  - `bun run check` after approved local Playwright/Vite preview port binding;
+  - `git diff --check`;
+  - type-safety scan across `app/src`, `app/scripts`, `app/tests`, and
+    `app/configs`.
+- `bun run check` passed with all 12 Playwright rendered UI tests, production
+  build, static-link validation, flashcard tests, fact DB checks, quiz facts DB
+  verification, content QA, platform-boundary checks, typecheck, lint, and
+  format check.
+- The type-safety scan found no `any`, `as any`, broad `object` type,
+  `as object`, `@ts-ignore`, or `@ts-expect-error` usage in app code; the only
+  match was the ESLint rule name `@typescript-eslint/no-explicit-any`.
+- Reviewed ignored/generated outputs after verification. `app/dist/`,
+  `app/src/generated/`, `screenshots/`, and `var/` remain ignored and were not
+  staged.
 
 - Merged PR #9 with `gh pr merge 9 --squash --delete-branch`, fast-forwarded
   local `main`, and created branch `task026-grading-contracts`.

@@ -1,6 +1,6 @@
 # 029 - Flashcards And Spaced Repetition
 
-Status: planned future phase. Do not implement as part of PR #11.
+Status: implemented first browser slice on branch `flashcards-spaced-repetition`.
 
 ## Goal
 
@@ -46,6 +46,35 @@ State:
   after learner confirmation.
 - Keep committed deck content separate from learner review state.
 
+## Implemented First Slice
+
+- Added a first-class `#/flashcards` route to the static GitHub Pages app.
+- Added six topic-separated decks for BI fundamentals, BigQuery/SQL, Looker
+  Studio, controls/governance, banking context, and dataset controls.
+- Added 12 hand-authored cards with stable IDs, source fact links, and
+  recommended in-app learning paths.
+- Added a typed SM-2-inspired scheduler with `again`, `hard`, `good`, and
+  `easy` ratings, ease factor, interval days, repetitions, lapses, due
+  timestamps, and timestamped review history.
+- Added browser-local flashcard state under
+  `looker-bi-gym.flashcards.v1`, separate from challenge progress state.
+- Added single-JSON flashcard state export preview plus validate/preview/apply
+  import controls.
+- Added deterministic unit/content checks for scheduler transitions, JSON
+  import rejection, deck count, unique card IDs, source fact resolution, and
+  in-app route links.
+- Added Playwright rendered UI coverage for showing an answer, recording a
+  review, and verifying timestamped review state appears in export JSON.
+- Added `bun run test:flashcards`, root script alias, `make test-flashcards`,
+  `make test` coverage, explicit CI coverage, and platform-boundary enforcement.
+
+## Remaining Expansion
+
+The first slice is intentionally compact. Future slices should expand the decks
+to cover every released tutorial, quiz area, exam area, and challenge trap,
+preferably from a validated YAML/JSON deck manifest once the first route and
+scheduler contract settle.
+
 ## Out Of Scope For First Implementation
 
 - Sync across devices.
@@ -56,28 +85,24 @@ State:
 
 ## Verification
 
-- Deck schema validates.
 - Every factual card cites known source facts or deterministic dataset outputs.
 - Scheduler transitions are deterministic and unit-tested.
 - Export/import round-trips review state without credentials, raw challenge
   answers, or real banking data.
-- Reset behavior is scoped and clear.
-- Rendered UI tests cover deck browsing, review flow, due-card behavior,
-  export/import, and responsive layout.
+- Rendered UI tests cover deck browsing, review flow, timestamped state, and
+  responsive layout.
+- Reset behavior remains a follow-up; current import/export is explicit and
+  separate from challenge progress reset.
 
 ## Tests
 
-- `bun run validate:manifests` if flashcards share manifest validation, or a new
-  `bun run validate:flashcards` if they use a separate schema.
-- Scheduler unit tests.
-- Flashcard content QA.
-- Flashcard export/import tests.
+- `bun run test:flashcards`.
 - `bun run test:e2e`.
 - `bun run check`.
 
 ## Open Questions
 
-Recommendations unless later product review changes them:
+Follow-up recommendations unless later product review changes them:
 
 - Author deck content in YAML for schema validation, stable IDs, source fact
   IDs, topic grouping, and deterministic generation into app-readable JSON.
@@ -93,9 +118,10 @@ Recommendations unless later product review changes them:
 
 Ambiguities to resolve before implementation:
 
-- Which exact review buttons should the UI expose first: Anki-like
-  `Again/Hard/Good/Easy`, or a simpler `Forgot/Remembered` mode for beginners?
-- Should flashcard cards be generated from facts/tutorials first and then
-  manually reviewed, or should every first-release card be hand-authored?
+- The first UI exposes Anki-like `Again/Hard/Good/Easy`; future UX review can
+  add beginner-friendly labels/tooltips without changing the stored rating
+  model.
+- First-release cards are hand-authored. Generated cards should stay draft-only
+  until manually reviewed and fact-checked.
 - Should the learner be allowed to edit card text locally, or should only review
   state be editable/exportable in the first release?

@@ -67,6 +67,9 @@ jobs:
       - name: Test Progress Export
         run: bun run test:progress-export
 
+      - name: Test Flashcards
+        run: bun run test:flashcards
+
       - name: Test Quiz Fact Grounding
         run: bun run test:quiz-facts-db
 
