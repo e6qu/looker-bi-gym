@@ -5,6 +5,7 @@ import type { Locator, Page } from "@playwright/test";
 const responsiveRoutes = [
   "/#/home",
   "/#/docs/README.md",
+  "/#/tutorials/learner-tasks/lt-bi-001-profile-dataset-grain.md",
   "/#/challenges",
   "/#/challenges/first-banking-dataset",
   "/#/challenges/looker-studio-evidence",
@@ -176,6 +177,20 @@ test.describe("rendered UI", () => {
   test("browser SQL challenge loads DuckDB-WASM and renders query results", async ({
     page,
   }) => {
+    await page.goto(
+      "/#/tutorials/learner-tasks/lt-bi-001-profile-dataset-grain.md",
+    );
+
+    await expect(
+      page.getByRole("heading", {
+        level: 1,
+        name: "LT-BI-001 - Profile Dataset Grain",
+      }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Objective: prove the row grain"),
+    ).toBeVisible();
+
     await page.goto("/#/challenges/first-banking-dataset");
 
     await expect(
@@ -184,7 +199,8 @@ test.describe("rendered UI", () => {
         name: "010 - First Banking Dataset Inspection",
       }),
     ).toBeVisible();
-    await expect(page.getByLabel("SQL query")).toBeVisible();
+    const sqlEditor = page.getByRole("textbox", { name: "SQL query" });
+    await expect(sqlEditor).toBeVisible();
     await expect(page.getByText("Step-by-step work")).toBeVisible();
 
     const runButton = page.getByRole("button", { name: "Run Query" });
@@ -199,6 +215,24 @@ test.describe("rendered UI", () => {
       resultTable.getByRole("columnheader", { name: "row_count" }),
     ).toBeVisible();
     await expect(resultTable.getByRole("cell", { name: "18" })).toBeVisible();
+
+    await sqlEditor.fill(`SELECT
+  adb.currency_code,
+  CAST(SUM(adb.ledger_balance) AS DOUBLE) AS ledger_total
+FROM account_daily_balances adb
+WHERE adb.business_date = '2026-03-31'
+GROUP BY adb.currency_code
+ORDER BY adb.currency_code;`);
+    await runButton.click();
+
+    const chart = page.getByRole("img", {
+      name: "Bar chart of ledger_total by currency_code",
+    });
+    await expect(chart).toBeVisible({ timeout: 20_000 });
+    await expect(chart.getByText("EUR", { exact: true })).toBeVisible();
+    await expect(chart.getByText("16400", { exact: true })).toBeVisible();
+    await expect(chart.getByText("RON", { exact: true })).toBeVisible();
+    await expect(chart.getByText("79300", { exact: true })).toBeVisible();
     await expectNoHorizontalOverflow(page);
   });
 

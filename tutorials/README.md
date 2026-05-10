@@ -8,6 +8,10 @@ Start with the shared contracts:
 
 - [Data Sources](data-sources.md): canonical synthetic schemas, grains, sensitive fields, and target marts.
 - [Curriculum Map](curriculum.md): dependency graph, areas, and artifacts.
+- [Learner Tasks](learner-tasks/README.md): focused 15-20 minute browser-first
+  exercise units with checkpoints and CTF-style endings.
+- [Looker Studio Recipes](recipes/r-looker-001-deposits-dashboard.md):
+  optional browser-driven report-building follow-ons after the core tutorials.
 - [Regulation Briefs](../regulations/README.md): regulatory context checklist for EU/Romania banking BI.
 
 ## Area A - Orientation And Source Data

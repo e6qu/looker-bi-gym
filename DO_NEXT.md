@@ -2,98 +2,32 @@
 
 ## Immediate Next Step
 
-Numbered implementation tasks 001 through 027 are implemented. PR #3, PR #4, PR #5, and PR #6 were merged. PR #6 merged on 2026-05-10 at `1da6272efb1c219bfcdf8981e4014af4b4a899e4`. Post-merge CI and GitHub Pages deployment for PR #6 passed, and the live Pages URL returned HTTP 200.
+Numbered implementation tasks 001 through 028 are implemented. PR #3, PR #4, PR #5, PR #6, and PR #7 were merged. PR #7 merged on 2026-05-10 at `954a128fd65b2b117b5fe23a3295c722cd6ae3f5`. Post-merge CI and GitHub Pages deployment for PR #7 passed, and the live Pages URL returned HTTP 200.
 
 Current implementation step:
 
-- Review PR #7: `https://github.com/e6qu/looker-bi-gym/pull/7`.
-- Task 028 is implemented on branch `organize-platform-components`; PR #7 is
-  open, mergeable, and CI is in progress for commit
-  `de20dea8717a803aa64d9b3be29a4dd48753a479`.
-- Organize the whole project into clear components and sections from the
-  learner's GitHub Pages website perspective.
-- Keep the frontend-only boundary explicit: no backend, no server session, no
-  API database, no analytics beacon, no server-side grading, no learner-data
-  upload.
-- Keep state explicit: browser `localStorage` plus same-site cookie for progress,
-  Settings JSON export implemented, Settings JSON import planned as a local
-  validate/preview/apply workflow.
+- Task 025 - Real Tutorial Instruction Packs is implemented on the open PR #8
+  branch.
+- Continue with implementation Task 026 - Challenge Grading Contract Expansion.
+- Read `README.md`, `docs/14-platform-components.md`, `PLAN.md`, `STATUS.md`,
+  `BUGS.md`, `tasks/025-real-tutorial-instruction-packs.md`, and
+  `tasks/026-challenge-grading-contract-expansion.md` first.
 - Keep terminology precise: `implementation tasks` are numbered repo work items
   under `tasks/*.md`; `learner tasks` are curriculum exercise units shown to
   learners.
 
-Task 028 concrete steps:
-
-1. Add a root `README.md` that orients contributors to the static website,
-   frontend-only boundary, component directories, and browser-local state.
-2. Add `docs/14-platform-components.md` as the component map covering:
-   - website sections;
-   - tutorials, learner tasks, challenges, recipes, quizzes, and exams;
-   - datasets, facts, sources, and regulations;
-   - app runtime modules;
-   - browser SQL and validation;
-   - `localStorage`, cookie mirror, JSON export, planned JSON import;
-   - verification gates.
-3. Link the component map from `docs/README.md`, `PLAN.md`, `AGENTS.md`, and
-   relevant continuity docs.
-4. Update `app/README.md` to clarify JSON export and planned browser-local JSON
-   import.
-5. Update Task 028, `STATUS.md`, `WHAT_WE_DID.md`, `DO_NEXT.md`, and `BUGS.md`.
-6. Run `bun run format:check` and `bun run test:content-qa`.
-7. Commit on `organize-platform-components`, push the branch, and open a PR.
-
-Task 028 implementation status:
-
-- `README.md` added.
-- `docs/14-platform-components.md` added.
-- `docs/README.md`, `app/README.md`, `PLAN.md`, `STATUS.md`, `WHAT_WE_DID.md`,
-  `DO_NEXT.md`, `BUGS.md`, `tasks/README.md`, and
-  `tasks/028-platform-component-organization.md` updated.
-- `bun run format`, `bun run format:check`, and `bun run test:content-qa`
-  passed.
-- Post-merge PR #6 CI and Pages deployment passed, and Pages returned HTTP 200.
-- Remaining: wait for PR #7 CI, merge after review, then verify post-merge CI
-  and Pages.
-
-Next implementation step after Task 028:
-
-1. Update or add learner-task content/schema for several complete 15-20 minute
-   learner tasks across multiple areas:
-   - BI fundamentals;
-   - BigQuery/SQL for BI;
-   - Looker Studio mechanics;
-   - data quality and controls;
-   - banking BI applications as realistic context, not legal/market theory.
-2. Each learner task must include:
-   - overall learning objective;
-   - prerequisites;
-   - input dataset;
-   - exact step-by-step learner actions;
-   - verification checkpoints;
-   - visualization/reporting action;
-   - optional recipe pointer;
-   - self-assessment;
-   - CTF-style end challenge.
-3. Start from general BI fundamentals, preferably using `deposits-seed/v0.1.0`
-   before leaning on lending/real-estate specifics.
-4. Add a useful in-app SQL result visualization path on task/challenge pages:
-   when a SQL result contains a dimension-like column and numeric column, allow a
-   simple deterministic table/bar-chart visualization. Avoid dummy or placeholder
-   visualization work.
-5. Add a separate quiz-bank format rather than overloading challenge manifests.
-   First quiz target: one mixed approximately 20-minute quiz, internally grouped
-   by `easy`, `medium`, and `hard`, with recommended learner-task IDs,
-   `source_facts`, answers, explanations, estimated seconds, and
-   self-assessment notes.
-6. Add a separate tutorials recipes section for Looker Studio recipes after the
-   browser-first tutorials. For PR #6, keep recipes manual/browser-driven and do
-   not introduce AWS CLI, Google CLI, BigQuery CLI, Python, Docker, or shell
-   upload scripts.
-7. Document exam mode as untimed independent challenge cards up to about 2 hours
-   each, selectable by the learner and self-assessed first. Defer full app exam
-   rendering unless it falls naturally out of the task/quiz data model.
-8. Cross-link learner-task docs with the platform component map so future
-   implementation does not confuse learner tasks with implementation tasks.
+1. Extend challenge contracts for broader grading beyond current SQL-result and
+   cloud-evidence checks.
+2. Add or complete browser-config and metric-contract validators where the
+   static app can grade artifacts deterministically.
+3. Add dataset-derived expected-answer generation where it improves reliability
+   without hiding expected outputs from committed fixtures.
+4. Expand known-bad fixture requirements beyond SQL trap challenges when a
+   common wrong artifact can be expressed.
+5. Keep learner-task, quiz-bank, recipe, and exam-card content QA green while
+   expanding the grading model.
+6. Preserve the new SQL result visualization behavior and Playwright
+   tutorial-to-challenge flow.
 
 Preservation and verification steps:
 

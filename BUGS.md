@@ -43,7 +43,10 @@ No known app bugs after the Bun-only tooling, typed config, formatting, rendered
   structure.
 - Fix plan: Continue PR #6 with the Task 025 implementation slice recorded in
   `DO_NEXT.md` and `tasks/025-real-tutorial-instruction-packs.md`.
-- Status: open; specification pinned on 2026-05-10.
+- Status: fixed by Task 025 on the open PR #8 branch. Added real learner-task
+  packs, separate quiz/exam content, a Looker Studio recipe, SQL result
+  visualization, content QA, and Playwright coverage; `bun run check` passed on
+  2026-05-10.
 
 ## Follow-Up Verification Gaps
 
@@ -55,6 +58,14 @@ No known app bugs after the Bun-only tooling, typed config, formatting, rendered
   commit `1da6272efb1c219bfcdf8981e4014af4b4a899e4`, and the deployed Pages URL
   returned HTTP 200 on 2026-05-10. A browser-rendered smoke pass of the new
   lending challenge route remains optional follow-up if needed.
+- Post-merge PR #7 GitHub Actions and GitHub Pages deployment passed for merge
+  commit `954a128fd65b2b117b5fe23a3295c722cd6ae3f5`, and the deployed Pages URL
+  returned HTTP 200 on 2026-05-10.
+- Task 025 full `bun run check` verification passed locally on 2026-05-10 after
+  the user approved Playwright/Vite local port binding. Initial focused
+  Playwright verification caught an incorrect expected EUR/RON latest-balance
+  split in the new learner-task docs; the expected values were corrected to
+  `EUR = 16400` and `RON = 79300`.
 - JSON import is planned but not implemented. Current Settings supports JSON
   export and reset only. Future import must stay browser-local and validate the
   `looker-bi-gym.progress-export.v1` structure before applying state.

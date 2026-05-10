@@ -1,6 +1,6 @@
 # 025 - Real Tutorial Instruction Packs
 
-Status: planned; next PR #6 continuation.
+Status: complete in PR #8 continuation.
 
 Terminology:
 
@@ -14,9 +14,8 @@ Convert the tutorial sequence from good lesson outlines into full reproducible
 instruction packs with exact commands, SQL, expected outputs, checks, and
 fact-backed explanations.
 
-Current agreed direction:
+Implemented direction:
 
-- Add this work to PR #6 before merge.
 - Build several complete 15-20 minute learner tasks across multiple areas, not
   only a schema or placeholder proof of concept.
 - Target learner: data analyst moving into BI and banking.
@@ -24,6 +23,24 @@ Current agreed direction:
   quality, and controls. Banking and real-estate context should make the work
   realistic without making legal theory or market expertise the first-pass
   learning goal.
+
+Implemented files:
+
+- `tutorials/learner-tasks/README.md`
+- `tutorials/learner-tasks/lt-bi-001-profile-dataset-grain.md`
+- `tutorials/learner-tasks/lt-bi-002-detect-fanout.md`
+- `tutorials/learner-tasks/lt-sql-003-month-end-serving-result.md`
+- `tutorials/learner-tasks/lt-looker-004-report-ready-data-source.md`
+- `tutorials/learner-tasks/lt-dq-005-reconcile-dashboard-controls.md`
+- `tutorials/recipes/r-looker-001-deposits-dashboard.md`
+- `quizzes/bi-foundations-mixed.yaml`
+- `exams/bi-foundations-exam.yaml`
+- SQL result bar-chart rendering in `app/src/App.tsx`
+- Recursive tutorial Markdown loading in `app/src/content.ts`
+- Content QA coverage for learner tasks, quiz banks, and exam packs in
+  `app/scripts/test-content-qa.ts`
+- Playwright coverage for a tutorial-to-challenge path and the SQL result chart
+  in `app/tests/rendered-ui.spec.ts`
 
 ## Deliverables
 
@@ -71,7 +88,7 @@ Current agreed direction:
 
 ## Tests
 
-- `bun run test:content-qa`
-- `bun run test:e2e`
-- `bun run test:fixtures`
-- `bun run check`
+- `bun run test:content-qa` passed on 2026-05-10.
+- `bun run test:e2e` passed on 2026-05-10 after approved local preview binding.
+- `bun run test:fixtures` passed on 2026-05-10.
+- `bun run check` passed on 2026-05-10 after approved local preview binding.
