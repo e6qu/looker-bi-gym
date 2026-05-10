@@ -1,5 +1,52 @@
 # What We Did
 
+## 2026-05-10 - Phase 4 Root Facts Corpus Migration
+
+- Verified PR #21 post-merge state:
+  - PR #21 was squash-merged at
+    `b65ccdd34578f914462430b29bc3dd124da9a397`.
+  - Main CI passed for `b65ccdd`.
+  - GitHub Pages workflow passed for `b65ccdd`.
+  - Live Pages URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200.
+- Confirmed no open PRs before starting the Phase 4 branch.
+- Created branch `phase-4-root-facts-corpus` from verified `main`.
+- Added `_development/tasks/036-root-facts-corpus-migration.md`.
+- Moved the authored fact corpus to root `facts/`.
+- Updated relative source links inside fact Markdown for the new root path.
+- Updated catalog generation to read facts from root `facts/`.
+- Updated content QA, flashcard fact checks, and `facts-db-app` to read root
+  `facts/`.
+- Updated app fact fallback UI and docs links away from the old nested docs
+  route.
+- Updated current documentation so root `facts/` is canonical, with fact-count
+  expansion left as a follow-up after the migration stabilizes.
+- Verification passed:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run test:facts-db`;
+  - `bun run facts:build-db`;
+  - `bun run test:content-qa`;
+  - `bun run test:flashcards`;
+  - `bun run test:quiz-facts-db`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:platform-boundary`;
+  - `bun run validate:static-links`;
+  - `bun run check` after approved local Vite preview binding, with all 12
+    Playwright tests passing;
+  - stale scan for old fact path/future-canonical wording in current docs, app,
+    source, and content paths;
+  - `git diff --check`.
+- Failed/blocked attempts recorded:
+  - first sandboxed `bun run check` reached Playwright but Vite preview could
+    not bind `127.0.0.1:4173`;
+  - the Task 036 formal Claude CLI review used non-TUI
+    `claude --print --permission-mode plan --output-format text ...`, produced
+    no output for over 40 seconds, and was terminated.
+- Committed `93e8a4f Move fact corpus to root facts`.
+- Pushed branch `phase-4-root-facts-corpus` and opened PR #22:
+  `https://github.com/e6qu/looker-bi-gym/pull/22`.
+
 ## 2026-05-10 - Phase 3 Facts DB App Workspace
 
 - Verified PR #20 post-merge state:
@@ -65,7 +112,8 @@
 - Confirmed no open PRs before starting the Phase 2 branch.
 - Created branch `phase-2-content-schema-catalogs` from updated `main`.
 - Added `_development/tasks/034-content-schema-and-generated-catalogs.md`.
-- Added typed frontmatter to tutorial Markdown and `docs/facts/` Markdown.
+- Added typed frontmatter to tutorial Markdown and the then-current fact
+  Markdown path.
 - Moved flashcard authoring from `app/src/flashcards.ts` into
   `flashcards/{topic}/` Markdown.
 - Moved quiz and exam authoring from YAML into:

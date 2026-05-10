@@ -20,8 +20,8 @@ inputs stay in CSV/JSON files, and progress stays on the learner's device in
 - `challenges/`: challenge manifests, schema, authoring guide, and solution
   fixtures.
 - `datasets/`: deterministic synthetic datasets and dataset metadata.
-- Current fact corpus path: `docs/facts/`.
-- Future canonical fact path after migration: root `facts/`.
+- `facts/`: canonical source-backed fact corpus for tutorials, questions, and
+  fact graph tooling.
 - `sources/`: source cards and permitted source snapshots backing the fact
   corpus.
 - `regulations/`: technical regulatory-context briefs for training context, not

@@ -105,8 +105,8 @@ advice.
 - Statement: GDPR Article 5 requires personal data to be collected for
   specified, explicit, and legitimate purposes and not further processed in an
   incompatible way.
-- Source: [`SRC-GDPR-ELI-2016-679`](../../sources/law/eu-gdpr.md#src-gdpr-eli-2016-679);
-  [`SRC-GDPR-EC-MINIMISATION`](../../sources/law/eu-gdpr.md#src-gdpr-ec-minimisation).
+- Source: [`SRC-GDPR-ELI-2016-679`](../sources/law/eu-gdpr.md#src-gdpr-eli-2016-679);
+  [`SRC-GDPR-EC-MINIMISATION`](../sources/law/eu-gdpr.md#src-gdpr-ec-minimisation).
 - Source quote: "specified, explicit and legitimate purposes".
 - Derived implication: BI exercises should ask learners to state the dashboard
   purpose before choosing identifiers, dimensions, and retention evidence.
@@ -117,7 +117,7 @@ advice.
 
 - Statement: GDPR Article 5 includes an accuracy principle requiring personal
   data to be accurate and kept up to date where needed.
-- Source: [`SRC-GDPR-ELI-2016-679`](../../sources/law/eu-gdpr.md#src-gdpr-eli-2016-679).
+- Source: [`SRC-GDPR-ELI-2016-679`](../sources/law/eu-gdpr.md#src-gdpr-eli-2016-679).
 - Source quote: "accurate and, where necessary, kept up to date".
 - Derived implication: Banking BI lessons should include freshness and
   reconciliation checks before presenting learner outputs as usable evidence.
@@ -128,7 +128,7 @@ advice.
 
 - Statement: GDPR Article 5 includes storage limitation: personal data should
   not permit identification for longer than necessary for the processing purpose.
-- Source: [`SRC-GDPR-ELI-2016-679`](../../sources/law/eu-gdpr.md#src-gdpr-eli-2016-679).
+- Source: [`SRC-GDPR-ELI-2016-679`](../sources/law/eu-gdpr.md#src-gdpr-eli-2016-679).
 - Source quote: "no longer than is necessary".
 - Derived implication: Progress exports and challenge evidence should avoid
   retaining raw answers, credentials, or pasted cloud evidence.
@@ -140,7 +140,7 @@ advice.
 - Statement: GDPR Article 5 includes integrity and confidentiality through
   security against unauthorised processing and accidental loss, destruction, or
   damage.
-- Source: [`SRC-GDPR-ELI-2016-679`](../../sources/law/eu-gdpr.md#src-gdpr-eli-2016-679).
+- Source: [`SRC-GDPR-ELI-2016-679`](../sources/law/eu-gdpr.md#src-gdpr-eli-2016-679).
 - Source quote: "integrity and confidentiality".
 - Derived implication: Tutorials should frame access control, field exclusion,
   and local-only evidence as part of BI delivery quality, not as optional polish.
@@ -151,7 +151,7 @@ advice.
 
 - Statement: GDPR Article 32 requires security measures appropriate to the risk,
   including technical and organisational measures.
-- Source: [`SRC-GDPR-ELI-2016-679`](../../sources/law/eu-gdpr.md#src-gdpr-eli-2016-679).
+- Source: [`SRC-GDPR-ELI-2016-679`](../sources/law/eu-gdpr.md#src-gdpr-eli-2016-679).
 - Source quote: "appropriate technical and organisational measures".
 - Derived implication: Cloud-applied BI challenges should ask for access,
   dependency, and credential-boundary evidence without collecting credentials in
@@ -164,7 +164,7 @@ advice.
 - Statement: GDPR Article 9 gives special-category personal data separate
   handling rules, including data revealing racial or ethnic origin, political
   opinions, religious beliefs, health, or biometric identifiers.
-- Source: [`SRC-GDPR-ELI-2016-679`](../../sources/law/eu-gdpr.md#src-gdpr-eli-2016-679).
+- Source: [`SRC-GDPR-ELI-2016-679`](../sources/law/eu-gdpr.md#src-gdpr-eli-2016-679).
 - Source quote: "special categories of personal data".
 - Derived implication: Synthetic banking datasets should not introduce
   unnecessary protected-category fields for BI practice scenarios.

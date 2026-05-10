@@ -101,7 +101,7 @@ privacy, compliance, or model-risk advice.
 
 - Statement: DORA establishes ICT-related incident management, classification,
   and reporting obligations for financial entities.
-- Source: [`SRC-DORA-ELI-2022-2554`](../../sources/law/eu-dora.md#src-dora-eli-2022-2554).
+- Source: [`SRC-DORA-ELI-2022-2554`](../sources/law/eu-dora.md#src-dora-eli-2022-2554).
 - Source quote: "ICT-related incidents".
 - Derived implication: BI operations tutorials should include incident notes,
   broken-refresh evidence, severity labels, and recovery checkpoints.
@@ -112,7 +112,7 @@ privacy, compliance, or model-risk advice.
 
 - Statement: DORA includes backup, restoration, and recovery requirements for
   ICT systems and data supporting financial-entity operations.
-- Source: [`SRC-DORA-ELI-2022-2554`](../../sources/law/eu-dora.md#src-dora-eli-2022-2554).
+- Source: [`SRC-DORA-ELI-2022-2554`](../sources/law/eu-dora.md#src-dora-eli-2022-2554).
 - Source quote: "backup policies and procedures".
 - Derived implication: Tutorial datasets and expected results should be
   reproducible from committed sources rather than live external state.
@@ -123,7 +123,7 @@ privacy, compliance, or model-risk advice.
 
 - Statement: DORA requires financial entities to maintain information related to
   contractual arrangements for ICT services supplied by third-party providers.
-- Source: [`SRC-DORA-ELI-2022-2554`](../../sources/law/eu-dora.md#src-dora-eli-2022-2554).
+- Source: [`SRC-DORA-ELI-2022-2554`](../sources/law/eu-dora.md#src-dora-eli-2022-2554).
 - Source quote: "ICT third-party service providers".
 - Derived implication: Cloud-applied BI tutorials should make learners document
   external platform dependencies, data sources, owners, and failure contacts.
@@ -135,8 +135,8 @@ privacy, compliance, or model-risk advice.
 - Statement: EBA reporting framework materials are organised by framework
   versions and reference dates, with associated templates, DPM artifacts, and
   validation rules.
-- Source: [`SRC-EBA-REPORTING-FRAMEWORKS`](../../sources/regulators/eba-reporting-frameworks.md#src-eba-reporting-frameworks);
-  [`SRC-EBA-VALIDATION-RULES-PACKAGES`](../../sources/regulators/eba-reporting-frameworks.md#src-eba-validation-rules-packages).
+- Source: [`SRC-EBA-REPORTING-FRAMEWORKS`](../sources/regulators/eba-reporting-frameworks.md#src-eba-reporting-frameworks);
+  [`SRC-EBA-VALIDATION-RULES-PACKAGES`](../sources/regulators/eba-reporting-frameworks.md#src-eba-validation-rules-packages).
 - Source quote: "framework version".
 - Derived implication: Facts, datasets, and challenge answers that model
   regulatory reporting need explicit version and reference-date fields.
@@ -147,7 +147,7 @@ privacy, compliance, or model-risk advice.
 
 - Statement: EBA reporting framework documentation is structured around
   reporting requirements applicable for each reference date.
-- Source: [`SRC-EBA-REPORTING-FRAMEWORKS`](../../sources/regulators/eba-reporting-frameworks.md#src-eba-reporting-frameworks).
+- Source: [`SRC-EBA-REPORTING-FRAMEWORKS`](../sources/regulators/eba-reporting-frameworks.md#src-eba-reporting-frameworks).
 - Source quote: "each reference date".
 - Derived implication: Banking BI challenges should distinguish transaction
   dates, reporting reference dates, and dashboard refresh dates.
@@ -158,7 +158,7 @@ privacy, compliance, or model-risk advice.
 
 - Statement: EBA validation rules packages are part of the technical package for
   reporting requirements and are updated through release-specific packages.
-- Source: [`SRC-EBA-VALIDATION-RULES-PACKAGES`](../../sources/regulators/eba-reporting-frameworks.md#src-eba-validation-rules-packages).
+- Source: [`SRC-EBA-VALIDATION-RULES-PACKAGES`](../sources/regulators/eba-reporting-frameworks.md#src-eba-validation-rules-packages).
 - Source quote: "integral part of the EBA technical package".
 - Derived implication: Future regulatory-reporting labs should store source
   package version, validation rule version, and expected failing rows locally.

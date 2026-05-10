@@ -27,7 +27,7 @@ function requireDefined<TValue>(
 }
 
 async function readFactIds(): Promise<ReadonlySet<string>> {
-  const factsDir = join(repoRoot, "docs", "facts");
+  const factsDir = join(repoRoot, "facts");
   const factFiles = (await readdir(factsDir)).filter((fileName) =>
     fileName.endsWith(".md"),
   );

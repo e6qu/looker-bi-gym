@@ -11,9 +11,8 @@ Start from these references:
 - [Solution fixtures](solution-fixtures/) for release-ready known-good and known-bad validator coverage.
 - [Deposits seed dataset](../datasets/deposits-seed/v0.1.0/README.md) and [dataset metadata](../datasets/deposits-seed/v0.1.0/metadata.json).
 - [Tutorial data-source contract](../tutorials/data-sources.md) and [tutorial index](../tutorials/README.md).
-- [Source fact register](../docs/facts/README.md) for current fact IDs used by
-  tutorial steps and quiz questions. The planned canonical location is root
-  `facts/` after the fact-corpus migration phase.
+- [Source fact register](../facts/README.md) for current fact IDs used by
+  tutorial steps and quiz questions.
 - [Regulation briefs](../regulations/README.md) for EU/Romanian context notes.
 
 These materials are technical training content, not legal, regulatory, accounting, privacy, compliance, or model-risk advice.
@@ -109,8 +108,7 @@ For required tools, include `version` or a version range when tool behavior matt
 
 Use `source_facts` for every released question and every `lesson_steps` entry.
 Fact IDs must exist in the current
-[source fact register](../docs/facts/README.md). After the fact-corpus
-migration phase, the canonical path will be root `facts/`.
+[source fact register](../facts/README.md).
 
 Good fact-backed prompts ask for a concrete source consequence:
 

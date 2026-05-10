@@ -20,8 +20,8 @@ model-risk advice.
 
 - Statement: FDIC deposit insurance coverage is $250,000 per depositor, per
   FDIC-insured bank, for each account ownership category.
-- Source: [`SRC-FDIC-DEPOSIT-INSURANCE-WORKS`](../../sources/regulators/fdic-deposit-insurance.md#src-fdic-deposit-insurance-works);
-  [`SRC-FDIC-INSURANCE-AT-A-GLANCE`](../../sources/regulators/fdic-deposit-insurance.md#src-fdic-insurance-at-a-glance).
+- Source: [`SRC-FDIC-DEPOSIT-INSURANCE-WORKS`](../sources/regulators/fdic-deposit-insurance.md#src-fdic-deposit-insurance-works);
+  [`SRC-FDIC-INSURANCE-AT-A-GLANCE`](../sources/regulators/fdic-deposit-insurance.md#src-fdic-insurance-at-a-glance).
 - Source quote: "$250,000 per depositor".
 - Derived implication: US banking BI coverage examples need bank and ownership
   category grain, not just account balance grain.
@@ -33,7 +33,7 @@ model-risk advice.
 - Statement: FDIC coverage uses account ownership categories such as single,
   joint, retirement, trust, employee benefit plan, business, and government
   accounts.
-- Source: [`SRC-FDIC-DEPOSIT-INSURANCE-WORKS`](../../sources/regulators/fdic-deposit-insurance.md#src-fdic-deposit-insurance-works).
+- Source: [`SRC-FDIC-DEPOSIT-INSURANCE-WORKS`](../sources/regulators/fdic-deposit-insurance.md#src-fdic-deposit-insurance-works).
 - Source quote: "Ownership categories include".
 - Derived implication: US deposit datasets need ownership-category fields before
   coverage calculations can be compared with EU depositor-bank ceilings.
@@ -44,7 +44,7 @@ model-risk advice.
 
 - Statement: FDIC guidance says deposits in the same ownership category at the
   same bank are added together when determining insurance coverage.
-- Source: [`SRC-FDIC-DEPOSIT-INSURANCE-WORKS`](../../sources/regulators/fdic-deposit-insurance.md#src-fdic-deposit-insurance-works).
+- Source: [`SRC-FDIC-DEPOSIT-INSURANCE-WORKS`](../sources/regulators/fdic-deposit-insurance.md#src-fdic-deposit-insurance-works).
 - Source quote: "added together".
 - Derived implication: BI questions should test whether learners aggregate by
   depositor, bank, and ownership category before applying the $250,000 limit.
@@ -55,7 +55,7 @@ model-risk advice.
 
 - Statement: FDIC coverage is automatic when a deposit account is opened at an
   FDIC-insured bank or financial institution.
-- Source: [`SRC-FDIC-INSURANCE-AT-A-GLANCE`](../../sources/regulators/fdic-deposit-insurance.md#src-fdic-insurance-at-a-glance).
+- Source: [`SRC-FDIC-INSURANCE-AT-A-GLANCE`](../sources/regulators/fdic-deposit-insurance.md#src-fdic-insurance-at-a-glance).
 - Source quote: "Coverage is automatic".
 - Derived implication: Tutorials should focus on coverage calculation grain and
   exclusions rather than asking learners to model an application process.
@@ -66,7 +66,7 @@ model-risk advice.
 - Statement: FDIC guidance excludes investments such as stocks, bonds, mutual
   funds, annuities, municipal securities, safe deposit boxes, and US Treasury
   securities from FDIC insurance.
-- Source: [`SRC-FDIC-INSURANCE-AT-A-GLANCE`](../../sources/regulators/fdic-deposit-insurance.md#src-fdic-insurance-at-a-glance).
+- Source: [`SRC-FDIC-INSURANCE-AT-A-GLANCE`](../sources/regulators/fdic-deposit-insurance.md#src-fdic-insurance-at-a-glance).
 - Source quote: "not insured by the FDIC".
 - Derived implication: US banking BI challenge datasets should distinguish
   insured deposit products from investment products before coverage metrics.

@@ -11,8 +11,7 @@
       "FACT-EUROSTAT-HPI-MARKET-PRICE-INDEX",
       "FACT-EUROSTAT-HPI-ROMANIA-HISTORICAL-PRESENT",
     ],
-  "recommended_learner_tasks":
-    ["#/docs/facts/real-estate-collateral-romania.md"],
+  "recommended_learner_tasks": ["#/facts/fact-eurostat-hpi-market-price-index"],
   "tags": ["flashcard"],
 }
 ---

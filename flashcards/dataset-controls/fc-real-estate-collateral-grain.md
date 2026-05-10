@@ -7,8 +7,7 @@
   "version": "0.1.0",
   "topic": "dataset-controls",
   "source_facts": ["FACT-REAL-ESTATE-COLLATERAL-GRAIN"],
-  "recommended_learner_tasks":
-    ["#/docs/facts/real-estate-collateral-romania.md"],
+  "recommended_learner_tasks": ["#/facts/fact-real-estate-collateral-grain"],
   "tags": ["flashcard"],
 }
 ---

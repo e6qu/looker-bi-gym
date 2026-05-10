@@ -231,10 +231,7 @@ function readExamPacks(): ExamPack[] {
 }
 
 async function readFactRegister(): Promise<FactRegister> {
-  const factPaths = await listFiles(
-    join(repoRoot, "docs", "facts"),
-    new Set([".md"]),
-  );
+  const factPaths = await listFiles(join(repoRoot, "facts"), new Set([".md"]));
   const factIds = new Set<string>();
 
   for (const factPath of factPaths) {
