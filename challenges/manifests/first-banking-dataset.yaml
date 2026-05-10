@@ -94,12 +94,12 @@ questions:
       - id: branch_month
         label: One row per branch per month.
     answer: account_day
-    explanation: FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION is why the profile must first preserve the account-date snapshot grain before totals are trusted.
+    explanation: The profile must first preserve the account-date snapshot grain before any totals are trusted.
     source_facts:
       - FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION
   - id: q_profile_output_minimisation
     type: select-all
-    prompt: Which raw identifiers should stay out of the one-row profile result under FACT-GDPR-DATA-MINIMISATION?
+    prompt: Which raw identifiers should stay out of the one-row profile result unless a specific reporting purpose requires them?
     options:
       - id: account_id
         label: account_id
@@ -113,7 +113,7 @@ questions:
       - account_id
       - customer_id
       - synthetic_iban
-    explanation: FACT-GDPR-DATA-MINIMISATION makes branch_count acceptable for the profile, while unnecessary account/customer/IBAN identifiers stay out.
+    explanation: The branch count supports the profile objective, while unnecessary account, customer, and IBAN identifiers should stay out.
     source_facts:
       - FACT-GDPR-PERSONAL-DATA
       - FACT-GDPR-DATA-MINIMISATION

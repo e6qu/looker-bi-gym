@@ -41,6 +41,7 @@
     "dream:claude": "bun run --filter @looker-bi-gym/app dream:claude",
     "test:platform-boundary": "bun run --filter @looker-bi-gym/app test:platform-boundary",
     "test:e2e": "bun run --filter @looker-bi-gym/app test:e2e",
+    "verify:deployed-surface": "bun run --filter @looker-bi-gym/app verify:deployed-surface",
     "test:validators": "bun run --filter @looker-bi-gym/app test:validators",
     "validate:datasets": "bun run --filter @looker-bi-gym/app validate:datasets",
     "validate:manifests": "bun run --filter @looker-bi-gym/app validate:manifests",

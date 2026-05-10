@@ -138,30 +138,6 @@ function assertNoRows(database: Database, sql: string, message: string): void {
   assert.equal(row?.count, 0, message);
 }
 
-function assertExplanationMentionsCitedFacts(
-  quizBanks: readonly QuizBank[],
-): void {
-  const missingMentions: string[] = [];
-
-  for (const quizBank of quizBanks) {
-    for (const difficulty of difficulties) {
-      for (const question of quizBank.questions[difficulty]) {
-        for (const factId of question.source_facts) {
-          if (!question.explanation.includes(factId)) {
-            missingMentions.push(`${quizBank.id}:${question.id}:${factId}`);
-          }
-        }
-      }
-    }
-  }
-
-  assert.deepEqual(
-    missingMentions,
-    [],
-    `Quiz explanations must mention each cited fact:\n${missingMentions.join("\n")}`,
-  );
-}
-
 function assertNumericAnswersAppearInCitedFactText(
   database: Database,
   quizBanks: readonly QuizBank[],
@@ -252,7 +228,6 @@ assertNoRows(
   "Every quiz question fact must participate in the fact graph.",
 );
 
-assertExplanationMentionsCitedFacts(quizBanks);
 assertNumericAnswersAppearInCitedFactText(database, quizBanks);
 
 database.close();

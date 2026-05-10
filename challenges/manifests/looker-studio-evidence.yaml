@@ -7,7 +7,7 @@ difficulty: intermediate
 estimated_minutes: 35
 prerequisites:
   - first-banking-dataset
-business_scenario: Practice a local evidence-pattern simulation for a browser-based synthetic BI workflow without storing credentials in the app. A live Looker Studio report is optional and must be reviewed by the learner outside this static app.
+business_scenario: Practice a local evidence-pattern simulation for a browser-based synthetic BI workflow without storing credentials. A live Looker Studio report is optional and must be reviewed in the governed Google interface.
 regulatory_context:
   - BNR
   - GDPR
@@ -72,13 +72,13 @@ checks:
         - datastudio.google.com
   - id: manual_dashboard_confirmation
     type: checklist-confirmed
-    description: Learner self-attests that the dashboard visibly labels source freshness and excludes sensitive fields if they completed the optional report-building recipe.
+    description: Self-attestation that the dashboard visibly labels source freshness and excludes sensitive fields if the optional report-building recipe is completed.
     target: dashboard_checklist
     expected: true
 questions:
   - id: q_credentials
     type: multiple-choice
-    prompt: Under FACT-LOOKER-STUDIO-CREDENTIALS, what should this static app store for the cloud evidence task?
+    prompt: What should be stored as evidence for an optional Looker Studio report review?
     options:
       - id: no_credentials
         label: No cloud credentials or tokens.
@@ -87,21 +87,21 @@ questions:
       - id: oauth_token
         label: A pasted OAuth access token.
     answer: no_credentials
-    explanation: FACT-LOOKER-STUDIO-CREDENTIALS belongs in Looker Studio data-source configuration, while the static app collects only local evidence text.
+    explanation: Credentials belong in Looker Studio data-source configuration. Review evidence should be limited to inspectable text, output, URLs, or checklist confirmations.
     source_facts:
       - FACT-LOOKER-STUDIO-CREDENTIALS
   - id: q_calculated_field_scope
     type: multiple-choice
-    prompt: According to FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE, where is reusable dashboard metric logic safer than a single-chart field?
+    prompt: Where is reusable dashboard metric logic safer than a single-chart field?
     options:
       - id: data_source_or_upstream
         label: In the shared data source or upstream serving view.
       - id: single_chart
         label: Only inside one chart-specific calculated field.
       - id: browser_cookie
-        label: In a browser cookie mirrored by the app.
+        label: In a browser cookie attached to report viewers.
     answer: data_source_or_upstream
-    explanation: FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE distinguishes reusable data-source fields from chart-only fields; governed metrics should not hide in one chart.
+    explanation: Governed metrics should be reusable through serving SQL or data-source fields rather than hidden in one chart.
     source_facts:
       - FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE
       - FACT-BIGQUERY-VIEW-SCOPE

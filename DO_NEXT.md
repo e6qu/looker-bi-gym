@@ -11,9 +11,9 @@
    gh pr list --state open --limit 10
    ```
 
-3. Continue Task 040 on branch `phase-7-learning-surface-verification`; no PR
-   is open yet.
-4. If updating this branch, run:
+3. Open the Task 040 PR from branch `phase-7-learning-surface-verification`
+   after confirming there is still no open PR.
+4. If updating this branch before PR creation, rerun:
 
    ```sh
    bun run content:generate
@@ -29,14 +29,17 @@
    bun run test:platform-boundary
    bun run validate:static-links
    bun run check
+   DEPLOYED_BASE_URL=http://127.0.0.1:4174/ bun run verify:deployed-surface
    git diff --check
    ```
 
 5. Before opening the next PR, confirm there is still no open PR. Before
    merging it, fetch `origin/main`, rebase the branch on `origin/main`, verify
    CI is passing, and then squash-merge.
-6. After merge, verify main CI, GitHub Pages deployment, and the live Pages URL
-   before moving on.
+6. After merge, verify main CI, GitHub Pages deployment, the live Pages URL,
+   and `bun run verify:deployed-surface` against the live URL before moving on.
+7. Next implementation task after Task 040 is
+   `_development/tasks/041-curriculum-completeness-audit.md`.
 
 ## Review Requirement
 
@@ -52,8 +55,9 @@ Task 039 tutorial/challenge expansion batch 1 is merged, deployed, and
 main-verified, but not Claude-reviewed. It adds `LT-DQ-006 - Define A Ratio
 Null Contract`.
 
-Task 040 learning surface verification is only set up. No Phase 7 browser
-walkthrough has been implemented yet.
+Task 040 learning surface verification is implemented first pass locally but
+not PR-reviewed, deployed, or Claude-reviewed. Local preview verification
+passed; live deployed verification must be rerun after merge and Pages deploy.
 
 `PLAN.md` Phase 9 now defines the required gate for any claim that tutorials,
 questions, exams, or flashcards are complete, comprehensive, reality-verified,
@@ -65,12 +69,10 @@ The required command shape remains:
 claude --print --permission-mode plan --output-format text "<phase-specific review prompt>"
 ```
 
-The latest small non-TUI Claude CLI check succeeded, but the Task 034 formal
-review, Task 035 formal review, Task 036 formal review, and Task 037 formal
-review hung with no output and were terminated. The Task 038 formal review also
-hung with no output and was terminated. The Task 039 formal review also hung
-with no output and was terminated. Do not mark Phase 2, Phase 3, Phase 4, Phase
-5, or Phase 6 complete until a completed formal review is available and
+The latest Task 040 formal Claude CLI review also hung with no output and was
+killed. Codex CLI non-TUI mode works via `codex exec`; Claude CLI formal review
+does not currently complete. Do not mark Phase 2, Phase 3, Phase 4, Phase 5,
+Phase 6, or Phase 7 complete until a completed formal review is available and
 recorded.
 
 ## PR Discipline

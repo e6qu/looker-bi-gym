@@ -119,7 +119,11 @@ Good fact-backed prompts ask for a concrete source consequence:
 - what BigQuery logical views can and cannot do.
 
 Avoid prompts that only ask what the project prefers unless the answer is also
-implemented by the app or tied to a source fact.
+implemented by the app or tied to a source fact. Learner-facing prompts,
+options, explanations, and lesson steps must not display raw `FACT-*` IDs,
+`LT-*` IDs, repository paths, implementation tasks, or app-internal storage
+details. Put those references in metadata and keep the visible text framed as
+BI, Looker Studio, BigQuery, and limited regulatory practice.
 
 Each lesson step needs:
 
@@ -258,7 +262,7 @@ mode: quiz
 difficulty: intro
 estimated_minutes: 5
 prerequisites: []
-business_scenario: Confirm a project rule before opening a banking BI challenge.
+business_scenario: Confirm the synthetic-data boundary before opening a banking BI challenge.
 regulatory_context:
   - GDPR
 required_tools: none
@@ -287,7 +291,7 @@ questions:
       - id: production_extract
         label: A masked production extract.
     answer: synthetic_only
-    explanation: FACT-GDPR-PERSONAL-DATA is one source-backed reason to avoid real banking data in challenge files.
+    explanation: Real or re-identifiable banking records do not belong in synthetic BI challenge files.
     source_facts:
       - FACT-GDPR-PERSONAL-DATA
 lesson_steps:

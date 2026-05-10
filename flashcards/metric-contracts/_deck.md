@@ -23,7 +23,7 @@
         "url": "https://docs.ankiweb.net/getting-started.html#shared-decks",
         "reviewedAt": "2026-05-10",
         "coverageNote": "The Anki manual frames shared decks as supplements and recommends creating your own deck for complex subjects.",
-        "incorporationNote": "Supports keeping project cards fact-backed, explanatory, and locally authored instead of importing opaque third-party decks.",
+        "incorporationNote": "Supports keeping cards fact-backed, explanatory, and locally authored instead of importing opaque third-party decks.",
       },
     ],
 }

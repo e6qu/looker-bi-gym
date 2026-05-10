@@ -36,6 +36,7 @@
     "dream:claude": "bun run scripts/llm-question-workbench.ts dream claude",
     "test:platform-boundary": "bun run scripts/test-platform-boundary.ts",
     "test:e2e": "bun run scripts/test-e2e.ts",
+    "verify:deployed-surface": "bun run scripts/verify-deployed-learning-surface.ts",
     "test:validators": "bun run scripts/test-validators.ts",
     "validate:datasets": "bun run scripts/validate-datasets.ts",
     "validate:manifests": "bun run scripts/validate-challenge-manifests.ts",

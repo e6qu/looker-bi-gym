@@ -30,8 +30,8 @@ Training boundary: use synthetic training data only. These cards are technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
 
-Source file in the repository:
-`exams/bi-foundations/bi-foundations-exam.md`.
+Use the interactive exam surface to pick a card and compare your written work
+against the deterministic expected outputs.
 
 ## Card 1 - Grain And Fanout Review
 

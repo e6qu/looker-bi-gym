@@ -7,6 +7,7 @@ const responsiveRoutes = [
   "/#/home",
   "/#/docs/README.md",
   "/#/tutorials/learner-tasks/lt-bi-001-profile-dataset-grain.md",
+  "/#/tutorials/learner-tasks/lt-dq-006-ratio-null-contract.md",
   "/#/tutorials/quiz-bank.md",
   "/#/tutorials/exam-mode.md",
   "/#/workbench/deposits-seed/v0.1.0",
@@ -737,7 +738,7 @@ GROUP BY business_date, currency_code;`);
       .check();
     await page
       .getByRole("radio", {
-        name: "FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION",
+        name: "Declare row grain before aggregating balances.",
       })
       .check();
 

@@ -1,7 +1,7 @@
 ---
 {
   "id": "fc-real-estate-synthetic-only",
-  "title": "Why do practical collateral exercises in this repo use synthetic property rows?",
+  "title": "Why do practical collateral exercises use synthetic property rows?",
   "content_type": "flashcard",
   "status": "published",
   "version": "0.1.0",
@@ -16,12 +16,12 @@
 }
 ---
 
-# Why do practical collateral exercises in this repo use synthetic property rows?
+# Why do practical collateral exercises use synthetic property rows?
 
 ## Front
 
-Why do practical collateral exercises in this repo use synthetic property rows?
+Why do practical collateral exercises use synthetic property rows?
 
 ## Back
 
-The training app avoids real banking and property data while preserving realistic grains, dates, and controls for BI practice.
+The exercises avoid real banking and property data while preserving realistic grains, dates, and controls for BI practice.

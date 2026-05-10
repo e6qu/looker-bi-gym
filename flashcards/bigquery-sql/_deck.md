@@ -15,7 +15,7 @@
         "url": "https://ankiweb.net/shared/decks?search=BigQuery",
         "reviewedAt": "2026-05-10",
         "coverageNote": "Indexed web search did not expose a directly reusable BigQuery AnkiWeb deck with clear source and license metadata.",
-        "incorporationNote": "No Anki deck content was copied; BigQuery cards are authored from official Google Cloud-backed repo facts.",
+        "incorporationNote": "No Anki deck content was copied; BigQuery cards are authored from official Google Cloud-backed source facts.",
       },
       {
         "sourceKind": "brainscape",
@@ -31,7 +31,7 @@
         "url": "https://quizlet.com/307466959/bigquery-flash-cards/",
         "reviewedAt": "2026-05-10",
         "coverageNote": "Coverage signal for BigQuery basics, datasets/tables/jobs, IAM, query cost, and SQL usage.",
-        "incorporationNote": "Used as a topic-coverage signal only; new cards use official BigQuery facts already in this repo.",
+        "incorporationNote": "Used as a topic-coverage signal only; new cards use official BigQuery source facts.",
       },
       {
         "sourceKind": "quizlet",

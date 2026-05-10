@@ -118,6 +118,9 @@ Review gates before this phase can be called complete:
   known-bad trap coverage where relevant.
 - Keep the first pass mechanics-first for a data analyst moving into BI and
   banking.
+- Learner-facing questions, flashcards, challenge prompts, and exam cards must
+  ask about the curriculum domain, not about the repository, app internals,
+  training meta-policy, or what "the learner" should do.
 
 ## Phase 7 - App Learning Surface Verification
 
@@ -172,9 +175,20 @@ Required tutorial standard:
 - Every tutorial must include objective, prerequisites, exact steps,
   checkpoints, expected outputs, visualization/reporting action,
   self-assessment, common failure modes, and an end challenge.
+- Every tutorial must start from a real, verified setup state: browser-only
+  where possible; otherwise exact cross-platform setup, exact tool versions or
+  acceptable version ranges, exact account/interface prerequisites, and a
+  recovery path for common failures.
 - If a tutorial requires a file, the page must provide exact browser download
   or `curl` instructions, expected file name/location, row counts or checksums
   where practical, and a recovery path for common download/import failures.
+- Every referenced dataset, route, file, external page, report recipe, and
+  command must be verified to exist at review time. Nonexistent downloads,
+  placeholder files, vague "open the report from tutorial 01" dependencies, or
+  unverified setup steps are blockers, not minor docs issues.
+- Every SQL, Looker Studio, or BigQuery action must include the expected result:
+  row counts, field names, totals, screenshots/checkpoints where appropriate,
+  and an explanation of what to do when the result differs.
 - Early learner paths must remain browser-first and must not require Google
   Cloud CLI, BigQuery CLI, Python, Docker, credentials, learner-data upload, or
   real banking data.
@@ -190,6 +204,10 @@ Required question, exam, and flashcard standard:
 - Flashcards must cover definitions, traps, platform mechanics, dataset
   controls, source-backed facts, and troubleshooting patterns without copying
   third-party deck text.
+- Assessment items must be scenario-driven and useful for BI work. Avoid
+  circular or meta questions about the course, repository, generated catalogs,
+  storage implementation, source IDs, task IDs, or "what learners should do
+  about learners."
 - Counts are minimum scale checks, not quality proof: at least 500 flashcards,
   200 quiz questions, and 30 exam cards must be reviewed against the competency
   matrix before any completeness claim.
