@@ -50,3 +50,11 @@ Automate validation, static build, and GitHub Pages deployment.
 - Temporary negative manifest check passed: changing `first-banking-dataset` to `dataset_version: v9.9.9` made `bun validate:manifests` fail with a missing dataset reference error, then the manifest was restored and validation passed.
 - `GITHUB_PAGES_BASE=/looker-bi-gym/ bun build` and `GITHUB_PAGES_BASE=/looker-bi-gym/ bun validate:static-links` passed.
 - Live GitHub Pages URL and post-deploy deep-link verification remain pending until these workflows run in GitHub.
+- Follow-up on 2026-05-10: PR #11 was merged and post-merge main CI run
+  `25629510931` plus Pages deployment run `25629510924` passed for merge commit
+  `bd0be4505958f2e33706169dc7816096c7abc617`; the live Pages URL returned
+  HTTP 200.
+- Follow-up branch `ci-ui-warning-checks` expands CI with explicit format,
+  derived SQL expectation, browser-config runtime, fact database, LLM workbench,
+  and platform-boundary steps. Local full `bun run check` passed with the
+  expanded gate on 2026-05-10 after approved Playwright/Vite port binding.

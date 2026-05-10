@@ -83,6 +83,13 @@ No known app bugs after the Bun-only tooling, typed config, formatting, rendered
 - During the PR #10 manual review, `LT-DQ-005` expected 13 snapshot rows and 6
   latest rows, but the committed lending CSV has 11 snapshot rows and 5 latest
   rows. The follow-up branch corrects the learner-facing checkpoint and table.
+- Post-merge PR #11 GitHub Actions and GitHub Pages deployment passed for merge
+  commit `bd0be4505958f2e33706169dc7816096c7abc617`, and the deployed Pages URL
+  returned HTTP 200 on 2026-05-10.
+- The `ci-ui-warning-checks` branch adds a Playwright diagnostics guard for
+  browser console warnings, browser console errors, page errors, and failed
+  network requests. Local `bun run test:e2e` and full `bun run check` passed on
+  2026-05-10, and no such diagnostics were found in the covered rendered flows.
 - JSON import is planned but not implemented. Current Settings supports JSON
   export and reset only. Future import must stay browser-local and validate the
   `looker-bi-gym.progress-export.v1` structure before applying state.

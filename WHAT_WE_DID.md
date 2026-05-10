@@ -2,6 +2,56 @@
 
 ## 2026-05-10
 
+- After the user merged PR #11, confirmed it merged at
+  `bd0be4505958f2e33706169dc7816096c7abc617`, switched to `main`, pulled the
+  merge, and created branch `ci-ui-warning-checks`.
+- Checked post-merge PR #11 automation:
+  - main-branch CI run `25629510931` passed for merge commit
+    `bd0be4505958f2e33706169dc7816096c7abc617`;
+  - main-branch Pages deployment run `25629510924` passed for the same commit;
+  - `curl -I https://e6qu.github.io/looker-bi-gym/` returned HTTP 200.
+- Started a CI and browser-diagnostics hardening pass for Tasks 012 and 013.
+- Expanded `.github/workflows/ci.yml` so GitHub Actions explicitly runs:
+  - `bun run format:check`;
+  - `bun run test:derived-expectations`;
+  - `bun run test:browser-config`;
+  - `bun run test:facts-db`;
+  - `bun run test:llm-workbench`;
+  - `bun run test:platform-boundary`.
+- Added root package script aliases for `test:derived-expectations` and
+  `test:browser-config`.
+- Updated the app `check` script so `bun run check` starts with
+  `bun run format:check`.
+- Expanded the platform-boundary test so it enforces the new format,
+  facts-database, and LLM-workbench check coverage in the app test pyramid.
+- Updated Playwright rendered UI tests to collect and fail on:
+  - browser console warnings;
+  - browser console errors;
+  - uncaught page errors;
+  - failed network requests.
+- Updated the browser QA and test-pyramid docs to document the diagnostics gate.
+- Initial `bun run lint` caught unnecessary `async` on the new Playwright hooks;
+  the hooks were corrected and lint then passed.
+- Verification run:
+  - `bun run format`;
+  - `bun run format:check`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:e2e` after approved local preview binding;
+  - `bun run test:platform-boundary`;
+  - `bun run check` after approved local preview binding.
+- The first sandboxed full `bun run check` rerun after continuity-doc updates
+  reached Playwright and then failed because Vite preview could not bind
+  `127.0.0.1:4173` (`listen EPERM`). The approved rerun passed.
+- Full `bun run check` passed, including all 9 Playwright rendered UI tests with
+  the new browser diagnostics guard. No browser console warnings, browser
+  console errors, page errors, or failed network requests were found in the
+  covered rendered flows.
+- Committed the hardening pass as
+  `4a2376d Strengthen CI and browser diagnostics`, pushed branch
+  `ci-ui-warning-checks`, and opened PR #12:
+  `https://github.com/e6qu/looker-bi-gym/pull/12`.
+
 - Merged PR #9 with `gh pr merge 9 --squash --delete-branch`, fast-forwarded
   local `main`, and created branch `task026-grading-contracts`.
 - Implemented Task 026 - Challenge Grading Contract Expansion.

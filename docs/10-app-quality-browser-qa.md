@@ -40,3 +40,16 @@ Unexpected network activity:
 - Requests to Google Cloud, Looker Studio, or banking systems from the static app.
 
 Learner answers and generated flags should stay in browser `localStorage`.
+
+## Browser Diagnostics Check
+
+Automated Playwright rendered UI tests fail on:
+
+- browser console warnings;
+- browser console errors;
+- uncaught page errors;
+- failed network requests.
+
+Manual browser QA should treat those diagnostics the same way. If DevTools shows
+a warning or error, either fix it in the current task or document why it is an
+expected browser/package limitation before release.

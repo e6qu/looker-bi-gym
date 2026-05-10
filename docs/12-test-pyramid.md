@@ -29,6 +29,12 @@ The lower and middle layers run deterministic checks without a browser:
   against their pinned datasets and verifies manifest row-count and aggregate
   expectations match the dataset-derived values.
 - `bun run test:content-qa` covers required-tool declarations, synthetic-data boundaries, regulatory links, disclaimers, and Markdown links.
+- `bun run test:facts-db` verifies source snapshots, fact IDs, and fact/source
+  links through the local SQLite facts database.
+- `bun run test:llm-workbench` verifies that manual LLM question and dreaming
+  prompts are assembled from local, source-backed context.
+- `bun run test:platform-boundary` keeps the frontend-only no-backend boundary
+  enforced in source and documentation.
 
 ## Rendered User Flows
 
@@ -41,7 +47,14 @@ The lower and middle layers run deterministic checks without a browser:
 - Fill browser-config metric contract JSON, answer contract questions, and
   verify local completion without backend calls.
 - Check responsive routes, rendered UI structure, nonblank screenshots, no horizontal overflow, and control text fit.
+- Fail on browser console warnings, browser console errors, page errors, or
+  failed network requests during rendered UI flows.
 
 ## Full Gate
 
-`bun run check` is the merge gate. It runs validation, strict lint, TypeScript checks, domain tests, contract tests, architecture-boundary tests, rendered user-flow tests, production build, and static-link validation.
+`bun run check` is the merge gate. It runs formatting checks, validation, strict lint, TypeScript checks, domain tests, contract tests, architecture-boundary tests, rendered user-flow tests, production build, and static-link validation.
+
+GitHub Actions CI mirrors this gate with explicit steps for format, manifest and
+dataset validation, lint, typecheck, domain/runtime tests, fixture and derived
+expectation tests, content/fact/workbench/platform tests, rendered UI tests,
+production build, and static-link validation.

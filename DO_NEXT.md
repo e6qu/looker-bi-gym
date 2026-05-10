@@ -3,18 +3,25 @@
 ## Immediate Next Step
 
 Numbered implementation tasks 001 through 028 are implemented. PR #3 through
-PR #10 were merged. PR #10 merged on 2026-05-10 at merge commit
-`cf8a6bd6b6bb4353bf2f5a15a59e0a4c031d5d59`.
+PR #11 were merged. PR #11 merged on 2026-05-10 at merge commit
+`bd0be4505958f2e33706169dc7816096c7abc617`.
 
 Current implementation step:
 
-- Task 026 - Challenge Grading Contract Expansion is merged and post-merge
-  verified.
-- PR #11 (`https://github.com/e6qu/looker-bi-gym/pull/11`) is open from branch
-  `record-pr10-postmerge`. It records the PR #10 post-merge automation,
-  deployed UI screenshot pass, learner-flow review, subagent feedback, tutorial
-  objective/outcome cleanup, and content polish fixes found during that review.
-- PR #11 CI run `25629294229` passed on 2026-05-10.
+- PR #11 (`https://github.com/e6qu/looker-bi-gym/pull/11`) is merged and
+  post-merge verified.
+- Main CI run `25629510931` passed for merge commit
+  `bd0be4505958f2e33706169dc7816096c7abc617`.
+- Main GitHub Pages deployment run `25629510924` passed for the same merge
+  commit, and `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200.
+- Current branch: `ci-ui-warning-checks`.
+- Current PR: `https://github.com/e6qu/looker-bi-gym/pull/12`.
+- Current branch purpose: strengthen CI and UI warning/error detection by
+  adding explicit CI steps for format, derived SQL expectations, browser-config,
+  fact database, LLM workbench, and platform-boundary checks; make
+  `bun run check` include `format:check`; and make rendered Playwright tests
+  fail on browser console warnings/errors, page errors, and failed network
+  requests.
 - Read `README.md`, `docs/14-platform-components.md`, `PLAN.md`, `STATUS.md`,
   `BUGS.md`, `tasks/025-real-tutorial-instruction-packs.md`, and
   `tasks/026-challenge-grading-contract-expansion.md` first.
@@ -22,14 +29,15 @@ Current implementation step:
   under `tasks/*.md`; `learner tasks` are curriculum exercise units shown to
   learners.
 
-1. Leave PR #11 for the user to merge.
-2. After PR #11 is merged, verify the GitHub Pages deployment and then choose
-   the next implementation task. Good candidates are a browser-local JSON import
-   flow for Settings, richer browser-config/metric-contract challenges, or
-   rendering quiz/exam YAML directly in the app instead of maintaining separate
-   learner-facing Markdown summaries.
-3. Keep the ignored screenshot artifacts under
-   `screenshots/post-merge-pr10/` local only; do not commit them.
+1. Let PR #12 GitHub Actions run; do not merge. The user will merge after CI is
+   done.
+2. After PR #12 is merged, verify main CI, GitHub Pages deployment, and the
+   live GitHub Pages app again.
+3. Good next implementation candidates after this hardening PR are a
+   browser-local JSON import flow for Settings, richer browser-config or
+   metric-contract challenges, or rendering quiz/exam YAML directly in the app
+   instead of maintaining separate learner-facing Markdown summaries.
+4. Keep ignored screenshot artifacts local only; do not commit them.
 
 Preservation and verification steps:
 
@@ -37,7 +45,7 @@ Preservation and verification steps:
 - Keep rebuildable generated outputs ignored; regenerate them from committed source instead of committing them.
 - Keep DuckDB-WASM runtime files supplied by dependencies/local build output, not committed binary artifacts.
 - Keep config files in `app/configs/` as TypeScript and covered by `tsconfig.node.json`.
-- Keep `bun run format:check`, `bun run lint`, `bun run typecheck`, and `bun run check` clean before merging. Full `bun run check` passed locally for the `record-pr10-postmerge` branch on 2026-05-10 after rerunning with local Vite preview port binding allowed for Playwright.
+- Keep `bun run format:check`, `bun run lint`, `bun run typecheck`, and `bun run check` clean before merging. Full `bun run check` passed locally for the `ci-ui-warning-checks` branch on 2026-05-10 after rerunning with local Vite preview port binding allowed for Playwright.
 - Preserve the frontend-only boundary: no backend calls, server session, API database, analytics beacon, or learner-data upload.
 - Preserve browser-local progress behavior: `localStorage` plus same-site cookie fallback, with reset clearing both.
 - Preserve Settings export behavior and implement future import as browser-local JSON validation/preview/apply only.
@@ -50,7 +58,7 @@ Preservation and verification steps:
   `bun run test:derived-expectations`.
 - Preserve the Task 016 export boundary: progress export must stay local, user-controlled, and free of credentials, raw answers, pasted cloud evidence, sensitive synthetic field names, real banking data, storage keys, and hidden app internals.
 - Preserve the Task 017 content QA boundary: `bun run test:content-qa` must keep required tools, regulatory-context links, disclaimer language, synthetic-data warnings, dataset synthetic-only notes, and internal Markdown links covered.
-- Preserve the rendered UI boundary: `bun run test:e2e` must keep the real built app, responsive layout, challenge pages, DuckDB-WASM SQL execution, cloud-evidence controls, Settings export metadata, and overflow checks covered.
+- Preserve the rendered UI boundary: `bun run test:e2e` must keep the real built app, responsive layout, challenge pages, DuckDB-WASM SQL execution, cloud-evidence controls, Settings export metadata, overflow checks, and browser diagnostics checks for warnings/errors/page failures/failed requests covered.
 - Preserve the Task 018 release boundary: `CHANGELOG.md`, `VERSIONING.md`, app/content version display, challenge versions, fixture tests, content QA, rendered UI tests, and generated-artifact review must stay aligned.
 - Preserve the Task 019 fact-backed instruction boundary: source facts belong in `docs/facts/README.md`, and future regulation/product/browser-storage/BI-tooling questions should cite fact IDs.
 - Preserve the Task 020-022 instruction boundary: released manifests need rendered `lesson_steps`; released questions and steps need known `source_facts`; released tutorial Markdown needs Source Facts, Steps, Checkpoints, and Common Failure Modes sections.
