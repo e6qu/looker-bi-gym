@@ -103,11 +103,22 @@ assert.equal(
 
 const cardIds = new Set<string>();
 const factIds = await readFactIds();
+const totalCardCount = flashcardDecks.reduce(
+  (count, deck) => count + deck.cards.length,
+  0,
+);
 
-assert.ok(flashcardDecks.length >= 6, "Expected at least six topic decks.");
+assert.ok(flashcardDecks.length >= 10, "Expected at least ten topic decks.");
+assert.ok(
+  totalCardCount >= 40,
+  "Expected at least 40 flashcards across the topic decks.",
+);
 
 for (const deck of flashcardDecks) {
-  assert.ok(deck.cards.length >= 2, `${deck.id} must have at least two cards.`);
+  assert.ok(
+    deck.cards.length >= 4,
+    `${deck.id} must have at least four cards.`,
+  );
 
   for (const deckCard of deck.cards) {
     assert.ok(!cardIds.has(deckCard.id), `Duplicate card ID ${deckCard.id}.`);

@@ -68,8 +68,9 @@ Resetting browser progress clears `localStorage` and the same-site progress cook
 ## Flashcards
 
 The `#/flashcards` route provides topic-separated review decks for BI
-fundamentals, BigQuery/SQL, Looker Studio, governance, banking context, and
-dataset-control traps.
+fundamentals, BigQuery/SQL, Looker Studio, governance, metric contracts,
+performance and operations, privacy/security, banking context, deterministic
+dataset traps, and real-estate collateral context.
 
 Flashcard review state is separate from challenge progress and uses
 `localStorage` key `looker-bi-gym.flashcards.v1`. Reviews record explicit

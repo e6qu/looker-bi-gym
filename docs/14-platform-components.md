@@ -129,8 +129,9 @@ Flashcards:
 - State: browser-local timestamped review state with one JSON export/import
   file.
 - Boundary: no backend, no learner-data upload, and no real banking data.
-- First decks: BI fundamentals, BigQuery/SQL, Looker Studio,
-  controls/governance, banking context, and dataset controls.
+- Current decks: BI fundamentals, BigQuery/SQL, Looker Studio,
+  controls/governance, banking context, dataset controls, metric contracts,
+  performance/operations, privacy/security, and real-estate collateral.
 - Verification: `bun run test:flashcards` validates scheduler transitions, deck
   structure, source fact IDs, and JSON import behavior; Playwright covers a real
   review flow, export preview, and validate/preview/apply import flow.

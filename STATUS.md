@@ -4,27 +4,26 @@ Last updated: 2026-05-10
 
 ## Current State
 
-Planning, documentation, task tracking, continuity protocol, the static app skeleton, Markdown content navigation, challenge manifest validation/catalog generation, the first synthetic deposits dataset, dataset versioning policy, a changed-output dataset simulation, the quiz challenge runtime, the browser SQL runtime, reusable browser validators, local flags, browser-local progress storage with same-site cookie fallback, reset controls, Settings JSON progress export/import, the first three browser-verifiable challenges, the first cloud-evidence challenge pattern, the challenge authoring guide, CI validation, GitHub Pages deployment workflows, the app quality/accessibility pass, solution fixture golden tests, dataset-derived SQL expectation checks, local progress export/completion evidence, the content QA/regulatory disclaimer pass, release versioning/change log, Bun-only repository tooling, typed TypeScript config files under `app/configs/`, Prettier formatting gates, a documented/enforced test pyramid, Playwright rendered user-flow tests, a source-fact register for fact-backed tutorials and quiz questions, rendered step-by-step challenge lesson steps, fact-backed challenge questions, rewritten step-by-step tutorial Markdown, content QA enforcement for source facts, area-organized banking BI facts, downloaded BigQuery/Looker Studio official documentation snapshots, a local SQLite facts database builder/test, deterministic deposits plus lending month-end dataset packs, the platform component map, real learner-task packs, the first separate quiz bank, the first exam-card pack, a Looker Studio recipe, SQL result bar-chart visualization, browser-config JSON grading, and the first metric-contract grading challenge are in place. PR #3 through PR #15 were merged. Tasks 001 through 031 are complete except for Safari second-browser smoke verification from Task 013, which requires the user to explicitly enable Safari remote automation or perform a manual Safari pass. PR #15 merged on 2026-05-10 at merge commit `46c98327b2a474bc2631816d7e2ca7fa65bd2fad`; main CI and GitHub Pages deployment passed, and the live Pages URL returned HTTP 200 with `last-modified: Sun, 10 May 2026 15:18:13 GMT`. Git discipline requires `.gitignore` maintenance, no committed rebuildable artifacts, no committed WASM runtime artifacts, and a commit after each completed task. A root `Makefile` exposes the repository checks, formatting, tests, flashcards checks, question workbench, and manual dreaming targets through `make`.
+Planning, documentation, task tracking, continuity protocol, the static app skeleton, Markdown content navigation, challenge manifest validation/catalog generation, the first synthetic deposits dataset, dataset versioning policy, a changed-output dataset simulation, the quiz challenge runtime, the browser SQL runtime, reusable browser validators, local flags, browser-local progress storage with same-site cookie fallback, reset controls, Settings JSON progress export/import, the first browser-local flashcards and spaced-repetition route, the first three browser-verifiable challenges, the first cloud-evidence challenge pattern, the challenge authoring guide, CI validation, GitHub Pages deployment workflows, the app quality/accessibility pass, solution fixture golden tests, dataset-derived SQL expectation checks, local progress export/completion evidence, the content QA/regulatory disclaimer pass, release versioning/change log, Bun-only repository tooling, typed TypeScript config files under `app/configs/`, Prettier formatting gates, a documented/enforced test pyramid, Playwright rendered user-flow tests, a source-fact register for fact-backed tutorials and quiz questions, rendered step-by-step challenge lesson steps, fact-backed challenge questions, rewritten step-by-step tutorial Markdown, content QA enforcement for source facts, area-organized banking BI facts, downloaded BigQuery/Looker Studio official documentation snapshots, a local SQLite facts database builder/test, deterministic deposits plus lending month-end dataset packs, the platform component map, real learner-task packs, the first separate quiz bank, the first exam-card pack, a Looker Studio recipe, SQL result bar-chart visualization, browser-config JSON grading, and the first metric-contract grading challenge are in place. PR #3 through PR #16 were merged. Tasks 001 through 031 are complete except for Safari second-browser smoke verification from Task 013, which requires the user to explicitly enable Safari remote automation or perform a manual Safari pass. PR #16 merged on 2026-05-10 at merge commit `6bcf0ba64f9985b98db69ddc178b310707af661c`; main CI and GitHub Pages deployment passed, and the live Pages URL returned HTTP 200 with `last-modified: Sun, 10 May 2026 15:43:11 GMT`. Git discipline requires `.gitignore` maintenance, no committed rebuildable artifacts, no committed WASM runtime artifacts, and a commit after each completed task. A root `Makefile` exposes the repository checks, formatting, tests, flashcards checks, question workbench, and manual dreaming targets through `make`.
 
 ## Active Task
 
-Active implementation task: Task 029 - Flashcards And Spaced Repetition on
-branch `flashcards-spaced-repetition`. PR #15
-(`https://github.com/e6qu/looker-bi-gym/pull/15`) is merged and post-merge
-verified. Current branch adds the first `#/flashcards` browser slice: six
-topic-separated decks, 12 source-fact-backed cards, a typed SM-2-inspired
-scheduler, separate browser-local flashcard state, JSON export/import, unit
-checks, Playwright coverage for validate/preview/apply import, CI coverage, and
-continuity docs. Focused
-verification has passed for `bun run typecheck`, `bun run lint`,
-`bun run test:flashcards`, `bun run test:platform-boundary`, and
-`bun run test:e2e` after approved local Playwright/Vite preview port binding.
-Full `bun run check` passed on 2026-05-10 after approved local Playwright/Vite
-preview port binding, including all 12 rendered UI tests, production build, and
-static-link validation. `git diff --check` passed, and a type-safety scan found
-no `any`, `as any`, broad `object` type, `as object`, `@ts-ignore`, or
-`@ts-expect-error` usage in app sources/scripts/tests/configs except the
-literal ESLint rule name that forbids explicit `any`.
+Active implementation task: Task 032 - Expanded Flashcard Coverage on branch
+`expand-flashcard-coverage`. PR #16
+(`https://github.com/e6qu/looker-bi-gym/pull/16`) is merged and post-merge
+verified. Current branch expands the flashcard corpus from the first starter
+slice to ten topic decks and 40 cards, with stronger automated coverage for
+minimum deck count, total card count, per-deck card count, source-fact IDs, and
+recommended in-app routes. Focused verification has passed for
+`bun run typecheck`, `bun run lint`, `bun run test:flashcards`,
+`bun run test:platform-boundary`, and `bun run test:e2e` after approved local
+Playwright/Vite preview port binding. Full `bun run check` passed on
+2026-05-10 after approved local Playwright/Vite preview port binding, including
+all 12 rendered UI tests, production build, and static-link validation.
+`git diff --check` passed, and a type-safety scan found no `any`, `as any`,
+broad `object` type, `as object`, `@ts-ignore`, or `@ts-expect-error` usage in
+app sources/scripts/tests/configs except the literal ESLint rule name that
+forbids explicit `any`.
 
 ## Current Decisions
 

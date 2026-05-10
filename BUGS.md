@@ -124,6 +124,13 @@ No known app bugs after the Bun-only tooling, typed config, formatting, rendered
   across six decks. Future work should expand coverage across all released
   tutorials, quiz/exam areas, and challenge traps; this is an expansion item,
   not a known broken behavior.
+- Post-merge PR #16 GitHub Actions and GitHub Pages deployment passed for merge
+  commit `6bcf0ba64f9985b98db69ddc178b310707af661c`, and the deployed Pages URL
+  returned HTTP 200 on 2026-05-10.
+- Task 032 is in progress to resolve the flashcard expansion follow-up by
+  broadening the corpus to ten decks and 40 fact-backed cards. Local focused
+  checks and full `bun run check` passed on 2026-05-10 after approved local
+  Playwright/Vite preview port binding.
 
 ## Template
 

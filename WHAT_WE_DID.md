@@ -315,6 +315,54 @@
 - Reviewed ignored/generated outputs after verification. `app/dist/`,
   `app/src/generated/`, `screenshots/`, and `var/` remain ignored and were not
   staged.
+- Committed the Task 029 implementation as
+  `7813274 Add flashcards spaced repetition`, pushed branch
+  `flashcards-spaced-repetition`, and opened PR #16:
+  `https://github.com/e6qu/looker-bi-gym/pull/16`.
+- Confirmed PR #16 CI `Validate, Test, And Build` passed in 2m06s.
+- Merged PR #16 with squash merge and fast-forwarded local `main`.
+- Confirmed PR #16 merged on 2026-05-10 at merge commit
+  `6bcf0ba64f9985b98db69ddc178b310707af661c`.
+- Confirmed main CI run `25632812238` passed for merge commit
+  `6bcf0ba64f9985b98db69ddc178b310707af661c`.
+- Confirmed main GitHub Pages deployment run `25632812244` passed for the same
+  merge commit.
+- Confirmed `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
+  `last-modified: Sun, 10 May 2026 15:43:11 GMT`.
+- Created branch `expand-flashcard-coverage` from updated `main`; no work was
+  pushed directly to `main`.
+- Started Task 032 - Expanded Flashcard Coverage.
+- Expanded `app/src/flashcards.ts` from six starter decks / 12 cards to ten
+  decks / 40 cards covering BI fundamentals, BigQuery/SQL, Looker Studio,
+  controls/governance, banking context, dataset controls, metric contracts,
+  performance/operations, privacy/security, and real-estate collateral context.
+- Tightened `bun run test:flashcards` so it now requires at least ten decks, at
+  least 40 cards total, at least four cards per deck, unique card IDs, known
+  source facts, and in-app recommended route links.
+- Added [tasks/032-expanded-flashcard-coverage.md](tasks/032-expanded-flashcard-coverage.md)
+  and updated docs to describe the expanded flashcard corpus.
+- Final local verification for Task 032:
+  - `bun run format`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:flashcards`;
+  - `bun run test:platform-boundary`;
+  - `bun run test:e2e` after approved local Playwright/Vite preview port
+    binding;
+  - `bun run check` after approved local Playwright/Vite preview port binding;
+  - `git diff --check`;
+  - type-safety scan across `app/src`, `app/scripts`, `app/tests`, and
+    `app/configs`.
+- `bun run check` passed with all 12 Playwright rendered UI tests, production
+  build, static-link validation, flashcard tests, fact DB checks, quiz facts DB
+  verification, content QA, platform-boundary checks, typecheck, lint, and
+  format check.
+- The type-safety scan found no `any`, `as any`, broad `object` type,
+  `as object`, `@ts-ignore`, or `@ts-expect-error` usage in app code; the only
+  match was the ESLint rule name `@typescript-eslint/no-explicit-any`.
+- Reviewed ignored/generated outputs after verification. `app/dist/`,
+  `app/src/generated/`, `screenshots/`, and `var/` remain ignored and were not
+  staged.
 
 - Merged PR #9 with `gh pr merge 9 --squash --delete-branch`, fast-forwarded
   local `main`, and created branch `task026-grading-contracts`.
