@@ -61,6 +61,9 @@ No known app bugs after the Bun-only tooling, typed config, formatting, rendered
 - Post-merge PR #7 GitHub Actions and GitHub Pages deployment passed for merge
   commit `954a128fd65b2b117b5fe23a3295c722cd6ae3f5`, and the deployed Pages URL
   returned HTTP 200 on 2026-05-10.
+- Post-merge PR #8 GitHub Actions and GitHub Pages deployment passed for merge
+  commit `5db7663ee0d76be809cb383a4dfeb4390eb5ed6f`, and the deployed Pages URL
+  returned HTTP 200 on 2026-05-10.
 - Task 025 full `bun run check` verification passed locally on 2026-05-10 after
   the user approved Playwright/Vite local port binding. Initial focused
   Playwright verification caught an incorrect expected EUR/RON latest-balance

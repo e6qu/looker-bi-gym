@@ -2,6 +2,17 @@
 
 ## 2026-05-10
 
+- After the user merged PR #8, confirmed it merged at
+  `5db7663ee0d76be809cb383a4dfeb4390eb5ed6f`, switched to `main`, and pulled
+  the merge.
+- Checked post-merge PR #8 automation:
+  - main-branch CI run `25628017632` passed for merge commit
+    `5db7663ee0d76be809cb383a4dfeb4390eb5ed6f`;
+  - main-branch Pages deployment run `25628017630` passed for the same commit;
+  - `curl -I https://e6qu.github.io/looker-bi-gym/` returned HTTP 200.
+- Created branch `record-pr8-postmerge` to record the post-merge baseline without
+  pushing to `main`.
+
 - Continued on open PR #8 branch `record-pr7-postmerge` after PR #7 merged and
   implemented Task 025 - Real Tutorial Instruction Packs.
 - Added area-grouped learner-task packs:
