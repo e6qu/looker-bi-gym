@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --config configs/vite.config.ts --host 127.0.0.1",
     "build": "bun run validate:manifests && bun run validate:datasets && bun run typecheck && vite build --config configs/vite.config.ts",
-    "check": "bun run format:check && bun run validate:manifests && bun run lint && bun run typecheck && bun run validate:datasets && bun run test:quiz && bun run test:sql && bun run test:fixtures && bun run test:derived-expectations && bun run test:cloud-evidence && bun run test:browser-config && bun run test:progress-export && bun run test:content-qa && bun run test:facts-db && bun run test:llm-workbench && bun run test:platform-boundary && bun run test:validators && bun run test:e2e && vite build --config configs/vite.config.ts && bun run validate:static-links",
+    "check": "bun run format:check && bun run validate:manifests && bun run lint && bun run typecheck && bun run validate:datasets && bun run test:quiz && bun run test:sql && bun run test:fixtures && bun run test:derived-expectations && bun run test:cloud-evidence && bun run test:browser-config && bun run test:progress-export && bun run test:quiz-facts-db && bun run test:content-qa && bun run test:facts-db && bun run test:llm-workbench && bun run test:platform-boundary && bun run test:validators && bun run test:e2e && vite build --config configs/vite.config.ts && bun run validate:static-links",
     "lint": "bun run validate:manifests && eslint --config configs/eslint.config.ts . --max-warnings 0",
     "format": "prettier --write .. --ignore-path ../.prettierignore",
     "format:check": "prettier --check .. --ignore-path ../.prettierignore",
@@ -17,6 +17,7 @@
     "test:cloud-evidence": "bun run scripts/test-cloud-evidence.ts",
     "test:browser-config": "bun run scripts/test-browser-config.ts",
     "test:progress-export": "bun run scripts/test-progress-export.ts",
+    "test:quiz-facts-db": "bun run scripts/test-quiz-facts-db.ts",
     "test:content-qa": "bun run scripts/test-content-qa.ts",
     "test:facts-db": "bun run scripts/test-fact-database.ts",
     "test:llm-workbench": "bun run scripts/test-llm-question-workbench.ts",
@@ -43,7 +44,8 @@
     "@duckdb/duckdb-wasm": "1.29.1-dev132.0",
     "marked": "18.0.3",
     "react": "19.2.5",
-    "react-dom": "19.2.5"
+    "react-dom": "19.2.5",
+    "yaml": "2.8.4"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
@@ -61,7 +63,6 @@
     "prettier": "3.8.3",
     "typescript": "6.0.3",
     "typescript-eslint": "8.59.2",
-    "vite": "8.0.10",
-    "yaml": "2.8.4"
+    "vite": "8.0.10"
   }
 }

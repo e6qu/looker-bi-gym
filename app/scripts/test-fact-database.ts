@@ -31,6 +31,11 @@ assert.ok(
   summary.factLinkCount >= summary.factCount,
   "Expected at least one related-fact edge per fact on average.",
 );
+assert.ok(
+  summary.factTripleCount >=
+    summary.factSourceCount * 2 + summary.factLinkCount,
+  "Expected triples to include source and fact graph edges.",
+);
 
 const database = new Database(outputPath, { readonly: true });
 const sourceCount = database
@@ -63,6 +68,20 @@ const fullBigQueryDocumentCount = database
        AND path = 'sources/platforms/bigquery/full/views-intro.md'`,
   )
   .get();
+const factSourceTripleCount = database
+  .query<CountRow, []>(
+    `SELECT COUNT(*) AS count
+     FROM triples
+     WHERE predicate = 'SUPPORTED_BY_SOURCE'`,
+  )
+  .get();
+const factLinkTripleCount = database
+  .query<CountRow, []>(
+    `SELECT COUNT(*) AS count
+     FROM triples
+     WHERE predicate = 'RELATED_TO_FACT'`,
+  )
+  .get();
 
 database.close();
 
@@ -71,3 +90,5 @@ assert.equal(factCount?.count, summary.factCount);
 assert.equal(unresolvedSourceCount?.count, 0);
 assert.equal(gdprSourceCount?.count, 1);
 assert.equal(fullBigQueryDocumentCount?.count, 1);
+assert.equal(factSourceTripleCount?.count, summary.factSourceCount);
+assert.equal(factLinkTripleCount?.count, summary.factLinkCount);

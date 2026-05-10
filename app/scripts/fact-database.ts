@@ -51,6 +51,7 @@ export type FactDatabaseBuildSummary = {
   readonly factCount: number;
   readonly factSourceCount: number;
   readonly factLinkCount: number;
+  readonly factTripleCount: number;
 };
 
 const markdownExtensions = new Set([".md"]);
@@ -118,12 +119,29 @@ function collectSections(
 }
 
 function extractField(body: string, label: string): string | null {
-  const escapedLabel = label.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
-  const pattern = new RegExp(`^- ${escapedLabel}:\\s*(.+)$`, "mu");
-  const match = body.match(pattern);
-  const value = match?.[1]?.trim();
+  const fieldPrefix = `- ${label}:`;
+  const lines = body.split(/\r?\n/u);
+  const fieldIndex = lines.findIndex((line) => line.startsWith(fieldPrefix));
 
-  return value === undefined || value.length === 0 ? null : value;
+  if (fieldIndex < 0) {
+    return null;
+  }
+
+  const values = [lines[fieldIndex]?.slice(fieldPrefix.length).trim() ?? ""];
+
+  for (const line of lines.slice(fieldIndex + 1)) {
+    if (line.startsWith("- ")) {
+      break;
+    }
+
+    if (line.startsWith("  ")) {
+      values.push(line.trim());
+    }
+  }
+
+  const value = values.filter((entry) => entry.length > 0).join(" ");
+
+  return value.length === 0 ? null : value;
 }
 
 function extractIds(source: string, pattern: RegExp): string[] {
@@ -501,6 +519,14 @@ export async function buildFactDatabase(
       PRIMARY KEY (fact_id, related_fact_id)
     )`,
   );
+  database.run(
+    `CREATE TABLE triples (
+      subject TEXT NOT NULL,
+      predicate TEXT NOT NULL,
+      object TEXT NOT NULL,
+      PRIMARY KEY (subject, predicate, object)
+    )`,
+  );
 
   const insertSource = database.query(
     `INSERT INTO sources (
@@ -539,6 +565,9 @@ export async function buildFactDatabase(
   );
   const insertFactLink = database.query(
     `INSERT INTO fact_links (fact_id, related_fact_id) VALUES (?, ?)`,
+  );
+  const insertTriple = database.query(
+    `INSERT OR IGNORE INTO triples (subject, predicate, object) VALUES (?, ?, ?)`,
   );
   const insertAll = database.transaction(() => {
     for (const source of sources) {
@@ -579,13 +608,24 @@ export async function buildFactDatabase(
     for (const [factId, sourceIds] of factSourceLinks.entries()) {
       for (const sourceId of sourceIds) {
         insertFactSource.run(factId, sourceId);
+        insertTriple.run(factId, "SUPPORTED_BY_SOURCE", sourceId);
+        insertTriple.run(sourceId, "SUPPORTS_FACT", factId);
       }
     }
 
     for (const fact of facts) {
       for (const relatedFactId of fact.relatedFacts) {
         insertFactLink.run(fact.id, relatedFactId);
+        insertTriple.run(fact.id, "RELATED_TO_FACT", relatedFactId);
       }
+    }
+
+    for (const sourceDocument of sourceDocuments) {
+      insertTriple.run(
+        sourceDocument.sourceId,
+        "HAS_SOURCE_DOCUMENT",
+        sourceDocument.path,
+      );
     }
   });
 
@@ -602,5 +642,9 @@ export async function buildFactDatabase(
       (total, fact) => total + fact.relatedFacts.length,
       0,
     ),
+    factTripleCount:
+      countLinks(factSourceLinks) * 2 +
+      facts.reduce((total, fact) => total + fact.relatedFacts.length, 0) +
+      sourceDocuments.length,
   };
 }

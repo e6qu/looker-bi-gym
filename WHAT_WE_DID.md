@@ -51,6 +51,99 @@
   `4a2376d Strengthen CI and browser diagnostics`, pushed branch
   `ci-ui-warning-checks`, and opened PR #12:
   `https://github.com/e6qu/looker-bi-gym/pull/12`.
+- After the user merged PR #12, confirmed it merged at
+  `3edd840e1c749a453f2834d8684211069dceae1d` on 2026-05-10.
+- Fast-forwarded local `main` to PR #12.
+- Checked post-merge PR #12 automation:
+  - main-branch CI run `25629932439` passed for merge commit
+    `3edd840e1c749a453f2834d8684211069dceae1d`;
+  - main-branch Pages deployment run `25629932430` passed for the same commit;
+  - `curl -I https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
+    `last-modified: Sun, 10 May 2026 13:28:52 GMT`.
+- Created branch `record-pr12-postmerge` to record post-merge status and the
+  next implementation phase options without pushing to `main`.
+- Continued PR #13 with the next learning-surface phase.
+- Added typed browser YAML loading for quiz banks and exam packs in
+  `app/src/learningContent.ts`.
+- Rendered quiz-bank YAML as an interactive static-app route at `#/quiz`, with
+  difficulty groups, local answer checking, source-evidence links, recommended
+  learner-task links, and self-assessment notes.
+- Rendered exam-card YAML as `#/exam`, with independent self-assessed practical
+  cards and deterministic expected outputs.
+- Added `app/src/factCatalog.ts` and `#/facts` as a browser-local fact graph
+  view parsed from committed fact Markdown.
+- Changed source-evidence UI so learners see human-readable fact statements and
+  areas; raw `FACT-*` IDs remain as metadata/link targets instead of the main
+  visible label.
+- Added synthetic learner-dataset source cards and facts for deterministic quiz
+  controls:
+  - `FACT-DEPOSITS-ACCOUNT-DAILY-BALANCES-GRAIN`;
+  - `FACT-DEPOSITS-FANOUT-CONTROL-TOTALS`;
+  - `FACT-LENDING-NON-MONTH-END-SNAPSHOT-COUNT`.
+- Refined all quiz-bank questions so cited facts directly cover the prompt,
+  answer, explanation, and numeric deterministic answers. Used subagent audit
+  feedback to add missing dataset-control, credential, select-list, valuation,
+  and fanout facts where needed.
+- Extended the SQLite facts database with a `triples` table for
+  source-support, reverse source-support, related-fact, and source-document
+  graph rows.
+- Added `bun run test:quiz-facts-db`, root script alias, Makefile target, CI
+  step, and platform-boundary enforcement. The test builds the SQLite facts DB,
+  loads quiz YAML into temporary quiz tables, verifies source fact nodes and
+  graph/source edges, checks explanations mention every cited fact, and requires
+  numeric answers to appear in cited fact text.
+- Ran `bun run facts:build-db`; it produced ignored
+  `app/src/generated/facts.sqlite` for local inspection.
+- Moved `yaml` into app runtime dependencies because browser code now imports it
+  for quiz/exam YAML parsing; `bun install --frozen-lockfile` passed with no
+  lockfile changes after approved temp/cache access.
+- Updated Playwright coverage for `#/quiz`, `#/exam`, and `#/facts`.
+- Adjusted Vite `chunkSizeWarningLimit` from 1024 to 4096 to match the expected
+  static DuckDB/YAML learning bundle and avoid noisy build warnings during
+  Playwright preview.
+- Added `AGENTS.md` type-safety rules: no `any`, `as any`, broad `object` type,
+  `as object`, `@ts-ignore`, or `@ts-expect-error`; validate external parser
+  inputs from `unknown` into domain types.
+- Verification run so far:
+  - `bun run test:quiz-facts-db`;
+  - `bun run test:facts-db`;
+  - `bun run test:content-qa`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:platform-boundary`;
+  - `bun run test:e2e` after approved local preview binding.
+- Final local verification for PR #13:
+  - `bun run format`;
+  - `bun run check` after approved local Playwright/Vite preview port binding;
+  - `git diff --check`;
+  - type-safety scan across `app/src`, `app/scripts`, `app/tests`, and
+    `app/configs`.
+- `bun run check` passed with all 10 Playwright rendered UI tests, production
+  build, static-link validation, fact DB checks, quiz facts DB verification,
+  content QA, platform-boundary checks, typecheck, lint, and format check.
+- The type-safety scan found no `any`, `as any`, broad `object` type,
+  `as object`, `@ts-ignore`, or `@ts-expect-error` usage in app code; the only
+  match was the ESLint rule name `@typescript-eslint/no-explicit-any`.
+- Reviewed ignored/generated outputs after verification. `app/dist/`,
+  `app/src/generated/`, `screenshots/`, and `var/` remain ignored and were not
+  staged.
+- Committed the PR #13 implementation as
+  `69f2330 Render learning surfaces and verify quiz facts`, pushed
+  `record-pr12-postmerge`, and updated PR #13:
+  `https://github.com/e6qu/looker-bi-gym/pull/13`.
+- PR #13 GitHub Actions `Validate, Test, And Build` passed for commit
+  `69f2330ca46aaaa0ec10975e4d17dfa8a5653016` in 1m43s.
+- Failed attempts during verification:
+  - sandboxed `bun install --frozen-lockfile` could not write to Bun tempdir;
+    approved rerun passed;
+  - sandboxed `bun run test:e2e` could not bind `127.0.0.1:4173`; approved
+    reruns executed Playwright;
+  - early Playwright assertions were too broad or still assumed visible raw
+    `FACT-*` IDs; tests were corrected to match human-readable evidence UI.
+- User-requested next phase after this PR: rewrite tutorials to be
+  self-contained. Tutorials may include prerequisite docs at the start, but the
+  tutorial body itself should provide complete step-by-step instructions and not
+  point learners to challenges as the way to understand the lesson.
 
 - Merged PR #9 with `gh pr merge 9 --squash --delete-branch`, fast-forwarded
   local `main`, and created branch `task026-grading-contracts`.

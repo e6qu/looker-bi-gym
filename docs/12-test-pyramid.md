@@ -24,13 +24,18 @@ The lower and middle layers run deterministic checks without a browser:
 - `bun run test:cloud-evidence` covers local evidence parsing and validation.
 - `bun run test:browser-config` covers local JSON config parsing and validation.
 - `bun run test:progress-export` covers browser-local progress, cookie fallback, reset, and export boundaries.
+- `bun run test:quiz-facts-db` builds the SQLite facts database, loads quiz YAML
+  into temporary quiz tables, and verifies that quiz source facts resolve to
+  sourced fact graph nodes. Numeric quiz answers must be backed by cited fact
+  text.
 - `bun run test:fixtures` covers known-good and known-bad challenge solution fixtures.
 - `bun run test:derived-expectations` executes known-good browser-SQL fixtures
   against their pinned datasets and verifies manifest row-count and aggregate
   expectations match the dataset-derived values.
 - `bun run test:content-qa` covers required-tool declarations, synthetic-data boundaries, regulatory links, disclaimers, and Markdown links.
-- `bun run test:facts-db` verifies source snapshots, fact IDs, and fact/source
-  links through the local SQLite facts database.
+- `bun run test:facts-db` verifies source snapshots, fact IDs, fact/source
+  links, and triple-like fact/source/related-fact graph edges through the local
+  SQLite facts database.
 - `bun run test:llm-workbench` verifies that manual LLM question and dreaming
   prompts are assembled from local, source-backed context.
 - `bun run test:platform-boundary` keeps the frontend-only no-backend boundary
@@ -46,6 +51,8 @@ The lower and middle layers run deterministic checks without a browser:
 - Fill cloud-evidence fields, answer the credential boundary question, and verify local completion without backend calls.
 - Fill browser-config metric contract JSON, answer contract questions, and
   verify local completion without backend calls.
+- Render quiz-bank YAML, exam-card YAML, and the in-app fact graph as real
+  learner surfaces rather than Markdown-only summaries.
 - Check responsive routes, rendered UI structure, nonblank screenshots, no horizontal overflow, and control text fit.
 - Fail on browser console warnings, browser console errors, page errors, or
   failed network requests during rendered UI flows.
@@ -56,5 +63,5 @@ The lower and middle layers run deterministic checks without a browser:
 
 GitHub Actions CI mirrors this gate with explicit steps for format, manifest and
 dataset validation, lint, typecheck, domain/runtime tests, fixture and derived
-expectation tests, content/fact/workbench/platform tests, rendered UI tests,
-production build, and static-link validation.
+expectation tests, quiz fact grounding, content/fact/workbench/platform tests,
+rendered UI tests, production build, and static-link validation.

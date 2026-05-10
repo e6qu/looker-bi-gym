@@ -82,15 +82,21 @@ Recipes:
 Quizzes:
 
 - Current location: `quizzes/`.
-- Role: reusable question banks separate from challenge manifests.
+- App route: `#/quiz`.
+- Role: reusable question banks separate from challenge manifests, rendered as
+  first-class browser quiz surfaces.
 - First bank: one mixed 20-minute quiz with `easy`, `medium`, and `hard`
   questions, recommended learner-task IDs, source facts, answers,
   explanations, estimated seconds, and self-assessment notes.
+- Verification: `bun run test:quiz-facts-db` loads quiz YAML into SQLite temp
+  tables and verifies question facts against the local facts graph.
 
 Exam cards:
 
 - Current location: `exams/`.
-- Role: optional independent longer challenge specifications.
+- App route: `#/exam`.
+- Role: optional independent longer challenge specifications rendered as
+  learner-pickable self-assessment cards.
 - First pack: untimed, self-assessed cards with deterministic verification
   where feasible.
 
@@ -120,9 +126,16 @@ Datasets:
 Facts:
 
 - Location: `docs/facts/`.
+- App route: `#/facts`.
 - Role: durable `FACT-*` IDs for fact-backed tutorials, quiz questions,
   challenge explanations, and LLM workbench context.
-- Validation: `bun run test:facts-db`.
+- Learner UI: show human-readable fact statements and area labels first; keep
+  raw `FACT-*` IDs as metadata/links rather than primary learner-facing text.
+- Validation: `bun run test:facts-db` and `bun run test:quiz-facts-db`.
+- Local SQLite graph: `bun run facts:build-db` builds ignored
+  `app/src/generated/facts.sqlite` with facts, sources, source documents,
+  fact-source edges, related-fact edges, and triple-like graph rows for local
+  inspection and LLM-assisted review.
 
 Sources:
 
@@ -141,6 +154,10 @@ App shell:
   query returns at least one dimension-like column and one numeric column.
 - `app/src/content.ts`: Markdown discovery for docs, regulations, and
   recursive tutorial content.
+- `app/src/learningContent.ts`: typed YAML loading for quiz banks and exam
+  packs.
+- `app/src/factCatalog.ts`: browser fact index parsed from local fact Markdown
+  for source-evidence links and the `#/facts` graph browser.
 - `app/src/markdown.ts`: Markdown rendering and internal link rewriting for
   GitHub Pages hash routes.
 

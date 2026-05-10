@@ -92,3 +92,8 @@ Implemented files:
 - `bun run test:e2e` passed on 2026-05-10 after approved local preview binding.
 - `bun run test:fixtures` passed on 2026-05-10.
 - `bun run check` passed on 2026-05-10 after approved local preview binding.
+- Follow-up on PR #13 renders quiz-bank YAML at `#/quiz` and exam-card YAML at
+  `#/exam`, with Playwright coverage for those app surfaces and the fact graph.
+- Follow-up on PR #13 adds `bun run test:quiz-facts-db` so quiz question facts
+  are verified against the SQLite fact graph, including sourced fact nodes and
+  numeric-answer evidence.

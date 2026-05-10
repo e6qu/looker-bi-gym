@@ -126,6 +126,18 @@ The first platform release and PR #3 established:
 - JSON export is implemented in Settings. JSON import is planned as an optional
   browser-local workflow: validate the export format locally, preview imported
   evidence, apply only after user confirmation, and never upload learner data.
+- Quiz banks and exam cards should be rendered as first-class app surfaces when
+  they become core learner flows. Markdown summaries are useful navigation aids,
+  but the website should not require the learner to read repository YAML or a
+  secondary summary to use a quiz or exam card.
+- Source facts should be learner-readable in the UI. Raw `FACT-*` IDs are useful
+  for validation, linking, fixtures, and LLM workbench context, but the primary
+  learner label should be a human-readable statement or title with the ID kept
+  as metadata.
+- Tutorials should be self-contained. They may list prerequisite docs or facts
+  near the start, but step-by-step learner instructions should live inside the
+  tutorial itself rather than sending learners to challenge pages to understand
+  the lesson.
 - Terminology must stay precise:
   - `implementation tasks` are numbered repository work items under `tasks/*.md`
     such as Task 024 and Task 025;
@@ -207,6 +219,10 @@ sketch-like lessons with full lesson packs and app-rendered learning surfaces:
   self-assessment.
 - Exam mode defined as untimed, independent, longer challenge cards; richer app
   rendering can follow after task and quiz models stabilize.
+- Follow-up direction: make tutorials self-contained lessons. If a tutorial
+  prepares a challenge, it should still include the objective, steps,
+  verification, expected outputs, common failures, and self-assessment in the
+  tutorial body instead of relying on the challenge page as the instruction.
 
 ### Phase D - Stronger Challenge And Grading Contracts
 

@@ -8,6 +8,10 @@ const responsiveRoutes = [
   "/#/tutorials/learner-tasks/lt-bi-001-profile-dataset-grain.md",
   "/#/tutorials/quiz-bank.md",
   "/#/tutorials/exam-mode.md",
+  "/#/quiz",
+  "/#/exam",
+  "/#/facts",
+  "/#/facts/fact-deposits-fanout-control-totals",
   "/#/challenges",
   "/#/challenges/first-banking-dataset",
   "/#/challenges/deposit-metric-contract",
@@ -230,6 +234,54 @@ test.describe("rendered UI", () => {
     await expect(
       page.getByText("Flag appears after required checks pass"),
     ).toBeVisible();
+  });
+
+  test("quiz, exam, and fact graph surfaces render source-backed learning content", async ({
+    page,
+  }) => {
+    await page.goto("/#/quiz");
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Quiz" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", {
+        level: 2,
+        name: "BI Foundations Mixed Quiz",
+      }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Before summing `ledger_balance`", { exact: false }),
+    ).toBeVisible();
+    await page.getByLabel("One row per account and business date.").check();
+    await page.getByRole("button", { name: "Check Quiz" }).click();
+    await expect(
+      page
+        .locator('a[title="FACT-DEPOSITS-ACCOUNT-DAILY-BALANCES-GRAIN"]')
+        .first(),
+    ).toBeVisible();
+
+    await page.goto("/#/exam");
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Exam" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 3, name: "Grain And Fanout Review" }),
+    ).toBeVisible();
+    await expect(page.getByText("fanout_delta = 69100")).toBeVisible();
+
+    await page.goto("/#/facts/fact-deposits-fanout-control-totals");
+
+    await expect(
+      page.getByRole("heading", {
+        level: 1,
+        name: "FACT-DEPOSITS-FANOUT-CONTROL-TOTALS",
+      }),
+    ).toBeVisible();
+    await expect(page.getByText("164800").first()).toBeVisible();
+    await expect(page.getByText("95700").first()).toBeVisible();
+    await expect(page.getByText("69100").first()).toBeVisible();
   });
 
   test("browser SQL challenge loads DuckDB-WASM and renders query results", async ({
@@ -515,7 +567,11 @@ GROUP BY business_date, currency_code;`);
     await page
       .getByLabel("Upstream serving SQL or a reusable data-source field.")
       .check();
-    await page.getByLabel("FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION").check();
+    await page
+      .getByRole("radio", {
+        name: "FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION",
+      })
+      .check();
 
     await expect(
       page.getByText("Challenge complete. Flag: flag-deposit-metric-contract"),

@@ -21,6 +21,7 @@
     "test:cloud-evidence": "bun run --filter @looker-bi-gym/app test:cloud-evidence",
     "test:browser-config": "bun run --filter @looker-bi-gym/app test:browser-config",
     "test:progress-export": "bun run --filter @looker-bi-gym/app test:progress-export",
+    "test:quiz-facts-db": "bun run --filter @looker-bi-gym/app test:quiz-facts-db",
     "test:content-qa": "bun run --filter @looker-bi-gym/app test:content-qa",
     "test:facts-db": "bun run --filter @looker-bi-gym/app test:facts-db",
     "test:llm-workbench": "bun run --filter @looker-bi-gym/app test:llm-workbench",

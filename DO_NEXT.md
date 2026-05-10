@@ -3,25 +3,24 @@
 ## Immediate Next Step
 
 Numbered implementation tasks 001 through 028 are implemented. PR #3 through
-PR #11 were merged. PR #11 merged on 2026-05-10 at merge commit
-`bd0be4505958f2e33706169dc7816096c7abc617`.
+PR #12 were merged. PR #12 merged on 2026-05-10 at merge commit
+`3edd840e1c749a453f2834d8684211069dceae1d`.
 
 Current implementation step:
 
-- PR #11 (`https://github.com/e6qu/looker-bi-gym/pull/11`) is merged and
+- PR #12 (`https://github.com/e6qu/looker-bi-gym/pull/12`) is merged and
   post-merge verified.
-- Main CI run `25629510931` passed for merge commit
-  `bd0be4505958f2e33706169dc7816096c7abc617`.
-- Main GitHub Pages deployment run `25629510924` passed for the same merge
-  commit, and `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200.
-- Current branch: `ci-ui-warning-checks`.
-- Current PR: `https://github.com/e6qu/looker-bi-gym/pull/12`.
-- Current branch purpose: strengthen CI and UI warning/error detection by
-  adding explicit CI steps for format, derived SQL expectations, browser-config,
-  fact database, LLM workbench, and platform-boundary checks; make
-  `bun run check` include `format:check`; and make rendered Playwright tests
-  fail on browser console warnings/errors, page errors, and failed network
-  requests.
+- Main CI run `25629932439` passed for merge commit
+  `3edd840e1c749a453f2834d8684211069dceae1d`.
+- Main GitHub Pages deployment run `25629932430` passed for the same merge
+  commit, and `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
+  `last-modified: Sun, 10 May 2026 13:28:52 GMT`.
+- Current branch: `record-pr12-postmerge`.
+- Current PR: `https://github.com/e6qu/looker-bi-gym/pull/13`.
+- Current branch purpose: record PR #12 post-merge verification and implement
+  the app-rendered learning-surface phase: quiz bank route, exam route, fact
+  graph route, human-readable source-evidence labels, and SQLite-backed quiz
+  fact grounding.
 - Read `README.md`, `docs/14-platform-components.md`, `PLAN.md`, `STATUS.md`,
   `BUGS.md`, `tasks/025-real-tutorial-instruction-packs.md`, and
   `tasks/026-challenge-grading-contract-expansion.md` first.
@@ -29,15 +28,48 @@ Current implementation step:
   under `tasks/*.md`; `learner tasks` are curriculum exercise units shown to
   learners.
 
-1. Let PR #12 GitHub Actions run; do not merge. The user will merge after CI is
-   done.
-2. After PR #12 is merged, verify main CI, GitHub Pages deployment, and the
-   live GitHub Pages app again.
-3. Good next implementation candidates after this hardening PR are a
-   browser-local JSON import flow for Settings, richer browser-config or
-   metric-contract challenges, or rendering quiz/exam YAML directly in the app
-   instead of maintaining separate learner-facing Markdown summaries.
-4. Keep ignored screenshot artifacts local only; do not commit them.
+Current PR #13 must finish before starting the next item:
+
+- Keep `#/quiz`, `#/exam`, and `#/facts` rendered, responsive, and covered by
+  Playwright.
+- Keep `bun run test:quiz-facts-db` in `bun run check`, CI, root scripts, and
+  `make test`.
+- Keep quiz numeric answers backed by dataset-control facts, not only generic BI
+  concepts.
+- Keep raw `FACT-*` IDs out of primary learner-facing labels; show human-readable
+  fact statements/areas and keep IDs as metadata/link targets.
+- Preserve the strict typing boundary: no `any`, `as any`, broad `object` type,
+  `as object`, `@ts-ignore`, or `@ts-expect-error`; YAML/Markdown/SQLite inputs
+  should be parsed as `unknown` and validated into domain types.
+
+PR #13 local verification passed on 2026-05-10:
+
+- `bun run format`
+- `bun run check` after approved local Playwright/Vite preview port binding,
+  including all 10 rendered UI tests and production build/static-link checks
+- `git diff --check`
+- type-safety scan across app sources/scripts/tests/configs, with only the
+  literal ESLint rule name `@typescript-eslint/no-explicit-any` matching
+- PR #13 GitHub Actions `Validate, Test, And Build` passed for commit
+  `69f2330ca46aaaa0ec10975e4d17dfa8a5653016`.
+
+Recommended next phases after PR #13:
+
+1. Self-contained tutorial rewrite: tutorials should include prerequisite docs
+   at the start, then complete step-by-step instructions in the tutorial itself.
+   They should not send learners to challenges to understand the lesson.
+2. Browser-local JSON import: add Settings import for
+   `looker-bi-gym.progress-export.v1` with local validation, preview, apply
+   confirmation, and no upload.
+3. Flashcards and spaced repetition: implement Task 029 with topic-separated
+   decks, fact-backed cards, Anki-style timestamps/due dates, and single-JSON
+   flashcard state export/import.
+4. Richer challenges and datasets: add more deterministic synthetic dataset
+   packs and browser-verifiable Looker/BigQuery/BI mechanics challenges, with
+   fixtures and source-fact-backed questions.
+5. Optional cloud-applied track: expand Looker Studio recipes only after the
+   browser-first equivalent exists; keep it manual and UI-driven unless a future
+   learner script is justified and ShellCheck-verified.
 
 Preservation and verification steps:
 

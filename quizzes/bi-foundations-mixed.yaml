@@ -14,6 +14,7 @@ questions:
         - LT-BI-001
       source_facts:
         - FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION
+        - FACT-DEPOSITS-ACCOUNT-DAILY-BALANCES-GRAIN
       prompt: >
         Before summing `ledger_balance`, what must the learner declare for the
         balance rows?
@@ -28,6 +29,8 @@ questions:
       explanation: >
         FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION requires the row grain to be
         stated before aggregates are trusted.
+        FACT-DEPOSITS-ACCOUNT-DAILY-BALANCES-GRAIN gives the deposits seed
+        balance grain: one row per account and business date.
       self_assessment: >
         Review LT-BI-001 if you cannot say what one source row represents.
     - id: q-easy-sensitive-fields
@@ -39,6 +42,7 @@ questions:
       source_facts:
         - FACT-GDPR-DATA-MINIMISATION
         - FACT-GDPR-PERSONAL-DATA
+        - FACT-BIGQUERY-SELECT-LIST-NARROWING
       prompt: >
         Which fields should stay out of a currency-level dashboard output unless
         a specific purpose requires them?
@@ -58,6 +62,9 @@ questions:
       explanation: >
         FACT-GDPR-DATA-MINIMISATION supports narrow serving outputs; currency is
         needed for the stated aggregate, while unnecessary identifiers are not.
+        FACT-GDPR-PERSONAL-DATA grounds identifier sensitivity, and
+        FACT-BIGQUERY-SELECT-LIST-NARROWING supports exposing only required
+        dashboard fields.
       self_assessment: >
         Review the output-minimisation checkpoint in LT-BI-001.
     - id: q-easy-data-source-role
@@ -67,6 +74,7 @@ questions:
         - LT-LOOKER-004
       source_facts:
         - FACT-LOOKER-STUDIO-DATA-SOURCE
+        - FACT-LOOKER-STUDIO-CREDENTIALS
       prompt: >
         What role does a Looker Studio data source play between source data and
         charts?
@@ -80,7 +88,8 @@ questions:
       answer: conduit_schema_layer
       explanation: >
         FACT-LOOKER-STUDIO-DATA-SOURCE defines the data source as the connection
-        and schema layer for report charts.
+        and schema layer for report charts. FACT-LOOKER-STUDIO-CREDENTIALS
+        keeps credential behavior outside this static app's local quiz answer.
       self_assessment: >
         Review LT-LOOKER-004 if data source, chart, and view roles are blurred.
   medium:
@@ -91,14 +100,16 @@ questions:
         - LT-BI-002
       source_facts:
         - FACT-BI-FANOUT-JOIN-RISK
+        - FACT-DEPOSITS-FANOUT-CONTROL-TOTALS
       prompt: >
         In the synthetic deposits fanout exercise, what is the overstatement
         delta between the naive owner-joined total and the correct latest
         account-grain total?
       answer: 69100
       explanation: >
-        FACT-BI-FANOUT-JOIN-RISK is demonstrated by 164800 minus 95700, giving
-        fanout_delta 69100.
+        FACT-BI-FANOUT-JOIN-RISK explains why the owner join can duplicate
+        balance facts. FACT-DEPOSITS-FANOUT-CONTROL-TOTALS fixes the synthetic
+        dataset values: 164800 minus 95700 gives fanout_delta 69100.
       self_assessment: >
         Review LT-BI-002 if you cannot reproduce the delta from SQL.
     - id: q-medium-view-purpose
@@ -135,6 +146,7 @@ questions:
       source_facts:
         - FACT-BIGQUERY-LAST-DAY-MONTH-END
         - FACT-BI-RECONCILIATION-WINDOWS
+        - FACT-LENDING-NON-MONTH-END-SNAPSHOT-COUNT
       prompt: >
         How many synthetic lending snapshot rows are not on an accepted
         month-end date in the month-end control task?
@@ -142,6 +154,9 @@ questions:
       explanation: >
         FACT-BIGQUERY-LAST-DAY-MONTH-END supports the month-end check and the
         deterministic control query returns one non-month-end row.
+        FACT-BI-RECONCILIATION-WINDOWS frames the result as a control signal,
+        and FACT-LENDING-NON-MONTH-END-SNAPSHOT-COUNT fixes the expected answer
+        at 1 for the synthetic lending dataset.
       self_assessment: >
         Review LT-DQ-005 if the control looks like a business KPI instead of a
         data-quality signal.
@@ -154,6 +169,7 @@ questions:
       source_facts:
         - FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT
         - FACT-BI-REFERENCE-DATE-SEPARATION
+        - FACT-REAL-ESTATE-VALUATION-DATE-SEPARATION
       prompt: >
         Which result should be used as the dashboard KPI for March exposure?
       options:
@@ -168,6 +184,8 @@ questions:
         FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT says snapshots are safe across
         entities for one date, not across time; FACT-BI-REFERENCE-DATE-SEPARATION
         keeps exposure and valuation dates distinct.
+        FACT-REAL-ESTATE-VALUATION-DATE-SEPARATION keeps property valuation
+        context separate from loan principal.
       self_assessment: >
         Review LT-SQL-003 if all dates in the dataset feel interchangeable.
     - id: q-hard-metric-ownership
@@ -177,6 +195,7 @@ questions:
         - LT-BI-002
         - LT-LOOKER-004
       source_facts:
+        - FACT-BI-FANOUT-JOIN-RISK
         - FACT-BIGQUERY-REDUCE-BEFORE-JOIN
         - FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE
       prompt: >
@@ -191,6 +210,7 @@ questions:
           label: The raw account-owner join before reducing grain.
       answer: upstream_serving_logic
       explanation: >
+        FACT-BI-FANOUT-JOIN-RISK explains the raw owner-join risk.
         FACT-BIGQUERY-REDUCE-BEFORE-JOIN supports reducing grain before joins,
         and FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE distinguishes reusable
         data-source logic from chart-only calculations.
