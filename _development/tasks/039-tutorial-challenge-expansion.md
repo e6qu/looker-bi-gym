@@ -1,7 +1,7 @@
 # 039 - Tutorial Challenge Expansion
 
 Status: implemented locally on branch `phase-6-tutorial-challenge-expansion`;
-PR not opened yet; formal Claude review blocked by CLI hang.
+PR #25 open; formal Claude review blocked by CLI hang.
 
 ## Goal
 

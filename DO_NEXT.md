@@ -11,8 +11,8 @@
    gh pr list --state open --limit 10
    ```
 
-3. Continue Task 039 on branch `phase-6-tutorial-challenge-expansion`; no PR is
-   open yet.
+3. Continue Task 039 on PR #25:
+   `https://github.com/e6qu/looker-bi-gym/pull/25`.
 4. If updating this branch, run:
 
    ```sh
@@ -32,9 +32,8 @@
    git diff --check
    ```
 
-5. Before opening the next PR, confirm there is still no open PR. Before
-   merging it, fetch `origin/main`, rebase the branch on `origin/main`, verify
-   CI is passing, and then squash-merge.
+5. Before merging PR #25, fetch `origin/main`, rebase the branch on
+   `origin/main`, verify CI is passing, and then squash-merge.
 6. After merge, verify main CI, GitHub Pages deployment, and the live Pages URL
    before moving on.
 
@@ -48,8 +47,8 @@ Task 038 assessment expansion batch 1 is merged, deployed, and main-verified,
 but not Claude-reviewed. It adds 10 flashcards, 6 quiz questions, 2 exam cards,
 and guardrails for at least 59 flashcards, 14 quiz questions, and 4 exam cards.
 
-Task 039 tutorial/challenge expansion batch 1 is locally implemented and
-verified, but not Claude-reviewed or opened as a PR yet. It adds
+Task 039 tutorial/challenge expansion batch 1 is locally implemented, verified,
+pushed, and opened as PR #25, but not Claude-reviewed. It adds
 `LT-DQ-006 - Define A Ratio Null Contract`.
 
 `PLAN.md` Phase 9 now defines the required gate for any claim that tutorials,

@@ -37,6 +37,9 @@
     no output for about 50 seconds, and was terminated.
 - Acceptance note: this is a first Phase 6 tutorial/challenge batch only. It
   does not satisfy Phase 9 completeness targets.
+- Committed `a3be749 Add ratio null contract learner task`.
+- Pushed branch `phase-6-tutorial-challenge-expansion` and opened PR #25:
+  `https://github.com/e6qu/looker-bi-gym/pull/25`.
 
 ## 2026-05-10 - Phase 5 Assessment Content Expansion Batch 1
 

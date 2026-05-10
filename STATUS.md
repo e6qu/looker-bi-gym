@@ -6,7 +6,7 @@ Last updated: 2026-05-10
 
 - Current branch: `phase-6-tutorial-challenge-expansion`, based on verified
   `main`.
-- Current PR: not opened yet.
+- Current PR: #25, `https://github.com/e6qu/looker-bi-gym/pull/25`.
 - PR #24, `https://github.com/e6qu/looker-bi-gym/pull/24`, is squash-merged
   at `22ff713374382341bbc11474a2501ab9d5325908`.
 - Main CI for `22ff713` passed:
