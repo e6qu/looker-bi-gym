@@ -1545,6 +1545,17 @@ h3 {
   font-weight: 800;
 }
 
+.settingsButtonRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.settingsButtonRow button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .progressExportPanel button {
   border-color: var(--accent);
   background: var(--accent);

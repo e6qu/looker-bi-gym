@@ -34,6 +34,7 @@ Task order:
 - [028 - Platform Component Organization](028-platform-component-organization.md)
 - [029 - Flashcards And Spaced Repetition](029-flashcards-and-spaced-repetition.md)
 - [030 - Self-Contained Tutorial Workbench](030-self-contained-tutorial-workbench.md)
+- [031 - Browser-Local Progress Import](031-browser-local-progress-import.md)
 
 Completion rule:
 

@@ -2,24 +2,24 @@
 
 ## Immediate Next Step
 
-Numbered implementation tasks 001 through 028 are implemented. PR #3 through
-PR #13 were merged. PR #13 merged on 2026-05-10 at merge commit
-`f0deb549a3601559ffc1a6f81e386f95c5b36702`.
+Numbered implementation tasks 001 through 030 are implemented. PR #3 through
+PR #14 were merged. PR #14 merged on 2026-05-10 at merge commit
+`add376a9b6766871a6b46ed574c547fb322c21e7`.
 
 Current implementation step:
 
-- PR #13 (`https://github.com/e6qu/looker-bi-gym/pull/13`) is merged and
+- PR #14 (`https://github.com/e6qu/looker-bi-gym/pull/14`) is merged and
   post-merge verified.
-- Main CI run `25630673392` passed for merge commit
-  `f0deb549a3601559ffc1a6f81e386f95c5b36702`.
-- Main GitHub Pages deployment run `25630673398` passed for the same merge
+- Main CI run `25631925236` passed for merge commit
+  `add376a9b6766871a6b46ed574c547fb322c21e7`.
+- Main GitHub Pages deployment run `25631925233` passed for the same merge
   commit, and `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
-  `last-modified: Sun, 10 May 2026 14:03:54 GMT`.
-- Current branch: `self-contained-tutorials`.
-- Current implementation task: [030 - Self-Contained Tutorial Workbench](tasks/030-self-contained-tutorial-workbench.md).
-- Current branch purpose: add neutral browser SQL workbench routes and make
-  released learner-task tutorials self-contained so the lesson does not point
-  learners to challenge pages for instruction.
+  `last-modified: Sun, 10 May 2026 15:01:49 GMT`.
+- Current branch: `browser-progress-import`.
+- Current implementation task: [031 - Browser-Local Progress Import](tasks/031-browser-local-progress-import.md).
+- Current branch purpose: add Settings import for
+  `looker-bi-gym.progress-export.v1` with local validation, preview, apply
+  confirmation, and no upload.
 - Read `README.md`, `docs/14-platform-components.md`, `PLAN.md`, `STATUS.md`,
   `BUGS.md`, `tasks/025-real-tutorial-instruction-packs.md`, and
   `tasks/026-challenge-grading-contract-expansion.md` first.
@@ -27,44 +27,40 @@ Current implementation step:
   under `tasks/*.md`; `learner tasks` are curriculum exercise units shown to
   learners.
 
-Current Task 030 must finish before starting the next item:
+Current Task 031 must finish before starting the next item:
 
-- Keep `#/workbench/deposits-seed/v0.1.0` and
-  `#/workbench/lending-month-end/v0.1.0` rendered, responsive, and covered by
-  Playwright.
-- Keep learner-task tutorials self-contained: they may name prerequisite docs or
-  facts, but their steps, SQL, expected outputs, checkpoint questions,
-  visualization/reporting action, and CTF-style end check must live in the
-  tutorial page.
-- Keep content QA failing if a released learner-task tutorial links to
-  `#/challenges/` or requires a local challenge flag for instruction.
+- Keep import frontend-only: pasted JSON is validated in the browser and never
+  uploaded.
+- Keep import application explicit: preview before Apply, and write
+  `localStorage` plus same-site cookie only after confirmation.
+- Keep invalid imports rejected when the format, storage version, privacy
+  boundary, completion rows, timestamps, flags, or passed check/question arrays
+  are wrong.
 - Preserve the strict typing boundary: no `any`, `as any`, broad `object` type,
   `as object`, `@ts-ignore`, or `@ts-expect-error`.
 
-Task 030 local verification passed on 2026-05-10:
+Task 031 focused verification passed on 2026-05-10:
 
 - `bun run typecheck`
 - `bun run lint`
-- `bun run test:content-qa`
+- `bun run test:progress-export`
 - `bun run test:e2e` after approved local Playwright/Vite preview port binding
+- `bun run test:platform-boundary`
 - `bun run check` after approved local Playwright/Vite preview port binding,
   including all 11 rendered UI tests and production build/static-link checks
 - `git diff --check`
 - type-safety scan across app sources/scripts/tests/configs, with only the
   literal ESLint rule name `@typescript-eslint/no-explicit-any` matching
 
-Recommended next phases after Task 030:
+Recommended next phases after Task 031:
 
-1. Browser-local JSON import: add Settings import for
-   `looker-bi-gym.progress-export.v1` with local validation, preview, apply
-   confirmation, and no upload.
-2. Flashcards and spaced repetition: implement Task 029 with topic-separated
+1. Flashcards and spaced repetition: implement Task 029 with topic-separated
    decks, fact-backed cards, Anki-style timestamps/due dates, and single-JSON
    flashcard state export/import.
-3. Richer challenges and datasets: add more deterministic synthetic dataset
+2. Richer challenges and datasets: add more deterministic synthetic dataset
    packs and browser-verifiable Looker/BigQuery/BI mechanics challenges, with
    fixtures and source-fact-backed questions.
-4. Optional cloud-applied track: expand Looker Studio recipes only after the
+3. Optional cloud-applied track: expand Looker Studio recipes only after the
    browser-first equivalent exists; keep it manual and UI-driven unless a future
    learner script is justified and ShellCheck-verified.
 
@@ -77,7 +73,8 @@ Preservation and verification steps:
 - Keep `bun run format:check`, `bun run lint`, `bun run typecheck`, and `bun run check` clean before merging. Full `bun run check` passed locally for the `ci-ui-warning-checks` branch on 2026-05-10 after rerunning with local Vite preview port binding allowed for Playwright.
 - Preserve the frontend-only boundary: no backend calls, server session, API database, analytics beacon, or learner-data upload.
 - Preserve browser-local progress behavior: `localStorage` plus same-site cookie fallback, with reset clearing both.
-- Preserve Settings export behavior and implement future import as browser-local JSON validation/preview/apply only.
+- Preserve Settings export/import behavior as browser-local JSON validation,
+  preview, and apply only.
 - Preserve the test pyramid documented in `docs/12-test-pyramid.md` and enforced by `bun run test:platform-boundary`.
 - Preserve the Task 015 fixture coverage rule: every released manifest needs a known-good solution fixture or a documented exception, and CTF/trap challenges need expected known-bad coverage.
 - Preserve the Task 026 grading-contract rule: browser-config challenges use

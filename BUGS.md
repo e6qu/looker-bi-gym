@@ -104,9 +104,13 @@ No known app bugs after the Bun-only tooling, typed config, formatting, rendered
   selector is exact. `bun run test:e2e` then passed with all 11 rendered UI
   tests. Full `bun run check` passed on 2026-05-10 after approved local
   Playwright/Vite preview port binding.
-- JSON import is planned but not implemented. Current Settings supports JSON
-  export and reset only. Future import must stay browser-local and validate the
-  `looker-bi-gym.progress-export.v1` structure before applying state.
+- Post-merge PR #14 GitHub Actions and GitHub Pages deployment passed for merge
+  commit `add376a9b6766871a6b46ed574c547fb322c21e7`, and the deployed Pages URL
+  returned HTTP 200 on 2026-05-10.
+- Task 031 focused verification passed for typecheck, lint, progress
+  export/import unit tests, Playwright rendered UI import flow,
+  platform-boundary checks, and full `bun run check` after approved local
+  Playwright/Vite preview port binding.
 
 ## Template
 

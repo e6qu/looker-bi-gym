@@ -204,12 +204,13 @@ Dataset and SQL runtime:
 State and export:
 
 - `app/src/progress.ts`: browser-local progress model, local flags,
-  `localStorage`, same-site cookie mirror, reset, and JSON export.
+  `localStorage`, same-site cookie mirror, reset, JSON export, and JSON import
+  validation.
 - Storage keys:
   - `looker-bi-gym.progress.v1`;
   - `looker-bi-gym.quiz-progress.v1` for legacy migration;
   - `looker-bi-gym-progress-v1` for the same-site cookie mirror.
-- Export format: `looker-bi-gym.progress-export.v1`.
+- Export/import format: `looker-bi-gym.progress-export.v1`.
 - Future flashcard state should use a separate versioned local storage key and
   JSON format so challenge completion state and spaced-repetition state can be
   imported/exported independently or packaged together later by an explicit
@@ -225,14 +226,10 @@ The canonical state path is browser-local:
 3. Completing a challenge writes both `localStorage` and the cookie mirror.
 4. Reset clears both browser storage surfaces.
 5. Export creates a JSON file locally in the browser and does not upload it.
-
-Planned import behavior:
-
-- user chooses a JSON file in Settings;
-- the app validates `looker-bi-gym.progress-export.v1` locally;
-- the app previews imported completion evidence before applying it;
-- import writes browser-local progress only after user confirmation;
-- import never contacts a backend and never uploads learner data.
+6. Import accepts pasted JSON in Settings, validates
+   `looker-bi-gym.progress-export.v1` locally, previews imported completion
+   evidence, and writes browser-local progress only after user confirmation.
+7. Import never contacts a backend and never uploads learner data.
 
 Planned flashcard state behavior:
 

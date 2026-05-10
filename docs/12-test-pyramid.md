@@ -10,7 +10,7 @@ The allowed state surfaces are browser-local only:
 
 - `localStorage` for challenge progress.
 - A same-site progress cookie that mirrors the same completion state.
-- User-triggered JSON export from Settings.
+- User-triggered JSON export/import from Settings.
 
 The app has no backend account system, server session, API database, server-side grading, analytics beacon, or learner-data upload.
 
@@ -23,7 +23,8 @@ The lower and middle layers run deterministic checks without a browser:
 - `bun run test:validators` covers browser challenge validators.
 - `bun run test:cloud-evidence` covers local evidence parsing and validation.
 - `bun run test:browser-config` covers local JSON config parsing and validation.
-- `bun run test:progress-export` covers browser-local progress, cookie fallback, reset, and export boundaries.
+- `bun run test:progress-export` covers browser-local progress, cookie fallback,
+  reset, export, import validation, and privacy boundaries.
 - `bun run test:quiz-facts-db` builds the SQLite facts database, loads quiz YAML
   into temporary quiz tables, and verifies that quiz source facts resolve to
   sourced fact graph nodes. Numeric quiz answers must be backed by cited fact
@@ -49,6 +50,8 @@ The lower and middle layers run deterministic checks without a browser:
 - Clear `localStorage`, reload from the cookie mirror, and verify Settings still shows completion evidence.
 - Run the browser SQL challenge, answer its grain question, and verify a local flag is produced.
 - Fill cloud-evidence fields, answer the credential boundary question, and verify local completion without backend calls.
+- Validate and apply a pasted progress JSON import in Settings, then verify it
+  writes browser-local state.
 - Fill browser-config metric contract JSON, answer contract questions, and
   verify local completion without backend calls.
 - Render quiz-bank YAML, exam-card YAML, and the in-app fact graph as real
