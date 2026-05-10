@@ -1,0 +1,188 @@
+id: deposit-metric-contract
+version: v0.1.0
+title: 050 - Deposit Metric Contract Review
+area: warehouse-modeling-and-metrics
+mode: browser-config
+difficulty: intermediate
+estimated_minutes: 25
+prerequisites:
+  - first-banking-dataset
+  - account-owner-fanout
+business_scenario: Define a JSON metric contract for latest synthetic deposit balances before a dashboard team builds charts from it.
+regulatory_context:
+  - BNR
+  - FGDB
+  - GDPR
+required_tools: none
+inputs:
+  - id: deposits_seed
+    type: dataset
+    description: Synthetic deposits seed used to define the metric contract.
+    dataset_id: deposits-seed
+    dataset_version: v0.1.0
+    path: datasets/deposits-seed/v0.1.0
+    tables:
+      - account_daily_balances
+      - account_owners
+      - accounts
+    sensitive_fields:
+      - account_id
+      - customer_id
+      - synthetic_iban
+    grain: One row per account per business_date in account_daily_balances.
+  - id: learner_tasks
+    type: markdown
+    description: Learner-task instructions for grain, fanout, and Looker Studio metric ownership.
+    path: tutorials/learner-tasks/README.md
+outputs:
+  - id: metric_contract
+    type: metric-contract
+    description: JSON contract for a reusable latest deposit balance metric.
+checks:
+  - id: contract_required_fields
+    type: json-required-fields
+    description: Metric contract includes the required governance and serving fields.
+    target: metric_contract_json
+    expected:
+      - metric_id
+      - source_table
+      - grain
+      - measure
+      - aggregation
+      - date_role
+      - selected_fields
+      - excluded_fields
+      - owner
+  - id: contract_core_values
+    type: json-field-equals
+    description: Metric contract names the correct source table, measure, aggregation, and date role.
+    target: metric_contract_json
+    expected:
+      source_table: account_daily_balances
+      measure: ledger_balance
+      aggregation: SUM
+      date_role: business_date
+  - id: selected_fields_include_serving_shape
+    type: json-array-includes
+    description: Selected fields include the dashboard serving shape.
+    target: metric_contract_json
+    expected:
+      selected_fields:
+        - business_date
+        - currency_code
+        - ledger_total
+  - id: excluded_fields_include_sensitive_identifiers
+    type: json-array-includes
+    description: Excluded fields explicitly list sensitive identifiers.
+    target: metric_contract_json
+    expected:
+      excluded_fields:
+        - account_id
+        - customer_id
+        - synthetic_iban
+  - id: selected_fields_exclude_sensitive_identifiers
+    type: json-array-excludes
+    description: Selected serving fields do not expose sensitive identifiers.
+    target: metric_contract_json
+    expected:
+      selected_fields:
+        - account_id
+        - customer_id
+        - synthetic_iban
+questions:
+  - id: q_metric_owner
+    type: multiple-choice
+    prompt: According to FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE and FACT-BIGQUERY-REDUCE-BEFORE-JOIN, where should reusable fanout-safe balance logic live?
+    options:
+      - id: upstream_or_datasource
+        label: Upstream serving SQL or a reusable data-source field.
+      - id: one_chart
+        label: Only in one chart-specific calculated field.
+      - id: raw_owner_join
+        label: In the raw account-owner join result.
+    answer: upstream_or_datasource
+    explanation: FACT-BIGQUERY-REDUCE-BEFORE-JOIN supports repairing grain before joins, and FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE keeps reusable metrics out of one-off chart fields.
+    source_facts:
+      - FACT-BIGQUERY-REDUCE-BEFORE-JOIN
+      - FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE
+  - id: q_metric_grain
+    type: multiple-choice
+    prompt: Which fact explains why the contract must state grain before `ledger_total` is trusted?
+    options:
+      - id: grain_before_aggregation
+        label: FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION
+      - id: viewer_credentials
+        label: FACT-LOOKER-STUDIO-VIEWER-CREDENTIALS
+      - id: cookie_id
+        label: FACT-GDPR-COOKIE-ID-PERSONAL-DATA-EXAMPLE
+    answer: grain_before_aggregation
+    explanation: FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION is the source-backed reason to declare row grain before aggregating balances.
+    source_facts:
+      - FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION
+lesson_steps:
+  - id: start_from_grain
+    title: Start from the balance snapshot grain
+    instruction: Open the learner-task notes for LT-BI-001 and copy the account_daily_balances grain into your metric contract.
+    expected_result: The contract states that source rows are account-date balance snapshots before aggregation.
+    why_it_matters: BI metrics are easier to review when their grain is explicit before joins or charts.
+    failure_mode: A contract that says only deposits balance hides whether the metric is account-level, owner-level, or date-level.
+    source_facts:
+      - FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION
+      - FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT
+  - id: define_serving_shape
+    title: Define the serving fields
+    instruction: Paste JSON that selects business_date, currency_code, and ledger_total as the serving fields for the metric.
+    expected_result: The selected_fields array includes business_date, currency_code, and ledger_total.
+    why_it_matters: A narrow serving shape lets report authors chart the metric without dragging raw identifiers into the dashboard.
+    failure_mode: Selecting account_id or customer_id in a dashboard metric contract creates unnecessary exposure.
+    source_facts:
+      - FACT-GDPR-DATA-MINIMISATION
+      - FACT-BIGQUERY-SELECT-LIST-NARROWING
+  - id: record_exclusions
+    title: Record identifier exclusions
+    instruction: Add account_id, customer_id, and synthetic_iban to excluded_fields while keeping them out of selected_fields.
+    expected_result: The validator passes the exclusion list and rejects the same fields if they appear in selected_fields.
+    why_it_matters: A metric contract should make privacy and serving-output boundaries inspectable before report work starts.
+    failure_mode: Listing fields as excluded while also selecting them creates a contradictory contract.
+    source_facts:
+      - FACT-GDPR-PERSONAL-DATA
+      - FACT-GDPR-DATA-MINIMISATION
+  - id: set_metric_ownership
+    title: Set reusable metric ownership
+    instruction: Mark the metric owner as upstream serving SQL or reusable data-source logic rather than a one-chart formula.
+    expected_result: Your answer identifies upstream or reusable data-source ownership for the fanout-safe metric.
+    why_it_matters: Shared dashboard metrics should not depend on hidden one-off chart calculations.
+    failure_mode: Repairing fanout in one chart but not in the reusable source lets later charts reintroduce the same error.
+    source_facts:
+      - FACT-BIGQUERY-REDUCE-BEFORE-JOIN
+      - FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE
+evidence:
+  - id: metric_contract_json
+    type: metric-contract-json
+    label: Metric contract JSON
+    description: Paste a JSON object that defines the latest deposit balance metric contract.
+    placeholder: |
+      {
+        "metric_id": "latest_ledger_total",
+        "source_table": "account_daily_balances",
+        "grain": "business_date + currency_code",
+        "measure": "ledger_balance",
+        "aggregation": "SUM",
+        "date_role": "business_date",
+        "selected_fields": ["business_date", "currency_code", "ledger_total"],
+        "excluded_fields": ["account_id", "customer_id", "synthetic_iban"],
+        "owner": "upstream serving SQL or reusable data-source field"
+      }
+    required: true
+flag:
+  id: flag-deposit-metric-contract
+  criteria:
+    - Metric contract JSON checks pass locally.
+    - Fact-backed questions are answered correctly.
+hints:
+  - level: 1
+    text: Treat selected_fields as the serving output, not as every raw field available in the source tables.
+  - level: 2
+    text: The expected source table is account_daily_balances and the expected measure is ledger_balance.
+next_challenges:
+  - looker-studio-evidence

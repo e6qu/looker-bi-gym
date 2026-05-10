@@ -9,6 +9,10 @@ import {
   evaluateCloudEvidenceChecks,
   isCloudEvidenceCheckSupported,
 } from "./cloudEvidence";
+import {
+  evaluateBrowserConfigChecks,
+  isBrowserConfigCheckSupported,
+} from "./configEvidence";
 import { defaultDatasetRef, type RuntimeDatasetRef } from "./datasetRegistry";
 import {
   challengeCatalog,
@@ -47,6 +51,10 @@ import type {
   CloudEvidenceAnswerState,
   CloudEvidenceValue,
 } from "./cloudEvidence";
+import type {
+  BrowserConfigAnswerState,
+  BrowserConfigValue,
+} from "./configEvidence";
 import type { ContentDocument, ContentSectionId } from "./content";
 import type {
   BrowserProgressPersistence,
@@ -1043,19 +1051,24 @@ function formatEvidenceType(type: string): string {
       return "Checklist";
     case "manual-note":
       return "Manual note";
+    case "metric-contract-json":
+    case "browser-config-json":
+      return "JSON config";
     default:
       return type;
   }
 }
 
-function CloudEvidenceField({
+type LocalEvidenceValue = CloudEvidenceValue | BrowserConfigValue;
+
+function LocalEvidenceField({
   evidence,
   value,
   onChange,
 }: {
   readonly evidence: NonNullable<ChallengeManifest["evidence"]>[number];
-  readonly value: CloudEvidenceValue | undefined;
-  readonly onChange: (evidenceId: string, value: CloudEvidenceValue) => void;
+  readonly value: LocalEvidenceValue | undefined;
+  readonly onChange: (evidenceId: string, value: LocalEvidenceValue) => void;
 }): JSX.Element {
   const inputId = `evidence-${evidence.id}`;
   const label = evidence.label ?? evidence.description;
@@ -1085,7 +1098,9 @@ function CloudEvidenceField({
     evidence.type === "pasted-sql" ||
     evidence.type === "pasted-result" ||
     evidence.type === "manual-note" ||
-    evidence.type === "screenshot-description";
+    evidence.type === "screenshot-description" ||
+    evidence.type === "metric-contract-json" ||
+    evidence.type === "browser-config-json";
 
   return (
     <label className="evidenceField" htmlFor={inputId}>
@@ -1123,7 +1138,7 @@ function CloudEvidenceField({
   );
 }
 
-function CloudEvidencePage({
+function LocalEvidenceChallengePage({
   challenge,
   isCompleted,
   onComplete,
@@ -1132,12 +1147,17 @@ function CloudEvidencePage({
   readonly isCompleted: boolean;
   readonly onComplete: CompleteChallengeHandler;
 }): JSX.Element {
-  const [evidenceAnswers, setEvidenceAnswers] =
-    useState<CloudEvidenceAnswerState>({});
+  const isBrowserConfig = challenge.mode === "browser-config";
+  const [evidenceAnswers, setEvidenceAnswers] = useState<
+    CloudEvidenceAnswerState | BrowserConfigAnswerState
+  >({});
   const [questionAnswers, setQuestionAnswers] = useState<QuizAnswerState>({});
   const checkEvaluation = useMemo(
-    () => evaluateCloudEvidenceChecks(challenge, evidenceAnswers),
-    [challenge, evidenceAnswers],
+    () =>
+      isBrowserConfig
+        ? evaluateBrowserConfigChecks(challenge, evidenceAnswers)
+        : evaluateCloudEvidenceChecks(challenge, evidenceAnswers),
+    [challenge, evidenceAnswers, isBrowserConfig],
   );
   const questionEvaluation = useMemo(
     () => evaluateChallengeQuestions(challenge, questionAnswers),
@@ -1158,7 +1178,10 @@ function CloudEvidencePage({
   );
   const unsupportedChecks = challenge.checks.filter(
     (check) =>
-      check.type !== "quiz-answer" && !isCloudEvidenceCheckSupported(check),
+      check.type !== "quiz-answer" &&
+      (isBrowserConfig
+        ? !isBrowserConfigCheckSupported(check)
+        : !isCloudEvidenceCheckSupported(check)),
   );
   const mechanicalChecks = checkEvaluation.checks.filter(
     (check) => check.status !== "unsupported",
@@ -1180,7 +1203,7 @@ function CloudEvidencePage({
 
   function setEvidenceAnswer(
     evidenceId: string,
-    value: CloudEvidenceValue,
+    value: LocalEvidenceValue,
   ): void {
     setEvidenceAnswers((currentAnswers) => ({
       ...currentAnswers,
@@ -1197,7 +1220,9 @@ function CloudEvidencePage({
 
   return (
     <section
-      className="page challengeDetailPage cloudEvidencePage"
+      className={`page challengeDetailPage ${
+        isBrowserConfig ? "browserConfigPage" : "cloudEvidencePage"
+      }`}
       aria-labelledby={`${challenge.id}-title`}
     >
       <div className="challengeDetailHeader">
@@ -1253,20 +1278,26 @@ function CloudEvidencePage({
 
       {unsupportedChecks.length > 0 ? (
         <div className="feedbackBox feedbackFail" role="status">
-          This cloud evidence challenge includes unsupported checks and cannot
-          be completed yet.
+          This {isBrowserConfig ? "browser config" : "cloud evidence"} challenge
+          includes unsupported checks and cannot be completed yet.
         </div>
       ) : null}
 
       <div className="cloudEvidenceLayout">
         <section className="evidencePanel" aria-label="Evidence inputs">
           <div>
-            <p className="eyebrow">Evidence</p>
-            <h2>Local evidence capture</h2>
+            <p className="eyebrow">
+              {isBrowserConfig ? "Configuration" : "Evidence"}
+            </p>
+            <h2>
+              {isBrowserConfig
+                ? "Local config capture"
+                : "Local evidence capture"}
+            </h2>
           </div>
           <div className="evidenceGrid">
             {(challenge.evidence ?? []).map((evidence) => (
-              <CloudEvidenceField
+              <LocalEvidenceField
                 evidence={evidence}
                 key={evidence.id}
                 onChange={setEvidenceAnswer}
@@ -1279,7 +1310,9 @@ function CloudEvidencePage({
         <section className="evidencePanel" aria-label="Evidence questions">
           <div>
             <p className="eyebrow">Checkpoint</p>
-            <h2>Credential boundary</h2>
+            <h2>
+              {isBrowserConfig ? "Contract checkpoint" : "Credential boundary"}
+            </h2>
           </div>
           <div className="quizPanel">
             {challenge.questions.map((question, index) => {
@@ -2038,7 +2071,18 @@ function ChallengesPage({
 
   if (selectedChallenge?.mode === "cloud-evidence") {
     return (
-      <CloudEvidencePage
+      <LocalEvidenceChallengePage
+        key={selectedChallenge.id}
+        challenge={selectedChallenge}
+        isCompleted={completedChallengeIds.has(selectedChallenge.id)}
+        onComplete={completeSelectedChallenge}
+      />
+    );
+  }
+
+  if (selectedChallenge?.mode === "browser-config") {
+    return (
+      <LocalEvidenceChallengePage
         key={selectedChallenge.id}
         challenge={selectedChallenge}
         isCompleted={completedChallengeIds.has(selectedChallenge.id)}

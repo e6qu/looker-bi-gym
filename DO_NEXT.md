@@ -3,14 +3,13 @@
 ## Immediate Next Step
 
 Numbered implementation tasks 001 through 028 are implemented. PR #3, PR #4,
-PR #5, PR #6, PR #7, and PR #8 were merged. PR #8 merged on 2026-05-10 at
-`5db7663ee0d76be809cb383a4dfeb4390eb5ed6f`. Post-merge CI and GitHub Pages
-deployment for PR #8 passed, and the live Pages URL returned HTTP 200.
+PR #5, PR #6, PR #7, PR #8, and PR #9 were merged. PR #9 merged on 2026-05-10
+as squash commit `b583b77`.
 
 Current implementation step:
 
-- Task 025 - Real Tutorial Instruction Packs is merged via PR #8.
-- Continue with implementation Task 026 - Challenge Grading Contract Expansion.
+- Task 026 - Challenge Grading Contract Expansion is implemented on branch
+  `task026-grading-contracts` and ready for PR review.
 - Read `README.md`, `docs/14-platform-components.md`, `PLAN.md`, `STATUS.md`,
   `BUGS.md`, `tasks/025-real-tutorial-instruction-packs.md`, and
   `tasks/026-challenge-grading-contract-expansion.md` first.
@@ -18,18 +17,21 @@ Current implementation step:
   under `tasks/*.md`; `learner tasks` are curriculum exercise units shown to
   learners.
 
-1. Extend challenge contracts for broader grading beyond current SQL-result and
-   cloud-evidence checks.
-2. Add or complete browser-config and metric-contract validators where the
-   static app can grade artifacts deterministically.
-3. Add dataset-derived expected-answer generation where it improves reliability
-   without hiding expected outputs from committed fixtures.
-4. Expand known-bad fixture requirements beyond SQL trap challenges when a
-   common wrong artifact can be expressed.
-5. Keep learner-task, quiz-bank, recipe, and exam-card content QA green while
-   expanding the grading model.
-6. Preserve the new SQL result visualization behavior and Playwright
-   tutorial-to-challenge flow.
+1. Push the Task 026 follow-up commit to PR #10.
+2. Watch PR #10 checks and keep the branch mergeable. The user will merge the
+   PR after CI passes.
+3. After merge, verify main-branch CI, GitHub Pages deployment, and the live
+   Pages URL.
+4. After the merge and Pages deployment, perform a real deployed-UI click-through
+   with Playwright/browser automation and screenshots. Do not infer from build
+   output alone. At minimum open the deployed GitHub Pages app, capture the home
+   page, challenge catalog, `deposit-metric-contract`, one browser SQL flow,
+   one cloud-evidence flow, Settings export/reset surfaces, and a mobile
+   viewport. Follow actual controls and record screenshots/checkpoints in the
+   continuity notes.
+5. Then choose the next implementation task. Good candidates are a browser-local
+   JSON import flow for Settings or richer browser-config/metric-contract
+   challenges.
 
 Preservation and verification steps:
 
@@ -37,12 +39,17 @@ Preservation and verification steps:
 - Keep rebuildable generated outputs ignored; regenerate them from committed source instead of committing them.
 - Keep DuckDB-WASM runtime files supplied by dependencies/local build output, not committed binary artifacts.
 - Keep config files in `app/configs/` as TypeScript and covered by `tsconfig.node.json`.
-- Keep `bun run format:check`, `bun run lint`, `bun run typecheck`, and `bun run check` clean before merging. Full `bun run check` passed locally for the Task 024 branch on 2026-05-10.
+- Keep `bun run format:check`, `bun run lint`, `bun run typecheck`, and `bun run check` clean before merging. Full `bun run check` passed locally for the Task 026 branch on 2026-05-10.
 - Preserve the frontend-only boundary: no backend calls, server session, API database, analytics beacon, or learner-data upload.
 - Preserve browser-local progress behavior: `localStorage` plus same-site cookie fallback, with reset clearing both.
 - Preserve Settings export behavior and implement future import as browser-local JSON validation/preview/apply only.
 - Preserve the test pyramid documented in `docs/12-test-pyramid.md` and enforced by `bun run test:platform-boundary`.
 - Preserve the Task 015 fixture coverage rule: every released manifest needs a known-good solution fixture or a documented exception, and CTF/trap challenges need expected known-bad coverage.
+- Preserve the Task 026 grading-contract rule: browser-config challenges use
+  local JSON evidence only, supported checks must be covered by content QA, and
+  exclusion-style artifact checks need known-bad fixture coverage. Browser-SQL
+  exact row-count and aggregate manifest expectations must stay covered by
+  `bun run test:derived-expectations`.
 - Preserve the Task 016 export boundary: progress export must stay local, user-controlled, and free of credentials, raw answers, pasted cloud evidence, sensitive synthetic field names, real banking data, storage keys, and hidden app internals.
 - Preserve the Task 017 content QA boundary: `bun run test:content-qa` must keep required tools, regulatory-context links, disclaimer language, synthetic-data warnings, dataset synthetic-only notes, and internal Markdown links covered.
 - Preserve the rendered UI boundary: `bun run test:e2e` must keep the real built app, responsive layout, challenge pages, DuckDB-WASM SQL execution, cloud-evidence controls, Settings export metadata, and overflow checks covered.

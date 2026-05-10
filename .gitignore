@@ -7,6 +7,10 @@ test-results/
 .vite/
 app/.vite/
 var/
+derived-expectations/
+screenshots/
+app/derived-expectations/
+app/screenshots/
 app/src/generated/*.json
 app/src/generated/*.sqlite
 app/src/generated/*.ts

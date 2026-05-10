@@ -36,10 +36,14 @@ The first platform release and PR #3 established:
 - [docs/14-platform-components.md](docs/14-platform-components.md) is the
   component map for the GitHub Pages website, content, datasets, facts, runtime,
   browser-local state, JSON export/import direction, and verification gates.
-- Open PR #8 now includes the first real learner-task packs, a separate quiz
-  bank, an exam-card pack, an optional Looker Studio recipe, recursive tutorial
+- PR #8 added the first real learner-task packs, a separate quiz bank, an
+  exam-card pack, an optional Looker Studio recipe, recursive tutorial
   rendering, and SQL result bar-chart visualization for browser SQL challenge
   results.
+- Task 026 on branch `task026-grading-contracts` adds browser-config JSON
+  grading, the first metric-contract artifact challenge, known-good/known-bad
+  fixtures for that mode, content QA for supported checks, and a rendered
+  Playwright learner flow.
 
 ## Split Plans
 
@@ -202,8 +206,11 @@ sketch-like lessons with full lesson packs and app-rendered learning surfaces:
 
 Add richer challenge modes and validators:
 
-- Browser config/metric contract validators.
-- Dataset-derived expected answer generation.
+- Browser config/metric contract validators. Initial browser-config JSON
+  validators and a metric-contract challenge are implemented in Task 026.
+- Dataset-derived expected answer generation. Initial browser-SQL row-count and
+  aggregate expectation checks are implemented in Task 026 through known-good
+  fixture SQL executed against pinned committed datasets.
 - Golden answer explanations.
 - Known-bad fixtures for every CTF/trap challenge.
 - Fact ID coverage checks for every released lesson step and question.

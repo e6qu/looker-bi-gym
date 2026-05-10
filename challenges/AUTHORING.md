@@ -42,7 +42,9 @@ Use `quiz` when the work is conceptual and can be graded through multiple-choice
 
 Use `browser-sql` when the learner writes SQL over static synthetic CSV datasets loaded into DuckDB-WASM. Prefer this for grain, fanout, reconciliation, semi-additive balance, and sensitive-field exclusion exercises.
 
-Use `browser-config` when the learner edits structured text such as a metric contract, mapping, or governance register. This mode is planned in the schema; do not release a browser-config challenge until rendering and validators exist or the task documents the manual gap.
+Use `browser-config` when the learner edits structured JSON such as a metric
+contract, mapping, or governance register. The runtime renders local JSON inputs
+and grades deterministic JSON-path checks in the browser.
 
 Use `cloud-evidence` when the learner optionally works in Google Cloud Console, BigQuery UI, or Looker Studio UI and pastes local evidence into the static app. Checks must clearly separate mechanically validated evidence from self-attested checklist items.
 
@@ -74,12 +76,12 @@ Every manifest must include:
 
 Optional fields:
 
-| Field             | Rule                                                                                                    |
-| ----------------- | ------------------------------------------------------------------------------------------------------- |
-| `hints`           | Staged help, with `level` from 1 to 5. Do not reveal the full solution in the first hint.               |
-| `evidence`        | Required for most cloud-evidence challenges. Describe the pasted value and whether it is self-attested. |
-| `rubric`          | Use for manual-review or capstone scoring notes.                                                        |
-| `next_challenges` | Challenge IDs that continue the path.                                                                   |
+| Field             | Rule                                                                                                                       |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `hints`           | Staged help, with `level` from 1 to 5. Do not reveal the full solution in the first hint.                                  |
+| `evidence`        | Required for most cloud-evidence and browser-config challenges. Describe the pasted value and whether it is self-attested. |
+| `rubric`          | Use for manual-review or capstone scoring notes.                                                                           |
+| `next_challenges` | Challenge IDs that continue the path.                                                                                      |
 
 ## Required Tools Policy
 
@@ -189,6 +191,15 @@ Cloud evidence validators:
 | `checklist-confirmed`      | `true` when the learner must confirm an inspectable condition. |
 | `evidence-format`          | String or string array that text evidence must mention.        |
 
+Browser config validators:
+
+| Check type             | Expected shape                                                       |
+| ---------------------- | -------------------------------------------------------------------- |
+| `json-required-fields` | String or string array of required JSON paths.                       |
+| `json-field-equals`    | Object whose keys are JSON paths and values are scalar expectations. |
+| `json-array-includes`  | Object whose keys are JSON paths and values are required strings.    |
+| `json-array-excludes`  | Object whose keys are JSON paths and values are forbidden strings.   |
+
 Schema-only or future/manual checks include `reconciliation`, `manual-review`, and some question types such as `matching` and `short-evidence`. Do not rely on them as the only release gate until a runtime or manual procedure is documented in the task file.
 
 ## Verification And Tests
@@ -200,11 +211,21 @@ A release-ready challenge must document how it is verified. Prefer automated tes
 - `bun run test:quiz` for quiz grading changes.
 - `bun run test:sql` for browser SQL runtime smoke coverage.
 - `bun run test:fixtures` for released challenge known-good and expected known-bad solution fixtures.
+- `bun run test:derived-expectations` for browser-SQL row-count and aggregate
+  values derived from the pinned dataset through known-good fixture SQL.
 - `bun run test:cloud-evidence` for cloud evidence parser and validator changes.
+- `bun run test:browser-config` for browser-config parser and validator
+  changes.
 - `bun run test:validators` for shared validator behavior.
 - `make check` before marking a task complete.
 
 Every released manifest under `challenges/manifests/` must have at least one known-good solution fixture under `challenges/solution-fixtures/{challenge_id}/`. Golden fixtures should prove both sides of a trap: one known-good solution passes and one known-bad solution fails for the expected check IDs. If a task cannot automate a check yet, write the manual procedure and residual risk in the relevant `tasks/*.md` file and continuity docs.
+
+For browser-SQL challenges, exact `row-count`, `scalar-aggregate`, and
+`aggregate-total` expectations are not trusted by inspection alone. The
+known-good fixture SQL is executed against the pinned committed dataset, and
+`bun run test:derived-expectations` fails if the manifest value differs from
+the derived result.
 
 ## Tutorial Conversion Checklist
 
