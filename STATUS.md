@@ -4,9 +4,17 @@ Last updated: 2026-05-10
 
 ## Current Branch And PR
 
-- Current branch: `phase-5-assessment-content-expansion`, based on verified
+- Current branch: `phase-6-tutorial-challenge-expansion`, based on verified
   `main`.
-- Current PR: #24, `https://github.com/e6qu/looker-bi-gym/pull/24`.
+- Current PR: not opened yet.
+- PR #24, `https://github.com/e6qu/looker-bi-gym/pull/24`, is squash-merged
+  at `22ff713374382341bbc11474a2501ab9d5325908`.
+- Main CI for `22ff713` passed:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25639848973`.
+- GitHub Pages workflow for `22ff713` passed:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25639848974`.
+- Live Pages URL verified HTTP 200 on 2026-05-10:
+  `https://e6qu.github.io/looker-bi-gym/`.
 - PR #23, `https://github.com/e6qu/looker-bi-gym/pull/23`, is squash-merged
   at `1ba5fefdb169c74b633b02d6ef0a66014bf96006`.
 - Main CI for `1ba5fef` passed:
@@ -26,30 +34,28 @@ Last updated: 2026-05-10
 
 ## Active Task
 
-Task 038 - Assessment Content Expansion.
+Task 039 - Tutorial Challenge Expansion.
 
 Current state:
 
 - PR #23 added the first Phase 4 fact expansion batch and was verified on main.
-- Started Phase 5 on branch `phase-5-assessment-content-expansion`.
-- Added the first Task 038 assessment expansion batch locally:
-  - 10 flashcards tied to the new BigQuery and Looker Studio facts;
-  - 6 quiz questions across easy, medium, and hard;
-  - 2 exam cards for ratio null contracts and dashboard refresh operations.
-- Raised local assessment guardrails to at least 59 flashcards, 14 quiz
-  questions, and 4 exam cards.
-- Fixed the rendered UI flashcard test so the expected card count is derived
-  from the generated catalog instead of hardcoded.
+- PR #24 added the first Phase 5 assessment expansion batch and was verified on
+  main.
+- Started Phase 6 on branch `phase-6-tutorial-challenge-expansion`.
+- Added Task 039 and a first self-contained learner task locally:
+  `LT-DQ-006 - Define A Ratio Null Contract`.
+- Task 039 local verification passed; formal Claude review is blocked by the
+  same CLI hang.
 
 ## Open Blockers
 
 - Claude CLI formal review remains blocked. Non-TUI Claude CLI mode works for a
   tiny prompt, but the Task 034 formal review and Task 035 formal review
-  attempts, plus the Task 036, Task 037, and Task 038 formal review attempts,
-  produced no output and were terminated. Phase 4 path migration and the first
-  fact expansion batch are implemented, merged, deployed, and locally verified,
-  but not Claude-reviewed. Task 038 is locally verified but not
-  Claude-reviewed.
+  attempts, plus the Task 036, Task 037, Task 038, and Task 039 formal review
+  attempts, produced no output and were terminated. Phase 4 path migration and
+  the first fact expansion batch are implemented, merged, deployed, and locally
+  verified, but not Claude-reviewed. Tasks 038 and 039 are locally verified but
+  not Claude-reviewed.
 - Safari second-browser verification remains open until Safari remote
   automation is explicitly enabled or a manual Safari pass is performed.
 
@@ -84,6 +90,15 @@ PR #23 post-merge verification passed on 2026-05-10:
   `1ba5fef`.
 - `curl -L -I https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
   `last-modified: Sun, 10 May 2026 20:53:44 GMT`.
+
+PR #24 post-merge verification passed on 2026-05-10:
+
+- PR #24 was squash-merged at `22ff713`.
+- `gh run watch 25639848973` showed main CI success for `22ff713`.
+- `gh run watch 25639848974` showed GitHub Pages deployment success for
+  `22ff713`.
+- `curl -L -I https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
+  `last-modified: Sun, 10 May 2026 21:11:23 GMT`.
 
 Task 036 local verification passed on 2026-05-10:
 
@@ -139,6 +154,21 @@ Task 038 local verification passed on 2026-05-10:
 - stale scan for unsupported completeness claims
 - `git diff --check`
 
+Task 039 local verification passed on 2026-05-10:
+
+- `bun run content:generate`
+- `bun run content:check`
+- `bun run test:content-qa`
+- `bun run validate:static-links`
+- `bun run format:check`
+- `bun run typecheck`
+- `bun run lint`
+- `bun run test:platform-boundary`
+- `bun run check` after approved local Vite preview binding, with all 12
+  Playwright tests passing
+- stale scan for unsupported completeness claims
+- `git diff --check`
+
 Failed/blocked attempts:
 
 - First sandboxed `bun run check` failed only because Vite preview could not
@@ -150,10 +180,13 @@ Failed/blocked attempts:
   produced no output for over 40 seconds, and was terminated.
 - Task 038 Claude CLI formal review used the same non-TUI command shape,
   produced no output for about 50 seconds, and was terminated.
+- Task 039 Claude CLI formal review used the same non-TUI command shape,
+  produced no output for about 50 seconds, and was terminated.
 
 ## Confidence
 
 High for the local Phase 4 root-path migration, first fact expansion batch,
-Task 038 assessment expansion batch, and automated gates. Phase 4 and Phase 5
-must stay `implemented, not Claude-reviewed` until a non-hanging formal review
-path exists.
+Task 038 assessment expansion batch, Task 039 tutorial/challenge expansion
+batch, and automated gates. Phase 4, Phase 5, and Phase 6 must stay
+`implemented, not Claude-reviewed` until a non-hanging formal review path
+exists.
