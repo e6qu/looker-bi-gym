@@ -30,6 +30,12 @@ The first platform release and PR #3 established:
   Markdown links, source fact references, and tutorial structure.
 - Deterministic lending month-end dataset pack and browser SQL challenge for
   semi-additive exposure snapshots.
+- Post-merge PR #6 adds the larger lending/collateral dataset pack, official
+  Romania HPI context, manual LLM question/dreaming workbench, and the
+  terminology/plan boundary for learner tasks.
+- [docs/14-platform-components.md](docs/14-platform-components.md) is the
+  component map for the GitHub Pages website, content, datasets, facts, runtime,
+  browser-local state, JSON export/import direction, and verification gates.
 
 ## Split Plans
 
@@ -103,6 +109,9 @@ The first platform release and PR #3 established:
   enforced browser exam. Each exam challenge can be up to roughly 2 hours, is
   user-selected, and is self-assessed at first with as much deterministic
   verification as the current static app can support.
+- JSON export is implemented in Settings. JSON import is planned as an optional
+  browser-local workflow: validate the export format locally, preview imported
+  evidence, apply only after user confirmation, and never upload learner data.
 - Terminology must stay precise:
   - `implementation tasks` are numbered repository work items under `tasks/*.md`
     such as Task 024 and Task 025;

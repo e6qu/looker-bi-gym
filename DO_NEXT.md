@@ -2,24 +2,60 @@
 
 ## Immediate Next Step
 
-Numbered tasks 001 through 027 are implemented. PR #3, PR #4, and PR #5 were merged. Post-merge CI and GitHub Pages deployment for PR #5 passed, and the live Pages URL returned HTTP 200.
+Numbered implementation tasks 001 through 027 are implemented. PR #3, PR #4, PR #5, and PR #6 were merged. PR #6 merged on 2026-05-10 at `1da6272efb1c219bfcdf8981e4014af4b4a899e4`. Post-merge CI and GitHub Pages deployment for PR #6 passed, and the live Pages URL returned HTTP 200.
 
 Current implementation step:
 
-- Continue PR #6: `https://github.com/e6qu/looker-bi-gym/pull/6`.
-- PR #6 now includes the expanded Romania lending/real-estate collateral dataset
-  support, official Eurostat HPI source table, fact-backed collateral questions,
-  and the manual LLM question review/dreaming workbench. Local `bun run check`
-  passed on 2026-05-10 after the expansion.
-- PR #6 is mergeable and GitHub Actions `Validate, Test, And Build` passed for
-  commit `cc1957e7fc1ce8d771b0a07e14c903703d853717` on 2026-05-10.
-- The user explicitly wants implementation Task 025's learner-facing tutorial
-  model added to PR #6 before merge.
+- Review PR #7: `https://github.com/e6qu/looker-bi-gym/pull/7`.
+- Task 028 is implemented on branch `organize-platform-components`; PR #7 is
+  open, mergeable, and CI is in progress for commit
+  `de20dea8717a803aa64d9b3be29a4dd48753a479`.
+- Organize the whole project into clear components and sections from the
+  learner's GitHub Pages website perspective.
+- Keep the frontend-only boundary explicit: no backend, no server session, no
+  API database, no analytics beacon, no server-side grading, no learner-data
+  upload.
+- Keep state explicit: browser `localStorage` plus same-site cookie for progress,
+  Settings JSON export implemented, Settings JSON import planned as a local
+  validate/preview/apply workflow.
 - Keep terminology precise: `implementation tasks` are numbered repo work items
   under `tasks/*.md`; `learner tasks` are curriculum exercise units shown to
   learners.
 
-Next implementation step inside PR #6:
+Task 028 concrete steps:
+
+1. Add a root `README.md` that orients contributors to the static website,
+   frontend-only boundary, component directories, and browser-local state.
+2. Add `docs/14-platform-components.md` as the component map covering:
+   - website sections;
+   - tutorials, learner tasks, challenges, recipes, quizzes, and exams;
+   - datasets, facts, sources, and regulations;
+   - app runtime modules;
+   - browser SQL and validation;
+   - `localStorage`, cookie mirror, JSON export, planned JSON import;
+   - verification gates.
+3. Link the component map from `docs/README.md`, `PLAN.md`, `AGENTS.md`, and
+   relevant continuity docs.
+4. Update `app/README.md` to clarify JSON export and planned browser-local JSON
+   import.
+5. Update Task 028, `STATUS.md`, `WHAT_WE_DID.md`, `DO_NEXT.md`, and `BUGS.md`.
+6. Run `bun run format:check` and `bun run test:content-qa`.
+7. Commit on `organize-platform-components`, push the branch, and open a PR.
+
+Task 028 implementation status:
+
+- `README.md` added.
+- `docs/14-platform-components.md` added.
+- `docs/README.md`, `app/README.md`, `PLAN.md`, `STATUS.md`, `WHAT_WE_DID.md`,
+  `DO_NEXT.md`, `BUGS.md`, `tasks/README.md`, and
+  `tasks/028-platform-component-organization.md` updated.
+- `bun run format`, `bun run format:check`, and `bun run test:content-qa`
+  passed.
+- Post-merge PR #6 CI and Pages deployment passed, and Pages returned HTTP 200.
+- Remaining: wait for PR #7 CI, merge after review, then verify post-merge CI
+  and Pages.
+
+Next implementation step after Task 028:
 
 1. Update or add learner-task content/schema for several complete 15-20 minute
    learner tasks across multiple areas:
@@ -56,10 +92,8 @@ Next implementation step inside PR #6:
 7. Document exam mode as untimed independent challenge cards up to about 2 hours
    each, selectable by the learner and self-assessed first. Defer full app exam
    rendering unless it falls naturally out of the task/quiz data model.
-8. Cross-link `PLAN.md`, `STATUS.md`, `DO_NEXT.md`, `WHAT_WE_DID.md`, `BUGS.md`,
-   `tasks/024-deterministic-local-dataset-packs.md`,
-   `tasks/025-real-tutorial-instruction-packs.md`, and `AGENTS.md` so a future
-   session can resume without chat history.
+8. Cross-link learner-task docs with the platform component map so future
+   implementation does not confuse learner tasks with implementation tasks.
 
 Preservation and verification steps:
 
@@ -70,6 +104,7 @@ Preservation and verification steps:
 - Keep `bun run format:check`, `bun run lint`, `bun run typecheck`, and `bun run check` clean before merging. Full `bun run check` passed locally for the Task 024 branch on 2026-05-10.
 - Preserve the frontend-only boundary: no backend calls, server session, API database, analytics beacon, or learner-data upload.
 - Preserve browser-local progress behavior: `localStorage` plus same-site cookie fallback, with reset clearing both.
+- Preserve Settings export behavior and implement future import as browser-local JSON validation/preview/apply only.
 - Preserve the test pyramid documented in `docs/12-test-pyramid.md` and enforced by `bun run test:platform-boundary`.
 - Preserve the Task 015 fixture coverage rule: every released manifest needs a known-good solution fixture or a documented exception, and CTF/trap challenges need expected known-bad coverage.
 - Preserve the Task 016 export boundary: progress export must stay local, user-controlled, and free of credentials, raw answers, pasted cloud evidence, sensitive synthetic field names, real banking data, storage keys, and hidden app internals.
@@ -91,4 +126,5 @@ Preservation and verification steps:
 - [024 - Deterministic Local Dataset Packs](tasks/024-deterministic-local-dataset-packs.md)
 - [025 - Real Tutorial Instruction Packs](tasks/025-real-tutorial-instruction-packs.md)
 - [026 - Challenge Grading Contract Expansion](tasks/026-challenge-grading-contract-expansion.md)
+- [028 - Platform Component Organization](tasks/028-platform-component-organization.md)
 - Use the SQLite fact database to draft richer fact-backed questions and tutorial steps.

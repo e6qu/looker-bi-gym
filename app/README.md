@@ -55,13 +55,15 @@ No third-party analytics, telemetry beacon, session replay, advertising tag, or 
 
 The app displays the app version, content version, and build reference in the footer and Settings page. The app/content version comes from `app/package.json`; CI or a local release build may set `VITE_BUILD_REF` to show a commit, tag, or workflow run label. If unset, the displayed build reference is `local`.
 
-## Progress Export
+## Progress Export And Planned Import
 
 The Settings page can export local completion evidence as a JSON file. The export is generated in the browser from the current local progress state and is not uploaded by the app.
 
 The export format is `looker-bi-gym.progress-export.v1` and includes completed challenge IDs, challenge versions, local flags, completion timestamps, dataset IDs and versions, app/content version, privacy boundary fields, and optional learner notes typed into the export form. It excludes credentials, raw quiz answers, pasted cloud evidence, sensitive synthetic dataset columns, real banking data, storage keys, and hidden app internals.
 
-The Settings page shows a JSON preview before download. Import is not implemented in this static release; learners should review the JSON before sharing it for completion review. Resetting browser progress clears local storage only and does not delete exported JSON files already saved outside the browser.
+The Settings page shows a JSON preview before download. Import is not implemented in this static release; learners should review the JSON before sharing it for completion review. Planned import should remain browser-local: the learner chooses a JSON file, the app validates the `looker-bi-gym.progress-export.v1` structure locally, previews the imported completion evidence, and applies it only after confirmation. Import must not upload learner data or contact a backend.
+
+Resetting browser progress clears `localStorage` and the same-site progress cookie. Reset does not delete exported JSON files already saved outside the browser.
 
 ## Browser Compatibility
 

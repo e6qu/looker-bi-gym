@@ -90,9 +90,13 @@ or challenge behavior:
 - `DO_NEXT.md`: next actionable implementation steps.
 - `WHAT_WE_DID.md`: commands run, fixes tried, what worked, and what failed.
 - `BUGS.md`: known defects and follow-up verification gaps.
-- `tasks/024-deterministic-local-dataset-packs.md`: current PR #6 dataset work.
+- `docs/14-platform-components.md`: current website, content, runtime, data,
+  state, export/import, and verification component map.
+- `tasks/024-deterministic-local-dataset-packs.md`: merged PR #6 dataset work.
 - `tasks/025-real-tutorial-instruction-packs.md`: next implementation task for
   learner-facing tutorial work.
+- `tasks/028-platform-component-organization.md`: current component
+  organization implementation task.
 - `docs/13-llm-question-and-dreaming-workbench.md`: manual LLM generation,
   review, refinement, and dreaming boundaries.
 

@@ -31,6 +31,7 @@ Task order:
 - [025 - Real Tutorial Instruction Packs](025-real-tutorial-instruction-packs.md)
 - [026 - Challenge Grading Contract Expansion](026-challenge-grading-contract-expansion.md)
 - [027 - Source-Backed BI Fact Database](027-source-backed-bi-fact-database.md)
+- [028 - Platform Component Organization](028-platform-component-organization.md)
 
 Completion rule:
 
