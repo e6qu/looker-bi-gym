@@ -2,12 +2,14 @@
 
 ## Immediate Next Step
 
-Numbered implementation tasks 001 through 028 are implemented. PR #3, PR #4, PR #5, PR #6, and PR #7 were merged. PR #7 merged on 2026-05-10 at `954a128fd65b2b117b5fe23a3295c722cd6ae3f5`. Post-merge CI and GitHub Pages deployment for PR #7 passed, and the live Pages URL returned HTTP 200.
+Numbered implementation tasks 001 through 028 are implemented. PR #3, PR #4,
+PR #5, PR #6, PR #7, and PR #8 were merged. PR #8 merged on 2026-05-10 at
+`5db7663ee0d76be809cb383a4dfeb4390eb5ed6f`. Post-merge CI and GitHub Pages
+deployment for PR #8 passed, and the live Pages URL returned HTTP 200.
 
 Current implementation step:
 
-- Task 025 - Real Tutorial Instruction Packs is implemented on the open PR #8
-  branch.
+- Task 025 - Real Tutorial Instruction Packs is merged via PR #8.
 - Continue with implementation Task 026 - Challenge Grading Contract Expansion.
 - Read `README.md`, `docs/14-platform-components.md`, `PLAN.md`, `STATUS.md`,
   `BUGS.md`, `tasks/025-real-tutorial-instruction-packs.md`, and
