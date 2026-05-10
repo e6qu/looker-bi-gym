@@ -1,3 +1,22 @@
+---
+{
+  "id": "LT-SQL-003",
+  "title": "LT-SQL-003 - Build A Month-End Serving Result",
+  "content_type": "learner_task",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "learner-tasks",
+  "source_facts":
+    [
+      "FACT-BI-REFERENCE-DATE-SEPARATION",
+      "FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT",
+      "FACT-BIGQUERY-LAST-DAY-MONTH-END",
+      "FACT-GDPR-DATA-MINIMISATION",
+    ],
+  "tags": ["tutorial", "synthetic-data"],
+}
+---
+
 # LT-SQL-003 - Build A Month-End Serving Result
 
 Area: BigQuery and SQL mechanics. Timebox: 15-20 minutes. Dataset:

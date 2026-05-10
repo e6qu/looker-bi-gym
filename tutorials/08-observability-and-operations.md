@@ -1,3 +1,22 @@
+---
+{
+  "id": "tutorial-tutorials-08-observability-and-operations",
+  "title": "08 - Observability And Operations",
+  "content_type": "tutorial",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "core",
+  "source_facts":
+    [
+      "FACT-BIGQUERY-LOGICAL-VIEW",
+      "FACT-DORA-ICT-IDENTIFICATION",
+      "FACT-DORA-ICT-RISK-FRAMEWORK",
+      "FACT-EBA-DPM-VALIDATION-RULES",
+    ],
+  "tags": ["tutorial", "synthetic-data"],
+}
+---
+
 # 08 - Observability And Operations
 
 Area: D - Governance, Security, And Operations

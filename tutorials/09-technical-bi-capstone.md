@@ -1,3 +1,25 @@
+---
+{
+  "id": "tutorial-tutorials-09-technical-bi-capstone",
+  "title": "09 - Technical BI Capstone",
+  "content_type": "tutorial",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "core",
+  "source_facts":
+    [
+      "FACT-BIGQUERY-VIEW-SCOPE",
+      "FACT-DORA-ICT-IDENTIFICATION",
+      "FACT-DORA-ICT-RISK-FRAMEWORK",
+      "FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK",
+      "FACT-GDPR-DATA-MINIMISATION",
+      "FACT-LOOKER-STUDIO-CREDENTIALS",
+      "FACT-LOOKER-STUDIO-DATA-SOURCE",
+    ],
+  "tags": ["tutorial", "synthetic-data"],
+}
+---
+
 # 09 - Technical BI Capstone
 
 Area: E - Capstone

@@ -42,6 +42,7 @@ Task order:
 - [031 - Browser-Local Progress Import](031-browser-local-progress-import.md)
 - [032 - Expanded Flashcard Coverage](032-expanded-flashcard-coverage.md)
 - [033 - Flashcard Study Usability](033-flashcard-study-usability.md)
+- [034 - Content Schema And Generated Catalogs](034-content-schema-and-generated-catalogs.md)
 
 Completion rule:
 

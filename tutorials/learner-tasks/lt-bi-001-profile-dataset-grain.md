@@ -1,3 +1,22 @@
+---
+{
+  "id": "LT-BI-001",
+  "title": "LT-BI-001 - Profile Dataset Grain",
+  "content_type": "learner_task",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "learner-tasks",
+  "source_facts":
+    [
+      "FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION",
+      "FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT",
+      "FACT-GDPR-DATA-MINIMISATION",
+      "FACT-GDPR-PERSONAL-DATA",
+    ],
+  "tags": ["tutorial", "synthetic-data"],
+}
+---
+
 # LT-BI-001 - Profile Dataset Grain
 
 Area: BI fundamentals. Timebox: 15-20 minutes. Dataset:

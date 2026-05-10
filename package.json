@@ -10,6 +10,8 @@
   "scripts": {
     "dev": "bun run --filter @looker-bi-gym/app dev",
     "build": "bun run --filter @looker-bi-gym/app build",
+    "content:generate": "bun run --filter @looker-bi-gym/app content:generate",
+    "content:check": "bun run --filter @looker-bi-gym/app content:check",
     "check": "bun run --filter @looker-bi-gym/app check",
     "lint": "bun run --filter @looker-bi-gym/app lint",
     "format": "bun run --filter @looker-bi-gym/app format",

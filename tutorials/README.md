@@ -1,3 +1,15 @@
+---
+{
+  "id": "tutorial-tutorials-readme",
+  "title": "Tutorials Index",
+  "content_type": "tutorial_index",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "core",
+  "tags": ["tutorial", "synthetic-data"],
+}
+---
+
 # Tutorials Index
 
 The tutorial sequence is layered: each task consumes predefined synthetic

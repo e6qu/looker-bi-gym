@@ -5,6 +5,10 @@ import { fileURLToPath } from "node:url";
 import { parse } from "yaml";
 import { isBrowserConfigCheckSupported } from "../src/configEvidence";
 import { isCloudEvidenceCheckSupported } from "../src/cloudEvidence";
+import {
+  examPacks as catalogExamPacks,
+  quizBanks as catalogQuizBanks,
+} from "../src/learningContent";
 import { regulatoryContextReferences } from "../src/regulatoryContext";
 import { isSqlResultCheckSupported } from "../src/validators";
 import type {
@@ -73,14 +77,15 @@ const challengeDirs = [
   join(repoRoot, "challenges", "manifests"),
   join(repoRoot, "challenges", "drafts"),
 ];
-const quizDir = join(repoRoot, "quizzes");
-const examDir = join(repoRoot, "exams");
 const markdownRoots = [
   "_development",
   "app/README.md",
   "challenges",
   "datasets",
   "docs",
+  "exams",
+  "flashcards",
+  "quizzes",
   "regulations",
   "tutorials",
 ].map((path) => join(repoRoot, path));
@@ -217,24 +222,12 @@ async function readMarkdownFiles(): Promise<MarkdownFile[]> {
   );
 }
 
-async function readQuizBanks(): Promise<QuizBank[]> {
-  const quizPaths = await listFiles(quizDir, new Set([".yaml", ".yml"]));
-
-  return Promise.all(
-    quizPaths.map(
-      async (path) => parse(await readFile(path, "utf8")) as QuizBank,
-    ),
-  );
+function readQuizBanks(): QuizBank[] {
+  return [...catalogQuizBanks];
 }
 
-async function readExamPacks(): Promise<ExamPack[]> {
-  const examPaths = await listFiles(examDir, new Set([".yaml", ".yml"]));
-
-  return Promise.all(
-    examPaths.map(
-      async (path) => parse(await readFile(path, "utf8")) as ExamPack,
-    ),
-  );
+function readExamPacks(): ExamPack[] {
+  return [...catalogExamPacks];
 }
 
 async function readFactRegister(): Promise<FactRegister> {
@@ -751,8 +744,8 @@ const factRegister = await readFactRegister();
 const manifests = await readChallengeManifests();
 const markdownFiles = await readMarkdownFiles();
 const learnerTaskIds = readLearnerTaskIds(markdownFiles);
-const quizBanks = await readQuizBanks();
-const examPacks = await readExamPacks();
+const quizBanks = readQuizBanks();
+const examPacks = readExamPacks();
 
 assertChallengeContentBoundaries(manifests, factRegister);
 await assertRegulatoryContextLinks(manifests);

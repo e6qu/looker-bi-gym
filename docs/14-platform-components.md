@@ -32,8 +32,8 @@ Current rendered sections:
 - Workbench: neutral browser SQL workspace routes for committed synthetic
   datasets, used by self-contained tutorials.
 - Challenges: generated challenge catalog and challenge detail pages.
-- Quiz: rendered quiz-bank YAML.
-- Exam: rendered exam-card YAML.
+- Quiz: rendered quiz-bank Markdown from generated catalogs.
+- Exam: rendered exam-card Markdown from generated catalogs.
 - Flashcards: browser-local topic decks with spaced-repetition review state.
 - Facts: rendered source-fact graph.
 - Regulations: rendered context briefs from `regulations/`.
@@ -107,8 +107,9 @@ Quizzes:
 - First bank: one mixed 20-minute quiz with `easy`, `medium`, and `hard`
   questions, recommended learner-task IDs, source facts, answers,
   explanations, estimated seconds, and self-assessment notes.
-- Verification: `bun run test:quiz-facts-db` loads quiz YAML into SQLite temp
-  tables and verifies question facts against the local facts graph.
+- Verification: `bun run test:quiz-facts-db` loads generated quiz catalog
+  content into SQLite temp tables and verifies question facts against the local
+  facts graph.
 
 Exam cards:
 
@@ -122,8 +123,9 @@ Exam cards:
 Flashcards:
 
 - Current route: `#/flashcards`.
-- Current implementation: committed deck content and typed scheduler live in
-  `app/src/flashcards.ts`; the rendered route lives in `app/src/App.tsx`.
+- Current implementation: committed deck content lives in `flashcards/{topic}/`
+  Markdown; typed scheduler state lives in `app/src/flashcards.ts`; the rendered
+  route lives in `app/src/App.tsx`.
 - Role: topic-separated recall and review for facts, BI mechanics, platform
   behavior, tutorial checkpoints, and deterministic dataset outputs.
 - State: browser-local timestamped review state with one JSON export/import
@@ -187,12 +189,12 @@ App shell:
   browser SQL challenge/workbench UI, including a deterministic result bar chart
   when a query returns at least one dimension-like column and one numeric
   column.
-- `app/src/content.ts`: Markdown discovery for docs, regulations, and
-  recursive tutorial content.
-- `app/src/learningContent.ts`: typed YAML loading for quiz banks and exam
-  packs.
-- `app/src/factCatalog.ts`: browser fact index parsed from local fact Markdown
-  for source-evidence links and the `#/facts` graph browser.
+- `app/src/content.ts`: generated Markdown catalog access for docs,
+  regulations, and recursive tutorial content.
+- `app/src/learningContent.ts`: generated catalog access for quiz banks and
+  exam packs.
+- `app/src/factCatalog.ts`: generated browser fact index parsed from local fact
+  Markdown for source-evidence links and the `#/facts` graph browser.
 - `app/src/markdown.ts`: Markdown rendering and internal link rewriting for
   GitHub Pages hash routes.
 
@@ -220,8 +222,9 @@ State and export:
 - `app/src/progress.ts`: browser-local progress model, local flags,
   `localStorage`, same-site cookie mirror, reset, JSON export, and JSON import
   validation.
-- `app/src/flashcards.ts`: committed flashcard decks, typed review state,
-  SM-2-inspired scheduler transitions, and flashcard JSON import validation.
+- `app/src/flashcards.ts`: generated flashcard deck catalog access, typed
+  review state, SM-2-inspired scheduler transitions, and flashcard JSON import
+  validation.
 - Storage keys:
   - `looker-bi-gym.progress.v1`;
   - `looker-bi-gym.quiz-progress.v1` for legacy migration;
@@ -250,7 +253,7 @@ The canonical state path is browser-local:
 
 Current flashcard state behavior:
 
-- committed deck content is loaded from app source;
+- committed deck content is generated from `flashcards/{topic}/` Markdown;
 - per-card review state is stored locally in the browser;
 - export creates one JSON file containing the review state format, update time,
   and per-card review state;

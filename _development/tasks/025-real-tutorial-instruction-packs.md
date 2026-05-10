@@ -33,8 +33,8 @@ Implemented files:
 - `tutorials/learner-tasks/lt-looker-004-report-ready-data-source.md`
 - `tutorials/learner-tasks/lt-dq-005-reconcile-dashboard-controls.md`
 - `tutorials/recipes/r-looker-001-deposits-dashboard.md`
-- `quizzes/bi-foundations-mixed.yaml`
-- `exams/bi-foundations-exam.yaml`
+- `quizzes/bi-foundations/bi-foundations-mixed.md` after Task 034 migration
+- `exams/bi-foundations/bi-foundations-exam.md` after Task 034 migration
 - SQL result bar-chart rendering in `app/src/App.tsx`
 - Recursive tutorial Markdown loading in `app/src/content.ts`
 - Content QA coverage for learner tasks, quiz banks, and exam packs in
@@ -92,7 +92,7 @@ Implemented files:
 - `bun run test:e2e` passed on 2026-05-10 after approved local preview binding.
 - `bun run test:fixtures` passed on 2026-05-10.
 - `bun run check` passed on 2026-05-10 after approved local preview binding.
-- Follow-up on PR #13 renders quiz-bank YAML at `#/quiz` and exam-card YAML at
+- Follow-up on PR #13 rendered quiz-bank and exam-card content at `#/quiz` and
   `#/exam`, with Playwright coverage for those app surfaces and the fact graph.
 - Follow-up on PR #13 adds `bun run test:quiz-facts-db` so quiz question facts
   are verified against the SQLite fact graph, including sourced fact nodes and

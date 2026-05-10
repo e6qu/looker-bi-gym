@@ -1,3 +1,15 @@
+---
+{
+  "id": "facts-synthetic-dataset-controls",
+  "title": "Synthetic Dataset Control Facts",
+  "content_type": "fact_register",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "facts",
+  "tags": ["facts", "source-backed"],
+}
+---
+
 # Synthetic Dataset Control Facts
 
 These facts describe committed synthetic learner datasets used to grade browser

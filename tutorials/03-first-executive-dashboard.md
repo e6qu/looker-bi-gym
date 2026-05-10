@@ -1,3 +1,22 @@
+---
+{
+  "id": "tutorial-tutorials-03-first-executive-dashboard",
+  "title": "03 - First Executive Dashboard",
+  "content_type": "tutorial",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "core",
+  "source_facts":
+    [
+      "FACT-BIGQUERY-VIEW-SCOPE",
+      "FACT-GDPR-DATA-MINIMISATION",
+      "FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE",
+      "FACT-LOOKER-STUDIO-DATA-SOURCE",
+    ],
+  "tags": ["tutorial", "synthetic-data"],
+}
+---
+
 # 03 - First Executive Dashboard
 
 Area: C - Looker Studio Dashboards

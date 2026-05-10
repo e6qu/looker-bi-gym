@@ -1,3 +1,15 @@
+---
+{
+  "id": "facts-readme",
+  "title": "Source Fact Register",
+  "content_type": "fact_index",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "facts",
+  "tags": ["facts", "source-backed"],
+}
+---
+
 # Source Fact Register
 
 This directory is the local fact and source-card corpus for fact-backed banking

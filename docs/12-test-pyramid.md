@@ -29,10 +29,10 @@ The lower and middle layers run deterministic checks without a browser:
 - `bun run test:flashcards` covers the flashcard scheduler, timestamped review
   history, JSON import validation, deck uniqueness, source fact links, and
   recommended app-route links.
-- `bun run test:quiz-facts-db` builds the SQLite facts database, loads quiz YAML
-  into temporary quiz tables, and verifies that quiz source facts resolve to
-  sourced fact graph nodes. Numeric quiz answers must be backed by cited fact
-  text.
+- `bun run test:quiz-facts-db` builds the SQLite facts database, loads generated
+  quiz catalog content into temporary quiz tables, and verifies that quiz source
+  facts resolve to sourced fact graph nodes. Numeric quiz answers must be backed
+  by cited fact text.
 - `bun run test:fixtures` covers known-good and known-bad challenge solution fixtures.
 - `bun run test:derived-expectations` executes known-good browser-SQL fixtures
   against their pinned datasets and verifies manifest row-count and aggregate
@@ -66,8 +66,8 @@ The lower and middle layers run deterministic checks without a browser:
   sources remain visible without copying third-party deck text.
 - Fill browser-config metric contract JSON, answer contract questions, and
   verify local completion without backend calls.
-- Render quiz-bank YAML, exam-card YAML, and the in-app fact graph as real
-  learner surfaces rather than Markdown-only summaries.
+- Render quiz-bank Markdown, exam-card Markdown, and the in-app fact graph as
+  real learner surfaces rather than Markdown-only summaries.
 - Run a self-contained tutorial query through the neutral browser SQL workbench
   and verify committed synthetic dataset values.
 - Check responsive routes, rendered UI structure, nonblank screenshots, no horizontal overflow, and control text fit.

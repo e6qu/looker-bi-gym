@@ -1,3 +1,23 @@
+---
+{
+  "id": "tutorial-tutorials-recipes-r-looker-001-deposits-dashboard",
+  "title": "R-LOOKER-001 - Deposits Dashboard Recipe",
+  "content_type": "tutorial_recipe",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "recipes",
+  "source_facts":
+    [
+      "FACT-BIGQUERY-LOGICAL-VIEW",
+      "FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE",
+      "FACT-LOOKER-STUDIO-CREDENTIALS",
+      "FACT-LOOKER-STUDIO-DATA-SOURCE",
+      "FACT-LOOKER-STUDIO-FIELD-TYPES",
+    ],
+  "tags": ["tutorial", "synthetic-data"],
+}
+---
+
 # R-LOOKER-001 - Deposits Dashboard Recipe
 
 Recipe area: Looker Studio mechanics. Optional follow-on after

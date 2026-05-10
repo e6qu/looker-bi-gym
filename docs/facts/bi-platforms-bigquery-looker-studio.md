@@ -1,3 +1,15 @@
+---
+{
+  "id": "facts-bi-platforms-bigquery-looker-studio",
+  "title": "BI Platforms: BigQuery And Looker Studio Facts",
+  "content_type": "fact_register",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "facts",
+  "tags": ["facts", "source-backed"],
+}
+---
+
 # BI Platforms: BigQuery And Looker Studio Facts
 
 These facts anchor BI platform tutorials. They are technical training notes only,

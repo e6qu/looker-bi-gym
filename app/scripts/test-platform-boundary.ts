@@ -33,6 +33,10 @@ async function listSourceFiles(root: string): Promise<string[]> {
       const path = join(root, entry.name);
 
       if (entry.isDirectory()) {
+        if (entry.name === "generated") {
+          return [];
+        }
+
         return listSourceFiles(path);
       }
 

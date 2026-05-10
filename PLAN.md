@@ -79,6 +79,8 @@ Review gates before this phase can be called complete:
 
 - Markdown with typed frontmatter is the durable source of truth.
 - Generate typed catalogs for app consumption.
+- Move current tutorial metadata, facts metadata, flashcards, quiz banks, and
+  exam cards onto the shared Markdown-frontmatter contract.
 - CI fails on stale generated catalogs, duplicate IDs, missing facts, or
   missing sources.
 - Generated artifacts that can be rebuilt locally stay out of git unless a
@@ -102,8 +104,8 @@ Review gates before this phase can be called complete:
 
 ## Phase 5 - Flashcards, Quizzes, Exams
 
-- Move hardcoded flashcards into topic-grouped Markdown.
-- Target at least 500 flashcards, 200 quiz questions, and 30 exam cards.
+- Expand generated Markdown catalogs toward at least 500 flashcards, 200 quiz
+  questions, and 30 exam cards.
 - Require fact/source support, deterministic checks where possible, and quality
   review, not only item counts.
 

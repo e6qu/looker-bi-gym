@@ -1,3 +1,22 @@
+---
+{
+  "id": "tutorial-tutorials-04-metrics-and-calculated-fields",
+  "title": "04 - Metrics And Calculated Fields",
+  "content_type": "tutorial",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "core",
+  "source_facts":
+    [
+      "FACT-BIGQUERY-LOGICAL-VIEW",
+      "FACT-BIGQUERY-VIEW-SCOPE",
+      "FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK",
+      "FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE",
+    ],
+  "tags": ["tutorial", "synthetic-data"],
+}
+---
+
 # 04 - Metrics And Calculated Fields
 
 Area: B - Warehouse Modeling And Metrics
