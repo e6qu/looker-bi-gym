@@ -144,6 +144,62 @@
   self-contained. Tutorials may include prerequisite docs at the start, but the
   tutorial body itself should provide complete step-by-step instructions and not
   point learners to challenges as the way to understand the lesson.
+- After the user asked to merge once CI was passing, confirmed final PR #13 CI
+  passed, merged PR #13 with squash merge, and fast-forwarded local `main`.
+- Confirmed PR #13 merged on 2026-05-10 at merge commit
+  `f0deb549a3601559ffc1a6f81e386f95c5b36702`.
+- Confirmed main CI run `25630673392` passed for merge commit
+  `f0deb549a3601559ffc1a6f81e386f95c5b36702`.
+- Confirmed main GitHub Pages deployment run `25630673398` passed for the same
+  merge commit.
+- Confirmed `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
+  `last-modified: Sun, 10 May 2026 14:03:54 GMT`.
+- Created branch `self-contained-tutorials` from updated `main`; no work was
+  pushed directly to `main`.
+- Started Task 030 - Self-Contained Tutorial Workbench.
+- Added `#/workbench/deposits-seed/v0.1.0` and
+  `#/workbench/lending-month-end/v0.1.0` as neutral browser SQL workbench
+  routes for tutorial SQL. The workbench loads committed synthetic datasets
+  through DuckDB-WASM and does not grade answers, request credentials, require a
+  backend, or use challenge pages as the lesson surface.
+- Updated released learner-task tutorials to point to the workbench routes for
+  SQL execution and to keep the instructional path self-contained in the page:
+  prerequisites, exact SQL, deterministic outputs, checkpoint questions,
+  reporting/visualization actions, failure modes, self-assessment, and
+  tutorial-internal CTF-style end checks.
+- Added content QA coverage so learner-task tutorials must link to a workbench
+  route, must not link to `#/challenges/`, and must not require capturing a
+  local challenge flag for the tutorial.
+- Added Playwright coverage for the workbench route and a real tutorial query
+  returning `row_count = 18` and `latest_balance_date = 2026-03-31`.
+- During Playwright verification, the first workbench test exposed that an
+  uncast DuckDB `MAX(date)` result rendered as a numeric timestamp. Updated the
+  tutorial queries and Playwright query to cast displayed date values to
+  `VARCHAR`, matching the expected tutorial tables.
+- During the second Playwright verification, the workbench table button selector
+  matched both the schema-browser button and quick-query button. Tightened the
+  test selector to the exact quick-query button.
+- Verification so far for Task 030:
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:content-qa`;
+  - `bun run format:check`;
+  - `bun run test:e2e` after approved local preview binding; all 11 rendered UI
+    tests passed.
+- Final local verification for Task 030:
+  - `bun run check` after approved local Playwright/Vite preview port binding;
+  - `git diff --check`;
+  - type-safety scan across `app/src`, `app/scripts`, `app/tests`, and
+    `app/configs`.
+- `bun run check` passed with all 11 Playwright rendered UI tests, production
+  build, static-link validation, fact DB checks, quiz facts DB verification,
+  content QA, platform-boundary checks, typecheck, lint, and format check.
+- The type-safety scan found no `any`, `as any`, broad `object` type,
+  `as object`, `@ts-ignore`, or `@ts-expect-error` usage in app code; the only
+  match was the ESLint rule name `@typescript-eslint/no-explicit-any`.
+- Reviewed ignored/generated outputs after verification. `app/dist/`,
+  `app/src/generated/`, `screenshots/`, and `var/` remain ignored and were not
+  staged.
 
 - Merged PR #9 with `gh pr merge 9 --squash --delete-branch`, fast-forwarded
   local `main`, and created branch `task026-grading-contracts`.

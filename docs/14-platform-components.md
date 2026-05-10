@@ -29,7 +29,12 @@ Current rendered sections:
 - Docs: rendered Markdown from `docs/`.
 - Tutorials: rendered Markdown from `tutorials/`, including nested learner tasks
   and optional recipes.
+- Workbench: neutral browser SQL workspace routes for committed synthetic
+  datasets, used by self-contained tutorials.
 - Challenges: generated challenge catalog and challenge detail pages.
+- Quiz: rendered quiz-bank YAML.
+- Exam: rendered exam-card YAML.
+- Facts: rendered source-fact graph.
 - Regulations: rendered context briefs from `regulations/`.
 - Settings: browser-local state, JSON export, and reset controls.
 
@@ -37,7 +42,7 @@ Learner-facing content shapes:
 
 - Learner tasks: area-grouped 15-20 minute curriculum exercise units with an
   objective, steps, checkpoints, visualization/reporting action,
-  self-assessment, and an end challenge.
+  self-assessment, and a tutorial-internal CTF-style end check.
 - Recipes: optional Looker Studio follow-ons after browser-first tutorials.
 - Quiz bank: mixed 20-minute quizzes organized by difficulty and linked to
   recommended learner tasks.
@@ -55,6 +60,21 @@ Tutorials:
 - Current location: `tutorials/**/*.md`.
 - Role: learner-facing lessons and narrative guidance.
 - Learner-task packs live under `tutorials/learner-tasks/`.
+- Self-contained boundary: released learner-task pages should provide the full
+  instruction in the page body and use workbench routes for SQL execution rather
+  than pointing learners to challenge pages for the lesson.
+
+Workbench:
+
+- App routes: `#/workbench/deposits-seed/v0.1.0` and
+  `#/workbench/lending-month-end/v0.1.0`.
+- Role: neutral DuckDB-WASM SQL execution against committed synthetic dataset
+  packs for tutorial steps.
+- Boundary: no grading, no backend, no credential collection, no learner-data
+  upload, and no real banking data.
+- Verification: Playwright runs a real tutorial query through the workbench, and
+  content QA prevents learner-task tutorials from using `#/challenges/` as the
+  instructional path.
 
 Challenges:
 
@@ -150,8 +170,9 @@ Sources:
 App shell:
 
 - `app/src/App.tsx`: routes, rendered pages, challenge views, Settings, and the
-  browser SQL challenge UI, including a deterministic result bar chart when a
-  query returns at least one dimension-like column and one numeric column.
+  browser SQL challenge/workbench UI, including a deterministic result bar chart
+  when a query returns at least one dimension-like column and one numeric
+  column.
 - `app/src/content.ts`: Markdown discovery for docs, regulations, and
   recursive tutorial content.
 - `app/src/learningContent.ts`: typed YAML loading for quiz banks and exam

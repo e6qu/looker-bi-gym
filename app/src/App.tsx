@@ -83,6 +83,7 @@ type RouteId =
   | "quiz"
   | "exam"
   | "facts"
+  | "workbench"
   | "challenges"
   | "settings";
 
@@ -108,6 +109,7 @@ const routes: readonly Route[] = [
   { id: "docs", label: "Docs" },
   { id: "regulations", label: "Regulations" },
   { id: "tutorials", label: "Tutorials" },
+  { id: "workbench", label: "Workbench" },
   { id: "quiz", label: "Quiz" },
   { id: "exam", label: "Exam" },
   { id: "facts", label: "Facts" },
@@ -129,6 +131,28 @@ const principles: readonly string[] = [
   "Default learner path runs in the browser",
   "Optional tools are listed per tutorial",
 ];
+
+const workbenchDatasetRefs: readonly RuntimeDatasetRef[] = [
+  defaultDatasetRef,
+  { datasetId: "lending-month-end", version: "v0.1.0" },
+];
+
+type SqlRuntimeState =
+  | { readonly status: "loading" }
+  | {
+      readonly status: "ready";
+      readonly tables: readonly SqlTableSchema[];
+      readonly connection: Awaited<
+        ReturnType<typeof getSqlRuntime>
+      >["connection"];
+    }
+  | { readonly status: "error"; readonly message: string };
+
+type SqlQueryState =
+  | { readonly status: "idle" }
+  | { readonly status: "running" }
+  | { readonly status: "success"; readonly result: SqlQueryResult }
+  | { readonly status: "error"; readonly message: string };
 
 function getBrowserProgressPersistence(): BrowserProgressPersistence {
   return {
@@ -152,6 +176,41 @@ function routeFromHash(): AppRoute {
   const fileName = fileParts.join("/");
 
   return fileName.length > 0 ? { section, fileName } : { section };
+}
+
+function formatDatasetRef(datasetRef: RuntimeDatasetRef): string {
+  return `${datasetRef.datasetId}/${datasetRef.version}`;
+}
+
+function getWorkbenchDatasetRef(
+  routePath: string | undefined,
+): RuntimeDatasetRef | undefined {
+  if (routePath === undefined || routePath.length === 0) {
+    return defaultDatasetRef;
+  }
+
+  const [datasetId, version, ...extraParts] = routePath.split("/");
+
+  if (
+    datasetId === undefined ||
+    version === undefined ||
+    extraParts.length > 0
+  ) {
+    return undefined;
+  }
+
+  return workbenchDatasetRefs.find(
+    (datasetRef) =>
+      datasetRef.datasetId === datasetId && datasetRef.version === version,
+  );
+}
+
+function getWorkbenchStarterSql(datasetRef: RuntimeDatasetRef): string {
+  if (datasetRef.datasetId === "lending-month-end") {
+    return "SELECT * FROM loan_monthly_snapshots LIMIT 10;";
+  }
+
+  return "SELECT * FROM account_daily_balances LIMIT 10;";
 }
 
 function ChallengeList({
@@ -1932,23 +1991,12 @@ function SqlChallengePage({
     [challenge],
   );
   const [answers, setAnswers] = useState<QuizAnswerState>({});
-  const [runtimeState, setRuntimeState] = useState<
-    | { readonly status: "loading" }
-    | {
-        readonly status: "ready";
-        readonly tables: readonly SqlTableSchema[];
-        readonly connection: Awaited<
-          ReturnType<typeof getSqlRuntime>
-        >["connection"];
-      }
-    | { readonly status: "error"; readonly message: string }
-  >({ status: "loading" });
-  const [queryState, setQueryState] = useState<
-    | { readonly status: "idle" }
-    | { readonly status: "running" }
-    | { readonly status: "success"; readonly result: SqlQueryResult }
-    | { readonly status: "error"; readonly message: string }
-  >({ status: "idle" });
+  const [runtimeState, setRuntimeState] = useState<SqlRuntimeState>({
+    status: "loading",
+  });
+  const [queryState, setQueryState] = useState<SqlQueryState>({
+    status: "idle",
+  });
   const sqlEditorId = `${challenge.id}-sql-editor`;
   const sqlEditorHelpId = `${challenge.id}-sql-editor-help`;
   const checkEvaluation = useMemo(
@@ -2315,6 +2363,273 @@ function SqlChallengePage({
           {queryState.status === "idle" ? (
             <div className="sqlEmptyState">
               Run a query to inspect the synthetic banking tables.
+            </div>
+          ) : null}
+        </section>
+      </div>
+    </section>
+  );
+}
+
+function WorkbenchPage({
+  datasetRef,
+}: {
+  readonly datasetRef: RuntimeDatasetRef | undefined;
+}): JSX.Element {
+  if (datasetRef === undefined) {
+    return (
+      <section
+        className="page challengeDetailPage"
+        aria-labelledby="workbench-title"
+      >
+        <PageTitle
+          title="Browser SQL Workbench"
+          description="Choose a committed synthetic dataset to inspect with DuckDB-WASM in this browser."
+          id="workbench-title"
+        />
+        <div className="itemGrid">
+          {workbenchDatasetRefs.map((candidate) => (
+            <a
+              className="itemCard"
+              href={`#/workbench/${formatDatasetRef(candidate)}`}
+              key={formatDatasetRef(candidate)}
+            >
+              <div className="itemHeader">
+                <h3>{formatDatasetRef(candidate)}</h3>
+                <span className="status statusReady">Synthetic</span>
+              </div>
+              <p>
+                Open the browser-local SQL workspace for this committed training
+                dataset.
+              </p>
+            </a>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <WorkbenchRuntimePage
+      datasetRef={datasetRef}
+      key={formatDatasetRef(datasetRef)}
+    />
+  );
+}
+
+function WorkbenchRuntimePage({
+  datasetRef,
+}: {
+  readonly datasetRef: RuntimeDatasetRef;
+}): JSX.Element {
+  const [sql, setSql] = useState<string>(() =>
+    getWorkbenchStarterSql(datasetRef),
+  );
+  const [runtimeState, setRuntimeState] = useState<SqlRuntimeState>({
+    status: "loading",
+  });
+  const [queryState, setQueryState] = useState<SqlQueryState>({
+    status: "idle",
+  });
+  const sqlEditorId = `${datasetRef.datasetId}-${datasetRef.version}-workbench-sql-editor`;
+  const sqlEditorHelpId = `${datasetRef.datasetId}-${datasetRef.version}-workbench-sql-editor-help`;
+
+  useEffect(() => {
+    let isActive = true;
+
+    void getSqlRuntime(datasetRef)
+      .then((runtime) => {
+        if (isActive) {
+          setRuntimeState({
+            status: "ready",
+            tables: runtime.tables,
+            connection: runtime.connection,
+          });
+        }
+      })
+      .catch((error: unknown) => {
+        if (isActive) {
+          setRuntimeState({
+            status: "error",
+            message:
+              error instanceof Error
+                ? error.message
+                : "Unable to load DuckDB-Wasm.",
+          });
+        }
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, [datasetRef]);
+
+  async function runQuery(): Promise<void> {
+    if (runtimeState.status !== "ready") {
+      return;
+    }
+
+    if (!isSqlPreviewSupported(sql)) {
+      setQueryState({
+        status: "error",
+        message:
+          "Enter a SELECT or WITH query to run against the browser SQL runtime.",
+      });
+      return;
+    }
+
+    setQueryState({ status: "running" });
+
+    try {
+      const result = await runSqlPreview(runtimeState.connection, sql);
+      setQueryState({ status: "success", result });
+    } catch (error: unknown) {
+      setQueryState({
+        status: "error",
+        message:
+          error instanceof Error ? error.message : "SQL execution failed.",
+      });
+    }
+  }
+
+  function setSampleQuery(tableName: string): void {
+    setSql(`SELECT * FROM ${tableName} LIMIT 10;`);
+  }
+
+  return (
+    <section
+      className="page challengeDetailPage sqlChallengePage"
+      aria-labelledby="workbench-title"
+    >
+      <div className="challengeDetailHeader">
+        <PageTitle
+          title="Browser SQL Workbench"
+          description="Run SELECT queries against committed synthetic datasets entirely in this browser. No backend, credentials, CLI, Python, or Docker are required."
+          id="workbench-title"
+        />
+        <div className="sqlChallengeSummary">
+          <div>
+            <strong>Mode</strong>
+            <span>Browser SQL practice</span>
+          </div>
+          <div>
+            <strong>Dataset</strong>
+            <span>{formatDatasetRef(datasetRef)}</span>
+          </div>
+          <div>
+            <strong>Runtime</strong>
+            <span>DuckDB-WASM</span>
+          </div>
+          <div>
+            <strong>Storage</strong>
+            <span>Local browser only</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="sqlChallengeLayout">
+        {runtimeState.status === "ready" ? (
+          <SqlTableBrowser
+            tables={runtimeState.tables}
+            onSelectTable={setSampleQuery}
+          />
+        ) : (
+          <aside
+            aria-busy={runtimeState.status === "loading"}
+            aria-label="Loaded workbench tables"
+            className="sqlSidebar"
+          >
+            <div className="sidebarHeader">
+              <p className="eyebrow">Schema browser</p>
+              <h2>Dataset tables</h2>
+            </div>
+            <p
+              className={
+                runtimeState.status === "loading"
+                  ? "sqlLoadingText"
+                  : "feedbackBox feedbackFail sqlFeedback"
+              }
+              role="status"
+            >
+              {runtimeState.status === "loading"
+                ? "Loading DuckDB-WASM and synthetic dataset tables..."
+                : runtimeState.message}
+            </p>
+          </aside>
+        )}
+
+        <section
+          aria-busy={queryState.status === "running"}
+          aria-label="SQL workspace"
+          className="sqlWorkspace"
+        >
+          <div className="sqlEditorPanel">
+            <div className="sqlEditorHeader">
+              <p className="eyebrow">SQL editor</p>
+              <span>Tutorial workspace</span>
+            </div>
+            <label className="fieldLabel" htmlFor={sqlEditorId}>
+              SQL query
+            </label>
+            <textarea
+              aria-describedby={sqlEditorHelpId}
+              className="sqlEditor"
+              id={sqlEditorId}
+              onChange={(event) => setSql(event.currentTarget.value)}
+              value={sql}
+            />
+            <div className="sqlEditorActions">
+              <button
+                aria-describedby={sqlEditorHelpId}
+                disabled={
+                  runtimeState.status !== "ready" ||
+                  queryState.status === "running"
+                }
+                type="button"
+                onClick={() => void runQuery()}
+              >
+                {queryState.status === "running" ? "Running..." : "Run Query"}
+              </button>
+              <p id={sqlEditorHelpId}>
+                Use this page for tutorial SQL. It does not grade answers or
+                send data outside the browser.
+              </p>
+            </div>
+          </div>
+
+          <div className="sqlExamples">
+            {runtimeState.status === "ready"
+              ? runtimeState.tables.map((table) => (
+                  <button
+                    key={table.tableName}
+                    type="button"
+                    onClick={() => setSampleQuery(table.tableName)}
+                  >
+                    {table.tableName}
+                  </button>
+                ))
+              : null}
+          </div>
+
+          {queryState.status === "error" ? (
+            <div className="feedbackBox feedbackFail sqlFeedback" role="status">
+              {queryState.message}
+            </div>
+          ) : null}
+
+          {queryState.status === "running" ? (
+            <div className="feedbackBox sqlFeedback" role="status">
+              Running the SQL query in the browser.
+            </div>
+          ) : null}
+
+          {queryState.status === "success" ? (
+            <SqlResultTable result={queryState.result} />
+          ) : null}
+
+          {queryState.status === "idle" ? (
+            <div className="sqlEmptyState">
+              Run a tutorial query to inspect the synthetic banking tables.
             </div>
           ) : null}
         </section>
@@ -2766,6 +3081,10 @@ function AppPage({ route }: { readonly route: AppRoute }): JSX.Element {
       return <ExamPage />;
     case "facts":
       return <FactsPage factRouteId={route.fileName} />;
+    case "workbench":
+      return (
+        <WorkbenchPage datasetRef={getWorkbenchDatasetRef(route.fileName)} />
+      );
     case "challenges":
       return route.fileName !== undefined ? (
         <ChallengesPage challengeId={route.fileName} />

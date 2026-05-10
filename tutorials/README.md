@@ -39,6 +39,10 @@ work that happens outside this app.
 - [Curriculum Map](curriculum.md): dependency graph, areas, and artifacts.
 - [Learner Tasks](learner-tasks/README.md): focused 15-20 minute browser-first
   exercise units with checkpoints and CTF-style endings.
+- Browser SQL workbench:
+  `#/workbench/deposits-seed/v0.1.0` and
+  `#/workbench/lending-month-end/v0.1.0` run tutorial SQL against committed
+  synthetic datasets without opening a graded challenge.
 - [Looker Studio Recipes](recipes/r-looker-001-deposits-dashboard.md):
   optional browser-driven report-building follow-ons after the core tutorials.
 - [Quiz Bank](quiz-bank.md): self-check questions grouped by difficulty.
@@ -72,6 +76,7 @@ work that happens outside this app.
 
 ## Learner Artifact Rule
 
-Each tutorial should leave you with a visible artifact: a completed local flag,
-a SQL result, a metric contract, a note, or a report recipe checkpoint. Later
-tutorials reuse those artifacts instead of rebuilding the same logic in a chart.
+Each tutorial should leave you with a visible artifact: a SQL result, a metric
+contract, a CTF-style end-check answer, a note, or a report recipe checkpoint.
+Later tutorials reuse those artifacts instead of rebuilding the same logic in a
+chart.

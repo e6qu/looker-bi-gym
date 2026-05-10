@@ -38,6 +38,7 @@ Complete the learner tasks in order for the browser-first path:
 4. Prepare a narrow data source for a Looker Studio dashboard.
 5. Add reconciliation controls and failure-mode notes.
 
-Each task is designed for a focused 15-20 minute session and ends with a
-CTF-style challenge that can be checked with the browser challenge runtime or by
-self-assessment against deterministic expected outputs.
+Each task is designed for a focused 15-20 minute session and is self-contained:
+the lesson page gives the objective, SQL, expected outputs, checks, reporting
+action, failure modes, and CTF-style end check. Use the browser workbench routes
+only to run the SQL against committed synthetic datasets.

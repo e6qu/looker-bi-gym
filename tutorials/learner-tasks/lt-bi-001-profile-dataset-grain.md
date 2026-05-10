@@ -26,9 +26,12 @@ model-risk advice.
 
 ## Prerequisites
 
-- Open the website and go to `#/challenges/first-banking-dataset`.
-- Keep the SQL workspace in browser mode. No backend, CLI, Python, Docker, or
-  real banking data is required.
+- Open the website and go to
+  `#/workbench/deposits-seed/v0.1.0`.
+- Keep the workbench in browser mode. No backend, CLI, Python, Docker, or real
+  banking data is required.
+- Use this task page as the complete instruction source; the workbench is only
+  where you run the SQL.
 
 ## Steps
 
@@ -41,7 +44,7 @@ SELECT
   COUNT(*) AS row_count,
   COUNT(DISTINCT adb.currency_code) AS currency_count,
   COUNT(DISTINCT a.branch_id) AS branch_count,
-  MAX(adb.business_date) AS latest_balance_date
+  CAST(MAX(adb.business_date) AS VARCHAR) AS latest_balance_date
 FROM account_daily_balances adb
 INNER JOIN accounts a USING (account_id);
 ```
@@ -56,7 +59,10 @@ INNER JOIN accounts a USING (account_id);
    - grain: one balance row per `account_id` and `business_date`;
    - serving profile: aggregate counts and latest date only, with no account,
      customer, or synthetic IBAN identifiers.
-5. Answer the challenge questions on the same page.
+5. Answer these tutorial check questions in your notes:
+   - Which table has one row per `account_id` and `business_date`?
+   - Why is `row_count = 18` not an account count?
+   - Which identifiers did you deliberately exclude from the profile output?
 
 ## Checkpoints
 
@@ -102,9 +108,13 @@ SQL.
 
 ## End Challenge
 
-Capture the local flag for `010 - First Banking Dataset Inspection`. The
-expected flag is shown only after the browser SQL checks and fact-backed
-questions pass.
+Write a one-sentence CTF answer in this form:
+
+`grain=<grain>; rows=<row_count>; latest=<latest_balance_date>; safe_output=<yes/no>`
+
+The expected answer is:
+
+`grain=account_id+business_date; rows=18; latest=2026-03-31; safe_output=yes`
 
 ## Answer Reference
 

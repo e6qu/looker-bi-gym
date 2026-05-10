@@ -26,7 +26,9 @@ model-risk advice.
 ## Prerequisites
 
 - Complete [LT-SQL-003](lt-sql-003-month-end-serving-result.md).
-- Keep the same browser challenge page open.
+- Open `#/workbench/lending-month-end/v0.1.0`.
+- Use this task page as the complete instruction source; the workbench is only
+  where you run the SQL.
 
 ## Steps
 
@@ -42,8 +44,8 @@ SELECT
   COUNT(CASE
     WHEN as_of_date NOT IN ('2026-02-28', '2026-03-31') THEN 1
   END) AS non_month_end_snapshot_count,
-  MIN(as_of_date) AS first_snapshot_date,
-  MAX(as_of_date) AS latest_snapshot_date
+  CAST(MIN(as_of_date) AS VARCHAR) AS first_snapshot_date,
+  CAST(MAX(as_of_date) AS VARCHAR) AS latest_snapshot_date
 FROM loan_monthly_snapshots;
 ```
 
@@ -100,8 +102,13 @@ and what a report consumer should do when it is non-zero.
 
 ## End Challenge
 
-Update your answer in `024 - Lending Month-End Snapshots` so the local flag
-is still earned after you can explain the reconciliation controls.
+Write a one-sentence CTF answer in this form:
+
+`snapshot_rows=<count>; latest_rows=<count>; non_month_end=<count>; action=<consumer_action>`
+
+The expected answer is:
+
+`snapshot_rows=11; latest_rows=5; non_month_end=1; action=show_control_and_investigate_upstream`
 
 ## Answer Reference
 

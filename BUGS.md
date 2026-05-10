@@ -94,22 +94,19 @@ No known app bugs after the Bun-only tooling, typed config, formatting, rendered
   commit `3edd840e1c749a453f2834d8684211069dceae1d`, and the deployed Pages URL
   returned HTTP 200 on 2026-05-10.
 - PR #13 adds SQLite-backed quiz fact grounding and app-rendered quiz/exam/fact
-  graph surfaces. Local targeted verification passed for typecheck, lint,
-  content QA, facts DB, quiz facts DB, platform-boundary, and Playwright e2e.
-- PR #13 full local `bun run check` passed on 2026-05-10 after approved local
-  Playwright/Vite preview port binding, including all 10 rendered UI tests. A
-  final type-safety scan found no `any`, `as any`, broad `object` type,
-  `as object`, `@ts-ignore`, or `@ts-expect-error` usage in app code except the
-  literal ESLint rule name that enforces the ban. PR #13 GitHub Actions
-  `Validate, Test, And Build` passed for commit
-  `69f2330ca46aaaa0ec10975e4d17dfa8a5653016`.
+  graph surfaces. PR #13 merged at
+  `f0deb549a3601559ffc1a6f81e386f95c5b36702`; main CI and Pages deployment
+  passed, and the live Pages URL returned HTTP 200 on 2026-05-10.
+- Task 030 workbench verification exposed two issues before they reached a PR:
+  uncast DuckDB date output rendered as a numeric timestamp in the SQL result
+  table, and one Playwright selector matched duplicate workbench table buttons.
+  The tutorial queries now cast displayed date values to `VARCHAR`, and the test
+  selector is exact. `bun run test:e2e` then passed with all 11 rendered UI
+  tests. Full `bun run check` passed on 2026-05-10 after approved local
+  Playwright/Vite preview port binding.
 - JSON import is planned but not implemented. Current Settings supports JSON
   export and reset only. Future import must stay browser-local and validate the
   `looker-bi-gym.progress-export.v1` structure before applying state.
-- Tutorial self-containment is planned but not implemented in the current PR #13
-  phase. Current tutorial content may still point learners to challenge pages
-  for parts of the instructional flow; the next phase should make tutorials
-  complete step-by-step lessons with prerequisite docs only at the start.
 
 ## Template
 

@@ -31,13 +31,15 @@ model-risk advice.
 
 - Complete [LT-BI-001](lt-bi-001-profile-dataset-grain.md) and
   [LT-BI-002](lt-bi-002-detect-fanout.md).
-- Open `#/challenges/looker-studio-evidence`.
-- Treat this as a local evidence-pattern simulation unless you also complete
-  the optional Looker Studio recipe.
+- Open `#/workbench/deposits-seed/v0.1.0`.
+- Treat this as a local evidence-pattern design exercise unless you also
+  complete the optional Looker Studio recipe.
+- Use this task page as the complete instruction source; the workbench is only
+  where you validate the SQL shape.
 
 ## Steps
 
-1. Draft this serving view SQL in the evidence field:
+1. Draft this serving view SQL in your notes:
 
 ```sql
 CREATE OR REPLACE VIEW serving_deposit_dashboard AS
@@ -58,10 +60,23 @@ business_date,currency_code,ledger_total
 ```
 
 3. Enter `95700` as the visible latest-day total.
-4. Enter a Looker Studio URL shaped like
-   `https://lookerstudio.google.com/reporting/example`.
-5. Check the dashboard confirmation and credential-boundary checkbox.
-6. Answer the fact-backed question about reusable metric logic.
+4. Run this validation query in the workbench to reproduce the latest-day
+   control total:
+
+```sql
+SELECT
+  CAST(SUM(ledger_balance) AS DOUBLE) AS latest_visible_total
+FROM account_daily_balances
+WHERE business_date = '2026-03-31';
+```
+
+5. Record a Looker Studio report URL shape in your notes without creating or
+   pasting credentials: `https://lookerstudio.google.com/reporting/example`.
+6. Add this credential-boundary statement to the design note: "The app stores no
+   BigQuery, Looker Studio, Google Cloud, or banking credentials; any live
+   Looker Studio review is performed by the learner outside this static app."
+7. Answer this tutorial check question in your notes: which layer should own
+   reusable `ledger_total` logic before charts consume it?
 
 Expected control output:
 
@@ -74,6 +89,7 @@ Expected control output:
 
 - The SQL names `serving_deposit_dashboard`, `account_daily_balances`,
   `business_date`, `currency_code`, and `ledger_total`.
+- The validation query returns `latest_visible_total = 95700`.
 - Evidence is limited to SQL text, a tiny synthetic control output, a report URL
   shape, and local checkboxes.
 - No cloud credentials, service account keys, OAuth tokens, exports from real
@@ -101,10 +117,13 @@ adds between the source query and chart fields.
 
 ## End Challenge
 
-Capture the local flag for `030 - Looker Studio Evidence Pattern`. The flag
-means the local evidence format passed; it does not prove that a live Looker
-Studio report was reviewed unless you completed the optional recipe and checked
-your own report.
+Write a one-sentence CTF answer in this form:
+
+`view=<view_name>; total=<latest_visible_total>; credential_boundary=<yes/no>; reusable_logic_layer=<layer>`
+
+The expected answer is:
+
+`view=serving_deposit_dashboard; total=95700; credential_boundary=yes; reusable_logic_layer=serving_view_or_data_source`
 
 ## Answer Reference
 

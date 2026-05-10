@@ -27,7 +27,9 @@ model-risk advice.
 ## Prerequisites
 
 - Complete [LT-BI-001](lt-bi-001-profile-dataset-grain.md).
-- Open `#/challenges/account-owner-fanout`.
+- Open `#/workbench/deposits-seed/v0.1.0`.
+- Use this task page as the complete instruction source; the workbench is only
+  where you run the SQL.
 
 ## Steps
 
@@ -78,7 +80,8 @@ fanout_proof AS (
   CROSS JOIN naive_total
 )
 SELECT
-  (SELECT MAX(business_date) FROM latest_balances) AS latest_balance_date,
+  CAST((SELECT MAX(business_date) FROM latest_balances) AS VARCHAR)
+    AS latest_balance_date,
   correct_ledger_total,
   naive_joined_total,
   naive_joined_total - correct_ledger_total AS fanout_delta,
@@ -92,7 +95,10 @@ FROM fanout_proof;
 
 5. Explain in your notes why the fix belongs in the serving SQL/model layer
    before Looker Studio charts use the metric.
-6. Answer the challenge questions.
+6. Answer these tutorial check questions in your notes:
+   - Which join duplicates `ledger_balance`?
+   - Which CTE isolates the unsafe fanout total?
+   - Why is depositor coverage grain different from current balance KPI grain?
 
 ## Checkpoints
 
@@ -148,7 +154,13 @@ the balance measure and name the CTE where the duplication is isolated.
 
 ## End Challenge
 
-Capture the local flag for `020 - Account Owner Fanout CTF`.
+Write a one-sentence CTF answer in this form:
+
+`correct=<correct_ledger_total>; naive=<naive_joined_total>; delta=<fanout_delta>; pct=<overstatement_pct>`
+
+The expected answer is:
+
+`correct=95700; naive=164800; delta=69100; pct=72.20`
 
 ## Answer Reference
 

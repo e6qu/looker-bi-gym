@@ -29,7 +29,9 @@ model-risk advice.
 ## Prerequisites
 
 - Complete [LT-BI-001](lt-bi-001-profile-dataset-grain.md).
-- Open `#/challenges/lending-month-end-snapshots`.
+- Open `#/workbench/lending-month-end/v0.1.0`.
+- Use this task page as the complete instruction source; the workbench is only
+  where you run the SQL.
 
 ## Steps
 
@@ -114,8 +116,11 @@ ORDER BY lt.currency_code;
 | 2026-03-31        | EUR           | 55000                  | 112000               | 57000          | 1                            | 0                      | 11801400                            | 3                                | 164.82                      |
 | 2026-03-31        | RON           | 396000                 | 915000               | 519000         | 1                            | 29500                  | 11801400                            | 3                                | 164.82                      |
 
-5. Answer the challenge questions on semi-additive snapshots, date checks, and
-   output minimisation.
+5. Answer these tutorial check questions in your notes:
+   - Which reference date controls exposure measurement?
+   - Why is `naive_time_sum_total` a control and not a KPI?
+   - Which loan, borrower, contract, and property identifiers are excluded from
+     the serving result?
 
 ## Checkpoints
 
@@ -144,7 +149,13 @@ as a control but unacceptable as a dashboard KPI.
 
 ## End Challenge
 
-Capture the local flag for `024 - Lending Month-End Snapshots`.
+Write a one-sentence CTF answer in this form:
+
+`latest_as_of=<date>; ron_delta=<time_sum_delta>; non_month_end=<count>; stale_valuations=<count>`
+
+The expected answer is:
+
+`latest_as_of=2026-03-31; ron_delta=519000; non_month_end=1; stale_valuations=3`
 
 ## Answer Reference
 

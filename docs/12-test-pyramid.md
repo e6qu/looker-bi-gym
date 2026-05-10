@@ -53,6 +53,8 @@ The lower and middle layers run deterministic checks without a browser:
   verify local completion without backend calls.
 - Render quiz-bank YAML, exam-card YAML, and the in-app fact graph as real
   learner surfaces rather than Markdown-only summaries.
+- Run a self-contained tutorial query through the neutral browser SQL workbench
+  and verify committed synthetic dataset values.
 - Check responsive routes, rendered UI structure, nonblank screenshots, no horizontal overflow, and control text fit.
 - Fail on browser console warnings, browser console errors, page errors, or
   failed network requests during rendered UI flows.
