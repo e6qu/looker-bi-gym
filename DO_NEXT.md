@@ -7,6 +7,10 @@ Numbered tasks 001 through 027 are implemented. PR #3, PR #4, and PR #5 were mer
 Current implementation step:
 
 - Review and merge PR #6: `https://github.com/e6qu/looker-bi-gym/pull/6`.
+- PR #6 now includes the expanded Romania lending/real-estate collateral dataset
+  support, official Eurostat HPI source table, fact-backed collateral questions,
+  and the manual LLM question review/dreaming workbench. Local `bun run check`
+  passed on 2026-05-10 after the expansion.
 
 Next implementation step after the Task 024 PR:
 
@@ -32,6 +36,10 @@ Preservation and verification steps:
 - Preserve the Task 027 fact corpus boundary: learner facts should be banking BI, BigQuery, Looker Studio, and official regulatory/banking facts, not app implementation facts.
 - Preserve downloaded Google Cloud documentation snapshots under `sources/platforms/*/full/` as sanitized article-only Markdown wrappers with attribution.
 - Preserve `bun run test:facts-db` in the check pyramid so fact-source links, fact cross-links, and source snapshots stay queryable through SQLite.
+- Preserve the manual-only LLM workbench boundary: `var/llm-workbench/` stays
+  ignored, generated/reviewed questions are draft-only, and dreaming stays
+  manual through `make dream`, `make dream-codex`, or `make dream-claude` unless
+  a future task explicitly designs scheduler controls.
 
 ## Upcoming Tasks
 

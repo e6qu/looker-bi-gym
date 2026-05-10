@@ -1,7 +1,7 @@
 {
   "dataset_id": "lending-month-end",
   "version": "v0.1.0",
-  "description": "Synthetic Romania/EU lending month-end exposure dataset for semi-additive balance, date-role, DPD, IFRS 9 stage, and reconciliation exercises.",
+  "description": "Synthetic Romania lending month-end exposure and real-estate collateral dataset for semi-additive balance, date-role, DPD, IFRS 9 stage, collateral valuation, location, and reconciliation exercises.",
   "synthetic_only": true,
   "synthetic_data_statement": "Hand-authored synthetic data only. It is not derived from real borrowers, contracts, branches, collateral, credit systems, regulatory reports, or production banking data.",
   "pack_contract_version": "dataset-pack.v1",
@@ -13,7 +13,8 @@
   },
   "fixture_refresh_rules": [
     "If any CSV row changes, rerun bun run validate:datasets and bun run test:fixtures.",
-    "If loan_monthly_snapshots changes, refresh the lending-month-end-snapshots known-good fixture SQL and expected answers.",
+    "If generated real-estate collateral CSVs change, rerun bun datasets/lending-month-end/v0.1.0/generate-real-estate-collateral.ts and commit the regenerated deterministic outputs together.",
+    "If loan_monthly_snapshots, property_valuations, or collateral changes, refresh the lending-month-end-snapshots known-good fixture SQL and expected answers.",
     "If row counts, control totals, or known traps change, bump this dataset version instead of editing a released version in place."
   ],
   "tables": [
@@ -61,12 +62,65 @@
     {
       "id": "raw_lending.collateral",
       "file": "collateral.csv",
-      "grain": "One row per collateral valuation record.",
-      "row_count": 3,
+      "grain": "One row per pledged synthetic real-estate collateral record.",
+      "row_count": 60,
       "primary_key": ["collateral_id"],
-      "sensitive_fields": ["loan_id"],
+      "sensitive_fields": ["loan_id", "property_id"],
       "date_semantics": [
-        "valuation_date is a collateral valuation date, not an exposure snapshot date."
+        "valuation_date is the accepted collateral valuation date used for the pledge; it can be stale relative to an exposure snapshot date."
+      ]
+    },
+    {
+      "id": "raw_real_estate.property_locations",
+      "file": "property_locations.csv",
+      "grain": "One row per synthetic residential property location profile.",
+      "row_count": 60,
+      "primary_key": ["property_id"],
+      "sensitive_fields": ["property_id"],
+      "date_semantics": []
+    },
+    {
+      "id": "raw_real_estate.property_attributes",
+      "file": "property_attributes.csv",
+      "grain": "One row per synthetic residential property physical attribute profile.",
+      "row_count": 60,
+      "primary_key": ["property_id"],
+      "sensitive_fields": ["property_id"],
+      "date_semantics": [
+        "built_year is a construction attribute, not a valuation date or exposure date."
+      ]
+    },
+    {
+      "id": "raw_real_estate.property_valuations",
+      "file": "property_valuations.csv",
+      "grain": "One row per property per valuation_date.",
+      "row_count": 180,
+      "primary_key": ["valuation_id"],
+      "sensitive_fields": ["property_id"],
+      "date_semantics": [
+        "valuation_date is a collateral appraisal or indexation date, not a loan exposure snapshot date."
+      ]
+    },
+    {
+      "id": "raw_real_estate.market_price_bands",
+      "file": "market_price_bands.csv",
+      "grain": "One synthetic benchmark band per city, neighborhood tier, property type, and reference year.",
+      "row_count": 42,
+      "primary_key": ["benchmark_band_id"],
+      "sensitive_fields": [],
+      "date_semantics": [
+        "reference_year is the market band vintage; it is not a property-level valuation date."
+      ]
+    },
+    {
+      "id": "raw_market.romania_house_price_index_annual",
+      "file": "official_house_price_index_ro_annual.csv",
+      "grain": "One official Eurostat annual Romania HPI observation for total residential purchases.",
+      "row_count": 17,
+      "primary_key": ["year"],
+      "sensitive_fields": [],
+      "date_semantics": [
+        "year is the annual HPI observation period from Eurostat PRC_HPI_A."
       ]
     }
   ],
@@ -98,6 +152,34 @@
       "from_field": "loan_id",
       "to_table": "raw_lending.loan_accounts",
       "to_field": "loan_id",
+      "expected_missing_count": 0
+    },
+    {
+      "from_table": "raw_lending.collateral",
+      "from_field": "property_id",
+      "to_table": "raw_real_estate.property_attributes",
+      "to_field": "property_id",
+      "expected_missing_count": 0
+    },
+    {
+      "from_table": "raw_real_estate.property_locations",
+      "from_field": "property_id",
+      "to_table": "raw_real_estate.property_attributes",
+      "to_field": "property_id",
+      "expected_missing_count": 0
+    },
+    {
+      "from_table": "raw_real_estate.property_valuations",
+      "from_field": "property_id",
+      "to_table": "raw_real_estate.property_attributes",
+      "to_field": "property_id",
+      "expected_missing_count": 0
+    },
+    {
+      "from_table": "raw_real_estate.property_valuations",
+      "from_field": "benchmark_band_id",
+      "to_table": "raw_real_estate.market_price_bands",
+      "to_field": "benchmark_band_id",
       "expected_missing_count": 0
     }
   ],
@@ -154,6 +236,46 @@
           "total": 29500
         }
       ]
+    },
+    {
+      "id": "latest_property_valuation_total_eur",
+      "table": "raw_real_estate.property_valuations",
+      "sum_field": "market_value_eur",
+      "group_by": ["valuation_date"],
+      "filters": [
+        {
+          "field": "valuation_date",
+          "value": "2026-03-31"
+        }
+      ],
+      "expected": [
+        {
+          "key": {
+            "valuation_date": "2026-03-31"
+          },
+          "total": 11801400
+        }
+      ]
+    },
+    {
+      "id": "latest_official_romania_hpi",
+      "table": "raw_market.romania_house_price_index_annual",
+      "sum_field": "house_price_index_2015_100",
+      "group_by": ["year"],
+      "filters": [
+        {
+          "field": "year",
+          "value": "2025"
+        }
+      ],
+      "expected": [
+        {
+          "key": {
+            "year": "2025"
+          },
+          "total": 164.82
+        }
+      ]
     }
   ],
   "known_issues": [],
@@ -206,6 +328,18 @@
       "expected_baseline_total": 396000,
       "expected_comparison_total": 915000,
       "expected_delta": 519000
+    },
+    {
+      "id": "stale_collateral_valuation_count",
+      "type": "field-value-count",
+      "table": "raw_lending.collateral",
+      "filters": [
+        {
+          "field": "valuation_date",
+          "value": "2025-03-31"
+        }
+      ],
+      "expected_count": 3
     }
   ]
 }

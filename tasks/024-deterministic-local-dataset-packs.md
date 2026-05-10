@@ -45,6 +45,23 @@ Verification notes:
   committed metadata.
 - `bun run check` passed locally after the user approved Playwright/Vite local
   port binding.
+- PR #6 was expanded with deterministic Romania real-estate collateral and
+  mortgage-evaluation support:
+  - 60 synthetic property/collateral rows;
+  - 180 synthetic property valuation rows;
+  - 42 synthetic market price bands;
+  - 17 official Eurostat Romania annual HPI observations for 2009-2025 from
+    `PRC_HPI_A`;
+  - source cards and facts for HPI scope, notarial-study boundaries, valuation
+    date separation, and collateral/property/valuation grain.
+- The lending month-end challenge now tests collateral freshness, property
+  valuation totals, official HPI context, notarial reference-value boundaries,
+  and sensitive property identifier minimisation.
+- Added a manual LLM question generation/review/dreaming workbench. It writes
+  ignored artifacts under `var/llm-workbench/`, is not automatic, and is covered
+  by `bun run test:llm-workbench`.
+- Full `bun run check` passed again locally on 2026-05-10 after the PR #6
+  expansion, including all 8 Playwright rendered user-flow tests.
 
 ## Tests
 

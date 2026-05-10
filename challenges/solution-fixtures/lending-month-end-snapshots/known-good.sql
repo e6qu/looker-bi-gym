@@ -22,6 +22,21 @@ non_month_end AS (
   SELECT COUNT(*) AS non_month_end_snapshot_count
   FROM loan_monthly_snapshots
   WHERE as_of_date NOT IN ('2026-02-28', '2026-03-31')
+),
+latest_property_valuation AS (
+  SELECT CAST(SUM(market_value_eur) AS DOUBLE) AS latest_property_valuation_total_eur
+  FROM property_valuations
+  WHERE valuation_date = '2026-03-31'
+),
+stale_collateral AS (
+  SELECT COUNT(*) AS stale_collateral_valuation_count
+  FROM collateral
+  WHERE valuation_date = '2025-03-31'
+),
+latest_hpi AS (
+  SELECT CAST(house_price_index_2015_100 AS DOUBLE) AS latest_romania_hpi_2015_100
+  FROM romania_house_price_index_annual
+  WHERE year = 2025
 )
 SELECT
   '2026-03-31' AS latest_as_of_date,
@@ -30,8 +45,14 @@ SELECT
   nts.naive_time_sum_total,
   nts.naive_time_sum_total - lt.latest_principal_total AS time_sum_delta,
   non_month_end.non_month_end_snapshot_count,
-  lt.stage3_principal_total
+  lt.stage3_principal_total,
+  latest_property_valuation.latest_property_valuation_total_eur,
+  stale_collateral.stale_collateral_valuation_count,
+  latest_hpi.latest_romania_hpi_2015_100
 FROM latest_totals lt
 INNER JOIN naive_time_sums nts USING (currency_code)
 CROSS JOIN non_month_end
+CROSS JOIN latest_property_valuation
+CROSS JOIN stale_collateral
+CROSS JOIN latest_hpi
 ORDER BY lt.currency_code;

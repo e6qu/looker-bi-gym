@@ -71,6 +71,13 @@ The first platform release and PR #3 established:
 - Challenge definitions must be rich enough to grade: inputs, outputs, source
   facts, checks, fixtures, expected wrong answers or known-bad SQL where useful,
   and stable versioning.
+- Optional LLM question generation is draft-only. LLM review/refinement and
+  manual "dreaming" passes may help find weak facts, better sources, generic
+  questions, dataset realism gaps, and possible bugs, but they do not replace
+  committed source facts, deterministic fixtures, human review, or passing tests.
+- Dreaming is currently manual only through `make` targets. Do not enable an
+  automatic 3-6 hour background scheduler until a later explicit task designs
+  permissions, artifact review, cost controls, and merge discipline.
 
 ## Future Phases
 
@@ -97,6 +104,9 @@ Expand beyond the deposits seed with committed synthetic datasets and metadata:
 - Lending/month-end exposure pack for semi-additive snapshots and DPD buckets.
 - Finance/GL reconciliation pack.
 - Operations/freshness/reconciliation pack.
+- Real-estate collateral and mortgage-evaluation support packs with synthetic
+  property/location/valuation rows plus official historical/current market
+  context tables where licensing and source availability allow.
 
 Every dataset pack needs versioned files, metadata, synthetic-only declarations,
 schema/grain contracts, row counts, control totals, known traps, and fixture

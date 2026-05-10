@@ -2,6 +2,66 @@
 
 ## 2026-05-10
 
+- Continued PR #6 after the user requested larger deterministic datasets,
+  Romania-only real-estate prices/location context, official historical/current
+  data, LLM generation plus review/refinement, and manual dreaming.
+- Added deterministic Romania real-estate collateral support to
+  `lending-month-end/v0.1.0`:
+  - `generate-real-estate-collateral.ts`;
+  - 60 synthetic collateral/property/location/attribute rows;
+  - 180 synthetic property valuation rows;
+  - 42 synthetic sector/city/neighborhood-tier/property-type price bands.
+- Added official Eurostat Romania annual HPI observations for 2009-2025 in
+  `official_house_price_index_ro_annual.csv`, with source cards and facts for
+  HPI scope, historical/current observations, and market-index boundaries.
+- Added Romania notarial-study source cards and facts to prevent treating
+  notarial reference values as property-level appraisals or market advice.
+- Updated lending dataset metadata with new tables, relationships, control
+  totals, known traps, date semantics, synthetic-only boundaries, and fixture
+  refresh rules.
+- Expanded `lending-month-end-snapshots` with collateral freshness, latest
+  property valuation, official HPI, notarial-reference, and sensitive
+  `property_id` minimisation checks/questions.
+- Updated the browser starter SQL and known-good fixture SQL/answers for the
+  richer collateral controls.
+- Added the manual LLM question workbench:
+  - `make questions-context`;
+  - `make questions-generate-codex`;
+  - `make questions-generate-claude`;
+  - `make questions-review-codex`;
+  - `make questions-review-claude`;
+  - `make dream`;
+  - `make dream-codex`;
+  - `make dream-claude`.
+- Added `docs/13-llm-question-and-dreaming-workbench.md` documenting that
+  dreaming is manual, no-provider-capable, no-edit, ignored-artifact review
+  tooling for now.
+- Added `bun run test:llm-workbench` and included it in `bun run check` and
+  `make test`.
+- Updated `.gitignore` and `.prettierignore` so ignored workbench artifacts under
+  `var/` are not committed or formatted.
+- Fixed validation issues found during the local check pass:
+  - removed a comma from generated CSV note text because the dataset validator
+    intentionally uses simple CSV parsing;
+  - made Bucharest price-band IDs sector-aware to avoid duplicate primary keys;
+  - aligned fixture/starter SQL with the loaded table name
+    `romania_house_price_index_annual`;
+  - updated the deterministic latest property valuation total to `11801400`;
+  - made the new notarial question explanation cite its `FACT-*` ID.
+- Ran focused checks:
+  - `bun run validate:datasets`;
+  - `bun run validate:manifests`;
+  - `bun run test:facts-db`;
+  - `bun run test:llm-workbench`;
+  - `bun run test:fixtures`;
+  - `bun run test:content-qa`;
+  - `bun run test:sql`;
+  - `bun run format:check`;
+  - `bun run typecheck`;
+  - `bun run lint`.
+- Ran full `bun run check` with approved local preview binding; it passed,
+  including all 8 Playwright rendered user-flow tests.
+
 - Resumed Task 027 wrap-up after sandbox git-index writes were blocked on
   2026-05-09.
 - Reviewed the staged working tree and continuity files before committing.

@@ -7,7 +7,7 @@ difficulty: intermediate
 estimated_minutes: 35
 prerequisites:
   - account-owner-fanout
-business_scenario: Build a currency-level lending exposure result from synthetic loan snapshots while keeping month-end exposure separate from time-summed activity.
+business_scenario: Build a currency-level lending exposure result from synthetic loan snapshots and real-estate collateral data while keeping month-end exposure, valuation freshness, and market-index context separate.
 regulatory_context:
   - EBA
   - DORA
@@ -16,7 +16,7 @@ required_tools: none
 inputs:
   - id: lending_month_end
     type: dataset
-    description: Static synthetic lending month-end dataset with loan contracts, exposure snapshots, products, branches, and collateral rows.
+    description: Static synthetic lending month-end dataset with loan contracts, exposure snapshots, products, branches, real-estate collateral, property location bands, and official Romania HPI observations.
     dataset_id: lending-month-end
     dataset_version: v0.1.0
     tables:
@@ -25,14 +25,21 @@ inputs:
       - loan_accounts
       - loan_monthly_snapshots
       - collateral
+      - property_locations
+      - property_attributes
+      - property_valuations
+      - market_price_bands
+      - romania_house_price_index_annual
     sensitive_fields:
       - loan_id
       - borrower_id
       - synthetic_contract_ref
+      - property_id
     date_semantics:
       - as_of_date is the exposure snapshot date for outstanding_principal.
       - origination_date and maturity_date are loan lifecycle dates, not exposure measurement dates.
       - valuation_date is a collateral valuation date, not a lending exposure snapshot date.
+      - year in romania_house_price_index_annual is an annual market-index observation period, not a property valuation date.
     grain: One row per loan per as_of_date in loan_monthly_snapshots; reduce to the chosen month-end date before currency-level exposure reporting.
 outputs:
   - id: exposure_query
@@ -40,7 +47,7 @@ outputs:
     description: SQL that returns currency-level latest month-end exposure, naive all-date exposure, and the reconciliation delta.
   - id: exposure_result
     type: sql-result
-    description: Two-row result by currency with latest principal, naive time sum, time-sum delta, non-month-end count, and stage 3 principal.
+    description: Two-row result by currency with latest principal, naive time sum, time-sum delta, non-month-end count, stage 3 principal, and collateral quality control columns.
 checks:
   - id: required_columns
     type: required-column
@@ -54,6 +61,9 @@ checks:
       - time_sum_delta
       - non_month_end_snapshot_count
       - stage3_principal_total
+      - latest_property_valuation_total_eur
+      - stale_collateral_valuation_count
+      - latest_romania_hpi_2015_100
   - id: no_sensitive_fields
     type: sensitive-field-exclusion
     description: Result must not expose loan-level or borrower-level identifiers.
@@ -62,6 +72,7 @@ checks:
       - loan_id
       - borrower_id
       - synthetic_contract_ref
+      - property_id
   - id: two_currency_rows
     type: row-count
     description: Result returns exactly one row for each currency in the latest month-end snapshot.
@@ -133,13 +144,46 @@ questions:
         label: currency_code
       - id: synthetic_contract_ref
         label: synthetic_contract_ref
+      - id: property_id
+        label: property_id
     answer:
       - loan_id
       - borrower_id
       - synthetic_contract_ref
+      - property_id
     explanation: FACT-GDPR-DATA-MINIMISATION supports returning only fields needed for the stated BI purpose.
     source_facts:
       - FACT-GDPR-DATA-MINIMISATION
+  - id: q_stale_collateral_count
+    type: numeric
+    prompt: How many pledged collateral rows use the stale valuation date 2025-03-31 instead of the latest 2026-03-31 valuation date?
+    answer: 3
+    tolerance: 0
+    explanation: FACT-REAL-ESTATE-VALUATION-DATE-SEPARATION explains why collateral valuation dates must be managed separately from loan exposure snapshot dates.
+    source_facts:
+      - FACT-REAL-ESTATE-VALUATION-DATE-SEPARATION
+  - id: q_latest_property_valuation_total
+    type: numeric
+    prompt: What is the deterministic total market_value_eur for property_valuations at valuation_date 2026-03-31?
+    answer: 11801400
+    tolerance: 0
+    explanation: FACT-REAL-ESTATE-COLLATERAL-GRAIN explains why property valuation totals must be calculated at property valuation-date grain before joining to loan exposure.
+    source_facts:
+      - FACT-REAL-ESTATE-COLLATERAL-GRAIN
+  - id: q_notarial_minimum_reference
+    type: multiple-choice
+    prompt: What does FACT-ROMANIA-NOTARIAL-STUDIES-NOT-MARKET-VALUE imply about using Romanian notarial market studies in a mortgage BI dashboard?
+    options:
+      - id: reference_not_appraisal
+        label: They can provide minimum reference-value context, but they are not individual market valuations.
+      - id: direct_appraisal
+        label: They are sufficient as property-level mortgage appraisals.
+      - id: borrower_identity
+        label: They identify the borrower and exact pledged property.
+    answer: reference_not_appraisal
+    explanation: FACT-ROMANIA-NOTARIAL-STUDIES-NOT-MARKET-VALUE says Romanian notarial-study values are minimum reference values for specified legal/tax workflows, not market circulation values or loan-level appraisal outputs.
+    source_facts:
+      - FACT-ROMANIA-NOTARIAL-STUDIES-NOT-MARKET-VALUE
 lesson_steps:
   - id: identify_snapshot_grain
     title: Identify the exposure snapshot grain
@@ -184,6 +228,16 @@ lesson_steps:
     failure_mode: Selecting raw identifiers alongside aggregates encourages accidental detail-level exposure in BI tools.
     source_facts:
       - FACT-GDPR-DATA-MINIMISATION
+  - id: add_collateral_quality_controls
+    title: Add collateral valuation controls
+    instruction: Build CTEs that join the collateral, property_valuations, and romania_house_price_index_annual tables only after calculating property-level latest valuation controls and stale collateral counts.
+    expected_result: latest_property_valuation_total_eur is 11801400, stale_collateral_valuation_count is 3, and latest_romania_hpi_2015_100 is 164.82.
+    why_it_matters: Mortgage BI work needs valuation freshness and market-index context without pretending that index values are property appraisals.
+    failure_mode: Joining every valuation date to every exposure row multiplies collateral values and confuses valuation_date with as_of_date.
+    source_facts:
+      - FACT-REAL-ESTATE-COLLATERAL-GRAIN
+      - FACT-REAL-ESTATE-VALUATION-DATE-SEPARATION
+      - FACT-EUROSTAT-HPI-MARKET-PRICE-INDEX
 flag:
   id: flag-lending-month-end-snapshots
   criteria:

@@ -5,6 +5,7 @@ app/dist
 app/src/generated
 sources/platforms/*/full
 app/test-results
+var
 coverage
 playwright-report
 *.log
