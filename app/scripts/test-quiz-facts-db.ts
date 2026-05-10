@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { quizBanks } from "../src/learningContent";
-import { buildFactDatabase } from "./fact-database";
+import { buildFactDatabase } from "facts-db-app";
 
 type Difficulty = "easy" | "medium" | "hard";
 

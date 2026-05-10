@@ -2,7 +2,7 @@ import { spawnSync } from "node:child_process";
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
-import { readFactCards, readSourceCards } from "./fact-database";
+import { readFactCards, readSourceCards } from "facts-db-app";
 
 type WorkbenchAction =
   | "context"

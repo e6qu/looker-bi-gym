@@ -168,10 +168,12 @@ Facts:
 - Learner UI: show human-readable fact statements and area labels first; keep
   raw `FACT-*` IDs as metadata/links rather than primary learner-facing text.
 - Validation: `bun run test:facts-db` and `bun run test:quiz-facts-db`.
-- Local SQLite graph: `bun run facts:build-db` builds ignored
+- Local SQLite graph: the `facts-db-app` workspace package provides the
+  CLI/library behind `bun run facts:build-db`, which builds ignored
   `app/src/generated/facts.sqlite` with facts, sources, source documents,
   fact-source edges, related-fact edges, and triple-like graph rows for local
-  inspection and LLM-assisted review.
+  inspection and LLM-assisted review. It is development tooling only, not a web
+  UI or backend.
 
 Sources:
 

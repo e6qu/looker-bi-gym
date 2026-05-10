@@ -1,0 +1,18 @@
+{
+  "name": "facts-db-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/fact-database.ts"
+  },
+  "scripts": {
+    "build-db": "bun run src/cli.ts",
+    "test": "bun run tests/test-fact-database.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit --pretty false"
+  },
+  "devDependencies": {
+    "@types/node": "25.6.0",
+    "typescript": "6.0.3"
+  }
+}
