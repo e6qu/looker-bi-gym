@@ -104,7 +104,7 @@ advice.
 
 - Statement: DGSD Article 7 bases the coverage calculation on the aggregate
   deposits of each depositor at the same credit institution.
-- Source: [`SRC-DGSD-ELI-2014-49`](../../sources/law/eu-deposit-guarantee.md#src-dgsd-eli-2014-49).
+- Source: [`SRC-DGSD-ELI-2014-49`](../sources/law/eu-deposit-guarantee.md#src-dgsd-eli-2014-49).
 - Source quote: "aggregate deposits of each depositor".
 - Derived implication: Guarantee exercises must group by depositor and credit
   institution before applying the coverage ceiling.
@@ -115,7 +115,7 @@ advice.
 
 - Statement: DGSD Article 8 sets the repayable amount availability period at
   seven working days.
-- Source: [`SRC-DGSD-ELI-2014-49`](../../sources/law/eu-deposit-guarantee.md#src-dgsd-eli-2014-49).
+- Source: [`SRC-DGSD-ELI-2014-49`](../sources/law/eu-deposit-guarantee.md#src-dgsd-eli-2014-49).
 - Source quote: "seven working days".
 - Derived implication: Operations scenarios about unavailable deposits need an
   event date and working-day SLA evidence, not only a final compensation total.
@@ -126,8 +126,8 @@ advice.
 
 - Statement: DGSD harmonises the standard deposit coverage level across EU
   deposit guarantee schemes at EUR 100,000.
-- Source: [`SRC-DGSD-ELI-2014-49`](../../sources/law/eu-deposit-guarantee.md#src-dgsd-eli-2014-49);
-  [`SRC-EC-DEPOSIT-GUARANTEE`](../../sources/law/eu-deposit-guarantee.md#src-ec-deposit-guarantee).
+- Source: [`SRC-DGSD-ELI-2014-49`](../sources/law/eu-deposit-guarantee.md#src-dgsd-eli-2014-49);
+  [`SRC-EC-DEPOSIT-GUARANTEE`](../sources/law/eu-deposit-guarantee.md#src-ec-deposit-guarantee).
 - Source quote: "up to EUR 100 000".
 - Derived implication: Romanian guarantee lessons can use EU coverage concepts
   while still requiring FGDB-specific currency and member-bank context.
@@ -138,8 +138,8 @@ advice.
 
 - Statement: FGDB defines eligible deposits as deposits that are not excluded
   from the scope of guarantee.
-- Source: [`SRC-FGDB-DICTIONARY`](../../sources/regulators/fgdb-deposit-guarantee.md#src-fgdb-dictionary);
-  [`SRC-FGDB-LAW-311-2015`](../../sources/regulators/fgdb-deposit-guarantee.md#src-fgdb-law-311-2015).
+- Source: [`SRC-FGDB-DICTIONARY`](../sources/regulators/fgdb-deposit-guarantee.md#src-fgdb-dictionary);
+  [`SRC-FGDB-LAW-311-2015`](../sources/regulators/fgdb-deposit-guarantee.md#src-fgdb-law-311-2015).
 - Source quote: "deposits that are not excluded".
 - Derived implication: Coverage datasets need an eligibility dimension or
   exclusion reason before learners calculate compensation.
@@ -151,7 +151,7 @@ advice.
 - Statement: FGDB publishes a list of deposits excluded from coverage, including
   deposits by credit institutions on their own behalf and deposits whose holder
   identity has not been verified before unavailability.
-- Source: [`SRC-FGDB-INSURED`](../../sources/regulators/fgdb-deposit-guarantee.md#src-fgdb-insured).
+- Source: [`SRC-FGDB-INSURED`](../sources/regulators/fgdb-deposit-guarantee.md#src-fgdb-insured).
 - Source quote: "List of Deposits Excluded from Coverage".
 - Derived implication: Future CTF-style guarantee challenges should include
   excluded-account traps and require learners to justify exclusions.
@@ -162,8 +162,8 @@ advice.
 
 - Statement: FGDB defines the guarantee ceiling as the maximum coverage level
   per guaranteed depositor, per bank.
-- Source: [`SRC-FGDB-DICTIONARY`](../../sources/regulators/fgdb-deposit-guarantee.md#src-fgdb-dictionary);
-  [`SRC-FGDB-LAW-311-2015`](../../sources/regulators/fgdb-deposit-guarantee.md#src-fgdb-law-311-2015).
+- Source: [`SRC-FGDB-DICTIONARY`](../sources/regulators/fgdb-deposit-guarantee.md#src-fgdb-dictionary);
+  [`SRC-FGDB-LAW-311-2015`](../sources/regulators/fgdb-deposit-guarantee.md#src-fgdb-law-311-2015).
 - Source quote: "per guaranteed depositors, per bank".
 - Derived implication: Quiz questions should test the ceiling grain directly,
   because account-level and row-level answers are common BI mistakes.
@@ -175,8 +175,8 @@ advice.
 - Statement: FGDB materials distinguish Romanian legal-person credit
   institutions from EU branches whose deposits are covered under the state of
   origin.
-- Source: [`SRC-FGDB-DEPOSITORS`](../../sources/regulators/fgdb-deposit-guarantee.md#src-fgdb-depositors);
-  [`SRC-FGDB-LAW-311-2015`](../../sources/regulators/fgdb-deposit-guarantee.md#src-fgdb-law-311-2015).
+- Source: [`SRC-FGDB-DEPOSITORS`](../sources/regulators/fgdb-deposit-guarantee.md#src-fgdb-depositors);
+  [`SRC-FGDB-LAW-311-2015`](../sources/regulators/fgdb-deposit-guarantee.md#src-fgdb-law-311-2015).
 - Source quote: "state of origin".
 - Derived implication: Cross-border scenarios need member-scheme and legal
   entity fields before a guarantee calculation can be graded.

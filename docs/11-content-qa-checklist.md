@@ -16,7 +16,7 @@ Use this checklist before releasing learner-facing content.
 - Every challenge with `regulatory_context` has a mapped link to the relevant regulation brief in the app.
 - Every regulation brief states that it is technical orientation only, not legal, regulatory, accounting, privacy, compliance, or model-risk advice.
 - Every tutorial states that its sources and artifacts are synthetic training data only.
-- Every fact-backed tutorial step and quiz question cites a fact ID from [facts/README.md](facts/README.md) when it teaches regulation, product behavior, browser storage, or BI tooling constraints.
+- Every fact-backed tutorial step and quiz question cites a fact ID from [facts/README.md](../facts/README.md) when it teaches regulation, product behavior, browser storage, or BI tooling constraints.
 - Quiz prompts test concrete facts from cited sources, not vague project preferences or opinion prompts.
 - Released challenge manifests include rendered `lesson_steps` with an action, expected checkpoint, why-it-matters explanation, common failure mode, and valid source fact IDs.
 - Released tutorial Markdown files include `## Source Facts`, `## Steps`, `## Checkpoints`, and `## Common Failure Modes`.

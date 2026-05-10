@@ -988,8 +988,10 @@ async function buildCatalog(): Promise<Catalog> {
       (path) => readMarkdown(path),
     ),
   );
-  const factSources = docSources.filter((source) =>
-    source.repoPath.startsWith("docs/facts/"),
+  const factSources = await Promise.all(
+    (await listFiles(join(repoRoot, "facts"), new Set([".md"]))).map((path) =>
+      readMarkdown(path),
+    ),
   );
   const factCatalog = factSources.flatMap((source) => parseFactFile(source));
   const factIds = new Set(factCatalog.map((fact) => fact.id));

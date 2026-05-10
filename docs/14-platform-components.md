@@ -159,9 +159,7 @@ Datasets:
 
 Facts:
 
-- Current location: `docs/facts/`.
-- Planned canonical location: root `facts/` after the fact-corpus migration
-  phase.
+- Location: root `facts/`.
 - App route: `#/facts`.
 - Role: durable `FACT-*` IDs for sourced tutorials, quiz questions, challenge
   explanations, and LLM workbench context.

@@ -12,7 +12,7 @@
       "FACT-ROMANIA-NOTARIAL-STUDIES-ANNUAL-COUNTY",
     ],
   "recommended_learner_tasks":
-    ["#/docs/facts/real-estate-collateral-romania.md"],
+    ["#/facts/fact-romania-notarial-studies-not-market-value"],
   "tags": ["flashcard"],
 }
 ---

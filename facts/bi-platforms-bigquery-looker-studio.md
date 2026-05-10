@@ -164,7 +164,7 @@ not legal, regulatory, accounting, privacy, compliance, or model-risk advice.
 
 - Statement: BigQuery authorized views let a view grant selected access to data
   without granting direct table access to the underlying source dataset.
-- Source: [`SRC-BIGQUERY-AUTHORIZED-VIEWS`](../../sources/platforms/bigquery.md#src-bigquery-authorized-views).
+- Source: [`SRC-BIGQUERY-AUTHORIZED-VIEWS`](../sources/platforms/bigquery.md#src-bigquery-authorized-views).
 - Source quote: "without giving them access".
 - Derived implication: Governance lessons should separate raw-table access,
   serving-view access, and dashboard access decisions.
@@ -175,7 +175,7 @@ not legal, regulatory, accounting, privacy, compliance, or model-risk advice.
 
 - Statement: BigQuery materialized views periodically cache the results of a SQL
   query to improve performance for compatible query patterns.
-- Source: [`SRC-BIGQUERY-MATERIALIZED-VIEWS`](../../sources/platforms/bigquery.md#src-bigquery-materialized-views).
+- Source: [`SRC-BIGQUERY-MATERIALIZED-VIEWS`](../sources/platforms/bigquery.md#src-bigquery-materialized-views).
 - Source quote: "periodically cache".
 - Derived implication: Performance questions should ask learners to justify when
   cached results are appropriate versus when a logical view is enough.
@@ -186,7 +186,7 @@ not legal, regulatory, accounting, privacy, compliance, or model-risk advice.
 
 - Statement: BigQuery `INFORMATION_SCHEMA.JOBS` exposes `user_email` in job
   metadata examples and clusters the view by `project_id` and `user_email`.
-- Source: [`SRC-BIGQUERY-JOBS`](../../sources/platforms/bigquery.md#src-bigquery-jobs).
+- Source: [`SRC-BIGQUERY-JOBS`](../sources/platforms/bigquery.md#src-bigquery-jobs).
 - Source quote: "`user_email`".
 - Derived implication: Cost-observability tutorials should aggregate or redact
   user-level job metadata when evidence is shared outside the operations team.
@@ -198,7 +198,7 @@ not legal, regulatory, accounting, privacy, compliance, or model-risk advice.
 - Statement: BigQuery `INFORMATION_SCHEMA.JOBS` is partitioned by
   `creation_time`, making time-window filters a natural part of job-evidence
   queries.
-- Source: [`SRC-BIGQUERY-JOBS`](../../sources/platforms/bigquery.md#src-bigquery-jobs).
+- Source: [`SRC-BIGQUERY-JOBS`](../sources/platforms/bigquery.md#src-bigquery-jobs).
 - Source quote: "`creation_time`".
 - Derived implication: Cost and freshness exercises should specify the query
   time window instead of asking for an unbounded jobs scan.
@@ -209,7 +209,7 @@ not legal, regulatory, accounting, privacy, compliance, or model-risk advice.
 
 - Statement: BigQuery logical views must reference resources in the same
   location as the view.
-- Source: [`SRC-BIGQUERY-VIEWS`](../../sources/platforms/bigquery.md#src-bigquery-views).
+- Source: [`SRC-BIGQUERY-VIEWS`](../sources/platforms/bigquery.md#src-bigquery-views).
 - Source quote: "same location".
 - Derived implication: Cloud-applied instructions should include dataset-region
   checks before learners create or troubleshoot views.
@@ -221,8 +221,8 @@ not legal, regulatory, accounting, privacy, compliance, or model-risk advice.
 - Statement: A BigQuery logical view stores SQL as the contract for a virtual
   table, so changing the SQL changes downstream behavior even when the view name
   stays the same.
-- Source: [`SRC-BIGQUERY-VIEWS-INTRO`](../../sources/platforms/bigquery.md#src-bigquery-views-intro);
-  [`SRC-BIGQUERY-VIEWS`](../../sources/platforms/bigquery.md#src-bigquery-views).
+- Source: [`SRC-BIGQUERY-VIEWS-INTRO`](../sources/platforms/bigquery.md#src-bigquery-views-intro);
+  [`SRC-BIGQUERY-VIEWS`](../sources/platforms/bigquery.md#src-bigquery-views).
 - Source quote: "defined by a SQL query".
 - Derived implication: Tutorials should require learners to version view SQL or
   keep the SQL in source-controlled lesson artifacts.
@@ -234,8 +234,8 @@ not legal, regulatory, accounting, privacy, compliance, or model-risk advice.
 - Statement: Looker Studio blends require join keys and join configuration; the
   leftmost source determines the retained records for the documented default
   pattern.
-- Source: [`SRC-LOOKER-STUDIO-JOIN-KEY`](../../sources/platforms/looker-studio.md#src-looker-studio-join-key);
-  [`SRC-LOOKER-STUDIO-BLENDS`](../../sources/platforms/looker-studio.md#src-looker-studio-blends).
+- Source: [`SRC-LOOKER-STUDIO-JOIN-KEY`](../sources/platforms/looker-studio.md#src-looker-studio-join-key);
+  [`SRC-LOOKER-STUDIO-BLENDS`](../sources/platforms/looker-studio.md#src-looker-studio-blends).
 - Source quote: "join key".
 - Derived implication: Blend challenges should make learners state join key,
   source order, fields kept, and expected fanout risk before grading totals.
@@ -246,7 +246,7 @@ not legal, regulatory, accounting, privacy, compliance, or model-risk advice.
 
 - Statement: Looker Studio owner's credentials can let report viewers see data
   through the owner's access rather than their own direct access.
-- Source: [`SRC-LOOKER-STUDIO-CREDENTIALS`](../../sources/platforms/looker-studio.md#src-looker-studio-credentials).
+- Source: [`SRC-LOOKER-STUDIO-CREDENTIALS`](../sources/platforms/looker-studio.md#src-looker-studio-credentials).
 - Source quote: "owner's credentials".
 - Derived implication: Cloud-evidence tasks should ask for safe written
   descriptions of credential mode rather than screenshots or pasted credentials.
@@ -257,7 +257,7 @@ not legal, regulatory, accounting, privacy, compliance, or model-risk advice.
 
 - Statement: Looker Studio viewer credentials use the report viewer's access to
   determine what data the viewer can see.
-- Source: [`SRC-LOOKER-STUDIO-CREDENTIALS`](../../sources/platforms/looker-studio.md#src-looker-studio-credentials).
+- Source: [`SRC-LOOKER-STUDIO-CREDENTIALS`](../sources/platforms/looker-studio.md#src-looker-studio-credentials).
 - Source quote: "viewer credentials".
 - Derived implication: Access-control tutorials should ask learners to explain
   owner-versus-viewer credential tradeoffs for a synthetic banking dashboard.
@@ -268,8 +268,8 @@ not legal, regulatory, accounting, privacy, compliance, or model-risk advice.
 
 - Statement: Looker Studio data sources expose fields and field properties that
   report editors use when building charts and calculated fields.
-- Source: [`SRC-LOOKER-STUDIO-DATA-SOURCES`](../../sources/platforms/looker-studio.md#src-looker-studio-data-sources);
-  [`SRC-LOOKER-STUDIO-CALCULATED-FIELDS`](../../sources/platforms/looker-studio.md#src-looker-studio-calculated-fields).
+- Source: [`SRC-LOOKER-STUDIO-DATA-SOURCES`](../sources/platforms/looker-studio.md#src-looker-studio-data-sources);
+  [`SRC-LOOKER-STUDIO-CALCULATED-FIELDS`](../sources/platforms/looker-studio.md#src-looker-studio-calculated-fields).
 - Source quote: "field schema".
 - Derived implication: Dashboard lessons should require learners to inspect
   field type, aggregation, and calculation location before chart creation.

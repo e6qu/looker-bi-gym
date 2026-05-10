@@ -97,7 +97,7 @@ Review gates before this phase can be called complete:
 
 ## Phase 4 - Fact Corpus Expansion
 
-- Move the current fact corpus from `docs/facts/` to root `facts/`.
+- Use root `facts/` as the canonical authored fact corpus.
 - Expand toward at least 500 source-backed facts.
 - Prioritize BI, BigQuery, Looker Studio, SQL, metric contracts, data quality,
   privacy/security, and banking context.

@@ -38,9 +38,7 @@ result to compare, and which fact-backed rule explains the checkpoint.
 
 Fact-backed instruction rules:
 
-- External facts currently live in
-  [docs/facts/README.md](docs/facts/README.md).
-- Future canonical fact path after migration: root `facts/`.
+- External facts live in [facts/README.md](facts/README.md).
 - Regulation, platform, browser-storage, and BI-tooling questions cite fact IDs.
 - Quiz prompts ask about a concrete source-backed consequence.
 - Explanations name the fact ID and the practical mistake it prevents.

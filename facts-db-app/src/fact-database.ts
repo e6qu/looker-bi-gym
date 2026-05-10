@@ -301,7 +301,7 @@ async function readSourceDocuments(
 
 export async function readFactCards(repoRoot: string): Promise<FactCard[]> {
   const factPaths = (
-    await listFiles(join(repoRoot, "docs", "facts"), markdownExtensions)
+    await listFiles(join(repoRoot, "facts"), markdownExtensions)
   ).filter((path) => basename(path) !== "README.md");
   const cards = await Promise.all(
     factPaths.map(async (factPath) => {

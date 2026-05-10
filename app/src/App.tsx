@@ -1171,8 +1171,8 @@ function FactsPage({
       </aside>
       <article className="markdownArticle factArticle">
         <div className="documentMeta">
-          <span>{selectedFact?.filePath ?? "docs/facts/*.md"}</span>
-          <a href="#/docs/facts/README.md">Fact docs</a>
+          <span>{selectedFact?.filePath ?? "facts/*.md"}</span>
+          <a href="#/facts">Fact graph</a>
         </div>
         {selectedFact === undefined ? (
           <div className="markdownBody">

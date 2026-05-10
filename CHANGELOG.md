@@ -7,7 +7,7 @@ All notable release changes are recorded here.
 ### Added
 
 - Source fact register for fact-backed tutorial steps and quiz questions.
-- Area-organized fact corpus under `docs/facts/` with short source quotes,
+- Area-organized fact corpus under `facts/` with short source quotes,
   cross-links, and project-architecture facts.
 - Rendered challenge lesson steps with instructions, checkpoints, failure modes,
   and source fact IDs.

@@ -23,7 +23,7 @@ export const factById = new Map(
 );
 
 export function getFactHref(factId: string): string {
-  return factById.get(factId)?.href ?? "#/docs/facts/README.md";
+  return factById.get(factId)?.href ?? "#/facts";
 }
 
 export function getFactByRouteId(
