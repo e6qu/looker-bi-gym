@@ -6,7 +6,7 @@ Last updated: 2026-05-10
 
 - Current branch: `phase-5-assessment-content-expansion`, based on verified
   `main`.
-- Current PR: not opened yet.
+- Current PR: #24, `https://github.com/e6qu/looker-bi-gym/pull/24`.
 - PR #23, `https://github.com/e6qu/looker-bi-gym/pull/23`, is squash-merged
   at `1ba5fefdb169c74b633b02d6ef0a66014bf96006`.
 - Main CI for `1ba5fef` passed:

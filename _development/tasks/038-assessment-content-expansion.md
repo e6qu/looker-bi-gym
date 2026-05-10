@@ -1,7 +1,7 @@
 # 038 - Assessment Content Expansion
 
 Status: implemented locally on branch `phase-5-assessment-content-expansion`;
-PR not opened yet; formal Claude review blocked by CLI hang.
+PR #24 open; formal Claude review blocked by CLI hang.
 
 ## Goal
 

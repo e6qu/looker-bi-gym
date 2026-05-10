@@ -48,6 +48,9 @@
 - Acceptance note: this is a first Phase 5 expansion batch only. It does not
   satisfy the 500 flashcard, 200 quiz question, 30 exam card, or Phase 9
   completeness targets.
+- Committed `fdb6f5f Expand assessment content coverage`.
+- Pushed branch `phase-5-assessment-content-expansion` and opened PR #24:
+  `https://github.com/e6qu/looker-bi-gym/pull/24`.
 
 ## 2026-05-10 - Phase 4 Fact Corpus Expansion Batch 1
 
