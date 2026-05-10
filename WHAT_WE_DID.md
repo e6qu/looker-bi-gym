@@ -51,6 +51,17 @@
   `4a2376d Strengthen CI and browser diagnostics`, pushed branch
   `ci-ui-warning-checks`, and opened PR #12:
   `https://github.com/e6qu/looker-bi-gym/pull/12`.
+- After the user merged PR #12, confirmed it merged at
+  `3edd840e1c749a453f2834d8684211069dceae1d` on 2026-05-10.
+- Fast-forwarded local `main` to PR #12.
+- Checked post-merge PR #12 automation:
+  - main-branch CI run `25629932439` passed for merge commit
+    `3edd840e1c749a453f2834d8684211069dceae1d`;
+  - main-branch Pages deployment run `25629932430` passed for the same commit;
+  - `curl -I https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
+    `last-modified: Sun, 10 May 2026 13:28:52 GMT`.
+- Created branch `record-pr12-postmerge` to record post-merge status and the
+  next implementation phase options without pushing to `main`.
 
 - Merged PR #9 with `gh pr merge 9 --squash --delete-branch`, fast-forwarded
   local `main`, and created branch `task026-grading-contracts`.

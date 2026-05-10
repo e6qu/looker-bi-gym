@@ -3,25 +3,21 @@
 ## Immediate Next Step
 
 Numbered implementation tasks 001 through 028 are implemented. PR #3 through
-PR #11 were merged. PR #11 merged on 2026-05-10 at merge commit
-`bd0be4505958f2e33706169dc7816096c7abc617`.
+PR #12 were merged. PR #12 merged on 2026-05-10 at merge commit
+`3edd840e1c749a453f2834d8684211069dceae1d`.
 
 Current implementation step:
 
-- PR #11 (`https://github.com/e6qu/looker-bi-gym/pull/11`) is merged and
+- PR #12 (`https://github.com/e6qu/looker-bi-gym/pull/12`) is merged and
   post-merge verified.
-- Main CI run `25629510931` passed for merge commit
-  `bd0be4505958f2e33706169dc7816096c7abc617`.
-- Main GitHub Pages deployment run `25629510924` passed for the same merge
-  commit, and `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200.
-- Current branch: `ci-ui-warning-checks`.
-- Current PR: `https://github.com/e6qu/looker-bi-gym/pull/12`.
-- Current branch purpose: strengthen CI and UI warning/error detection by
-  adding explicit CI steps for format, derived SQL expectations, browser-config,
-  fact database, LLM workbench, and platform-boundary checks; make
-  `bun run check` include `format:check`; and make rendered Playwright tests
-  fail on browser console warnings/errors, page errors, and failed network
-  requests.
+- Main CI run `25629932439` passed for merge commit
+  `3edd840e1c749a453f2834d8684211069dceae1d`.
+- Main GitHub Pages deployment run `25629932430` passed for the same merge
+  commit, and `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
+  `last-modified: Sun, 10 May 2026 13:28:52 GMT`.
+- Current branch: `record-pr12-postmerge`.
+- Current branch purpose: record PR #12 post-merge verification and choose the
+  next implementation phase.
 - Read `README.md`, `docs/14-platform-components.md`, `PLAN.md`, `STATUS.md`,
   `BUGS.md`, `tasks/025-real-tutorial-instruction-packs.md`, and
   `tasks/026-challenge-grading-contract-expansion.md` first.
@@ -29,15 +25,23 @@ Current implementation step:
   under `tasks/*.md`; `learner tasks` are curriculum exercise units shown to
   learners.
 
-1. Let PR #12 GitHub Actions run; do not merge. The user will merge after CI is
-   done.
-2. After PR #12 is merged, verify main CI, GitHub Pages deployment, and the
-   live GitHub Pages app again.
-3. Good next implementation candidates after this hardening PR are a
-   browser-local JSON import flow for Settings, richer browser-config or
-   metric-contract challenges, or rendering quiz/exam YAML directly in the app
-   instead of maintaining separate learner-facing Markdown summaries.
-4. Keep ignored screenshot artifacts local only; do not commit them.
+Recommended next phases:
+
+1. App-rendered learning surfaces: render quiz-bank YAML and exam-card YAML
+   directly in the app, so learners do not depend on separate Markdown summaries
+   for core learning flows.
+2. Browser-local JSON import: add Settings import for
+   `looker-bi-gym.progress-export.v1` with local validation, preview, apply
+   confirmation, and no upload.
+3. Flashcards and spaced repetition: implement Task 029 with topic-separated
+   decks, fact-backed cards, Anki-style timestamps/due dates, and single-JSON
+   flashcard state export/import.
+4. Richer challenges and datasets: add more deterministic synthetic dataset
+   packs and browser-verifiable Looker/BigQuery/BI mechanics challenges, with
+   fixtures and source-fact-backed questions.
+5. Optional cloud-applied track: expand Looker Studio recipes only after the
+   browser-first equivalent exists; keep it manual and UI-driven unless a future
+   learner script is justified and ShellCheck-verified.
 
 Preservation and verification steps:
 

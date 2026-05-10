@@ -90,6 +90,9 @@ No known app bugs after the Bun-only tooling, typed config, formatting, rendered
   browser console warnings, browser console errors, page errors, and failed
   network requests. Local `bun run test:e2e` and full `bun run check` passed on
   2026-05-10, and no such diagnostics were found in the covered rendered flows.
+- Post-merge PR #12 GitHub Actions and GitHub Pages deployment passed for merge
+  commit `3edd840e1c749a453f2834d8684211069dceae1d`, and the deployed Pages URL
+  returned HTTP 200 on 2026-05-10.
 - JSON import is planned but not implemented. Current Settings supports JSON
   export and reset only. Future import must stay browser-local and validate the
   `looker-bi-gym.progress-export.v1` structure before applying state.
