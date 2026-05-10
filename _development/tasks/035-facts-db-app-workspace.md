@@ -1,7 +1,7 @@
 # 035 - Facts DB App Workspace
 
-Status: implemented locally on branch `phase-3-facts-db-app`; PR not opened
-yet; formal Claude review blocked by CLI hang.
+Status: implemented locally on branch `phase-3-facts-db-app`; PR #21 opened;
+formal Claude review blocked by CLI hang.
 
 ## Goal
 

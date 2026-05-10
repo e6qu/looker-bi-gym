@@ -46,6 +46,9 @@
   - the Task 035 formal Claude CLI review used non-TUI
     `claude --print --permission-mode plan --output-format text ...`, produced
     no output for over 40 seconds, and was terminated.
+- Committed `4832312 Add facts db app workspace`.
+- Pushed branch `phase-3-facts-db-app` and opened PR #21:
+  `https://github.com/e6qu/looker-bi-gym/pull/21`.
 
 ## 2026-05-10 - Phase 2 Content Schema And Generated Catalogs
 

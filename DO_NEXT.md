@@ -11,10 +11,9 @@
    gh pr list --state open --limit 10
    ```
 
-3. If the Phase 3 PR has not been opened yet, push
-   `phase-3-facts-db-app` and open it after confirming there is no other open
-   PR.
-4. If updating this Phase 3 branch, run:
+3. Continue Phase 3 PR #21:
+   `https://github.com/e6qu/looker-bi-gym/pull/21`.
+4. If updating this branch, run:
 
    ```sh
    bun run format:check
@@ -29,7 +28,7 @@
    git diff --check
    ```
 
-5. Before merging the Phase 3 PR, fetch `origin/main`, rebase the branch on
+5. Before merging PR #21, fetch `origin/main`, rebase the branch on
    `origin/main`, verify CI is passing, and then squash-merge.
 6. After merge, verify main CI, GitHub Pages deployment, and the live Pages URL
    before starting Phase 4.

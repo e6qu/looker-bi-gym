@@ -5,7 +5,7 @@ Last updated: 2026-05-10
 ## Current Branch And PR
 
 - Current branch: `phase-3-facts-db-app`, based on verified `main`.
-- Current PR: not opened yet.
+- Current PR: #21, `https://github.com/e6qu/looker-bi-gym/pull/21`.
 - PR #20, `https://github.com/e6qu/looker-bi-gym/pull/20`, is squash-merged
   at `1539350e05f58de84ac94db4c44e6c0702f83a6e`.
 - Main CI for `1539350` passed:
