@@ -17,12 +17,12 @@ const outputPath = join(tmpdir(), "looker-bi-gym-facts.sqlite");
 const summary = await buildFactDatabase({ repoRoot, outputPath });
 
 assert.equal(summary.outputPath, outputPath);
-assert.ok(summary.sourceCount >= 30, "Expected at least 30 source cards.");
+assert.ok(summary.sourceCount >= 50, "Expected at least 50 source cards.");
 assert.ok(
   summary.sourceDocumentCount >= 20,
   "Expected at least 20 full source snapshots.",
 );
-assert.ok(summary.factCount >= 75, "Expected at least 75 facts.");
+assert.ok(summary.factCount >= 109, "Expected at least 109 facts.");
 assert.ok(
   summary.factSourceCount >= summary.factCount,
   "Every fact should have at least one source link.",

@@ -12,7 +12,7 @@
    ```
 
 3. Continue Task 037 on `phase-4-fact-corpus-expansion`; no PR is open yet.
-4. Add the first stable source-backed fact expansion batch, then run:
+4. If updating this branch, run:
 
    ```sh
    bun run content:generate
@@ -32,15 +32,17 @@
    ```
 
 5. Before opening the next PR, confirm there is still no open PR. Before
-   merging it, fetch `origin/main`, rebase the branch on
-   `origin/main`, verify CI is passing, and then squash-merge.
+   merging it, fetch `origin/main`, rebase the branch on `origin/main`, verify
+   CI is passing, and then squash-merge.
 6. After merge, verify main CI, GitHub Pages deployment, and the live Pages URL
    before moving on.
 
 ## Review Requirement
 
 Phase 4 root-path migration is merged and main-verified, but not
-Claude-reviewed. Task 037 fact expansion is not started.
+Claude-reviewed. Task 037 fact expansion batch 1 is locally implemented and
+verified, but not Claude-reviewed or opened as a PR yet. The Task 037 formal
+review attempt also hung with no output and was terminated.
 
 `PLAN.md` Phase 9 now defines the required gate for any claim that tutorials,
 questions, exams, or flashcards are complete, comprehensive, reality-verified,
@@ -53,9 +55,9 @@ claude --print --permission-mode plan --output-format text "<phase-specific revi
 ```
 
 The latest small non-TUI Claude CLI check succeeded, but the Task 034 formal
-review, Task 035 formal review, and Task 036 formal review hung with no output
-and were terminated. Do not mark Phase 2, Phase 3, or the Phase 4 path
-migration complete until a completed formal review is available and recorded.
+review, Task 035 formal review, Task 036 formal review, and Task 037 formal
+review hung with no output and were terminated. Do not mark Phase 2, Phase 3,
+or Phase 4 complete until a completed formal review is available and recorded.
 
 ## PR Discipline
 

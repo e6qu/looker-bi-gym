@@ -147,3 +147,22 @@ advice.
 - Relevant quotes:
   - "group your data"
 - Notes: Use this source for dimension definitions in dashboard lessons.
+
+## SRC-LOOKER-STUDIO-DATA-FRESHNESS
+
+- Type: official product documentation.
+- Publisher: Google Cloud.
+- URL: https://cloud.google.com/looker/docs/studio/manage-data-freshness
+- Accessed: 2026-05-10.
+- Used by facts:
+  - `FACT-LOOKER-STUDIO-DATA-FRESHNESS-TRADEOFF`
+  - `FACT-LOOKER-STUDIO-FRESHNESS-MEMORY`
+  - `FACT-LOOKER-STUDIO-BIGQUERY-REFRESH-COST`
+  - `FACT-LOOKER-STUDIO-BLEND-FRESHNESS-MINIMUM`
+- Relevant quotes:
+  - "balance your need for up-to-date information"
+  - "served from memory"
+  - "usual query costs"
+  - "minimum refresh time"
+- Notes: Use this source for freshness, cost, and report-performance evidence in
+  Looker Studio tutorials.

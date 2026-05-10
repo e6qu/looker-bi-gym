@@ -117,3 +117,46 @@ regulatory, accounting, privacy, compliance, or model-risk advice.
   - "Avoid `SELECT *`"
   - "prune partitions"
 - Notes: Use this source for serving-view field selection and partition filters.
+
+## SRC-BIGQUERY-MATH-SAFE-DIVIDE
+
+- Type: official product documentation.
+- Publisher: Google Cloud.
+- URL: https://cloud.google.com/bigquery/docs/reference/standard-sql/mathematical_functions#safe_divide
+- Accessed: 2026-05-10.
+- Used by facts:
+  - `FACT-BIGQUERY-SAFE-DIVIDE-RATIO-GUARD`
+- Relevant quotes:
+  - "returns `NULL` if an error occurs"
+  - "division by zero"
+- Notes: Use this source for ratio metrics that need explicit divide-by-zero
+  behavior.
+
+## SRC-BIGQUERY-CONVERSION-SAFE-CAST
+
+- Type: official product documentation.
+- Publisher: Google Cloud.
+- URL: https://cloud.google.com/bigquery/docs/reference/standard-sql/conversion_functions#safe_cast
+- Accessed: 2026-05-10.
+- Used by facts:
+  - `FACT-BIGQUERY-SAFE-CAST-DQ-NULL`
+- Relevant quotes:
+  - "returns `NULL` when a runtime error is produced"
+  - "impossible casts"
+- Notes: Use this source for data-quality parsing traps and invalid source-field
+  handling.
+
+## SRC-BIGQUERY-QUERY-QUALIFY
+
+- Type: official product documentation.
+- Publisher: Google Cloud.
+- URL: https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax#qualify_clause
+- Accessed: 2026-05-10.
+- Used by facts:
+  - `FACT-BIGQUERY-QUALIFY-WINDOW-FILTER`
+  - `FACT-BIGQUERY-QUALIFY-TRUE-ONLY`
+- Relevant quotes:
+  - "filters the results of window functions"
+  - "evaluates to `TRUE`"
+- Notes: Use this source for latest-record and top-N tutorial patterns that
+  filter after window functions.

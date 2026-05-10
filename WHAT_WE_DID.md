@@ -1,5 +1,49 @@
 # What We Did
 
+## 2026-05-10 - Phase 4 Fact Corpus Expansion Batch 1
+
+- Continued Task 037 on branch `phase-4-fact-corpus-expansion`.
+- Verified official Google Cloud source pages on 2026-05-10 for:
+  - BigQuery `SAFE_DIVIDE`;
+  - BigQuery `SAFE_CAST`;
+  - BigQuery `QUALIFY`;
+  - Looker Studio data freshness.
+- Added 4 source cards under `sources/platforms/` for those official docs.
+- Added 8 new source-backed fact cards:
+  - `FACT-BIGQUERY-SAFE-DIVIDE-RATIO-GUARD`;
+  - `FACT-BIGQUERY-SAFE-CAST-DQ-NULL`;
+  - `FACT-BIGQUERY-QUALIFY-WINDOW-FILTER`;
+  - `FACT-BIGQUERY-QUALIFY-TRUE-ONLY`;
+  - `FACT-LOOKER-STUDIO-DATA-FRESHNESS-TRADEOFF`;
+  - `FACT-LOOKER-STUDIO-FRESHNESS-MEMORY`;
+  - `FACT-LOOKER-STUDIO-BIGQUERY-REFRESH-COST`;
+  - `FACT-LOOKER-STUDIO-BLEND-FRESHNESS-MINIMUM`.
+- Raised fact database guardrails to at least 50 source cards and 109
+  executable fact cards.
+- Verification passed:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run test:facts-db`;
+  - `bun run facts:build-db`;
+  - `bun run test:content-qa`;
+  - `bun run test:quiz-facts-db`;
+  - `bun run test:flashcards`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:platform-boundary`;
+  - `bun run validate:static-links`;
+  - `bun run format:check`;
+  - `bun run check` after approved local Vite preview binding, with all 12
+    Playwright tests passing;
+  - stale scan for old fact path and unsupported completeness claims;
+  - `git diff --check`.
+- Failed/blocked attempts recorded:
+  - the Task 037 formal Claude CLI review used non-TUI
+    `claude --print --permission-mode plan --output-format text ...`, produced
+    no output for over 40 seconds, and was terminated.
+- Acceptance note: this is a first stable expansion batch only. It does not
+  satisfy the Phase 4 500-fact target or Phase 9 completeness gate.
+
 ## 2026-05-10 - Phase 4 Root Facts Corpus Migration
 
 - Verified PR #21 post-merge state:

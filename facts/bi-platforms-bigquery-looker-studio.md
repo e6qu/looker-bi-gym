@@ -275,3 +275,49 @@ not legal, regulatory, accounting, privacy, compliance, or model-risk advice.
   field type, aggregation, and calculation location before chart creation.
 - Related facts: [`FACT-LOOKER-STUDIO-DATA-SOURCE`](#fact-looker-studio-data-source),
   [`FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE`](#fact-looker-studio-calculated-field-scope).
+
+### FACT-LOOKER-STUDIO-DATA-FRESHNESS-TRADEOFF
+
+- Statement: Looker Studio data freshness settings let report editors balance
+  up-to-date information against report performance, query costs, and quotas.
+- Source: [`SRC-LOOKER-STUDIO-DATA-FRESHNESS`](../sources/platforms/looker-studio.md#src-looker-studio-data-freshness).
+- Source quote: "balance your need for up-to-date information".
+- Derived implication: Dashboard tutorials should ask learners to document the
+  required freshness SLA instead of using refresh settings as a hidden default.
+- Related facts: [`FACT-BI-REFERENCE-DATE-SEPARATION`](bi-modeling-banking.md#fact-bi-reference-date-separation),
+  [`FACT-BIGQUERY-JOBS-BYTES`](#fact-bigquery-jobs-bytes).
+
+### FACT-LOOKER-STUDIO-FRESHNESS-MEMORY
+
+- Statement: Looker Studio can serve report data from memory while a data
+  source freshness threshold still applies.
+- Source: [`SRC-LOOKER-STUDIO-DATA-FRESHNESS`](../sources/platforms/looker-studio.md#src-looker-studio-data-freshness).
+- Source quote: "served from memory".
+- Derived implication: Learners should distinguish dashboard refresh behavior
+  from source-table update behavior when explaining stale or surprising report
+  values.
+- Related facts: [`FACT-LOOKER-STUDIO-DATA-FRESHNESS-TRADEOFF`](#fact-looker-studio-data-freshness-tradeoff),
+  [`FACT-GDPR-ACCURACY`](privacy-gdpr.md#fact-gdpr-accuracy).
+
+### FACT-LOOKER-STUDIO-BIGQUERY-REFRESH-COST
+
+- Statement: Looker Studio warns BigQuery users that usual query costs apply
+  when it queries the underlying project, including manual and automatic data
+  refreshes.
+- Source: [`SRC-LOOKER-STUDIO-DATA-FRESHNESS`](../sources/platforms/looker-studio.md#src-looker-studio-data-freshness).
+- Source quote: "usual query costs".
+- Derived implication: Cost-observability tutorials should connect dashboard
+  refresh settings to BigQuery job evidence and bytes processed.
+- Related facts: [`FACT-BIGQUERY-JOBS-BYTES`](#fact-bigquery-jobs-bytes),
+  [`FACT-BIGQUERY-JOBS-CREATION-TIME`](#fact-bigquery-jobs-creation-time).
+
+### FACT-LOOKER-STUDIO-BLEND-FRESHNESS-MINIMUM
+
+- Statement: For a blended Looker Studio data source, the data freshness setting
+  is the minimum refresh time across the included data sources.
+- Source: [`SRC-LOOKER-STUDIO-DATA-FRESHNESS`](../sources/platforms/looker-studio.md#src-looker-studio-data-freshness).
+- Source quote: "minimum refresh time".
+- Derived implication: Blend tutorials should require learners to account for
+  each source's freshness setting, not only the BigQuery serving view.
+- Related facts: [`FACT-LOOKER-STUDIO-BLEND-JOIN-CONFIG`](#fact-looker-studio-blend-join-config),
+  [`FACT-LOOKER-STUDIO-DATA-FRESHNESS-TRADEOFF`](#fact-looker-studio-data-freshness-tradeoff).

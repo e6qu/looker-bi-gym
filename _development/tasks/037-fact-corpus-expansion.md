@@ -1,6 +1,7 @@
 # 037 - Fact Corpus Expansion
 
-Status: not started on branch `phase-4-fact-corpus-expansion`.
+Status: implemented locally on branch `phase-4-fact-corpus-expansion`; PR not
+opened yet; formal Claude review blocked by CLI hang.
 
 ## Goal
 
@@ -43,6 +44,43 @@ quality.
 - `bun run validate:static-links`
 - `bun run check`
 - stale scan for old fact path and unsupported completeness claims
+
+Passed locally on 2026-05-10:
+
+- `bun run content:generate`
+- `bun run content:check`
+- `bun run test:facts-db`
+- `bun run facts:build-db`
+- `bun run test:content-qa`
+- `bun run test:quiz-facts-db`
+- `bun run test:flashcards`
+- `bun run typecheck`
+- `bun run lint`
+- `bun run test:platform-boundary`
+- `bun run validate:static-links`
+- `bun run format:check`
+- `bun run check` after approved local Vite preview binding, with all 12
+  Playwright tests passing
+- stale scan for old fact path and unsupported completeness claims
+- `git diff --check`
+
+Acceptance notes:
+
+- Added 8 official-source-backed facts:
+  - 4 BigQuery SQL facts for `SAFE_DIVIDE`, `SAFE_CAST`, and `QUALIFY`;
+  - 4 Looker Studio facts for data freshness, memory, BigQuery refresh cost,
+    and blended-source freshness.
+- Added 4 official Google Cloud source cards accessed on 2026-05-10.
+- Raised fact database guardrails to at least 50 source cards and 109 executable
+  fact cards.
+- This is a first expansion batch only; it does not satisfy the Phase 4 500-fact
+  target or the Phase 9 completeness gate.
+
+Blocked review:
+
+- `claude --print --permission-mode plan --output-format text ...` was run in
+  non-TUI mode for the Task 037 formal review, produced no output for over 40
+  seconds, and was terminated.
 
 ## Notes
 
