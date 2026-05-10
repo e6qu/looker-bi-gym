@@ -8,7 +8,8 @@ Planning, documentation, task tracking, continuity protocol, the static app skel
 
 ## Active Task
 
-Active implementation task: CI and browser-warning hardening on branch
+Active implementation task: CI and browser-warning hardening in PR #12
+(`https://github.com/e6qu/looker-bi-gym/pull/12`) from branch
 `ci-ui-warning-checks`. PR #11
 (`https://github.com/e6qu/looker-bi-gym/pull/11`) is merged and post-merge
 verified. This branch is a Task 012/013 follow-up: strengthen GitHub Actions

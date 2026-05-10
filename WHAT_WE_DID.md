@@ -47,6 +47,10 @@
   the new browser diagnostics guard. No browser console warnings, browser
   console errors, page errors, or failed network requests were found in the
   covered rendered flows.
+- Committed the hardening pass as
+  `4a2376d Strengthen CI and browser diagnostics`, pushed branch
+  `ci-ui-warning-checks`, and opened PR #12:
+  `https://github.com/e6qu/looker-bi-gym/pull/12`.
 
 - Merged PR #9 with `gh pr merge 9 --squash --delete-branch`, fast-forwarded
   local `main`, and created branch `task026-grading-contracts`.

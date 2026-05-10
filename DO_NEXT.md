@@ -15,6 +15,7 @@ Current implementation step:
 - Main GitHub Pages deployment run `25629510924` passed for the same merge
   commit, and `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200.
 - Current branch: `ci-ui-warning-checks`.
+- Current PR: `https://github.com/e6qu/looker-bi-gym/pull/12`.
 - Current branch purpose: strengthen CI and UI warning/error detection by
   adding explicit CI steps for format, derived SQL expectations, browser-config,
   fact database, LLM workbench, and platform-boundary checks; make
@@ -28,15 +29,15 @@ Current implementation step:
   under `tasks/*.md`; `learner tasks` are curriculum exercise units shown to
   learners.
 
-1. Commit and open a PR for branch `ci-ui-warning-checks`.
-2. Let GitHub Actions run; do not merge. The user will merge after CI is done.
-3. After that PR is merged, verify main CI, GitHub Pages deployment, and the
+1. Let PR #12 GitHub Actions run; do not merge. The user will merge after CI is
+   done.
+2. After PR #12 is merged, verify main CI, GitHub Pages deployment, and the
    live GitHub Pages app again.
-4. Good next implementation candidates after this hardening PR are a
+3. Good next implementation candidates after this hardening PR are a
    browser-local JSON import flow for Settings, richer browser-config or
    metric-contract challenges, or rendering quiz/exam YAML directly in the app
    instead of maintaining separate learner-facing Markdown summaries.
-5. Keep ignored screenshot artifacts local only; do not commit them.
+4. Keep ignored screenshot artifacts local only; do not commit them.
 
 Preservation and verification steps:
 
