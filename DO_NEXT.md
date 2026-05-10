@@ -11,9 +11,8 @@
    gh pr list --state open --limit 10
    ```
 
-3. Continue Phase 4 PR #22:
-   `https://github.com/e6qu/looker-bi-gym/pull/22`.
-4. If updating this branch, run:
+3. Continue Task 037 on `phase-4-fact-corpus-expansion`; no PR is open yet.
+4. Add the first stable source-backed fact expansion batch, then run:
 
    ```sh
    bun run content:generate
@@ -32,14 +31,16 @@
    git diff --check
    ```
 
-5. Before merging the Phase 4 PR, fetch `origin/main`, rebase the branch on
+5. Before opening the next PR, confirm there is still no open PR. Before
+   merging it, fetch `origin/main`, rebase the branch on
    `origin/main`, verify CI is passing, and then squash-merge.
 6. After merge, verify main CI, GitHub Pages deployment, and the live Pages URL
-   before starting fact-count expansion.
+   before moving on.
 
 ## Review Requirement
 
-Phase 4 root-path migration is locally implemented but not Claude-reviewed.
+Phase 4 root-path migration is merged and main-verified, but not
+Claude-reviewed. Task 037 fact expansion is not started.
 
 `PLAN.md` Phase 9 now defines the required gate for any claim that tutorials,
 questions, exams, or flashcards are complete, comprehensive, reality-verified,

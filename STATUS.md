@@ -4,31 +4,27 @@ Last updated: 2026-05-10
 
 ## Current Branch And PR
 
-- Current branch: `phase-4-root-facts-corpus`, based on verified `main`.
-- Current PR: #22, `https://github.com/e6qu/looker-bi-gym/pull/22`.
-- PR #21, `https://github.com/e6qu/looker-bi-gym/pull/21`, is squash-merged
-  at `b65ccdd34578f914462430b29bc3dd124da9a397`.
-- Main CI for `b65ccdd` passed:
-  `https://github.com/e6qu/looker-bi-gym/actions/runs/25635903756`.
-- GitHub Pages workflow for `b65ccdd` passed:
-  `https://github.com/e6qu/looker-bi-gym/actions/runs/25635903780`.
+- Current branch: `phase-4-fact-corpus-expansion`, based on verified `main`.
+- Current PR: not opened yet.
+- PR #22, `https://github.com/e6qu/looker-bi-gym/pull/22`, is squash-merged
+  at `9e9e709ff76eb90f21f837a3d0c2570200c34d7a`.
+- Main CI for `9e9e709` passed:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25636257713`.
+- GitHub Pages workflow for `9e9e709` passed:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25636257725`.
 - Live Pages URL verified HTTP 200 on 2026-05-10:
   `https://e6qu.github.io/looker-bi-gym/`.
 
 ## Active Task
 
-Task 036 - Root Facts Corpus Migration.
+Task 037 - Fact Corpus Expansion.
 
-Implemented locally:
+Current state:
 
-- Moved the authored fact corpus from the old nested docs path to root
-  `facts/`.
-- Updated fact Markdown source links for the new root-relative location.
-- Updated catalog generation, content QA, flashcard checks, `facts-db-app`,
-  app fact fallbacks, and docs to treat root `facts/` as canonical.
-- Kept generated catalogs and generated SQLite outputs ignored and rebuildable.
-- Did not expand fact counts in this migration PR; corpus scaling remains a
-  follow-up after the path move is stable.
+- PR #22 moved the corpus to root `facts/` and was verified on main.
+- Task 037 is opened as the next implementation task for source-backed corpus
+  expansion.
+- No new facts have been added on this branch yet.
 
 ## Open Blockers
 
@@ -54,11 +50,11 @@ Implemented locally:
 
 ## Verification
 
-PR #21 post-merge verification passed on 2026-05-10:
+PR #22 post-merge verification passed on 2026-05-10:
 
-- PR #21 was squash-merged at `b65ccdd`.
+- PR #22 was squash-merged at `9e9e709`.
 - `gh run list --branch main --limit 5` showed main CI success and GitHub Pages
-  deployment success for `b65ccdd`.
+  deployment success for `9e9e709`.
 - `curl -L -I https://e6qu.github.io/looker-bi-gym/` returned HTTP 200.
 
 Task 036 local verification passed on 2026-05-10:

@@ -46,6 +46,15 @@
 - Committed `93e8a4f Move fact corpus to root facts`.
 - Pushed branch `phase-4-root-facts-corpus` and opened PR #22:
   `https://github.com/e6qu/looker-bi-gym/pull/22`.
+- PR #22 CI passed, then PR #22 was squash-merged at
+  `9e9e709ff76eb90f21f837a3d0c2570200c34d7a`.
+- Main CI passed for `9e9e709`.
+- GitHub Pages workflow passed for `9e9e709`.
+- Live Pages URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200
+  after the PR #22 deployment.
+- Created branch `phase-4-fact-corpus-expansion` from verified `main`.
+- Added `_development/tasks/037-fact-corpus-expansion.md` as the next
+  implementation task. No fact expansion has been implemented yet.
 
 ## 2026-05-10 - Phase 3 Facts DB App Workspace
 

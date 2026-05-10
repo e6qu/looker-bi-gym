@@ -45,6 +45,7 @@ Task order:
 - [034 - Content Schema And Generated Catalogs](034-content-schema-and-generated-catalogs.md)
 - [035 - Facts DB App Workspace](035-facts-db-app-workspace.md)
 - [036 - Root Facts Corpus Migration](036-root-facts-corpus-migration.md)
+- [037 - Fact Corpus Expansion](037-fact-corpus-expansion.md)
 
 Completion rule:
 
