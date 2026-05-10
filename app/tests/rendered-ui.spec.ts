@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { flashcardDecks } from "../src/flashcards";
 import { browserProgressStorageKeys } from "../src/progress";
 import type { Locator, Page } from "@playwright/test";
 
@@ -35,6 +36,11 @@ type BrowserDiagnostic = {
 };
 
 const diagnosticsByPage = new WeakMap<Page, BrowserDiagnostic[]>();
+const expectedFlashcardDeckCount = flashcardDecks.length;
+const expectedFlashcardCardCount = flashcardDecks.reduce(
+  (count, deck) => count + deck.cards.length,
+  0,
+);
 
 function collectBrowserDiagnostics(page: Page): BrowserDiagnostic[] {
   const diagnostics: BrowserDiagnostic[] = [];
@@ -327,7 +333,11 @@ FROM account_daily_balances;`);
       page.getByRole("heading", { level: 1, name: "Flashcards" }),
     ).toBeVisible();
     await expect(page.getByText("BI Fundamentals")).toBeVisible();
-    await expect(page.getByText("10 decks / 49 cards / 49 due")).toBeVisible();
+    await expect(
+      page.getByText(
+        `${expectedFlashcardDeckCount} decks / ${expectedFlashcardCardCount} cards / ${expectedFlashcardCardCount} due`,
+      ),
+    ).toBeVisible();
     await page.getByRole("button", { name: /BigQuery And SQL/u }).click();
     await page.getByText("External flashcard source review").click();
     await expect(

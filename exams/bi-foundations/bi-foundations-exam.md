@@ -52,6 +52,51 @@
             "self_assessment": "The learner can distinguish exposure date, valuation date, and dashboard control dates without exposing loan or property identifiers.\n",
           },
       },
+      {
+        "id": "exam-card-ratio-null-contract",
+        "title": "Ratio Null Contract Review",
+        "recommended_learner_tasks": ["LT-DQ-005", "LT-LOOKER-004"],
+        "source_facts":
+          [
+            "FACT-BIGQUERY-SAFE-DIVIDE-RATIO-GUARD",
+            "FACT-BI-RATIO-SUM-COMPONENTS-FIRST",
+            "FACT-LOOKER-STUDIO-DEFAULT-AGGREGATION",
+          ],
+        "objective": "Write a metric contract note for a dashboard ratio that uses numerator and denominator components, handles zero denominators, and states how Looker Studio should display or flag NULL results.\n",
+        "verification":
+          {
+            "expected_outputs":
+              [
+                "ratio numerator and denominator are named before aggregation",
+                "zero-denominator behavior is documented as NULL, hidden, zero, or flagged",
+                "Looker Studio field aggregation is checked before chart release",
+              ],
+            "self_assessment": "The learner can explain why SQL safety behavior and dashboard display behavior are separate contract decisions.\n",
+          },
+      },
+      {
+        "id": "exam-card-dashboard-refresh-ops",
+        "title": "Dashboard Refresh Operations Review",
+        "recommended_learner_tasks": ["LT-LOOKER-004", "LT-DQ-005"],
+        "source_facts":
+          [
+            "FACT-LOOKER-STUDIO-DATA-FRESHNESS-TRADEOFF",
+            "FACT-LOOKER-STUDIO-BIGQUERY-REFRESH-COST",
+            "FACT-BIGQUERY-JOBS-BYTES",
+            "FACT-BIGQUERY-JOBS-CREATION-TIME",
+          ],
+        "objective": "Prepare a handoff note for a BigQuery-backed Looker Studio report that names the freshness setting, cost-observability evidence, and the operational checks needed before publication.\n",
+        "verification":
+          {
+            "expected_outputs":
+              [
+                "freshness SLA or review interval is stated",
+                "BigQuery refresh cost risk is acknowledged",
+                "job bytes and job creation time evidence are listed as review inputs",
+              ],
+            "self_assessment": "The learner can connect report freshness settings to BigQuery job evidence instead of treating dashboard refresh as invisible platform behavior.\n",
+          },
+      },
     ],
   "content_type": "exam_pack",
   "status": "published",
