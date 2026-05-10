@@ -1,0 +1,211 @@
+{
+  "dataset_id": "lending-month-end",
+  "version": "v0.1.0",
+  "description": "Synthetic Romania/EU lending month-end exposure dataset for semi-additive balance, date-role, DPD, IFRS 9 stage, and reconciliation exercises.",
+  "synthetic_only": true,
+  "synthetic_data_statement": "Hand-authored synthetic data only. It is not derived from real borrowers, contracts, branches, collateral, credit systems, regulatory reports, or production banking data.",
+  "pack_contract_version": "dataset-pack.v1",
+  "domain": "lending",
+  "regulatory_context": ["EBA", "DORA", "GDPR"],
+  "versioning": {
+    "status": "released",
+    "immutable_after_release": true
+  },
+  "fixture_refresh_rules": [
+    "If any CSV row changes, rerun bun run validate:datasets and bun run test:fixtures.",
+    "If loan_monthly_snapshots changes, refresh the lending-month-end-snapshots known-good fixture SQL and expected answers.",
+    "If row counts, control totals, or known traps change, bump this dataset version instead of editing a released version in place."
+  ],
+  "tables": [
+    {
+      "id": "raw_lending.branches",
+      "file": "branches.csv",
+      "grain": "One row per synthetic lending branch.",
+      "row_count": 4,
+      "primary_key": ["branch_id"],
+      "sensitive_fields": [],
+      "date_semantics": []
+    },
+    {
+      "id": "raw_lending.loan_products",
+      "file": "loan_products.csv",
+      "grain": "One row per synthetic loan product.",
+      "row_count": 5,
+      "primary_key": ["product_id"],
+      "sensitive_fields": [],
+      "date_semantics": []
+    },
+    {
+      "id": "raw_lending.loan_accounts",
+      "file": "loan_accounts.csv",
+      "grain": "One row per synthetic loan contract.",
+      "row_count": 5,
+      "primary_key": ["loan_id"],
+      "sensitive_fields": ["loan_id", "borrower_id", "synthetic_contract_ref"],
+      "date_semantics": [
+        "origination_date and maturity_date are contract lifecycle dates, not exposure snapshot dates."
+      ]
+    },
+    {
+      "id": "raw_lending.loan_monthly_snapshots",
+      "file": "loan_monthly_snapshots.csv",
+      "grain": "One row per loan per as_of_date exposure snapshot.",
+      "row_count": 11,
+      "primary_key": ["as_of_date", "loan_id"],
+      "sensitive_fields": ["loan_id"],
+      "date_semantics": [
+        "as_of_date is the exposure snapshot date; outstanding_principal is semi-additive across time.",
+        "The pack intentionally includes one non-month-end 2026-03-15 snapshot to test date-role filtering."
+      ]
+    },
+    {
+      "id": "raw_lending.collateral",
+      "file": "collateral.csv",
+      "grain": "One row per collateral valuation record.",
+      "row_count": 3,
+      "primary_key": ["collateral_id"],
+      "sensitive_fields": ["loan_id"],
+      "date_semantics": [
+        "valuation_date is a collateral valuation date, not an exposure snapshot date."
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "from_table": "raw_lending.loan_accounts",
+      "from_field": "branch_id",
+      "to_table": "raw_lending.branches",
+      "to_field": "branch_id",
+      "expected_missing_count": 1,
+      "intentional_issue": "Loan L2005 references BR-UNKNOWN so missing branch mappings can be tested."
+    },
+    {
+      "from_table": "raw_lending.loan_accounts",
+      "from_field": "product_id",
+      "to_table": "raw_lending.loan_products",
+      "to_field": "product_id",
+      "expected_missing_count": 0
+    },
+    {
+      "from_table": "raw_lending.loan_monthly_snapshots",
+      "from_field": "loan_id",
+      "to_table": "raw_lending.loan_accounts",
+      "to_field": "loan_id",
+      "expected_missing_count": 0
+    },
+    {
+      "from_table": "raw_lending.collateral",
+      "from_field": "loan_id",
+      "to_table": "raw_lending.loan_accounts",
+      "to_field": "loan_id",
+      "expected_missing_count": 0
+    }
+  ],
+  "control_totals": [],
+  "control_total_checks": [
+    {
+      "id": "month_end_principal_by_currency",
+      "table": "raw_lending.loan_monthly_snapshots",
+      "sum_field": "outstanding_principal",
+      "group_by": ["as_of_date", "currency_code"],
+      "filters": [
+        {
+          "field": "as_of_date",
+          "value": "2026-03-31"
+        }
+      ],
+      "expected": [
+        {
+          "key": {
+            "as_of_date": "2026-03-31",
+            "currency_code": "RON"
+          },
+          "total": 396000
+        },
+        {
+          "key": {
+            "as_of_date": "2026-03-31",
+            "currency_code": "EUR"
+          },
+          "total": 55000
+        }
+      ]
+    },
+    {
+      "id": "latest_stage3_principal_by_currency",
+      "table": "raw_lending.loan_monthly_snapshots",
+      "sum_field": "outstanding_principal",
+      "group_by": ["currency_code"],
+      "filters": [
+        {
+          "field": "as_of_date",
+          "value": "2026-03-31"
+        },
+        {
+          "field": "ifrs9_stage",
+          "value": "3"
+        }
+      ],
+      "expected": [
+        {
+          "key": {
+            "currency_code": "RON"
+          },
+          "total": 29500
+        }
+      ]
+    }
+  ],
+  "known_issues": [],
+  "known_trap_checks": [
+    {
+      "id": "non_month_end_snapshot_count",
+      "type": "field-not-in-count",
+      "table": "raw_lending.loan_monthly_snapshots",
+      "field": "as_of_date",
+      "allowed_values": ["2026-02-28", "2026-03-31"],
+      "expected_count": 1
+    },
+    {
+      "id": "stage3_latest_count",
+      "type": "field-value-count",
+      "table": "raw_lending.loan_monthly_snapshots",
+      "filters": [
+        {
+          "field": "as_of_date",
+          "value": "2026-03-31"
+        },
+        {
+          "field": "ifrs9_stage",
+          "value": "3"
+        }
+      ],
+      "expected_count": 1
+    },
+    {
+      "id": "ron_semi_additive_time_sum_delta",
+      "type": "sum-delta",
+      "table": "raw_lending.loan_monthly_snapshots",
+      "sum_field": "outstanding_principal",
+      "baseline_filters": [
+        {
+          "field": "as_of_date",
+          "value": "2026-03-31"
+        },
+        {
+          "field": "currency_code",
+          "value": "RON"
+        }
+      ],
+      "comparison_filters": [
+        {
+          "field": "currency_code",
+          "value": "RON"
+        }
+      ],
+      "expected_baseline_total": 396000,
+      "expected_comparison_total": 915000,
+      "expected_delta": 519000
+    }
+  ]
+}

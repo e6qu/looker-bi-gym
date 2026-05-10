@@ -21,6 +21,7 @@ No known app bugs after the Bun-only tooling, typed config, formatting, rendered
 - Track Vite/DuckDB-WASM source-map noise during browser verification. It did not fail Task 008, but the dev server logged many DuckDB worker source-map warnings from package internals.
 - Post-merge Pages deployment for PR #5 passed on 2026-05-10, and `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200.
 - Complete Safari second-browser verification for Task 013. `safaridriver` is installed with Safari 26.1, but Safari's persistent "Allow remote automation" setting is disabled. Enabling it requires explicit user authorization because it changes a persistent browser security setting. The manual checklist lives in `docs/10-app-quality-browser-qa.md`.
+- Task 024 full `bun run check` verification passed locally on 2026-05-10 after the user approved Playwright/Vite local port binding.
 
 ## Template
 

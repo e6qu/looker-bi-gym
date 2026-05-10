@@ -280,7 +280,7 @@ async function assertDatasetBoundaries(): Promise<void> {
     );
     assert.match(
       datasetReadme,
-      /not derived from real bank data|do not use real/iu,
+      /not derived from real\s+bank data|do not use real/iu,
       `${metadata.dataset_id} ${metadata.version} README must reject real banking data.`,
     );
   }

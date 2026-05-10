@@ -27,11 +27,61 @@ type ControlTotal = {
   readonly ledger_total: number;
 };
 
+type FieldFilter = {
+  readonly field: string;
+  readonly value: string;
+};
+
+type ControlTotalExpected = {
+  readonly key: Readonly<Record<string, string>>;
+  readonly total: number;
+};
+
+type DatasetControlTotalCheck = {
+  readonly id: string;
+  readonly table: string;
+  readonly sum_field: string;
+  readonly group_by: readonly string[];
+  readonly filters?: readonly FieldFilter[];
+  readonly expected: readonly ControlTotalExpected[];
+};
+
 type KnownIssue = {
   readonly id: string;
   readonly description: string;
   readonly expected_count: number;
 };
+
+type FieldNotInCountTrap = {
+  readonly id: string;
+  readonly type: "field-not-in-count";
+  readonly table: string;
+  readonly field: string;
+  readonly allowed_values: readonly string[];
+  readonly expected_count: number;
+};
+
+type FieldValueCountTrap = {
+  readonly id: string;
+  readonly type: "field-value-count";
+  readonly table: string;
+  readonly filters: readonly FieldFilter[];
+  readonly expected_count: number;
+};
+
+type SumDeltaTrap = {
+  readonly id: string;
+  readonly type: "sum-delta";
+  readonly table: string;
+  readonly sum_field: string;
+  readonly baseline_filters: readonly FieldFilter[];
+  readonly comparison_filters: readonly FieldFilter[];
+  readonly expected_baseline_total: number;
+  readonly expected_comparison_total: number;
+  readonly expected_delta: number;
+};
+
+type KnownTrapCheck = FieldNotInCountTrap | FieldValueCountTrap | SumDeltaTrap;
 
 type FanoutNegativeTest = {
   readonly business_date: string;
@@ -56,12 +106,18 @@ type DatasetMetadata = {
   readonly version: string;
   readonly description: string;
   readonly synthetic_only: boolean;
+  readonly synthetic_data_statement?: string;
+  readonly pack_contract_version?: string;
+  readonly domain?: string;
   readonly regulatory_context: readonly string[];
+  readonly fixture_refresh_rules?: readonly string[];
   readonly tables: readonly DatasetTableMetadata[];
   readonly relationships: readonly DatasetRelationship[];
   readonly control_totals: readonly ControlTotal[];
+  readonly control_total_checks?: readonly DatasetControlTotalCheck[];
   readonly known_issues: readonly KnownIssue[];
-  readonly fanout_negative_test: FanoutNegativeTest;
+  readonly known_trap_checks?: readonly KnownTrapCheck[];
+  readonly fanout_negative_test?: FanoutNegativeTest;
   readonly versioning?: DatasetVersioningMetadata;
 };
 
@@ -217,6 +273,10 @@ function assertControlTotals(
   tables: ReadonlyMap<string, CsvTable>,
   controlTotals: readonly ControlTotal[],
 ): void {
+  if (controlTotals.length === 0) {
+    return;
+  }
+
   const balances = tables.get("raw_deposits.account_daily_balances");
 
   if (balances === undefined) {
@@ -247,6 +307,10 @@ function assertKnownIssues(
   tables: ReadonlyMap<string, CsvTable>,
   knownIssues: readonly KnownIssue[],
 ): void {
+  if (knownIssues.length === 0) {
+    return;
+  }
+
   const accounts = tables.get("raw_deposits.accounts");
   const branches = tables.get("raw_ref.branches");
   const owners = tables.get("raw_deposits.account_owners");
@@ -289,6 +353,146 @@ function assertKnownIssues(
       throw new Error(
         `${issue.id} count is ${actual ?? "missing"}, expected ${issue.expected_count}.`,
       );
+    }
+  }
+}
+
+function rowMatchesFilters(
+  row: Readonly<Record<string, string>>,
+  filters: readonly FieldFilter[] = [],
+): boolean {
+  return filters.every(
+    (filter) => requireField(row, filter.field) === filter.value,
+  );
+}
+
+function getTable(
+  tables: ReadonlyMap<string, CsvTable>,
+  tableId: string,
+): CsvTable {
+  const table = tables.get(tableId);
+
+  if (table === undefined) {
+    throw new Error(`Missing table ${tableId}.`);
+  }
+
+  return table;
+}
+
+function sumRows(
+  table: CsvTable,
+  sumField: string,
+  filters: readonly FieldFilter[] = [],
+): number {
+  return table.rows
+    .filter((row) => rowMatchesFilters(row, filters))
+    .reduce((total, row) => total + requireNumber(row, sumField), 0);
+}
+
+function groupKey(
+  row: Readonly<Record<string, string>>,
+  fields: readonly string[],
+): string {
+  return fields.map((field) => requireField(row, field)).join("|");
+}
+
+function expectedGroupKey(
+  expected: ControlTotalExpected,
+  fields: readonly string[],
+): string {
+  return fields.map((field) => expected.key[field] ?? "").join("|");
+}
+
+function assertControlTotalChecks(
+  tables: ReadonlyMap<string, CsvTable>,
+  checks: readonly DatasetControlTotalCheck[] = [],
+): void {
+  for (const check of checks) {
+    const table = getTable(tables, check.table);
+    const actualTotals = new Map<string, number>();
+
+    for (const row of table.rows) {
+      if (!rowMatchesFilters(row, check.filters)) {
+        continue;
+      }
+
+      const key = groupKey(row, check.group_by);
+      actualTotals.set(
+        key,
+        (actualTotals.get(key) ?? 0) + requireNumber(row, check.sum_field),
+      );
+    }
+
+    for (const expected of check.expected) {
+      const key = expectedGroupKey(expected, check.group_by);
+      const actual = actualTotals.get(key);
+
+      if (actual !== expected.total) {
+        throw new Error(
+          `${check.id} ${key} total is ${actual ?? "missing"}, expected ${expected.total}.`,
+        );
+      }
+    }
+  }
+}
+
+function assertKnownTrapChecks(
+  tables: ReadonlyMap<string, CsvTable>,
+  checks: readonly KnownTrapCheck[] = [],
+): void {
+  for (const check of checks) {
+    const table = getTable(tables, check.table);
+
+    switch (check.type) {
+      case "field-not-in-count": {
+        const allowedValues = new Set(check.allowed_values);
+        const actualCount = table.rows.filter(
+          (row) => !allowedValues.has(requireField(row, check.field)),
+        ).length;
+
+        if (actualCount !== check.expected_count) {
+          throw new Error(
+            `${check.id} count is ${actualCount}, expected ${check.expected_count}.`,
+          );
+        }
+        break;
+      }
+      case "field-value-count": {
+        const actualCount = table.rows.filter((row) =>
+          rowMatchesFilters(row, check.filters),
+        ).length;
+
+        if (actualCount !== check.expected_count) {
+          throw new Error(
+            `${check.id} count is ${actualCount}, expected ${check.expected_count}.`,
+          );
+        }
+        break;
+      }
+      case "sum-delta": {
+        const baselineTotal = sumRows(
+          table,
+          check.sum_field,
+          check.baseline_filters,
+        );
+        const comparisonTotal = sumRows(
+          table,
+          check.sum_field,
+          check.comparison_filters,
+        );
+        const delta = comparisonTotal - baselineTotal;
+
+        if (
+          baselineTotal !== check.expected_baseline_total ||
+          comparisonTotal !== check.expected_comparison_total ||
+          delta !== check.expected_delta
+        ) {
+          throw new Error(
+            `${check.id} failed: baseline=${baselineTotal}, comparison=${comparisonTotal}, delta=${delta}.`,
+          );
+        }
+        break;
+      }
     }
   }
 }
@@ -413,6 +617,26 @@ function assertDatasetMetadataShape(version: DatasetVersion): void {
     throw new Error(
       `${metadata.dataset_id} ${metadata.version} must declare at least one table.`,
     );
+  }
+
+  if (metadata.pack_contract_version !== undefined) {
+    if (
+      metadata.synthetic_data_statement === undefined ||
+      metadata.synthetic_data_statement.trim().length === 0
+    ) {
+      throw new Error(
+        `${metadata.dataset_id} ${metadata.version} must declare a synthetic_data_statement.`,
+      );
+    }
+
+    if (
+      metadata.fixture_refresh_rules === undefined ||
+      metadata.fixture_refresh_rules.length === 0
+    ) {
+      throw new Error(
+        `${metadata.dataset_id} ${metadata.version} must declare fixture_refresh_rules.`,
+      );
+    }
   }
 
   const tableIds = new Set<string>();
@@ -561,8 +785,13 @@ async function validateDatasetVersion(version: DatasetVersion): Promise<void> {
   }
 
   assertControlTotals(tables, metadata.control_totals);
+  assertControlTotalChecks(tables, metadata.control_total_checks);
   assertKnownIssues(tables, metadata.known_issues);
-  assertFanoutNegativeTest(tables, metadata.fanout_negative_test);
+  assertKnownTrapChecks(tables, metadata.known_trap_checks);
+
+  if (metadata.fanout_negative_test !== undefined) {
+    assertFanoutNegativeTest(tables, metadata.fanout_negative_test);
+  }
 }
 
 async function main(): Promise<void> {

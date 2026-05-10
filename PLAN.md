@@ -28,6 +28,8 @@ The first platform release and PR #3 established:
 - Fact-backed challenge questions.
 - Content QA for required tools, disclaimers, synthetic-data boundaries,
   Markdown links, source fact references, and tutorial structure.
+- Deterministic lending month-end dataset pack and browser SQL challenge for
+  semi-additive exposure snapshots.
 
 ## Split Plans
 
@@ -98,6 +100,10 @@ Expand beyond the deposits seed with committed synthetic datasets and metadata:
 
 Every dataset pack needs versioned files, metadata, synthetic-only declarations,
 schema/grain contracts, row counts, control totals, known traps, and fixture
+coverage.
+
+First implementation: `lending-month-end/v0.1.0` provides the lending
+month-end exposure seed pack with committed CSV/JSON, validation, and fixture
 coverage.
 
 ### Phase C - Real Tutorial Instruction Packs

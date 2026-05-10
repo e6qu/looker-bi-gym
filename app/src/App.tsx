@@ -9,6 +9,7 @@ import {
   evaluateCloudEvidenceChecks,
   isCloudEvidenceCheckSupported,
 } from "./cloudEvidence";
+import { defaultDatasetRef, type RuntimeDatasetRef } from "./datasetRegistry";
 import {
   challengeCatalog,
   formatChallengeArea,
@@ -224,6 +225,46 @@ function formatSqlCellValue(value: unknown): string {
 }
 
 function getStarterSql(challenge: ChallengeManifest): string {
+  if (challenge.id === "lending-month-end-snapshots") {
+    return `WITH latest_snapshots AS (
+  SELECT *
+  FROM loan_monthly_snapshots
+  WHERE as_of_date = '2026-03-31'
+),
+latest_totals AS (
+  SELECT
+    currency_code,
+    CAST(SUM(outstanding_principal) AS DOUBLE) AS latest_principal_total,
+    CAST(SUM(CASE WHEN ifrs9_stage = 3 THEN outstanding_principal ELSE 0 END) AS DOUBLE) AS stage3_principal_total
+  FROM latest_snapshots
+  GROUP BY currency_code
+),
+naive_time_sums AS (
+  SELECT
+    currency_code,
+    CAST(SUM(outstanding_principal) AS DOUBLE) AS naive_time_sum_total
+  FROM loan_monthly_snapshots
+  GROUP BY currency_code
+),
+non_month_end AS (
+  SELECT COUNT(*) AS non_month_end_snapshot_count
+  FROM loan_monthly_snapshots
+  WHERE as_of_date NOT IN ('2026-02-28', '2026-03-31')
+)
+SELECT
+  '2026-03-31' AS latest_as_of_date,
+  lt.currency_code,
+  lt.latest_principal_total,
+  nts.naive_time_sum_total,
+  nts.naive_time_sum_total - lt.latest_principal_total AS time_sum_delta,
+  non_month_end.non_month_end_snapshot_count,
+  lt.stage3_principal_total
+FROM latest_totals lt
+INNER JOIN naive_time_sums nts USING (currency_code)
+CROSS JOIN non_month_end
+ORDER BY lt.currency_code;`;
+  }
+
   if (challenge.id === "account-owner-fanout") {
     return `WITH latest_balances AS (
   SELECT account_id, business_date, ledger_balance
@@ -265,6 +306,28 @@ FROM fanout_proof;`;
   MAX(adb.business_date) AS latest_balance_date
 FROM account_daily_balances adb
 INNER JOIN accounts a USING (account_id);`;
+}
+
+function getChallengeDatasetRef(
+  challenge: ChallengeManifest,
+): RuntimeDatasetRef {
+  const datasetInput = challenge.inputs.find(
+    (input) =>
+      typeof input.dataset_id === "string" &&
+      typeof input.dataset_version === "string",
+  );
+
+  if (
+    datasetInput?.dataset_id !== undefined &&
+    datasetInput.dataset_version !== undefined
+  ) {
+    return {
+      datasetId: datasetInput.dataset_id,
+      version: datasetInput.dataset_version,
+    };
+  }
+
+  return defaultDatasetRef;
 }
 
 function ChallengeInstructions({
@@ -689,7 +752,7 @@ function SqlTableBrowser({
     <aside className="sqlSidebar" aria-label="Loaded challenge tables">
       <div className="sidebarHeader">
         <p className="eyebrow">Schema browser</p>
-        <h2>Seed tables</h2>
+        <h2>Dataset tables</h2>
       </div>
       <div className="sqlTableList">
         {tables.map((table) => (
@@ -1201,6 +1264,10 @@ function SqlChallengePage({
   readonly onComplete: CompleteChallengeHandler;
 }): JSX.Element {
   const [sql, setSql] = useState<string>(() => getStarterSql(challenge));
+  const datasetRef = useMemo(
+    () => getChallengeDatasetRef(challenge),
+    [challenge],
+  );
   const [answers, setAnswers] = useState<QuizAnswerState>({});
   const [runtimeState, setRuntimeState] = useState<
     | { readonly status: "loading" }
@@ -1249,7 +1316,7 @@ function SqlChallengePage({
   useEffect(() => {
     let isActive = true;
 
-    void getSqlRuntime()
+    void getSqlRuntime(datasetRef)
       .then((runtime) => {
         if (isActive) {
           setRuntimeState({
@@ -1274,7 +1341,7 @@ function SqlChallengePage({
     return () => {
       isActive = false;
     };
-  }, [challenge.id]);
+  }, [challenge.id, datasetRef]);
 
   useEffect(() => {
     if (completion !== undefined && !isCompleted) {
@@ -1353,9 +1420,7 @@ function SqlChallengePage({
           </div>
           <div>
             <strong>Loaded dataset</strong>
-            <span>
-              {challenge.inputs[0]?.dataset_id ?? "Synthetic CSV seed"}
-            </span>
+            <span>{`${datasetRef.datasetId} ${datasetRef.version}`}</span>
           </div>
         </div>
       </div>
@@ -1376,7 +1441,7 @@ function SqlChallengePage({
           >
             <div className="sidebarHeader">
               <p className="eyebrow">Schema browser</p>
-              <h2>Seed tables</h2>
+              <h2>Dataset tables</h2>
             </div>
             <p
               className={
@@ -1387,7 +1452,7 @@ function SqlChallengePage({
               role="status"
             >
               {runtimeState.status === "loading"
-                ? "Loading DuckDB-Wasm and seed tables..."
+                ? "Loading DuckDB-Wasm and challenge tables..."
                 : runtimeState.message}
             </p>
           </aside>
@@ -1548,27 +1613,17 @@ function SqlChallengePage({
           </div>
 
           <div className="sqlExamples">
-            <button type="button" onClick={() => setSampleQuery("branches")}>
-              branches
-            </button>
-            <button type="button" onClick={() => setSampleQuery("products")}>
-              products
-            </button>
-            <button type="button" onClick={() => setSampleQuery("accounts")}>
-              accounts
-            </button>
-            <button
-              type="button"
-              onClick={() => setSampleQuery("account_owners")}
-            >
-              account_owners
-            </button>
-            <button
-              type="button"
-              onClick={() => setSampleQuery("account_daily_balances")}
-            >
-              account_daily_balances
-            </button>
+            {runtimeState.status === "ready"
+              ? runtimeState.tables.map((table) => (
+                  <button
+                    key={table.tableName}
+                    type="button"
+                    onClick={() => setSampleQuery(table.tableName)}
+                  >
+                    {table.tableName}
+                  </button>
+                ))
+              : null}
           </div>
 
           {queryState.status === "error" ? (

@@ -4,9 +4,13 @@
 
 Numbered tasks 001 through 027 are implemented. PR #3, PR #4, and PR #5 were merged. Post-merge CI and GitHub Pages deployment for PR #5 passed, and the live Pages URL returned HTTP 200.
 
-Next implementation step:
+Current implementation step:
 
-- Continue with [024 - Deterministic Local Dataset Packs](tasks/024-deterministic-local-dataset-packs.md), using the source-backed BigQuery/Looker/BI facts database from [027 - Source-Backed BI Fact Database](tasks/027-source-backed-bi-fact-database.md).
+- Finish the Task 024 PR from branch `deterministic-local-dataset-packs`: commit the verified work, push the branch, and open a PR.
+
+Next implementation step after the Task 024 PR:
+
+- Start [025 - Real Tutorial Instruction Packs](tasks/025-real-tutorial-instruction-packs.md), using the source-backed BigQuery/Looker/BI facts database from [027 - Source-Backed BI Fact Database](tasks/027-source-backed-bi-fact-database.md) and the new deterministic lending pack from [024 - Deterministic Local Dataset Packs](tasks/024-deterministic-local-dataset-packs.md).
 
 Preservation and verification steps:
 
@@ -14,7 +18,7 @@ Preservation and verification steps:
 - Keep rebuildable generated outputs ignored; regenerate them from committed source instead of committing them.
 - Keep DuckDB-WASM runtime files supplied by dependencies/local build output, not committed binary artifacts.
 - Keep config files in `app/configs/` as TypeScript and covered by `tsconfig.node.json`.
-- Keep `bun run format:check`, `bun run lint`, `bun run typecheck`, and `bun run check` clean before merging.
+- Keep `bun run format:check`, `bun run lint`, `bun run typecheck`, and `bun run check` clean before merging. Full `bun run check` passed locally for the Task 024 branch on 2026-05-10.
 - Preserve the frontend-only boundary: no backend calls, server session, API database, analytics beacon, or learner-data upload.
 - Preserve browser-local progress behavior: `localStorage` plus same-site cookie fallback, with reset clearing both.
 - Preserve the test pyramid documented in `docs/12-test-pyramid.md` and enforced by `bun run test:platform-boundary`.

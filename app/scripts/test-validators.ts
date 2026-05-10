@@ -84,9 +84,19 @@ const challenge: ChallengeManifest = {
       expected: ["latest_balance_date"],
     },
     {
-      id: "aggregate_total",
+      id: "scalar_total",
       type: "scalar-aggregate",
       description: "Aggregate total matches.",
+      expected: {
+        column: "row_count",
+        value: 12,
+        tolerance: 0,
+      },
+    },
+    {
+      id: "aggregate_total",
+      type: "aggregate-total",
+      description: "Aggregate total matches across result rows.",
       expected: {
         column: "row_count",
         value: 12,
@@ -248,6 +258,27 @@ assert.equal(
     "aggregate_total",
   ),
   "fail",
+);
+
+assert.equal(
+  getCheckStatus(
+    resultWith({
+      rows: [
+        {
+          row_count: 5,
+          currency_count: 1,
+          latest_balance_date: "2026-03-31",
+        },
+        {
+          row_count: 7,
+          currency_count: 1,
+          latest_balance_date: "2026-03-30",
+        },
+      ],
+    }),
+    "aggregate_total",
+  ),
+  "pass",
 );
 
 assert.equal(

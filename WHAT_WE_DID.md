@@ -801,3 +801,86 @@
 - The first `bun check` after adding the SQL runtime failed lint on array type conventions, direct React state updates in an effect, and object stringification. Tightened the types, removed the effect-local loading reset, and switched the result formatter to explicit primitive handling.
 - `bun dev` still cannot bind `127.0.0.1:5173` in the sandbox, so manual browser refresh verification remains pending.
 - The escalated `bun dev` request was rejected by the environment, so the browser refresh check could not be run here.
+
+## Task 024 - Deterministic Local Dataset Packs
+
+- Continued Task 024 on branch `deterministic-local-dataset-packs`.
+- Added `datasets/lending-month-end/v0.1.0/` with committed synthetic CSVs for:
+  - `branches.csv`
+  - `loan_products.csv`
+  - `loan_accounts.csv`
+  - `loan_monthly_snapshots.csv`
+  - `collateral.csv`
+- Added lending metadata with synthetic-only declaration, schema/grain contracts,
+  row counts, primary keys, sensitive fields, date semantics, relationships,
+  generic control-total checks, known-trap checks, regulatory context tags, and
+  fixture refresh rules.
+- Added `app/src/datasetRegistry.ts` so browser SQL challenges can load the
+  dataset declared in their manifest from committed dataset metadata.
+- Updated `app/src/sqlRuntime.ts` to cache DuckDB runtimes per dataset pack
+  instead of loading only the deposits seed.
+- Updated `app/src/App.tsx` so SQL challenges display the active dataset, load
+  challenge tables, offer table sample buttons from the runtime schema, and
+  start the lending snapshot challenge with a relevant SQL starter query.
+- Extended `app/scripts/validate-datasets.ts` with generic control-total checks
+  and known-trap checks while preserving deposits-specific control checks when
+  present.
+- Added released challenge
+  `challenges/manifests/lending-month-end-snapshots.yaml` with fact-backed
+  questions, step-by-step lesson instructions, deterministic SQL checks, and
+  browser-only required tools.
+- Added a known-good solution fixture under
+  `challenges/solution-fixtures/lending-month-end-snapshots/`.
+- Corrected `aggregate-total` validator behavior to sum a numeric column across
+  result rows while keeping `scalar-aggregate` as the one-row validator.
+- Improved solution fixture assertion messages so failed fixture checks list
+  their check statuses and messages.
+- Updated dataset, fixture, authoring, roadmap, changelog, and continuity
+  documentation.
+- Confirmed `.gitignore` already excludes generated catalogs, generated SQLite,
+  build output, dependency directories, logs, environment files, TypeScript build
+  info, and WASM runtime artifacts.
+- Confirmed generated outputs remain ignored:
+  - `app/dist/`
+  - `app/src/generated/challengeCatalog.json`
+  - `app/src/generated/facts.sqlite`
+- Confirmed no package-lock, pnpm lockfile, yarn lockfile, generated app output,
+  or WASM runtime artifacts are tracked.
+- Ran and passed:
+  - `bun run validate:datasets`
+  - `bun run validate:manifests`
+  - `bun run test:fixtures`
+  - `bun run test:sql`
+  - `bun run test:validators`
+  - `bun run test:quiz`
+  - `bun run test:cloud-evidence`
+  - `bun run test:progress-export`
+  - `bun run test:content-qa`
+  - `bun run test:facts-db`
+  - `bun run test:platform-boundary`
+  - `bun run format`
+  - `bun run format:check`
+  - `bun run lint`
+  - `bun run typecheck`
+  - `bun run build`
+  - `bun run validate:static-links`
+  - `bun run check`
+
+## Task 024 Tried And Failed
+
+- The first `bun run test:fixtures` attempt failed because the new challenge
+  used `aggregate-total`, but the validator still treated it as a one-row scalar
+  check. Split aggregate and scalar validator behavior, added validator coverage,
+  and reran successfully.
+- The next `bun run test:fixtures` attempt failed because the combined
+  `time_sum_delta` expected value was `631500`, while the actual deterministic
+  fixture total is `576000`. Corrected the challenge expected value and lesson
+  checkpoint, then reran successfully.
+- The first `bun run test:content-qa` attempt failed because the new dataset
+  README did not match the existing exact real-bank-data rejection pattern.
+  Updated the README and relaxed the test pattern to tolerate Markdown line
+  wrapping inside "not derived from real bank data".
+- The first `bun run check` escalation was rejected by the environment before
+  the command started. After the user explicitly approved continuing, reran
+  `bun run check`; it passed, including all 8 Playwright rendered UI tests,
+  production build, and static-link validation.

@@ -3,7 +3,12 @@ import duckdbEhWasmUrl from "@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url";
 import duckdbEhWorkerUrl from "@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?url";
 import duckdbMvpWasmUrl from "@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url";
 import duckdbMvpWorkerUrl from "@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?url";
-import { seedDataset } from "./seedDataset";
+import {
+  defaultDatasetRef,
+  getRuntimeDataset,
+  type RuntimeDataset,
+  type RuntimeDatasetRef,
+} from "./datasetRegistry";
 
 type ArrowFieldLike = {
   readonly name: string;
@@ -74,7 +79,7 @@ const manualBundles: duckdb.DuckDBBundles = {
   },
 };
 
-let runtimePromise: Promise<SqlRuntime> | undefined;
+const runtimePromises = new Map<string, Promise<SqlRuntime>>();
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -144,15 +149,20 @@ async function createDuckDb(): Promise<DuckDbLike> {
   return database;
 }
 
-async function loadSeedTables(
+function datasetKey(datasetRef: RuntimeDatasetRef): string {
+  return `${datasetRef.datasetId}/${datasetRef.version}`;
+}
+
+async function loadDatasetTables(
   database: DuckDbLike,
   connection: DuckDbConnectionLike,
+  dataset: RuntimeDataset,
 ): Promise<readonly SqlTableSchema[]> {
   const tableSchemas: SqlTableSchema[] = [];
 
   try {
-    for (const table of seedDataset.tables) {
-      const registeredPath = `seed/${table.fileName}`;
+    for (const table of dataset.tables) {
+      const registeredPath = `${dataset.datasetId}/${dataset.version}/${table.fileName}`;
       await database.registerFileText(registeredPath, table.csv);
       await connection.query(
         `CREATE OR REPLACE TABLE "${table.tableName}" AS SELECT * FROM read_csv_auto('${registeredPath}', header=true);`,
@@ -190,10 +200,13 @@ async function loadSeedTables(
   return tableSchemas;
 }
 
-async function initializeSqlRuntime(): Promise<SqlRuntime> {
+async function initializeSqlRuntime(
+  datasetRef: RuntimeDatasetRef,
+): Promise<SqlRuntime> {
+  const dataset = getRuntimeDataset(datasetRef);
   const database = await createDuckDb();
   const connection = await database.connect();
-  const tables = await loadSeedTables(database, connection);
+  const tables = await loadDatasetTables(database, connection, dataset);
 
   return {
     connection,
@@ -205,9 +218,18 @@ async function initializeSqlRuntime(): Promise<SqlRuntime> {
   };
 }
 
-export async function getSqlRuntime(): Promise<SqlRuntime> {
-  runtimePromise ??= initializeSqlRuntime();
+export async function getSqlRuntime(
+  datasetRef: RuntimeDatasetRef = defaultDatasetRef,
+): Promise<SqlRuntime> {
+  const key = datasetKey(datasetRef);
+  const existingRuntime = runtimePromises.get(key);
 
+  if (existingRuntime !== undefined) {
+    return existingRuntime;
+  }
+
+  const runtimePromise = initializeSqlRuntime(datasetRef);
+  runtimePromises.set(key, runtimePromise);
   return runtimePromise;
 }
 
