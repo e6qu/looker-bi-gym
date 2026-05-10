@@ -8,12 +8,20 @@ Planning, documentation, task tracking, continuity protocol, the static app skel
 
 ## Active Task
 
-Active implementation task: post-merge PR #12 continuity recording on branch
-`record-pr12-postmerge`. PR #12
-(`https://github.com/e6qu/looker-bi-gym/pull/12`) is merged and post-merge
-verified. Next implementation should start from one of the next phase candidates
-in `DO_NEXT.md`: browser-local JSON import, app-rendered quiz/exam YAML,
-flashcards/spaced repetition, or richer challenge/dataset packs.
+Active implementation task: PR #13
+(`https://github.com/e6qu/looker-bi-gym/pull/13`) on branch
+`record-pr12-postmerge`. PR #12 is merged and post-merge verified. PR #13 now
+records PR #12 post-merge status and implements the next learning-surface
+phase: app-rendered quiz-bank YAML at `#/quiz`, exam-card YAML at `#/exam`, a
+browser fact graph at `#/facts`, human-readable source-evidence labels with raw
+`FACT-*` IDs kept as metadata, SQLite triple-like fact graph rows, and
+`bun run test:quiz-facts-db` to verify quiz questions against sourced fact
+nodes and numeric dataset-control facts. Local full verification for PR #13
+passed with `bun run check` on 2026-05-10 after approved local Playwright/Vite
+preview port binding; all 10 rendered UI tests passed. A final type-safety scan
+found no `any`, `as any`, broad `object` type, `as object`, `@ts-ignore`, or
+`@ts-expect-error` usage in app sources/scripts/tests/configs except the
+literal ESLint rule name that forbids explicit `any`.
 
 ## Current Decisions
 
@@ -25,6 +33,9 @@ flashcards/spaced repetition, or richer challenge/dataset packs.
 - Exact top-level dependency pins are based on live package registry checks.
 - Every imported external package must be declared directly in `app/package.json`; do not rely on transitive dependencies.
 - Strong TypeScript and type-aware ESLint gates are required for app code.
+- Do not use `any`, `as any`, `object` as a type, `as object`, `@ts-ignore`, or
+  `@ts-expect-error`; external parser boundaries should validate `unknown` into
+  domain-specific readonly types.
 - App tool configs live in `app/configs/` as TypeScript and are included in `tsconfig.node.json`.
 - Prettier is the repository formatter; `bun run format:check` must pass with `bun run lint`, `bun run typecheck`, and `bun run check`.
 - Source-backed tutorial and quiz facts live under `docs/facts/`; regulation, banking, BigQuery, Looker Studio, and BI-tooling questions should cite fact IDs.

@@ -47,10 +47,15 @@ future question generation.
 - Released manifest `source_facts` resolve.
 - Generated SQLite tables include source cards, full source documents, facts,
   fact-source edges, and fact-link edges.
+- Follow-up graph behavior includes a `triples` table with source-support,
+  reverse source-support, related-fact, and source-document predicates.
+- Quiz banks can be loaded into temporary SQLite tables and verified against
+  the fact graph through `bun run test:quiz-facts-db`.
 
 ## Tests
 
 - `bun run --filter @looker-bi-gym/app test:facts-db`
+- `bun run --filter @looker-bi-gym/app test:quiz-facts-db`
 - `bun run --filter @looker-bi-gym/app validate:manifests`
 - `bun run --filter @looker-bi-gym/app test:content-qa`
 - `bun run --filter @looker-bi-gym/app test:fixtures`
@@ -68,3 +73,6 @@ future question generation.
   only.
 - The generated SQLite file is rebuildable and ignored under
   `app/src/generated/*.sqlite`.
+- `bun run facts:build-db` builds the ignored local SQLite database for manual
+  inspection or LLM-assisted fact/question review. It is not a backend and is
+  not shipped as committed binary state.

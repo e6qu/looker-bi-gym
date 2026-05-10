@@ -20,7 +20,7 @@ export default defineConfig(({ command }) => ({
   plugins: [react()],
   root: appRoot,
   build: {
-    chunkSizeWarningLimit: 1024,
+    chunkSizeWarningLimit: 4096,
     outDir: "dist",
     sourcemap: true,
   },

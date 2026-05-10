@@ -183,6 +183,15 @@ main:focus {
   display: none;
 }
 
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 .page {
   display: grid;
   gap: 24px;
@@ -744,11 +753,34 @@ h3 {
 .sourceFactList {
   color: var(--muted);
   font-size: 0.9rem;
+  overflow-wrap: anywhere;
 }
 
 .sourceFactList span {
   color: var(--text);
   font-weight: 800;
+}
+
+.sourceFactList a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  margin: 4px 4px 4px 0;
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--accent-strong);
+  text-decoration: none;
+  vertical-align: middle;
+  white-space: normal;
+}
+
+.sourceFactList a small {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
 }
 
 .regulatoryContextList {
@@ -1329,6 +1361,107 @@ h3 {
   color: var(--muted);
 }
 
+.learningPanel {
+  display: grid;
+  gap: 22px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.learningPanelHeader {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 380px);
+  gap: 18px;
+  align-items: start;
+}
+
+.learningPanelHeader p,
+.examCard p,
+.selfAssessmentDetails p {
+  color: var(--muted);
+}
+
+.learningMeta {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-strong);
+}
+
+.learningMeta div {
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr);
+  gap: 10px;
+}
+
+.learningMeta dt {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.learningMeta dd {
+  margin: 0;
+}
+
+.difficultySection {
+  display: grid;
+  gap: 14px;
+}
+
+.learningQuestion {
+  background: #fbfcfd;
+}
+
+.selfAssessmentDetails {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.selfAssessmentDetails summary {
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.examGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.examCard {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfd;
+}
+
+.examCard h4 {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+.examCard ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.factArticle .markdownBody h1 {
+  font-size: clamp(1.6rem, 3vw, 2.5rem);
+}
+
 .feedbackBox {
   padding: 10px 12px;
   border: 1px solid var(--line);
@@ -1486,7 +1619,9 @@ h3 {
   .sqlChallengeLayout,
   .sqlChallengeSummary,
   .cloudEvidenceLayout,
-  .evidenceScopePanel {
+  .evidenceScopePanel,
+  .learningPanelHeader,
+  .examGrid {
     grid-template-columns: 1fr;
   }
 

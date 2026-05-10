@@ -70,6 +70,17 @@ Do not rely on chat history as the source of truth. Keep these files current so 
 - Do not add credentials, secrets, API keys, or user tracking.
 - Do not require a backend.
 
+## Type Safety Rules
+
+- Do not use `any`, `as any`, `object` as a type, `as object`, `@ts-ignore`,
+  or `@ts-expect-error`.
+- Prefer domain-specific readonly types for app data, content data, challenge
+  manifests, quiz banks, exam cards, source facts, and generated catalogs.
+- At parser or external-data boundaries, parse into `unknown`, validate into
+  domain types, and keep unavoidable casts as narrow and local as possible.
+- Keep `bun run lint`, `bun run typecheck`, and the repository type-safety scans
+  clean before committing.
+
 ## Documentation Rules
 
 - Keep plans high-level.

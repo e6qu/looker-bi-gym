@@ -15,12 +15,19 @@ import {
 } from "./configEvidence";
 import { defaultDatasetRef, type RuntimeDatasetRef } from "./datasetRegistry";
 import {
+  factCatalog,
+  factById,
+  getFactByRouteId,
+  getFactHref,
+} from "./factCatalog";
+import {
   challengeCatalog,
   formatChallengeArea,
   formatChallengeDifficulty,
   formatChallengeMode,
   formatRequiredTools,
 } from "./challenges";
+import { examPacks, quizBanks, type Difficulty } from "./learningContent";
 import { renderMarkdown } from "./markdown";
 import {
   evaluateChallengeQuestions,
@@ -60,11 +67,24 @@ import type {
   BrowserProgressPersistence,
   LearnerProgressState,
 } from "./progress";
+import type {
+  ExamCard,
+  ExamPack,
+  QuizBank,
+  QuizBankQuestion,
+} from "./learningContent";
 import type { QuizAnswerState, QuizResponse } from "./quiz";
 import type { SqlQueryResult, SqlTableSchema } from "./sqlRuntime";
 import type { ValidationEvaluation } from "./validators";
 
-type RouteId = "home" | ContentSectionId | "challenges" | "settings";
+type RouteId =
+  | "home"
+  | ContentSectionId
+  | "quiz"
+  | "exam"
+  | "facts"
+  | "challenges"
+  | "settings";
 
 type AppRoute = {
   readonly section: RouteId;
@@ -88,6 +108,9 @@ const routes: readonly Route[] = [
   { id: "docs", label: "Docs" },
   { id: "regulations", label: "Regulations" },
   { id: "tutorials", label: "Tutorials" },
+  { id: "quiz", label: "Quiz" },
+  { id: "exam", label: "Exam" },
+  { id: "facts", label: "Facts" },
   { id: "challenges", label: "Challenges" },
   { id: "settings", label: "Settings" },
 ];
@@ -587,14 +610,465 @@ function SourceFactList({
 
   return (
     <p className="sourceFactList">
-      <span>Source facts:</span>{" "}
-      {sourceFacts.map((sourceFact, index) => (
-        <Fragment key={sourceFact}>
-          <a href="#/docs/facts/README.md">{sourceFact}</a>
-          {index < sourceFacts.length - 1 ? ", " : ""}
+      <span>Source evidence:</span>{" "}
+      {sourceFacts.map((sourceFactId, index) => {
+        const fact = factById.get(sourceFactId);
+        const label = fact?.statement ?? sourceFactId;
+
+        return (
+          <Fragment key={sourceFactId}>
+            <a
+              aria-label={`Source evidence ${sourceFactId}: ${label}`}
+              href={getFactHref(sourceFactId)}
+              title={sourceFactId}
+            >
+              {label}
+              {fact !== undefined ? (
+                <small aria-hidden="true">{fact.area}</small>
+              ) : null}
+              <span className="visuallyHidden">{sourceFactId}</span>
+            </a>
+            {index < sourceFacts.length - 1 ? " " : ""}
+          </Fragment>
+        );
+      })}
+    </p>
+  );
+}
+
+const difficultyLabels: Readonly<Record<Difficulty, string>> = {
+  easy: "Easy",
+  medium: "Medium",
+  hard: "Hard",
+};
+
+function formatSeconds(seconds: number): string {
+  return seconds < 60 ? `${seconds} sec` : `${Math.round(seconds / 60)} min`;
+}
+
+function isStringArray(value: unknown): value is readonly string[] {
+  return (
+    Array.isArray(value) && value.every((entry) => typeof entry === "string")
+  );
+}
+
+function formatQuizBankAnswer(answer: QuizBankQuestion["answer"]): string {
+  return isStringArray(answer) ? answer.join(", ") : String(answer);
+}
+
+function answerMatchesQuestion(
+  question: QuizBankQuestion,
+  answer: QuizResponse | undefined,
+): boolean {
+  if (answer === undefined) {
+    return false;
+  }
+
+  if (question.type === "select_all") {
+    if (typeof answer === "string" || !isStringArray(question.answer)) {
+      return false;
+    }
+
+    const expected = [...question.answer].sort((left, right) =>
+      left.localeCompare(right),
+    );
+    const actual = [...answer].sort((left, right) => left.localeCompare(right));
+
+    return (
+      expected.length === actual.length &&
+      expected.every((expectedValue, index) => expectedValue === actual[index])
+    );
+  }
+
+  if (question.type === "numeric") {
+    if (typeof answer !== "string" || typeof question.answer !== "number") {
+      return false;
+    }
+
+    return Number(answer) === question.answer;
+  }
+
+  return typeof answer === "string" && answer === question.answer;
+}
+
+function LearnerTaskLinks({
+  taskIds,
+}: {
+  readonly taskIds: readonly string[];
+}): JSX.Element {
+  return (
+    <p className="sourceFactList">
+      <span>Recommended learner tasks:</span>{" "}
+      {taskIds.map((taskId, index) => (
+        <Fragment key={taskId}>
+          <a href="#/tutorials/learner-tasks/README.md">{taskId}</a>
+          {index < taskIds.length - 1 ? ", " : ""}
         </Fragment>
       ))}
     </p>
+  );
+}
+
+function QuizQuestionCard({
+  question,
+  questionIndex,
+  answer,
+  showResult,
+  onAnswer,
+}: {
+  readonly question: QuizBankQuestion;
+  readonly questionIndex: number;
+  readonly answer: QuizResponse | undefined;
+  readonly showResult: boolean;
+  readonly onAnswer: (questionId: string, answer: QuizResponse) => void;
+}): JSX.Element {
+  const isCorrect = answerMatchesQuestion(question, answer);
+  const selectedAnswers =
+    answer !== undefined && typeof answer !== "string" ? answer : [];
+  const numericInputId = `quiz-bank-${question.id}-numeric`;
+
+  return (
+    <fieldset className="quizQuestion learningQuestion">
+      <legend>
+        <span>
+          Question {questionIndex + 1} ·{" "}
+          {formatSeconds(question.estimated_seconds)}
+        </span>
+        {question.prompt}
+      </legend>
+      <SourceFactList sourceFacts={question.source_facts} />
+      <LearnerTaskLinks taskIds={question.recommended_learner_tasks} />
+
+      {question.type === "multiple_choice" && question.options !== undefined ? (
+        <div className="answerOptions">
+          {question.options.map((option) => (
+            <label key={option.id}>
+              <input
+                checked={answer === option.id}
+                name={question.id}
+                onChange={() => onAnswer(question.id, option.id)}
+                type="radio"
+                value={option.id}
+              />
+              <span>{option.label}</span>
+            </label>
+          ))}
+        </div>
+      ) : null}
+
+      {question.type === "select_all" && question.options !== undefined ? (
+        <div className="answerOptions">
+          {question.options.map((option) => {
+            const isSelected = selectedAnswers.includes(option.id);
+
+            return (
+              <label key={option.id}>
+                <input
+                  checked={isSelected}
+                  onChange={() =>
+                    onAnswer(
+                      question.id,
+                      isSelected
+                        ? selectedAnswers.filter(
+                            (selectedAnswer) => selectedAnswer !== option.id,
+                          )
+                        : [...selectedAnswers, option.id],
+                    )
+                  }
+                  type="checkbox"
+                  value={option.id}
+                />
+                <span>{option.label}</span>
+              </label>
+            );
+          })}
+        </div>
+      ) : null}
+
+      {question.type === "numeric" ? (
+        <label className="numericAnswerField" htmlFor={numericInputId}>
+          <span className="fieldLabel">
+            Numeric answer for question {questionIndex + 1}
+          </span>
+          <input
+            className="numericAnswer"
+            id={numericInputId}
+            inputMode="decimal"
+            onChange={(event) =>
+              onAnswer(question.id, event.currentTarget.value)
+            }
+            type="number"
+            value={typeof answer === "string" ? answer : ""}
+          />
+        </label>
+      ) : null}
+
+      {showResult ? (
+        <div
+          className={
+            isCorrect ? "feedbackBox feedbackPass" : "feedbackBox feedbackFail"
+          }
+          role="status"
+        >
+          {isCorrect ? "Correct." : "Review the answer."} Answer:{" "}
+          {formatQuizBankAnswer(question.answer)}. {question.explanation}
+        </div>
+      ) : null}
+
+      <details className="selfAssessmentDetails">
+        <summary>Self-assessment</summary>
+        <p>{question.self_assessment}</p>
+      </details>
+    </fieldset>
+  );
+}
+
+function QuizBankCard({
+  quizBank,
+}: {
+  readonly quizBank: QuizBank;
+}): JSX.Element {
+  const [answers, setAnswers] = useState<QuizAnswerState>({});
+  const [showResults, setShowResults] = useState<boolean>(false);
+  const allQuestions = (["easy", "medium", "hard"] as const).flatMap(
+    (difficulty) => quizBank.questions[difficulty],
+  );
+  const correctCount = allQuestions.filter((question) =>
+    answerMatchesQuestion(question, answers[question.id]),
+  ).length;
+
+  function setAnswer(questionId: string, answer: QuizResponse): void {
+    setAnswers((currentAnswers) => ({
+      ...currentAnswers,
+      [questionId]: answer,
+    }));
+  }
+
+  return (
+    <section className="learningPanel" aria-labelledby={`${quizBank.id}-title`}>
+      <div className="learningPanelHeader">
+        <div>
+          <p className="eyebrow">Mixed quiz</p>
+          <h2 id={`${quizBank.id}-title`}>{quizBank.title}</h2>
+          <p>{quizBank.description}</p>
+        </div>
+        <dl className="learningMeta">
+          <div>
+            <dt>Audience</dt>
+            <dd>{quizBank.audience}</dd>
+          </div>
+          <div>
+            <dt>Time</dt>
+            <dd>{quizBank.estimated_minutes} min</dd>
+          </div>
+          <div>
+            <dt>Score</dt>
+            <dd>
+              {showResults
+                ? `${correctCount}/${allQuestions.length}`
+                : "Not checked"}
+            </dd>
+          </div>
+        </dl>
+      </div>
+
+      {(["easy", "medium", "hard"] as const).map((difficulty) => (
+        <section className="difficultySection" key={difficulty}>
+          <h3>{difficultyLabels[difficulty]}</h3>
+          {quizBank.questions[difficulty].map((question, questionIndex) => (
+            <QuizQuestionCard
+              answer={answers[question.id]}
+              key={question.id}
+              onAnswer={setAnswer}
+              question={question}
+              questionIndex={questionIndex}
+              showResult={showResults}
+            />
+          ))}
+        </section>
+      ))}
+
+      <div className="quizActions">
+        <button type="button" onClick={() => setShowResults(true)}>
+          Check Quiz
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setAnswers({});
+            setShowResults(false);
+          }}
+        >
+          Reset Quiz
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function QuizBankPage(): JSX.Element {
+  return (
+    <section className="page quizBankPage" aria-labelledby="quiz-bank-title">
+      <PageTitle
+        title="Quiz"
+        description="Fact-backed self-check questions grouped by difficulty. Answers stay in this browser view and are not uploaded."
+        id="quiz-bank-title"
+      />
+      {quizBanks.map((quizBank) => (
+        <QuizBankCard key={quizBank.id} quizBank={quizBank} />
+      ))}
+    </section>
+  );
+}
+
+function ExamCardView({ card }: { readonly card: ExamCard }): JSX.Element {
+  return (
+    <article className="examCard">
+      <div className="itemHeader">
+        <h3>{card.title}</h3>
+        <span className="status statusReady">Self-assessed</span>
+      </div>
+      <p>{card.objective}</p>
+      <LearnerTaskLinks taskIds={card.recommended_learner_tasks} />
+      <SourceFactList sourceFacts={card.source_facts} />
+      <section>
+        <h4>Expected Outputs</h4>
+        <ul>
+          {card.verification.expected_outputs.map((output) => (
+            <li key={output}>{output}</li>
+          ))}
+        </ul>
+      </section>
+      <section>
+        <h4>Self-Assessment</h4>
+        <p>{card.verification.self_assessment}</p>
+      </section>
+    </article>
+  );
+}
+
+function ExamPackView({
+  examPack,
+}: {
+  readonly examPack: ExamPack;
+}): JSX.Element {
+  return (
+    <section className="learningPanel" aria-labelledby={`${examPack.id}-title`}>
+      <div className="learningPanelHeader">
+        <div>
+          <p className="eyebrow">Exam mode</p>
+          <h2 id={`${examPack.id}-title`}>{examPack.title}</h2>
+          <p>{examPack.description}</p>
+        </div>
+        <dl className="learningMeta">
+          <div>
+            <dt>Mode</dt>
+            <dd>{examPack.mode.replace("_", " ")}</dd>
+          </div>
+          <div>
+            <dt>Card Time</dt>
+            <dd>Up to {examPack.estimated_minutes_per_card} min</dd>
+          </div>
+          <div>
+            <dt>Cards</dt>
+            <dd>{examPack.cards.length}</dd>
+          </div>
+        </dl>
+      </div>
+      <div className="examGrid">
+        {examPack.cards.map((card) => (
+          <ExamCardView card={card} key={card.id} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ExamPage(): JSX.Element {
+  return (
+    <section className="page examPage" aria-labelledby="exam-title">
+      <PageTitle
+        title="Exam"
+        description="Longer independent practical cards. The learner keeps their own time and self-assesses against deterministic expected outputs."
+        id="exam-title"
+      />
+      {examPacks.map((examPack) => (
+        <ExamPackView examPack={examPack} key={examPack.id} />
+      ))}
+    </section>
+  );
+}
+
+function FactsPage({
+  factRouteId,
+}: {
+  readonly factRouteId: string | undefined;
+}): JSX.Element {
+  const selectedFact = getFactByRouteId(factRouteId);
+
+  return (
+    <section className="contentPage factsPage" aria-labelledby="facts-title">
+      <aside className="documentNav" aria-label="Fact database index">
+        <div>
+          <p className="eyebrow">Live fact graph</p>
+          <h2 id="facts-title">Facts</h2>
+          <p>
+            Source-backed fact nodes loaded from local Markdown and verified by
+            the SQLite facts database tests.
+          </p>
+        </div>
+        <nav>
+          {factCatalog.map((fact) => (
+            <a
+              aria-current={selectedFact?.id === fact.id ? "page" : undefined}
+              href={fact.href}
+              key={fact.id}
+            >
+              <span>{fact.id}</span>
+              <small>{fact.area}</small>
+            </a>
+          ))}
+        </nav>
+      </aside>
+      <article className="markdownArticle factArticle">
+        <div className="documentMeta">
+          <span>{selectedFact?.filePath ?? "docs/facts/*.md"}</span>
+          <a href="#/docs/facts/README.md">Fact docs</a>
+        </div>
+        {selectedFact === undefined ? (
+          <div className="markdownBody">
+            <h1>Fact Database</h1>
+            <p>
+              Pick a fact to inspect its statement, source quote, derived BI
+              implication, and graph links.
+            </p>
+          </div>
+        ) : (
+          <div className="markdownBody">
+            <h1>{selectedFact.id}</h1>
+            <p className="eyebrow">{selectedFact.area}</p>
+            <h2>Statement</h2>
+            <p>{selectedFact.statement}</p>
+            <h2>Source Quote</h2>
+            <p>{selectedFact.sourceQuote}</p>
+            <h2>Derived Implication</h2>
+            <p>{selectedFact.derivedImplication}</p>
+            <h2>Related Facts</h2>
+            {selectedFact.relatedFacts.length > 0 ? (
+              <ul>
+                {selectedFact.relatedFacts.map((relatedFactId) => (
+                  <li key={relatedFactId}>
+                    <a href={getFactHref(relatedFactId)}>{relatedFactId}</a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No related facts recorded yet.</p>
+            )}
+          </div>
+        )}
+      </article>
+    </section>
   );
 }
 
@@ -2286,6 +2760,12 @@ function AppPage({ route }: { readonly route: AppRoute }): JSX.Element {
   switch (route.section) {
     case "home":
       return <HomePage />;
+    case "quiz":
+      return <QuizBankPage />;
+    case "exam":
+      return <ExamPage />;
+    case "facts":
+      return <FactsPage factRouteId={route.fileName} />;
     case "challenges":
       return route.fileName !== undefined ? (
         <ChallengesPage challengeId={route.fileName} />
