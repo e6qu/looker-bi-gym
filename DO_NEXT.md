@@ -43,6 +43,10 @@
 
 Phase 2 is locally implemented but not Claude-reviewed.
 
+`PLAN.md` Phase 9 now defines the required gate for any claim that tutorials,
+questions, exams, or flashcards are complete, comprehensive, reality-verified,
+or externally verified.
+
 The required command shape remains:
 
 ```sh

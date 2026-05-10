@@ -43,6 +43,8 @@ Implemented locally:
 
 - Prior curriculum depth claims are still not trusted without deeper human,
   local judge, and Claude review gates.
+- `PLAN.md` now defines Phase 9 as the required gate for any
+  complete/comprehensive/reality-verified/externally verified curriculum claim.
 - Facts still live under `docs/facts/`; the root `facts/` move remains Phase 4.
 - Generated catalog validation now checks required metadata, duplicate IDs,
   source facts, quiz/exam learner-task links, and rebuild parity, but generated

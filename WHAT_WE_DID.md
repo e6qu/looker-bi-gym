@@ -2,6 +2,11 @@
 
 ## 2026-05-10 - Phase 2 Content Schema And Generated Catalogs
 
+- Added `PLAN.md` Phase 9 - Curriculum Completeness And External Verification,
+  which defines the required competency matrix, content coverage matrix,
+  tutorial standard, question/exam/flashcard standard, external verification,
+  and review gates before the project may claim complete or comprehensive
+  learning materials.
 - Verified PR #19 post-merge state:
   - PR #19 is merged at `1484ca1159f494421ab857107ef4d49d017fdd00`.
   - Main CI passed for `1484ca1`.
