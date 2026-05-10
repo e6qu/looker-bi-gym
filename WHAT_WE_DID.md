@@ -2,6 +2,31 @@
 
 ## 2026-05-10
 
+- After Task 032 verification, committed
+  `7231c53 Expand flashcard coverage`, pushed branch
+  `expand-flashcard-coverage`, and opened PR #17:
+  `https://github.com/e6qu/looker-bi-gym/pull/17`.
+- Confirmed PR #17 CI `Validate, Test, And Build` passed in 2m05s.
+- Merged PR #17 with squash merge and fast-forwarded local `main`.
+- Confirmed PR #17 merged on 2026-05-10 at merge commit
+  `d7ace564745b9f160679d5c8a3583ff4fd43cc34`.
+- Confirmed main CI run `25633063645` passed for merge commit
+  `d7ace564745b9f160679d5c8a3583ff4fd43cc34`.
+- Confirmed main GitHub Pages deployment run `25633063642` passed for the same
+  merge commit.
+- Confirmed `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
+  `last-modified: Sun, 10 May 2026 15:54:17 GMT`.
+- User requested a stricter PR discipline rule: if CI passes, merge the PR only
+  after rebasing it on `origin/main`, never create multiple concurrent PRs, and
+  keep a single PR in work at any time.
+- Confirmed local `main` matched `origin/main` at
+  `d7ace564745b9f160679d5c8a3583ff4fd43cc34`, confirmed there were no open PRs,
+  and created branch `agent-pr-discipline` for a single documentation PR.
+- Added a `Git And PR Discipline` section to `AGENTS.md` covering no direct
+  pushes to `main`, one working PR at a time, checking open PRs before creating
+  another, rebasing on `origin/main` before merge, merging only after CI passes,
+  and post-merge main CI/Pages/live-site verification.
+
 - After the user merged PR #11, confirmed it merged at
   `bd0be4505958f2e33706169dc7816096c7abc617`, switched to `main`, pulled the
   merge, and created branch `ci-ui-warning-checks`.

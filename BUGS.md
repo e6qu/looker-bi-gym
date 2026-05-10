@@ -127,10 +127,16 @@ No known app bugs after the Bun-only tooling, typed config, formatting, rendered
 - Post-merge PR #16 GitHub Actions and GitHub Pages deployment passed for merge
   commit `6bcf0ba64f9985b98db69ddc178b310707af661c`, and the deployed Pages URL
   returned HTTP 200 on 2026-05-10.
-- Task 032 is in progress to resolve the flashcard expansion follow-up by
-  broadening the corpus to ten decks and 40 fact-backed cards. Local focused
-  checks and full `bun run check` passed on 2026-05-10 after approved local
-  Playwright/Vite preview port binding.
+- Task 032 resolved the flashcard expansion follow-up by broadening the corpus
+  to ten decks and 40 fact-backed cards. Local focused checks and full
+  `bun run check` passed on 2026-05-10 after approved local Playwright/Vite
+  preview port binding. PR #17 merged at
+  `d7ace564745b9f160679d5c8a3583ff4fd43cc34`; main CI and Pages deployment
+  passed, and the deployed Pages URL returned HTTP 200 on 2026-05-10.
+- New PR discipline requirement from 2026-05-10: keep only one working PR open
+  at a time, rebase the PR branch on `origin/main` before merge, and merge only
+  after CI passes on that rebased branch. This is being recorded in
+  `AGENTS.md`.
 
 ## Template
 
