@@ -14,12 +14,14 @@ Current implementation step:
   `d7ace564745b9f160679d5c8a3583ff4fd43cc34`.
 - Main GitHub Pages deployment run `25633063642` passed for the same merge
   commit, and `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
+  `last-modified: Sun, 10 May 2026 15:54:17 GMT`.
 - Current branch: `agent-pr-discipline`.
-- Current implementation task: record the user-requested Git/PR discipline in
-  `AGENTS.md` and continuity files.
-- Current branch purpose: make explicit that there must be only one working PR
-  at a time, that new work must not create multiple concurrent PRs, and that a
-  PR branch must be rebased on top of `origin/main` before merge.
+- Current implementation task: Task 033 - Flashcard Study Usability.
+- Current branch purpose: improve the browser flashcard study workflow with
+  selected-deck search, due-only/all-card review mode, deck/card/due totals,
+  flashcard-only reset, external flashcard source-review metadata for Looker
+  Studio, BigQuery, and BI coverage sweeps, a 49-card fact-backed corpus,
+  rendered UI coverage, and the user-requested Git/PR discipline in `AGENTS.md`.
 - Read `README.md`, `docs/14-platform-components.md`, `PLAN.md`, `STATUS.md`,
   `BUGS.md`, `tasks/025-real-tutorial-instruction-packs.md`, and
   `tasks/026-challenge-grading-contract-expansion.md` first.
@@ -27,15 +29,17 @@ Current implementation step:
   under `tasks/*.md`; `learner tasks` are curriculum exercise units shown to
   learners.
 
-Current documentation PR must finish before starting the next item:
+Current PR #18 must finish before starting the next item:
 
-- Confirm there are no other open PRs before opening this one.
+- Reuse PR #18 and do not open another PR for this phase.
 - Keep this as the only in-flight PR.
 - Before merging, fetch `origin/main` and rebase this branch on top of it.
 - Merge only if CI passes on the rebased branch.
 - After merge, verify main CI, GitHub Pages deployment, and live Pages HTTP 200.
 - Preserve the strict typing boundary: no `any`, `as any`, broad `object` type,
   `as object`, `@ts-ignore`, or `@ts-expect-error`.
+- Task 033 local verification passed. Commit, rebase on `origin/main`, push to
+  PR #18, rename/update PR #18, and wait for CI. Do not open another PR.
 
 Task 032 verification passed on 2026-05-10 and PR #17 is post-merge verified:
 
@@ -49,6 +53,22 @@ Task 032 verification passed on 2026-05-10 and PR #17 is post-merge verified:
 - `git diff --check`
 - type-safety scan across app sources/scripts/tests/configs, with only the
   literal ESLint rule name `@typescript-eslint/no-explicit-any` matching
+
+Task 033 local verification passed on 2026-05-10:
+
+- `bun run typecheck`
+- `bun run lint`
+- `bun run test:flashcards`
+- `bun run test:platform-boundary`
+- `bun run test:e2e` after approved local Playwright/Vite preview port binding,
+  including all 12 rendered UI tests
+- `bun run format`
+- `bun run check` after approved local Playwright/Vite preview port binding
+- `git diff --check`
+- type-safety scan across app sources/scripts/tests/configs, with only the
+  literal ESLint rule name `@typescript-eslint/no-explicit-any` matching
+- ignored-output review confirmed `app/dist/`, `app/src/generated/`,
+  `screenshots/`, and `var/` are ignored
 
 Recommended next phases after Task 032:
 

@@ -26,6 +26,61 @@
   pushes to `main`, one working PR at a time, checking open PRs before creating
   another, rebasing on `origin/main` before merge, merging only after CI passes,
   and post-merge main CI/Pages/live-site verification.
+- User clarified that PRs should not be docs-only and requested keeping PR #18
+  open, reusing its branch, and renaming its title/description rather than
+  closing it.
+- Started Task 033 - Flashcard Study Usability on the existing
+  `agent-pr-discipline` branch.
+- Added browser flashcard search within the selected deck, due-only/all-card
+  review mode, deck/card/due totals, and a flashcard-only reset action that
+  clears `looker-bi-gym.flashcards.v1` without touching challenge progress.
+- Extended rendered UI flashcard coverage to exercise search, all-card mode,
+  review/export/import, and flashcard-only reset.
+- Added `tasks/033-flashcard-study-usability.md` and updated the task index,
+  platform component map, test pyramid, and app README to document the new
+  flashcard study controls.
+- User requested a follow-up after in-progress work is complete: check whether
+  useful Looker Studio or business intelligence Anki flashcard sources exist,
+  capture source metadata, and incorporate suitable cards here.
+- Checked indexed web results for Looker Studio and business-intelligence Anki
+  decks. No directly reusable Looker Studio or BI Anki shared deck was found in
+  the sweep; related Looker/Looker Studio flashcard material exists on
+  Brainscape and Quizlet.
+- Added typed external flashcard source-review metadata to selected decks,
+  recording the Anki search, Anki manual guidance, Brainscape Looker index, and
+  Quizlet Looker Studio coverage signals. No third-party card text was copied.
+- Added five more fact-backed Looker Studio and metric-contract cards for
+  reusable data sources, dimensions versus metrics, aggregation context, blend
+  contracts, and calculated-field location, bringing the corpus to 45 cards.
+- User also requested a BigQuery flashcard source sweep. Checked indexed web
+  results and found related BigQuery flashcard material on Brainscape and
+  Quizlet, plus no clearly reusable BigQuery AnkiWeb deck with license/source
+  metadata in the search results.
+- Added linked BigQuery source-review metadata to the BigQuery deck and added
+  four more official-fact-backed BigQuery cards for jobs byte fields, view
+  region requirements, view SQL versioning, and jobs time windows, bringing the
+  corpus to 49 cards.
+- Playwright caught that search for `authorized view` did not match a card whose
+  text contained `authorized BigQuery view`; fixed flashcard search to require
+  all search terms instead of one raw substring.
+- Playwright caught that deck source-review details could stay hidden after
+  switching decks; fixed the details panel to remount per selected deck.
+- Task 033 local verification passed:
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:flashcards`;
+  - `bun run test:platform-boundary`;
+  - `bun run test:e2e` after approved local Playwright/Vite preview port
+    binding, all 12 rendered UI tests passed;
+  - `bun run format`;
+  - `bun run check` after approved local Playwright/Vite preview port binding,
+    all checks passed;
+  - `git diff --check`;
+  - type-safety scan across `app/src`, `app/scripts`, `app/tests`, and
+    `app/configs`, with only the ESLint rule name
+    `@typescript-eslint/no-explicit-any` matching;
+  - ignored-output review confirmed `app/dist/`, `app/src/generated/`,
+    `screenshots/`, and `var/` are ignored.
 
 - After the user merged PR #11, confirmed it merged at
   `bd0be4505958f2e33706169dc7816096c7abc617`, switched to `main`, pulled the

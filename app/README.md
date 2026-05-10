@@ -81,6 +81,13 @@ document locally. No flashcard state is uploaded or synchronized by the app.
 Import is explicit: the learner validates pasted JSON, reviews the local
 preview, and then applies it to browser storage.
 
+The route includes selected-deck search, due-card versus all-card study modes,
+deck/card/due counts, and a flashcard-only reset. Resetting flashcards does not
+clear challenge progress.
+Decks may include external flashcard source-review metadata. Those entries
+record Anki/shared-flashcard coverage checks, source links, and licensing
+boundaries; card text remains locally authored from project source facts.
+
 ## Browser Compatibility
 
 The target release browsers are current stable Chrome and Safari on desktop, with responsive layouts checked at common desktop, tablet, and narrow mobile widths. DuckDB-WASM SQL challenges require a browser with WebAssembly, Web Worker, Blob URL, and modern ES module support.

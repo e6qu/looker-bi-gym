@@ -8,13 +8,22 @@ Planning, documentation, task tracking, continuity protocol, the static app skel
 
 ## Active Task
 
-Active implementation task: record the single-PR and rebase-before-merge
-discipline requested after PR #17. Current branch: `agent-pr-discipline`, based
-on `origin/main` at `d7ace564745b9f160679d5c8a3583ff4fd43cc34`. There were no
-open PRs before this branch was created. The intended PR changes only
-`AGENTS.md` and continuity docs; before merge, fetch `origin/main`, rebase this
-branch on top of it, verify CI is passing, then merge and check main CI, Pages,
-and the live site.
+Active implementation task: Task 033 - Flashcard Study Usability. Current
+branch: `agent-pr-discipline`, based on `origin/main` at
+`d7ace564745b9f160679d5c8a3583ff4fd43cc34`. PR #18 is the only open working PR
+for this phase and must be reused rather than replaced. The implementation adds
+flashcard deck search, due-only/all-card review mode, deck/card/due totals, a
+flashcard-only reset, linked external flashcard source-review metadata for
+Looker Studio, BigQuery, and BI coverage sweeps, a corpus increase from 40 to
+49 fact-backed cards, rendered UI coverage for those flows, and the
+user-requested single-PR/rebase-before-merge rule in `AGENTS.md`. Local
+verification passed: `bun run typecheck`, `bun run lint`,
+`bun run test:flashcards`, `bun run test:platform-boundary`,
+`bun run test:e2e` after approved local Vite preview binding, `bun run format`,
+`bun run check` after approved local Vite preview binding, `git diff --check`,
+type-safety scan, and ignored-output review. Before merge, fetch `origin/main`,
+rebase this branch on top of it, verify CI is passing, then merge and check main
+CI, Pages, and the live site.
 
 ## Current Decisions
 

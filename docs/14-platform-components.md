@@ -129,12 +129,18 @@ Flashcards:
 - State: browser-local timestamped review state with one JSON export/import
   file.
 - Boundary: no backend, no learner-data upload, and no real banking data.
+- Study controls: selected-deck search, due-only/all-card modes, deck/card/due
+  counts, export/import, and flashcard-only reset.
+- Source-review metadata: selected decks can expose reviewed Anki/shared
+  flashcard sources, coverage notes, and incorporation notes while keeping card
+  text fact-backed and locally authored.
 - Current decks: BI fundamentals, BigQuery/SQL, Looker Studio,
   controls/governance, banking context, dataset controls, metric contracts,
   performance/operations, privacy/security, and real-estate collateral.
 - Verification: `bun run test:flashcards` validates scheduler transitions, deck
   structure, source fact IDs, and JSON import behavior; Playwright covers a real
-  review flow, export preview, and validate/preview/apply import flow.
+  review flow, search, study-mode switching, export preview,
+  validate/preview/apply import flow, and reset.
 
 ## Data Components
 
@@ -248,8 +254,8 @@ Current flashcard state behavior:
   and per-card review state;
 - import validates schema/version locally, previews the reviewed-card count, and
   applies only to flashcard state after an explicit learner action;
-- flashcard reset is a follow-up control; challenge progress reset does not
-  implicitly delete flashcard state.
+- flashcard reset is scoped to flashcard review state; challenge progress reset
+  does not implicitly delete flashcard state.
 - review events should store explicit datetime timestamps for rating time,
   previous due timestamp, next due timestamp, and import/export time.
 

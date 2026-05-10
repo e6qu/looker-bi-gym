@@ -327,6 +327,27 @@ FROM account_daily_balances;`);
       page.getByRole("heading", { level: 1, name: "Flashcards" }),
     ).toBeVisible();
     await expect(page.getByText("BI Fundamentals")).toBeVisible();
+    await expect(page.getByText("10 decks / 49 cards / 49 due")).toBeVisible();
+    await page.getByRole("button", { name: /BigQuery And SQL/u }).click();
+    await page.getByText("External flashcard source review").click();
+    await expect(
+      page.getByText("Brainscape Bigquery flashcards index"),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Quizlet BigQuery flashcard set"),
+    ).toBeVisible();
+    await page.getByRole("button", { name: /Metric Contracts/u }).click();
+    await page.getByText("External flashcard source review").click();
+    await expect(
+      page.getByText("Brainscape Looker flashcards index"),
+    ).toBeVisible();
+    await page.getByLabel("Search flashcards").fill("authorized view");
+    await page.getByRole("button", { name: "All Cards" }).click();
+    await expect(
+      page.getByText("What does an authorized BigQuery view help control"),
+    ).toBeVisible();
+    await page.getByLabel("Search flashcards").fill("");
+    await page.getByRole("button", { name: /BI Fundamentals/u }).click();
     await page.getByRole("button", { name: "Show Answer" }).click();
     await expect(page.getByText("Declare the row grain first")).toBeVisible();
     await page.getByRole("button", { name: "good" }).click();
@@ -353,6 +374,13 @@ FROM account_daily_balances;`);
     await expect(
       page.getByText("Flashcard review state imported locally."),
     ).toBeVisible();
+    await page.getByRole("button", { name: "Reset Flashcards" }).click();
+    await expect(
+      page.getByText("Flashcard review state has been reset in this browser."),
+    ).toBeVisible();
+    await expect(
+      page.getByLabel("Flashcard state export JSON preview"),
+    ).not.toContainText("reviewedAt");
   });
 
   test("browser SQL challenge loads DuckDB-WASM and renders query results", async ({
