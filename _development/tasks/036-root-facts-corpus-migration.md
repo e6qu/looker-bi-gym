@@ -1,7 +1,7 @@
 # 036 - Root Facts Corpus Migration
 
-Status: implemented locally on branch `phase-4-root-facts-corpus`; PR not
-opened yet; formal Claude review blocked by CLI hang.
+Status: implemented locally on branch `phase-4-root-facts-corpus`; PR #22
+opened; formal Claude review blocked by CLI hang.
 
 ## Goal
 

@@ -5,7 +5,7 @@ Last updated: 2026-05-10
 ## Current Branch And PR
 
 - Current branch: `phase-4-root-facts-corpus`, based on verified `main`.
-- Current PR: not opened yet.
+- Current PR: #22, `https://github.com/e6qu/looker-bi-gym/pull/22`.
 - PR #21, `https://github.com/e6qu/looker-bi-gym/pull/21`, is squash-merged
   at `b65ccdd34578f914462430b29bc3dd124da9a397`.
 - Main CI for `b65ccdd` passed:

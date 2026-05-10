@@ -11,9 +11,8 @@
    gh pr list --state open --limit 10
    ```
 
-3. If the Phase 4 PR has not been opened yet, push
-   `phase-4-root-facts-corpus` and open it after confirming there is no other
-   open PR.
+3. Continue Phase 4 PR #22:
+   `https://github.com/e6qu/looker-bi-gym/pull/22`.
 4. If updating this branch, run:
 
    ```sh

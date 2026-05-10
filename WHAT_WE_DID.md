@@ -43,6 +43,9 @@
   - the Task 036 formal Claude CLI review used non-TUI
     `claude --print --permission-mode plan --output-format text ...`, produced
     no output for over 40 seconds, and was terminated.
+- Committed `93e8a4f Move fact corpus to root facts`.
+- Pushed branch `phase-4-root-facts-corpus` and opened PR #22:
+  `https://github.com/e6qu/looker-bi-gym/pull/22`.
 
 ## 2026-05-10 - Phase 3 Facts DB App Workspace
 
