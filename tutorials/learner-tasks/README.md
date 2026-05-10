@@ -39,6 +39,8 @@ After this page, you will be able to:
   [LT-LOOKER-004 - Prepare A Report-Ready Data Source](lt-looker-004-report-ready-data-source.md).
 - Data quality and controls:
   [LT-DQ-005 - Reconcile Dashboard Controls](lt-dq-005-reconcile-dashboard-controls.md).
+- Ratio contracts:
+  [LT-DQ-006 - Define A Ratio Null Contract](lt-dq-006-ratio-null-contract.md).
 
 ## Learning Path
 

@@ -1,5 +1,46 @@
 # What We Did
 
+## 2026-05-10 - Phase 6 Tutorial Challenge Expansion Batch 1
+
+- Verified PR #24 post-merge state:
+  - PR #24 was squash-merged at
+    `22ff713374382341bbc11474a2501ab9d5325908`.
+  - Main CI passed for `22ff713`.
+  - GitHub Pages workflow passed for `22ff713`.
+  - Live Pages URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200
+    with `last-modified: Sun, 10 May 2026 21:11:23 GMT`.
+- Confirmed no open PRs before starting the Phase 6 branch.
+- Created branch `phase-6-tutorial-challenge-expansion` from verified `main`.
+- Added `_development/tasks/039-tutorial-challenge-expansion.md`.
+- Added `LT-DQ-006 - Define A Ratio Null Contract` as a self-contained learner
+  task with browser-runnable SQL, expected outputs, checkpoints,
+  visualization/reporting action, common failure modes, self-assessment, and
+  an end challenge.
+- Verification passed:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run test:content-qa`;
+  - `bun run validate:static-links`;
+  - `bun run format:check`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:platform-boundary`;
+  - `bun run check` after approved local Vite preview binding, with all 12
+    Playwright tests passing;
+  - stale scan for unsupported completeness claims;
+  - `git diff --check`.
+- Failed/blocked attempts recorded:
+  - first sandboxed `bun run check` reached Playwright but Vite preview could
+    not bind `127.0.0.1:4173`;
+  - the Task 039 formal Claude CLI review used non-TUI
+    `claude --print --permission-mode plan --output-format text ...`, produced
+    no output for about 50 seconds, and was terminated.
+- Acceptance note: this is a first Phase 6 tutorial/challenge batch only. It
+  does not satisfy Phase 9 completeness targets.
+- Committed `a3be749 Add ratio null contract learner task`.
+- Pushed branch `phase-6-tutorial-challenge-expansion` and opened PR #25:
+  `https://github.com/e6qu/looker-bi-gym/pull/25`.
+
 ## 2026-05-10 - Phase 5 Assessment Content Expansion Batch 1
 
 - Verified PR #23 post-merge state:
