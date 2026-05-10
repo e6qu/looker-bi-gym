@@ -6,7 +6,10 @@ Numbered implementation tasks 001 through 027 are implemented. PR #3, PR #4, PR 
 
 Current implementation step:
 
-- Continue Task 028 on branch `organize-platform-components`.
+- Review PR #7: `https://github.com/e6qu/looker-bi-gym/pull/7`.
+- Task 028 is implemented on branch `organize-platform-components`; PR #7 is
+  open, mergeable, and CI is in progress for commit
+  `de20dea8717a803aa64d9b3be29a4dd48753a479`.
 - Organize the whole project into clear components and sections from the
   learner's GitHub Pages website perspective.
 - Keep the frontend-only boundary explicit: no backend, no server session, no
@@ -49,7 +52,8 @@ Task 028 implementation status:
 - `bun run format`, `bun run format:check`, and `bun run test:content-qa`
   passed.
 - Post-merge PR #6 CI and Pages deployment passed, and Pages returned HTTP 200.
-- Remaining: commit, push branch, open PR.
+- Remaining: wait for PR #7 CI, merge after review, then verify post-merge CI
+  and Pages.
 
 Next implementation step after Task 028:
 
