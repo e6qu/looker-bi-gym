@@ -85,7 +85,7 @@ lesson_steps:
 questions:
   - id: q_bigquery_logical_view
     type: multiple-choice
-    prompt: According to FACT-BIGQUERY-LOGICAL-VIEW, what is a BigQuery logical view?
+    prompt: What is a BigQuery logical view?
     options:
       - id: sql_defined_virtual_table
         label: A virtual table defined by a SQL query.
@@ -94,26 +94,26 @@ questions:
       - id: mutable_staging_table
         label: A mutable staging table updated by dashboard users.
     answer: sql_defined_virtual_table
-    explanation: FACT-BIGQUERY-LOGICAL-VIEW anchors the serving-view concept because the view is a virtual table defined by SQL.
+    explanation: A BigQuery logical view is a virtual table defined by SQL, which makes it useful for reusable serving-layer logic.
     source_facts:
       - FACT-BIGQUERY-LOGICAL-VIEW
   - id: q_looker_data_source
     type: multiple-choice
-    prompt: According to FACT-LOOKER-STUDIO-DATA-SOURCE, what role does a Looker Studio data source play?
+    prompt: What role does a Looker Studio data source play?
     options:
       - id: conduit_schema
         label: It connects external data to charts and provides the report field schema.
       - id: browser_cache
-        label: It stores browser-local learner progress.
+        label: It stores each viewer's dashboard click history as metric data.
       - id: legal_opinion
         label: It determines whether a banking dashboard is compliant.
     answer: conduit_schema
-    explanation: FACT-LOOKER-STUDIO-DATA-SOURCE describes the data source as the conduit and schema layer for report charts.
+    explanation: The data source is the conduit and schema layer that report charts use.
     source_facts:
       - FACT-LOOKER-STUDIO-DATA-SOURCE
   - id: q_data_minimisation
     type: select-all
-    prompt: Under FACT-GDPR-DATA-MINIMISATION, which seed fields should be excluded from a dashboard serving output unless there is a specific purpose?
+    prompt: Which seed fields should be excluded from a dashboard serving output unless there is a specific purpose?
     options:
       - id: account_id
         label: account_id
@@ -127,16 +127,16 @@ questions:
       - account_id
       - customer_id
       - synthetic_iban
-    explanation: FACT-GDPR-DATA-MINIMISATION is the reason to keep unnecessary account, customer, and synthetic IBAN identifiers out of serving outputs.
+    explanation: Unnecessary account, customer, and synthetic IBAN identifiers should stay out of serving outputs for this dashboard purpose.
     source_facts:
       - FACT-GDPR-PERSONAL-DATA
       - FACT-GDPR-DATA-MINIMISATION
   - id: q_deposit_guarantee_amount
     type: numeric
-    prompt: According to FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK and FACT-DGSD-100K-EU, what is the standard deposit guarantee ceiling amount in EUR?
+    prompt: What is the standard deposit-guarantee ceiling amount in EUR for this EU/Romanian context?
     answer: 100000
     tolerance: 0
-    explanation: FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK and FACT-DGSD-100K-EU both anchor the EUR 100,000 ceiling used in later grain exercises.
+    explanation: The standard ceiling used in the later grain exercises is EUR 100,000.
     source_facts:
       - FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK
       - FACT-DGSD-100K-EU
@@ -146,6 +146,6 @@ flag:
     - Answer all orientation questions correctly.
 hints:
   - level: 1
-    text: Check the project constraints shown on the home page.
+    text: Check the synthetic-data and browser-first constraints shown on the home page.
 next_challenges:
   - first-banking-dataset

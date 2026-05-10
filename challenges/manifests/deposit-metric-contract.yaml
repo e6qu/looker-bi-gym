@@ -92,7 +92,7 @@ checks:
 questions:
   - id: q_metric_owner
     type: multiple-choice
-    prompt: According to FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE and FACT-BIGQUERY-REDUCE-BEFORE-JOIN, where should reusable fanout-safe balance logic live?
+    prompt: Where should reusable fanout-safe balance logic live for a shared dashboard?
     options:
       - id: upstream_or_datasource
         label: Upstream serving SQL or a reusable data-source field.
@@ -101,28 +101,28 @@ questions:
       - id: raw_owner_join
         label: In the raw account-owner join result.
     answer: upstream_or_datasource
-    explanation: FACT-BIGQUERY-REDUCE-BEFORE-JOIN supports repairing grain before joins, and FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE keeps reusable metrics out of one-off chart fields.
+    explanation: Shared balance logic should repair grain before joins and should not be hidden in one-off chart fields.
     source_facts:
       - FACT-BIGQUERY-REDUCE-BEFORE-JOIN
       - FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE
   - id: q_metric_grain
     type: multiple-choice
-    prompt: Which fact explains why the contract must state grain before `ledger_total` is trusted?
+    prompt: Which principle explains why the contract must state grain before `ledger_total` is trusted?
     options:
       - id: grain_before_aggregation
-        label: FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION
+        label: Declare row grain before aggregating balances.
       - id: viewer_credentials
-        label: FACT-LOOKER-STUDIO-VIEWER-CREDENTIALS
+        label: Configure report viewer credentials.
       - id: cookie_id
-        label: FACT-GDPR-COOKIE-ID-PERSONAL-DATA-EXAMPLE
+        label: Treat cookie identifiers as possible personal data.
     answer: grain_before_aggregation
-    explanation: FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION is the source-backed reason to declare row grain before aggregating balances.
+    explanation: Row grain must be declared before balance aggregates are trusted.
     source_facts:
       - FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION
 lesson_steps:
   - id: start_from_grain
     title: Start from the balance snapshot grain
-    instruction: Open the learner-task notes for LT-BI-001 and copy the account_daily_balances grain into your metric contract.
+    instruction: Open the dataset-grain notes and copy the account_daily_balances grain into your metric contract.
     expected_result: The contract states that source rows are account-date balance snapshots before aggregation.
     why_it_matters: BI metrics are easier to review when their grain is explicit before joins or charts.
     failure_mode: A contract that says only deposits balance hides whether the metric is account-level, owner-level, or date-level.

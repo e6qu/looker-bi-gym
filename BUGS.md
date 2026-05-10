@@ -1,6 +1,6 @@
 # Bugs And Known Gaps
 
-Last updated: 2026-05-10
+Last updated: 2026-05-11
 
 ## Open Issues
 
@@ -13,6 +13,27 @@ Last updated: 2026-05-10
   - Fix plan: Apply the staged realignment plan in `PLAN.md` and keep explicit
     acceptance notes per phase.
   - Status: open.
+
+- ID: CURRICULUM-AUDIT-2026-05-11.
+  - Area: tutorials, questions, flashcards, exams.
+  - Severity: high.
+  - Description: The current curriculum is not yet a complete, comprehensive,
+    externally verified e-learning path. Several older tutorials need a hard
+    audit for self-contained setup, real files/routes, exact expected outputs,
+    and non-shallow practical work.
+  - Fix plan: Complete Task 041 and Phase 9 matrices before making any
+    completeness claim.
+  - Status: open.
+
+- ID: DEPLOYED-TUTORIAL-OVERFLOW-2026-05-11.
+  - Area: deployed mobile tutorial rendering.
+  - Severity: medium.
+  - Description: The current live Pages build has horizontal overflow on the
+    `LT-DQ-006` mobile route. This branch adds the CSS fix and local preview
+    verification, but the deployed verifier must be rerun after merge.
+  - Fix plan: Merge Task 040, verify Pages deployment, then run
+    `bun run verify:deployed-surface` against the live URL.
+  - Status: pending deploy.
 
 - ID: PATH-REALIGNMENT-2026-05-10.
   - Area: repository layout and app routes.
@@ -38,9 +59,9 @@ Last updated: 2026-05-10
   - Area: phase review gates.
   - Severity: high.
   - Description: Claude CLI formal review is required before any phase can be
-    marked complete. Non-TUI `claude --print` works for a tiny prompt, but the
-    Task 034, Task 035, Task 036, Task 037, Task 038, and Task 039 formal
-    reviews hung with no output and were stopped.
+    marked complete. Task 034 through Task 040 formal reviews using non-TUI
+    `claude --print` hung with no output and were stopped. Codex CLI non-TUI
+    mode works via `codex exec`.
   - Fix plan: Retry only with a known-good non-hanging formal review path, or
     use an explicitly accepted alternate formal review process and record the
     result in continuity docs.

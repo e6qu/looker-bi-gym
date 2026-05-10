@@ -19,7 +19,7 @@
                 "FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION",
                 "FACT-DEPOSITS-ACCOUNT-DAILY-BALANCES-GRAIN",
               ],
-            "prompt": "Before summing `ledger_balance`, what must the learner declare for the balance rows?\n",
+            "prompt": "Before summing `ledger_balance`, what must be declared for the balance rows?\n",
             "options":
               [
                 {
@@ -36,8 +36,8 @@
                 },
               ],
             "answer": "account_day_grain",
-            "explanation": "FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION requires the row grain to be stated before aggregates are trusted. FACT-DEPOSITS-ACCOUNT-DAILY-BALANCES-GRAIN gives the deposits seed balance grain: one row per account and business date.\n",
-            "self_assessment": "Review LT-BI-001 if you cannot say what one source row represents.\n",
+            "explanation": "The row grain must be stated before aggregates are trusted. In the deposits seed balance table, one source row represents one account on one business date.\n",
+            "self_assessment": "Review dataset-grain profiling if you cannot say what one source row represents.\n",
           },
           {
             "id": "q-easy-sensitive-fields",
@@ -59,8 +59,8 @@
                 { "id": "currency_code", "label": "currency_code" },
               ],
             "answer": ["account_id", "customer_id", "synthetic_iban"],
-            "explanation": "FACT-GDPR-DATA-MINIMISATION supports narrow serving outputs; currency is needed for the stated aggregate, while unnecessary identifiers are not. FACT-GDPR-PERSONAL-DATA grounds identifier sensitivity, and FACT-BIGQUERY-SELECT-LIST-NARROWING supports exposing only required dashboard fields.\n",
-            "self_assessment": "Review the output-minimisation checkpoint in LT-BI-001.\n",
+            "explanation": "Currency is needed for the stated aggregate, while unnecessary identifiers are not. Narrow dashboard-serving outputs reduce unnecessary exposure of personal or sensitive fields.\n",
+            "self_assessment": "Review the output-minimisation checkpoint in dataset-grain profiling.\n",
           },
           {
             "id": "q-easy-data-source-role",
@@ -81,16 +81,16 @@
                 },
                 {
                   "id": "backend_database",
-                  "label": "It becomes this app's backend database.",
+                  "label": "It replaces the bank's operational source system.",
                 },
                 {
                   "id": "credential_export",
-                  "label": "It exports cloud credentials into the static app.",
+                  "label": "It exports Google credentials into the report data model.",
                 },
               ],
             "answer": "conduit_schema_layer",
-            "explanation": "FACT-LOOKER-STUDIO-DATA-SOURCE defines the data source as the connection and schema layer for report charts. FACT-LOOKER-STUDIO-CREDENTIALS keeps credential behavior outside this static app's local quiz answer.\n",
-            "self_assessment": "Review LT-LOOKER-004 if data source, chart, and view roles are blurred.\n",
+            "explanation": "A Looker Studio data source is the connection and schema layer that report charts use. Credential handling belongs in the governed source configuration, not in metric definitions.\n",
+            "self_assessment": "Review report-ready data source setup if data source, chart, and view roles are blurred.\n",
           },
           {
             "id": "q-easy-safe-divide-ratio",
@@ -119,8 +119,8 @@
                 },
               ],
             "answer": "null_needs_policy",
-            "explanation": "FACT-BIGQUERY-SAFE-DIVIDE-RATIO-GUARD explains the NULL behavior for division errors, while FACT-BI-RATIO-SUM-COMPONENTS-FIRST keeps ratio components explicit before presentation.\n",
-            "self_assessment": "Review LT-DQ-005 if a NULL ratio feels like a finished dashboard answer rather than a control decision.\n",
+            "explanation": "SAFE_DIVIDE can return NULL for division errors, so the metric contract still needs a display and reconciliation policy. Ratio components should be explicit before presentation.\n",
+            "self_assessment": "Review dashboard-control reconciliation if a NULL ratio feels like a finished dashboard answer rather than a control decision.\n",
           },
           {
             "id": "q-easy-refresh-setting",
@@ -149,8 +149,8 @@
                 },
               ],
             "answer": "freshness_sla_tradeoff",
-            "explanation": "FACT-LOOKER-STUDIO-DATA-FRESHNESS-TRADEOFF requires an explicit freshness tradeoff, and FACT-BI-REFERENCE-DATE-SEPARATION keeps report refresh timing separate from business reference dates.\n",
-            "self_assessment": "Review LT-LOOKER-004 if freshness, source update timing, and business reference date are being treated as one field.\n",
+            "explanation": "Dashboard handoffs should state the freshness need and its performance, cost, and quota tradeoffs. Report refresh timing must stay separate from source business reference dates.\n",
+            "self_assessment": "Review report-ready data source setup if freshness, source update timing, and business reference date are being treated as one field.\n",
           },
         ],
       "medium":
@@ -167,8 +167,8 @@
               ],
             "prompt": "In the synthetic deposits fanout exercise, what is the overstatement delta between the naive owner-joined total and the correct latest account-grain total?\n",
             "answer": 69100,
-            "explanation": "FACT-BI-FANOUT-JOIN-RISK explains why the owner join can duplicate balance facts. FACT-DEPOSITS-FANOUT-CONTROL-TOTALS fixes the synthetic dataset values: 164800 minus 95700 gives fanout_delta 69100.\n",
-            "self_assessment": "Review LT-BI-002 if you cannot reproduce the delta from SQL.\n",
+            "explanation": "The owner join can duplicate balance facts. In the synthetic dataset, 164800 minus 95700 gives a fanout delta of 69100.\n",
+            "self_assessment": "Review fanout detection if you cannot reproduce the delta from SQL.\n",
           },
           {
             "id": "q-medium-view-purpose",
@@ -190,12 +190,12 @@
                 },
                 {
                   "id": "browser_storage",
-                  "label": "It stores learner progress in browser localStorage.",
+                  "label": "It stores each viewer's dashboard click history as metric data.",
                 },
               ],
             "answer": "sql_virtual_table",
-            "explanation": "FACT-BIGQUERY-LOGICAL-VIEW anchors the SQL-defined virtual table behavior; FACT-BIGQUERY-VIEW-SCOPE constrains how it references data.\n",
-            "self_assessment": "Review LT-LOOKER-004 before using a chart-only formula for shared metric logic.\n",
+            "explanation": "A BigQuery logical view is a SQL-defined virtual table that can be queried like a table. Its SQL scope constrains how it references underlying data.\n",
+            "self_assessment": "Review report-ready data source setup before using a chart-only formula for shared metric logic.\n",
           },
           {
             "id": "q-medium-month-end-control",
@@ -210,8 +210,8 @@
               ],
             "prompt": "How many synthetic lending snapshot rows are not on an accepted month-end date in the month-end control task?\n",
             "answer": 1,
-            "explanation": "FACT-BIGQUERY-LAST-DAY-MONTH-END supports the month-end check and the deterministic control query returns one non-month-end row. FACT-BI-RECONCILIATION-WINDOWS frames the result as a control signal, and FACT-LENDING-NON-MONTH-END-SNAPSHOT-COUNT fixes the expected answer at 1 for the synthetic lending dataset.\n",
-            "self_assessment": "Review LT-DQ-005 if the control looks like a business KPI instead of a data-quality signal.\n",
+            "explanation": "The month-end control query returns one non-month-end row in the synthetic lending dataset. That result is a reconciliation signal, not a business KPI.\n",
+            "self_assessment": "Review dashboard-control reconciliation if the control looks like a business KPI instead of a data-quality signal.\n",
           },
           {
             "id": "q-medium-safe-cast-null-control",
@@ -220,7 +220,7 @@
             "recommended_learner_tasks": ["LT-DQ-005"],
             "source_facts":
               ["FACT-BIGQUERY-SAFE-CAST-DQ-NULL", "FACT-GDPR-ACCURACY"],
-            "prompt": "After a parsing query uses SAFE_CAST on a messy source field, what should the learner add to the control output?\n",
+            "prompt": "After a parsing query uses SAFE_CAST on a messy source field, what should the control output include?\n",
             "options":
               [
                 {
@@ -237,8 +237,8 @@
                 },
               ],
             "answer": "null_reconciliation",
-            "explanation": "FACT-BIGQUERY-SAFE-CAST-DQ-NULL says SAFE_CAST returns NULL for runtime cast errors; FACT-GDPR-ACCURACY supports treating the resulting NULL count as data-quality evidence, not silent cleanup.\n",
-            "self_assessment": "Review LT-DQ-005 if failed casts disappear from your reconciliation notes.\n",
+            "explanation": "SAFE_CAST returns NULL for runtime cast errors. The resulting NULL count is data-quality evidence and should not disappear through silent cleanup.\n",
+            "self_assessment": "Review dashboard-control reconciliation if failed casts disappear from your reconciliation notes.\n",
           },
           {
             "id": "q-medium-qualify-latest-snapshot",
@@ -267,8 +267,8 @@
                 },
               ],
             "answer": "qualify_window_rank",
-            "explanation": "FACT-BIGQUERY-QUALIFY-WINDOW-FILTER supports filtering window-function results, and FACT-BIGQUERY-WINDOW-PRESERVES-ROWS explains why ranking rows before filtering can preserve the intended partition logic.\n",
-            "self_assessment": "Review LT-SQL-003 if latest snapshot logic depends on chart sorting rather than query output.\n",
+            "explanation": "QUALIFY can filter window-function results after ranking rows. Ranking within partitions before filtering preserves the intended latest-row selection logic.\n",
+            "self_assessment": "Review month-end serving SQL if latest snapshot logic depends on chart sorting rather than query output.\n",
           },
         ],
       "hard":
@@ -301,8 +301,8 @@
                 },
               ],
             "answer": "latest_period_not_time_sum",
-            "explanation": "FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT says snapshots are safe across entities for one date, not across time; FACT-BI-REFERENCE-DATE-SEPARATION keeps exposure and valuation dates distinct. FACT-REAL-ESTATE-VALUATION-DATE-SEPARATION keeps property valuation context separate from loan principal.\n",
-            "self_assessment": "Review LT-SQL-003 if all dates in the dataset feel interchangeable.\n",
+            "explanation": "Balance snapshots are safe across entities for one date, not across time. Exposure dates, reporting dates, and collateral valuation dates should remain distinct.\n",
+            "self_assessment": "Review month-end serving SQL if all dates in the dataset feel interchangeable.\n",
           },
           {
             "id": "q-hard-metric-ownership",
@@ -332,8 +332,8 @@
                 },
               ],
             "answer": "upstream_serving_logic",
-            "explanation": "FACT-BI-FANOUT-JOIN-RISK explains the raw owner-join risk. FACT-BIGQUERY-REDUCE-BEFORE-JOIN supports reducing grain before joins, and FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE distinguishes reusable data-source logic from chart-only calculations.\n",
-            "self_assessment": "Review LT-BI-002 and LT-LOOKER-004 if your answer depends on a chart hiding the repair.\n",
+            "explanation": "A raw owner join can duplicate balance facts. Shared metric repair belongs in upstream serving SQL or reusable data-source logic, not as a hidden one-chart calculation.\n",
+            "self_assessment": "Review fanout detection and report-ready data source setup if your answer depends on a chart hiding the repair.\n",
           },
           {
             "id": "q-hard-blend-freshness-operations",
@@ -363,8 +363,8 @@
                 },
               ],
             "answer": "each_source_freshness",
-            "explanation": "FACT-LOOKER-STUDIO-BLEND-FRESHNESS-MINIMUM states the minimum-refresh behavior for blended sources; FACT-LOOKER-STUDIO-BLEND-JOIN-CONFIG and FACT-LOOKER-STUDIO-DATA-FRESHNESS-TRADEOFF make the blend configuration and freshness SLA review explicit.\n",
-            "self_assessment": "Review LT-LOOKER-004 and LT-DQ-005 if only one source in a blend is included in your operations note.\n",
+            "explanation": "Blended-source freshness depends on each included source and the blend configuration. The operations note should make both the join setup and freshness tradeoff explicit.\n",
+            "self_assessment": "Review report-ready data source setup and dashboard-control reconciliation if only one source in a blend is included in your operations note.\n",
           },
           {
             "id": "q-hard-refresh-cost-observability",
@@ -398,8 +398,8 @@
                 },
               ],
             "answer": ["refresh_cost_note", "job_bytes", "job_creation_time"],
-            "explanation": "FACT-LOOKER-STUDIO-BIGQUERY-REFRESH-COST connects refresh behavior to usual BigQuery query costs, while FACT-BIGQUERY-JOBS-BYTES and FACT-BIGQUERY-JOBS-CREATION-TIME identify job evidence for cost and timing review.\n",
-            "self_assessment": "Review LT-DQ-005 if your operations note cannot connect refresh settings to observable BigQuery job evidence.\n",
+            "explanation": "Looker Studio refreshes can trigger usual BigQuery query costs. Job bytes processed and job creation time provide observable evidence for cost and timing review.\n",
+            "self_assessment": "Review dashboard-control reconciliation if your operations note cannot connect refresh settings to observable BigQuery job evidence.\n",
           },
         ],
     },

@@ -1,7 +1,7 @@
 ---
 {
   "id": "fc-dgsd-eu-coverage",
-  "title": "What EU-level deposit-guarantee amount should a learner recognize as context?",
+  "title": "What EU-level deposit-guarantee amount matters as BI context?",
   "content_type": "flashcard",
   "status": "published",
   "version": "0.1.0",
@@ -12,11 +12,11 @@
 }
 ---
 
-# What EU-level deposit-guarantee amount should a learner recognize as context?
+# What EU-level deposit-guarantee amount matters as BI context?
 
 ## Front
 
-What EU-level deposit-guarantee amount should a learner recognize as context?
+What EU-level deposit-guarantee amount matters as BI context?
 
 ## Back
 

@@ -108,6 +108,20 @@ Do not rely on chat history as the source of truth. Keep these files current so 
 - Record failed attempts in `WHAT_WE_DID.md`.
 - Record known defects in `BUGS.md`.
 
+## Learner-Facing Content Boundary
+
+- Course prose, tutorial steps, quiz questions, challenge questions,
+  flashcards, and exam cards must teach the material itself, not the
+  repository implementation.
+- Visible learner-facing text must not refer to repo structure, source files,
+  implementation tasks, generated catalogs, raw `FACT-*` IDs, raw `LT-*` IDs,
+  `localStorage`, build scripts, or app internals.
+- Keep learner-facing wording anchored to BI theory and practice, Looker
+  Studio, BigQuery, synthetic banking datasets, and thin regulatory context.
+- Source fact IDs, learner-task IDs, file paths, and generated catalog details
+  belong in metadata, QA scripts, implementation docs, or authoring notes, not
+  in the question/prompt/explanation text shown as course material.
+
 ## Current Implementation Direction
 
 Start from these cross-linked sources before changing tutorial, quiz, dataset,

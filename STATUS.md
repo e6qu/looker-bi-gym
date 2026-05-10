@@ -1,12 +1,20 @@
 # Status
 
-Last updated: 2026-05-10
+Last updated: 2026-05-11
 
 ## Current Branch And PR
 
-- Current branch: `phase-6-tutorial-challenge-expansion`, based on verified
+- Current branch: `phase-7-learning-surface-verification`, based on verified
   `main`.
-- Current PR: #25, `https://github.com/e6qu/looker-bi-gym/pull/25`.
+- Current PR: not opened yet.
+- PR #25, `https://github.com/e6qu/looker-bi-gym/pull/25`, is squash-merged
+  at `63aa59fb0791b37c09899ba96a45ba44ec023d2d`.
+- Main CI for `63aa59f` passed:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25640123958`.
+- GitHub Pages workflow for `63aa59f` passed:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25640123964`.
+- Live Pages URL verified HTTP 200 on 2026-05-10:
+  `https://e6qu.github.io/looker-bi-gym/`.
 - PR #24, `https://github.com/e6qu/looker-bi-gym/pull/24`, is squash-merged
   at `22ff713374382341bbc11474a2501ab9d5325908`.
 - Main CI for `22ff713` passed:
@@ -34,28 +42,36 @@ Last updated: 2026-05-10
 
 ## Active Task
 
-Task 039 - Tutorial Challenge Expansion.
+Task 040 - Learning Surface Verification.
 
 Current state:
 
 - PR #23 added the first Phase 4 fact expansion batch and was verified on main.
 - PR #24 added the first Phase 5 assessment expansion batch and was verified on
   main.
-- Started Phase 6 on branch `phase-6-tutorial-challenge-expansion`.
-- Added Task 039 and a first self-contained learner task locally:
-  `LT-DQ-006 - Define A Ratio Null Contract`.
-- Task 039 local verification passed; formal Claude review is blocked by the
-  same CLI hang.
+- PR #25 added the first Phase 6 tutorial/challenge expansion batch and was
+  verified on main.
+- Started Phase 7 on branch `phase-7-learning-surface-verification`.
+- Task 040 is implemented first pass locally:
+  - added `bun run verify:deployed-surface`;
+  - fixed mobile Markdown overflow for wide tutorial code/tables;
+  - added stricter visible learner-facing content QA;
+  - cleaned self-referential quiz/challenge/flashcard/exam wording;
+  - added `docs/15-learning-surface-walkthrough.md`;
+  - added `docs/16-curriculum-critical-review.md`;
+  - added Task 041 as the next curriculum-completeness audit.
+- No PR is open yet. Deployed Pages verification for this branch is pending
+  until the branch is merged and Pages redeploys.
 
 ## Open Blockers
 
-- Claude CLI formal review remains blocked. Non-TUI Claude CLI mode works for a
-  tiny prompt, but the Task 034 formal review and Task 035 formal review
-  attempts, plus the Task 036, Task 037, Task 038, and Task 039 formal review
-  attempts, produced no output and were terminated. Phase 4 path migration and
-  the first fact expansion batch are implemented, merged, deployed, and locally
-  verified, but not Claude-reviewed. Tasks 038 and 039 are locally verified but
-  not Claude-reviewed.
+- Claude CLI formal review remains blocked. The Task 040 formal review attempt
+  used non-TUI `claude --print --permission-mode plan --output-format text ...`,
+  produced no output for about one minute, and was killed. Tasks 034-039 also
+  had formal Claude review attempts hang with no output. Do not mark any phase
+  complete until a completed formal review is recorded.
+- Codex CLI non-TUI mode works: `codex -a never exec --ephemeral --sandbox
+read-only --json "Reply exactly: codex-cli-ok"` returned `codex-cli-ok`.
 - Safari second-browser verification remains open until Safari remote
   automation is explicitly enabled or a manual Safari pass is performed.
 
@@ -72,6 +88,8 @@ Current state:
   is only the first stable expansion batch.
 - Phase 5 expansion toward 500 flashcards, 200 quiz questions, and 30 exam
   cards remains open; Task 038 is only a first assessment-content batch.
+- Task 041 is required before any curriculum-completeness claim. Current
+  tutorials, questions, flashcards, and exams are not complete or comprehensive.
 
 ## Verification
 
@@ -99,6 +117,37 @@ PR #24 post-merge verification passed on 2026-05-10:
   `22ff713`.
 - `curl -L -I https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
   `last-modified: Sun, 10 May 2026 21:11:23 GMT`.
+
+PR #25 post-merge verification passed on 2026-05-10:
+
+- PR #25 was squash-merged at `63aa59f`.
+- `gh run watch 25640123958` showed main CI success for `63aa59f`.
+- `gh run watch 25640123964` showed GitHub Pages deployment success for
+  `63aa59f`.
+- `curl -L -I https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
+  `last-modified: Sun, 10 May 2026 21:24:25 GMT`.
+
+Task 040 local verification passed on 2026-05-11:
+
+- `bun run content:check`
+- `bun run test:content-qa`
+- `bun run test:quiz-facts-db`
+- `bun run test:flashcards`
+- `bun run test:e2e` after approved local Vite preview binding
+- `bun run check` after approved local Vite preview binding, with all 12
+  Playwright tests passing
+- `DEPLOYED_BASE_URL=http://127.0.0.1:4174/ bun run verify:deployed-surface`
+  against patched local preview
+- `git diff --check`
+
+Task 040 blocked/pending verification:
+
+- Initial `bun run verify:deployed-surface` against the current live Pages site
+  failed on the previous build because the `LT-DQ-006` mobile route had
+  horizontal overflow. The CSS fix is in this branch; rerun after merge and
+  Pages redeploy.
+- Claude CLI formal review hung with no output and was killed; Task 040 is not
+  Claude-reviewed.
 
 Task 036 local verification passed on 2026-05-10:
 
@@ -187,6 +236,6 @@ Failed/blocked attempts:
 
 High for the local Phase 4 root-path migration, first fact expansion batch,
 Task 038 assessment expansion batch, Task 039 tutorial/challenge expansion
-batch, and automated gates. Phase 4, Phase 5, and Phase 6 must stay
-`implemented, not Claude-reviewed` until a non-hanging formal review path
-exists.
+batch, and automated gates. Task 040 is not started beyond task setup. Phase 4,
+Phase 5, and Phase 6 must stay `implemented, not Claude-reviewed` until a
+non-hanging formal review path exists.

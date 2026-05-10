@@ -29,8 +29,8 @@ Training boundary: use synthetic training data only. This quiz is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
 
-Source file in the repository:
-`quizzes/bi-foundations/bi-foundations-mixed.md`.
+Use the interactive quiz surface for randomized answer entry and immediate
+feedback.
 
 ## Easy
 

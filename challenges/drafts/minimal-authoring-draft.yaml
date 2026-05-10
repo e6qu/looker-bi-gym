@@ -40,19 +40,19 @@ questions:
       - id: masked_real_data
         label: Masked real banking data.
     answer: synthetic_only
-    explanation: FACT-GDPR-PERSONAL-DATA is one reason the project prohibits real banking data, including masked production samples.
+    explanation: Real banking data, including masked production samples, does not belong in synthetic BI challenge files.
     source_facts:
       - FACT-GDPR-PERSONAL-DATA
   - id: q_credentials
     type: multiple-choice
-    prompt: Which credentials may be collected by the static app?
+    prompt: Which credentials may be collected as challenge evidence?
     options:
       - id: none
         label: None.
       - id: api_key
         label: API keys for validation.
     answer: none
-    explanation: FACT-LOOKER-STUDIO-CREDENTIALS describes data credential scope; credentials, secrets, API keys, and tokens must not be collected or stored in challenge evidence.
+    explanation: Credentials, secrets, API keys, and tokens must not be collected or stored in challenge evidence.
     source_facts:
       - FACT-LOOKER-STUDIO-CREDENTIALS
 flag:

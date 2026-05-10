@@ -112,7 +112,7 @@ questions:
       - id: branch_all_dates
         label: One row per branch across all dates.
     answer: account_latest_date
-    explanation: FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK is why ownership analysis must be deliberate; balance snapshots must first stay at account-latest-date grain.
+    explanation: Deposit-guarantee ownership analysis must be deliberate; balance snapshots must first stay at account-latest-date grain.
     source_facts:
       - FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK
   - id: q_delta
@@ -120,12 +120,12 @@ questions:
     prompt: How many RON/EUR ledger units does the naive owner join overstate on the latest date?
     answer: 69100
     tolerance: 0
-    explanation: FACT-BI-FANOUT-JOIN-RISK explains why the owner join can duplicate balance facts; the latest-date correct total is 95700 and the naive owner-joined total is 164800.
+    explanation: The owner join can duplicate balance facts; the latest-date correct total is 95700 and the naive owner-joined total is 164800.
     source_facts:
       - FACT-BI-FANOUT-JOIN-RISK
   - id: q_deposit_guarantee_grain
     type: multiple-choice
-    prompt: Which grain does FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK imply for a future deposit-guarantee coverage metric?
+    prompt: Which grain does a future per-depositor, per-bank deposit-guarantee coverage metric require?
     options:
       - id: depositor_bank
         label: One depositor per bank, after resolving ownership.
@@ -134,7 +134,7 @@ questions:
       - id: owner_joined_balance
         label: One row per account-owner join result.
     answer: depositor_bank
-    explanation: FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK says the ceiling is per depositor per bank, so account-owner join rows are not the final coverage grain.
+    explanation: The coverage ceiling is per depositor per bank, so account-owner join rows are not the final coverage grain.
     source_facts:
       - FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK
 lesson_steps:

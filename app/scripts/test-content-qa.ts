@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { parse } from "yaml";
 import { isBrowserConfigCheckSupported } from "../src/configEvidence";
 import { isCloudEvidenceCheckSupported } from "../src/cloudEvidence";
+import { flashcardDecks } from "../src/flashcards";
 import {
   examPacks as catalogExamPacks,
   quizBanks as catalogQuizBanks,
@@ -31,6 +32,11 @@ type FactRegister = ReadonlySet<string>;
 
 type Difficulty = "easy" | "medium" | "hard";
 
+type QuizOption = {
+  readonly id: string;
+  readonly label: string;
+};
+
 type QuizQuestion = {
   readonly id: string;
   readonly type: string;
@@ -38,6 +44,7 @@ type QuizQuestion = {
   readonly recommended_learner_tasks: readonly string[];
   readonly source_facts: readonly string[];
   readonly prompt: string;
+  readonly options?: readonly QuizOption[];
   readonly answer: unknown;
   readonly explanation: string;
   readonly self_assessment: string;
@@ -93,6 +100,10 @@ const disclaimerPattern =
   /not legal, regulatory, accounting, privacy, compliance, or model-risk advice/u;
 const sourceFactIdPattern = /`(FACT-[A-Z0-9]+(?:-[A-Z0-9]+)*)`/gu;
 const sourceFactHeadingPattern = /^### (FACT-[A-Z0-9]+(?:-[A-Z0-9]+)*)$/gmu;
+const learnerFacingIdPattern =
+  /\b(?:FACT-[A-Z0-9]+(?:-[A-Z0-9]+)*|LT-[A-Z]+-\d{3})\b/u;
+const learnerFacingImplementationPattern =
+  /\b(?:localStorage|this app|this static app|this repo|this repository|repo structure|source file in the repository|generated catalog|implementation task|learners?|training workflow|course source register|project (?:cards|facts|rule|constraints|prefers))\b/iu;
 const releasedTutorialFiles = new Set([
   "00-orientation-and-stack.md",
   "01-connect-public-data.md",
@@ -277,6 +288,20 @@ function assertNonEmptyString(value: string, context: string): void {
   assert.ok(value.trim().length > 0, `${context} must not be empty.`);
 }
 
+function assertLearnerFacingText(value: string, context: string): void {
+  assertNonEmptyString(value, context);
+  assert.doesNotMatch(
+    value,
+    learnerFacingIdPattern,
+    `${context} must keep raw source and task IDs in metadata instead of visible learner-facing text.`,
+  );
+  assert.doesNotMatch(
+    value,
+    learnerFacingImplementationPattern,
+    `${context} must stay focused on BI, Looker Studio, BigQuery, and regulatory context instead of implementation details.`,
+  );
+}
+
 function readLearnerTaskIds(
   markdownFiles: readonly MarkdownFile[],
 ): Set<string> {
@@ -446,6 +471,23 @@ function assertChallengeContentBoundaries(
     }
 
     for (const step of challenge.lesson_steps ?? []) {
+      assertLearnerFacingText(step.title, `${challenge.id}:${step.id}:title`);
+      assertLearnerFacingText(
+        step.instruction,
+        `${challenge.id}:${step.id}:instruction`,
+      );
+      assertLearnerFacingText(
+        step.expected_result,
+        `${challenge.id}:${step.id}:expected_result`,
+      );
+      assertLearnerFacingText(
+        step.why_it_matters,
+        `${challenge.id}:${step.id}:why_it_matters`,
+      );
+      assertLearnerFacingText(
+        step.failure_mode,
+        `${challenge.id}:${step.id}:failure_mode`,
+      );
       assertKnownSourceFacts(
         step.source_facts,
         factRegister,
@@ -459,15 +501,24 @@ function assertChallengeContentBoundaries(
     }
 
     for (const question of challenge.questions) {
+      assertLearnerFacingText(
+        question.prompt,
+        `${challenge.id}:${question.id}:prompt`,
+      );
+      assertLearnerFacingText(
+        question.explanation ?? "",
+        `${challenge.id}:${question.id}:explanation`,
+      );
+      for (const option of question.options ?? []) {
+        assertLearnerFacingText(
+          option.label,
+          `${challenge.id}:${question.id}:${option.id}:label`,
+        );
+      }
       assertKnownSourceFacts(
         question.source_facts,
         factRegister,
         `${challenge.id}:${question.id}`,
-      );
-      assert.match(
-        question.explanation ?? "",
-        /FACT-[A-Z0-9]+(?:-[A-Z0-9]+)*/u,
-        `${challenge.id}:${question.id} explanation must name a source fact ID.`,
       );
     }
   }
@@ -671,12 +722,18 @@ function assertQuizBanks(
       for (const question of questions) {
         const context = `${quizBank.id}:${difficulty}:${question.id}`;
 
-        assertNonEmptyString(question.prompt, `${context}:prompt`);
-        assertNonEmptyString(question.explanation, `${context}:explanation`);
-        assertNonEmptyString(
+        assertLearnerFacingText(question.prompt, `${context}:prompt`);
+        assertLearnerFacingText(question.explanation, `${context}:explanation`);
+        assertLearnerFacingText(
           question.self_assessment,
           `${context}:self_assessment`,
         );
+        for (const option of question.options ?? []) {
+          assertLearnerFacingText(
+            option.label,
+            `${context}:${option.id}:label`,
+          );
+        }
         assert.ok(
           question.estimated_seconds > 0,
           `${context} must estimate seconds.`,
@@ -687,11 +744,6 @@ function assertQuizBanks(
           context,
         );
         assertKnownSourceFacts(question.source_facts, factRegister, context);
-        assert.match(
-          question.explanation,
-          /FACT-[A-Z0-9]+(?:-[A-Z0-9]+)*/u,
-          `${context} explanation must name a source fact ID.`,
-        );
       }
     }
   }
@@ -726,8 +778,8 @@ function assertExamPacks(
       totalExamCardCount += 1;
       const context = `${examPack.id}:${card.id}`;
 
-      assertNonEmptyString(card.title, `${context}:title`);
-      assertNonEmptyString(card.objective, `${context}:objective`);
+      assertLearnerFacingText(card.title, `${context}:title`);
+      assertLearnerFacingText(card.objective, `${context}:objective`);
       assertRecommendedLearnerTasks(
         card.recommended_learner_tasks,
         learnerTaskIds,
@@ -738,7 +790,7 @@ function assertExamPacks(
         card.verification.expected_outputs.length > 0,
         `${context} must define expected outputs.`,
       );
-      assertNonEmptyString(
+      assertLearnerFacingText(
         card.verification.self_assessment,
         `${context}:self_assessment`,
       );
@@ -749,6 +801,29 @@ function assertExamPacks(
     totalExamCardCount >= 4,
     "Assessment catalog must include at least four exam cards.",
   );
+}
+
+function assertFlashcardDecks(): void {
+  for (const deck of flashcardDecks) {
+    assertLearnerFacingText(deck.title, `${deck.id}:title`);
+    assertLearnerFacingText(deck.topic, `${deck.id}:topic`);
+
+    for (const sourceReview of deck.sourceReviews ?? []) {
+      assertLearnerFacingText(
+        sourceReview.coverageNote,
+        `${deck.id}:${sourceReview.title}:coverageNote`,
+      );
+      assertLearnerFacingText(
+        sourceReview.incorporationNote,
+        `${deck.id}:${sourceReview.title}:incorporationNote`,
+      );
+    }
+
+    for (const card of deck.cards) {
+      assertLearnerFacingText(card.front, `${deck.id}:${card.id}:front`);
+      assertLearnerFacingText(card.back, `${deck.id}:${card.id}:back`);
+    }
+  }
 }
 
 const factRegister = await readFactRegister();
@@ -763,5 +838,6 @@ await assertRegulatoryContextLinks(manifests);
 assertMarkdownBoundaryLanguage(markdownFiles, factRegister);
 assertQuizBanks(quizBanks, factRegister, learnerTaskIds);
 assertExamPacks(examPacks, factRegister, learnerTaskIds);
+assertFlashcardDecks();
 await assertDatasetBoundaries();
 await assertMarkdownLinksResolve(markdownFiles);

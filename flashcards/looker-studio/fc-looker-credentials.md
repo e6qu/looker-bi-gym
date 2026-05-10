@@ -1,7 +1,7 @@
 ---
 {
   "id": "fc-looker-credentials",
-  "title": "Why does this app avoid collecting Looker Studio or Google Cloud credentials?",
+  "title": "Where should Looker Studio and Google Cloud credentials be handled for a BI report?",
   "content_type": "flashcard",
   "status": "published",
   "version": "0.1.0",
@@ -12,12 +12,12 @@
 }
 ---
 
-# Why does this app avoid collecting Looker Studio or Google Cloud credentials?
+# Where should Looker Studio and Google Cloud credentials be handled for a BI report?
 
 ## Front
 
-Why does this app avoid collecting Looker Studio or Google Cloud credentials?
+Where should Looker Studio and Google Cloud credentials be handled for a BI report?
 
 ## Back
 
-The project is a static frontend; learner credentials must stay outside the app.
+Credentials belong in the official Google account and data-source configuration. Review evidence should include schemas, SQL, outputs, and report URLs, never tokens, keys, or credentials.

@@ -26,7 +26,7 @@
                 "naive_joined_total = 164800",
                 "fanout_delta = 69100",
               ],
-            "self_assessment": "The learner can identify the duplicated measure and explain why the repair belongs upstream of dashboard charts.\n",
+            "self_assessment": "Identify the duplicated measure and explain why the repair belongs upstream of dashboard charts.\n",
           },
       },
       {
@@ -49,7 +49,7 @@
                 "non_month_end_snapshot_count = 1",
                 "stale_collateral_valuation_count = 3",
               ],
-            "self_assessment": "The learner can distinguish exposure date, valuation date, and dashboard control dates without exposing loan or property identifiers.\n",
+            "self_assessment": "Distinguish exposure date, valuation date, and dashboard control dates without exposing loan or property identifiers.\n",
           },
       },
       {
@@ -71,7 +71,7 @@
                 "zero-denominator behavior is documented as NULL, hidden, zero, or flagged",
                 "Looker Studio field aggregation is checked before chart release",
               ],
-            "self_assessment": "The learner can explain why SQL safety behavior and dashboard display behavior are separate contract decisions.\n",
+            "self_assessment": "Explain why SQL safety behavior and dashboard display behavior are separate contract decisions.\n",
           },
       },
       {
@@ -94,7 +94,7 @@
                 "BigQuery refresh cost risk is acknowledged",
                 "job bytes and job creation time evidence are listed as review inputs",
               ],
-            "self_assessment": "The learner can connect report freshness settings to BigQuery job evidence instead of treating dashboard refresh as invisible platform behavior.\n",
+            "self_assessment": "Connect report freshness settings to BigQuery job evidence instead of treating dashboard refresh as invisible platform behavior.\n",
           },
       },
     ],

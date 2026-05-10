@@ -1,5 +1,70 @@
 # What We Did
 
+## 2026-05-11 - Phase 7 Learning Surface Verification First Pass
+
+- Implemented Task 040 on `phase-7-learning-surface-verification`.
+- Added `bun run verify:deployed-surface`, a Playwright verifier for the
+  learning surface across desktop/mobile routes plus representative workbench,
+  flashcard, quiz, and exam flows.
+- Found that the current live Pages build has mobile horizontal overflow on
+  `LT-DQ-006` (`scrollWidth=414`, `clientWidth=390`).
+- Fixed Markdown table/code containment in `app/src/styles.css` and added the
+  `LT-DQ-006` route to rendered UI responsive coverage.
+- Added visible learner-facing content QA so challenge questions, quiz
+  questions, exam cards, and flashcards cannot show raw `FACT-*` IDs, raw
+  `LT-*` IDs, repository references, app internals, or learner-meta wording.
+- Cleaned existing self-referential assessment and flashcard wording, including
+  challenge manifests and quiz explanations that previously named internal fact
+  IDs as visible answer text.
+- Added `docs/15-learning-surface-walkthrough.md`.
+- Added `docs/16-curriculum-critical-review.md` and updated `PLAN.md` with
+  stricter requirements for self-contained, real, verified tutorials and
+  practical assessment items.
+- Added `_development/tasks/041-curriculum-completeness-audit.md` as the next
+  task.
+- Updated `AGENTS.md` to make the learner-facing content boundary explicit.
+- Verification passed:
+  - `bun run content:check`;
+  - `bun run test:content-qa`;
+  - `bun run test:quiz-facts-db`;
+  - `bun run test:flashcards`;
+  - `bun run test:e2e` after approved local Vite preview binding;
+  - `bun run check` after approved local Vite preview binding;
+  - `DEPLOYED_BASE_URL=http://127.0.0.1:4174/ bun run verify:deployed-surface`
+    against patched local preview;
+  - `git diff --check`.
+- Failed/blocked attempts recorded:
+  - first sandboxed `bun run check` reached Playwright but Vite preview could
+    not bind `127.0.0.1:4173`;
+  - first full check after content edits failed because an e2e selector still
+    expected the old raw `FACT-*` answer label;
+  - initial local preview verifier used the GitHub Pages base path and hit
+    local Vite preview asset 404s; using preview root URL passed;
+  - initial live Pages verifier failed against the old deployed build because
+    the mobile tutorial overflow fix was not deployed yet;
+  - formal Claude CLI review in `--print` mode produced no output for about one
+    minute and was killed;
+  - Codex CLI non-TUI mode works: `codex exec --json ...` returned
+    `codex-cli-ok`.
+- Acceptance note: Task 040 is locally verified first-pass Phase 7 work. It is
+  not deployed-verified or Claude-reviewed yet, and it does not make the
+  curriculum complete or comprehensive.
+
+## 2026-05-10 - Phase 7 Learning Surface Verification Setup
+
+- Verified PR #25 post-merge state:
+  - PR #25 was squash-merged at
+    `63aa59fb0791b37c09899ba96a45ba44ec023d2d`.
+  - Main CI passed for `63aa59f`.
+  - GitHub Pages workflow passed for `63aa59f`.
+  - Live Pages URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200
+    with `last-modified: Sun, 10 May 2026 21:24:25 GMT`.
+- Confirmed no open PRs before starting the Phase 7 branch.
+- Created branch `phase-7-learning-surface-verification` from verified `main`.
+- Added `_development/tasks/040-learning-surface-verification.md` as the next
+  implementation task.
+- No Phase 7 browser walkthrough work has been implemented yet.
+
 ## 2026-05-10 - Phase 6 Tutorial Challenge Expansion Batch 1
 
 - Verified PR #24 post-merge state:

@@ -112,7 +112,7 @@ questions:
       - id: lifecycle_date_only
         label: It is only tied to origination_date and maturity_date, so as_of_date can be ignored.
     answer: latest_period_not_time_sum
-    explanation: FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT describes why balance snapshots can be summed across accounts or loans for one date but not across time.
+    explanation: Balance snapshots can be summed across accounts or loans for one date, but not across time.
     source_facts:
       - FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT
   - id: q_non_month_end_count
@@ -120,7 +120,7 @@ questions:
     prompt: How many loan_monthly_snapshots rows have an as_of_date that is not one of the two declared month-end dates?
     answer: 1
     tolerance: 0
-    explanation: FACT-BIGQUERY-LAST-DAY-MONTH-END is the date-function basis for detecting the one synthetic non-month-end snapshot row.
+    explanation: A month-end date check detects the one synthetic non-month-end snapshot row.
     source_facts:
       - FACT-BIGQUERY-LAST-DAY-MONTH-END
   - id: q_ron_time_sum_delta
@@ -128,13 +128,13 @@ questions:
     prompt: For RON, what is the difference between summing all outstanding_principal snapshot rows and the 2026-03-31 latest month-end principal total?
     answer: 519000
     tolerance: 0
-    explanation: FACT-BI-REFERENCE-DATE-SEPARATION and FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION explain why the reference date and reporting grain must be explicit before aggregation.
+    explanation: The reference date and reporting grain must be explicit before aggregation.
     source_facts:
       - FACT-BI-REFERENCE-DATE-SEPARATION
       - FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION
   - id: q_output_minimisation
     type: select-all
-    prompt: Which fields from the lending pack should stay out of this currency-level result under FACT-GDPR-DATA-MINIMISATION?
+    prompt: Which fields from the lending pack should stay out of this currency-level result unless a specific reporting purpose requires them?
     options:
       - id: loan_id
         label: loan_id
@@ -151,7 +151,7 @@ questions:
       - borrower_id
       - synthetic_contract_ref
       - property_id
-    explanation: FACT-GDPR-DATA-MINIMISATION supports returning only fields needed for the stated BI purpose.
+    explanation: The result should return only fields needed for the stated BI purpose.
     source_facts:
       - FACT-GDPR-DATA-MINIMISATION
   - id: q_stale_collateral_count
@@ -159,7 +159,7 @@ questions:
     prompt: How many pledged collateral rows use the stale valuation date 2025-03-31 instead of the latest 2026-03-31 valuation date?
     answer: 3
     tolerance: 0
-    explanation: FACT-REAL-ESTATE-VALUATION-DATE-SEPARATION explains why collateral valuation dates must be managed separately from loan exposure snapshot dates.
+    explanation: Collateral valuation dates must be managed separately from loan exposure snapshot dates.
     source_facts:
       - FACT-REAL-ESTATE-VALUATION-DATE-SEPARATION
   - id: q_latest_property_valuation_total
@@ -167,12 +167,12 @@ questions:
     prompt: What is the deterministic total market_value_eur for property_valuations at valuation_date 2026-03-31?
     answer: 11801400
     tolerance: 0
-    explanation: FACT-REAL-ESTATE-COLLATERAL-GRAIN explains why property valuation totals must be calculated at property valuation-date grain before joining to loan exposure.
+    explanation: Property valuation totals must be calculated at property valuation-date grain before joining to loan exposure.
     source_facts:
       - FACT-REAL-ESTATE-COLLATERAL-GRAIN
   - id: q_notarial_minimum_reference
     type: multiple-choice
-    prompt: What does FACT-ROMANIA-NOTARIAL-STUDIES-NOT-MARKET-VALUE imply about using Romanian notarial market studies in a mortgage BI dashboard?
+    prompt: What does the Romanian notarial-study boundary imply for a mortgage BI dashboard?
     options:
       - id: reference_not_appraisal
         label: They can provide minimum reference-value context, but they are not individual market valuations.
@@ -181,7 +181,7 @@ questions:
       - id: borrower_identity
         label: They identify the borrower and exact pledged property.
     answer: reference_not_appraisal
-    explanation: FACT-ROMANIA-NOTARIAL-STUDIES-NOT-MARKET-VALUE says Romanian notarial-study values are minimum reference values for specified legal/tax workflows, not market circulation values or loan-level appraisal outputs.
+    explanation: Romanian notarial-study values are minimum reference values for specified legal or tax workflows, not market circulation values or loan-level appraisal outputs.
     source_facts:
       - FACT-ROMANIA-NOTARIAL-STUDIES-NOT-MARKET-VALUE
 lesson_steps:
