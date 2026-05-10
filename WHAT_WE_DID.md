@@ -2,6 +2,49 @@
 
 ## 2026-05-10
 
+- After the user merged PR #6, confirmed it merged at
+  `1da6272efb1c219bfcdf8981e4014af4b4a899e4`, switched to `main`, pulled the
+  merge, and created branch `organize-platform-components`.
+- Started implementation Task 028 to organize the merged platform components and
+  sections around the GitHub Pages learner experience.
+- Added root `README.md` with:
+  - static GitHub Pages project summary;
+  - no-backend/no-real-data/no-credential boundary;
+  - repository component directory map;
+  - Bun-only development commands;
+  - browser-local state and JSON export/import direction.
+- Added `docs/14-platform-components.md` as the component map for:
+  - learner website sections;
+  - current and planned learner-facing sections;
+  - tutorials, challenges, fixtures, recipes, quizzes, and exam cards;
+  - datasets, facts, sources, and regulations;
+  - app shell, content, challenge runtime, dataset registry, DuckDB-WASM SQL
+    runtime, validators, and progress state;
+  - `localStorage`, same-site cookie mirror, JSON export, planned JSON import;
+  - verification gates and implementation-task versus learner-task boundaries.
+- Linked the component map from `docs/README.md` and `PLAN.md`.
+- Updated `app/README.md` to rename the state section to "Progress Export And
+  Planned Import" and document the intended browser-local import flow:
+  choose JSON, validate `looker-bi-gym.progress-export.v1`, preview evidence,
+  apply after confirmation, and never upload learner data.
+- Added `tasks/028-platform-component-organization.md` and linked it from
+  `tasks/README.md`.
+- Updated `STATUS.md`, `DO_NEXT.md`, and `BUGS.md` to reflect:
+  - PR #6 is merged;
+  - Task 028 is active;
+  - JSON export is implemented;
+  - JSON import is planned, not implemented;
+  - post-merge PR #6 Pages verification needed to be checked.
+- Checked post-merge PR #6 automation:
+  - main-branch CI run `25626695978` passed for merge commit
+    `1da6272efb1c219bfcdf8981e4014af4b4a899e4`;
+  - main-branch Pages deployment run `25626695981` passed for the same commit;
+  - `curl -I https://e6qu.github.io/looker-bi-gym/` returned HTTP 200.
+- Ran Task 028 verification:
+  - `bun run format`;
+  - `bun run format:check`;
+  - `bun run test:content-qa`.
+
 - Discussed and pinned the next PR #6 tutorial direction after the dataset and
   LLM workbench expansion:
   - add implementation Task 025's learner-facing tutorial model to PR #6 instead

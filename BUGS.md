@@ -51,6 +51,13 @@ No known app bugs after the Bun-only tooling, typed config, formatting, rendered
 - Post-merge Pages deployment for PR #5 passed on 2026-05-10, and `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200.
 - Complete Safari second-browser verification for Task 013. `safaridriver` is installed with Safari 26.1, but Safari's persistent "Allow remote automation" setting is disabled. Enabling it requires explicit user authorization because it changes a persistent browser security setting. The manual checklist lives in `docs/10-app-quality-browser-qa.md`.
 - Task 024 full `bun run check` verification passed locally on 2026-05-10 after the user approved Playwright/Vite local port binding; it passed again after the PR #6 real-estate collateral and manual LLM workbench expansion.
+- Post-merge PR #6 GitHub Actions and GitHub Pages deployment passed for merge
+  commit `1da6272efb1c219bfcdf8981e4014af4b4a899e4`, and the deployed Pages URL
+  returned HTTP 200 on 2026-05-10. A browser-rendered smoke pass of the new
+  lending challenge route remains optional follow-up if needed.
+- JSON import is planned but not implemented. Current Settings supports JSON
+  export and reset only. Future import must stay browser-local and validate the
+  `looker-bi-gym.progress-export.v1` structure before applying state.
 
 ## Template
 

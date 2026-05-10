@@ -16,6 +16,7 @@ Start here:
 - [11 - Content QA Checklist](11-content-qa-checklist.md): repeatable checks for synthetic-data language, required tools, regulation links, disclaimers, and Markdown links.
 - [12 - Test Pyramid](12-test-pyramid.md): frontend-only architecture checks, domain tests, content contracts, and Playwright rendered user flows.
 - [13 - LLM Question And Dreaming Workbench](13-llm-question-and-dreaming-workbench.md): manual question generation, review, refinement, and opt-in dreaming workflow.
+- [14 - Platform Components](14-platform-components.md): website sections, content components, datasets, facts, runtime modules, state model, export/import direction, and verification.
 - [Source Fact Register](facts/README.md): canonical fact IDs and source links for fact-backed tutorials and quiz questions.
 - [Release Versioning](../VERSIONING.md): app/content, challenge, dataset, and regulation-brief version policy.
 - [Changelog](../CHANGELOG.md): tracked release contents and known verification gaps.
