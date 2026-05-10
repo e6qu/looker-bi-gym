@@ -8,7 +8,7 @@ Planning, documentation, task tracking, continuity protocol, the static app skel
 
 ## Active Task
 
-Active task: 024 - Deterministic Local Dataset Packs, implemented and locally verified on branch `deterministic-local-dataset-packs`; PR creation is pending. Next planned task after this PR is 025 - Real Tutorial Instruction Packs.
+Active task: 024 - Deterministic Local Dataset Packs, implemented and locally verified on branch `deterministic-local-dataset-packs`; PR #6 is open at `https://github.com/e6qu/looker-bi-gym/pull/6`. Next planned task after this PR is 025 - Real Tutorial Instruction Packs.
 
 ## Current Decisions
 

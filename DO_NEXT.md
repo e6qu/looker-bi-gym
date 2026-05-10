@@ -6,11 +6,11 @@ Numbered tasks 001 through 027 are implemented. PR #3, PR #4, and PR #5 were mer
 
 Current implementation step:
 
-- Finish the Task 024 PR from branch `deterministic-local-dataset-packs`: commit the verified work, push the branch, and open a PR.
+- Review and merge PR #6: `https://github.com/e6qu/looker-bi-gym/pull/6`.
 
 Next implementation step after the Task 024 PR:
 
-- Start [025 - Real Tutorial Instruction Packs](tasks/025-real-tutorial-instruction-packs.md), using the source-backed BigQuery/Looker/BI facts database from [027 - Source-Backed BI Fact Database](tasks/027-source-backed-bi-fact-database.md) and the new deterministic lending pack from [024 - Deterministic Local Dataset Packs](tasks/024-deterministic-local-dataset-packs.md).
+- After PR #6 merges, start [025 - Real Tutorial Instruction Packs](tasks/025-real-tutorial-instruction-packs.md), using the source-backed BigQuery/Looker/BI facts database from [027 - Source-Backed BI Fact Database](tasks/027-source-backed-bi-fact-database.md) and the new deterministic lending pack from [024 - Deterministic Local Dataset Packs](tasks/024-deterministic-local-dataset-packs.md).
 
 Preservation and verification steps:
 
