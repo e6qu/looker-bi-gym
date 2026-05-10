@@ -1,0 +1,5 @@
+branch_id,branch_name,country_code,region,city,legal_entity_id
+BR-BUC,Bucharest Corporate Lending,RO,Bucharest-Ilfov,Bucharest,LE-RO-BANK
+BR-CJ,Cluj SME Lending,RO,North-West,Cluj-Napoca,LE-RO-BANK
+BR-IASI,Iasi Retail Lending,RO,North-East,Iasi,LE-RO-BANK
+BR-TM,Timisoara Workout Desk,RO,West,Timisoara,LE-RO-BANK

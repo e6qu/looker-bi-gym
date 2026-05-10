@@ -7,6 +7,7 @@ The MVP browser track remains deposits-first. These domains are documented expan
 - Synthetic loan accounts, customers, collateral, repayment schedules, arrears events, staging labels, and impairment inputs.
 - BI traps: slowly changing credit status, vintage/cohort ambiguity, default-event timing, exposure-at-default grain, collateral fanout, and borrower/loan/account grain mismatch.
 - Context tags: EBA, CRR/CRD, BNR, GDPR.
+- First deterministic pack: `lending-month-end/v0.1.0`, focused on month-end exposure snapshots, semi-additive outstanding principal, non-month-end date detection, IFRS 9 stage aggregation, branch mapping gaps, and minimised currency-level serving outputs.
 
 ## Payments, Cards, PSD2, And Fraud
 

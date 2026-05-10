@@ -174,8 +174,8 @@ Browser SQL result validators:
 | `forbidden-column`          | String or string array of result columns that must not exist.                                  |
 | `row-count`                 | Integer for exact count, or `{ operator: equals                                                | at-least | at-most, value: integer }`. |
 | `unique-key`                | String or string array of columns that must uniquely identify rows.                            |
-| `aggregate-total`           | `{ column, value, tolerance }` checked against one result row.                                 |
-| `scalar-aggregate`          | Same shape as `aggregate-total`; use for one-row aggregate outputs.                            |
+| `aggregate-total`           | `{ column, value, tolerance }` summed across all result rows.                                  |
+| `scalar-aggregate`          | Same shape as `aggregate-total`; checked against one result row.                               |
 | `sensitive-field-exclusion` | String array of forbidden sensitive fields, combined with sensitive fields declared on inputs. |
 
 Cloud evidence validators:

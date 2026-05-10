@@ -28,6 +28,8 @@ The first platform release and PR #3 established:
 - Fact-backed challenge questions.
 - Content QA for required tools, disclaimers, synthetic-data boundaries,
   Markdown links, source fact references, and tutorial structure.
+- Deterministic lending month-end dataset pack and browser SQL challenge for
+  semi-additive exposure snapshots.
 
 ## Split Plans
 
@@ -69,6 +71,45 @@ The first platform release and PR #3 established:
 - Challenge definitions must be rich enough to grade: inputs, outputs, source
   facts, checks, fixtures, expected wrong answers or known-bad SQL where useful,
   and stable versioning.
+- Optional LLM question generation is draft-only. LLM review/refinement and
+  manual "dreaming" passes may help find weak facts, better sources, generic
+  questions, dataset realism gaps, and possible bugs, but they do not replace
+  committed source facts, deterministic fixtures, human review, or passing tests.
+- Dreaming is currently manual only through `make` targets. Do not enable an
+  automatic 3-6 hour background scheduler until a later explicit task designs
+  permissions, artifact review, cost controls, and merge discipline.
+- Learner tasks must have an explicit overall learning objective. The
+  objective should explain what the learner will be able to do and how it fits
+  the broader data-analyst-to-banking-BI path.
+- Learner tasks should be grouped by learning area and timeboxed to roughly
+  15-20 focused minutes. Each learner task should include step-by-step
+  instructions, verification checkpoints, a meaningful visualization or reporting
+  step where appropriate, self-assessment, and an end challenge.
+- Early tutorial work should prioritize BI mechanics and Looker/BigQuery
+  behavior over legal theory or specific market-condition expertise. Banking
+  and real-estate data provide realistic context, not the main first-pass
+  learning goal.
+- Looker Studio recipes belong after the core browser-first tutorials as
+  optional follow-on recipes. Prefer manual browser/UI workflows first; defer
+  shell scripts until there is a clear need. Any learner-facing shell scripts
+  must be uncomplicated, ShellCheck-verified, work on macOS and Linux, and work
+  from both `bash` and `zsh`.
+- Quiz content should use a separate quiz-bank format instead of overloading
+  challenge manifests. The first quiz bank should support one mixed
+  approximately 20-minute quiz organized internally by `easy`, `medium`, and
+  `hard`, with recommended learner-task links, source facts, answers,
+  explanations, and self-assessment notes.
+- Exam mode should start as independent optional challenge cards, not a timed
+  enforced browser exam. Each exam challenge can be up to roughly 2 hours, is
+  user-selected, and is self-assessed at first with as much deterministic
+  verification as the current static app can support.
+- Terminology must stay precise:
+  - `implementation tasks` are numbered repository work items under `tasks/*.md`
+    such as Task 024 and Task 025;
+  - `learner tasks` are curriculum exercise units shown to learners in the app
+    or tutorial content.
+    Do not use unqualified "task" when it could confuse implementation work with
+    learner-facing curriculum.
 
 ## Future Phases
 
@@ -95,15 +136,33 @@ Expand beyond the deposits seed with committed synthetic datasets and metadata:
 - Lending/month-end exposure pack for semi-additive snapshots and DPD buckets.
 - Finance/GL reconciliation pack.
 - Operations/freshness/reconciliation pack.
+- Real-estate collateral and mortgage-evaluation support packs with synthetic
+  property/location/valuation rows plus official historical/current market
+  context tables where licensing and source availability allow.
 
 Every dataset pack needs versioned files, metadata, synthetic-only declarations,
 schema/grain contracts, row counts, control totals, known traps, and fixture
+coverage.
+
+First implementation: `lending-month-end/v0.1.0` provides the lending
+month-end exposure seed pack with committed CSV/JSON, validation, and fixture
 coverage.
 
 ### Phase C - Real Tutorial Instruction Packs
 
 Replace remaining sketch-like lessons with full lesson packs:
 
+- Area-grouped task packs for:
+  - BI fundamentals;
+  - BigQuery/SQL for BI;
+  - Looker Studio mechanics;
+  - data quality and controls;
+  - banking BI applications as realistic context.
+- Several complete 15-20 minute learner tasks across multiple areas in the next
+  PR #6 continuation, not only a schema proof of concept.
+- Each learner task includes an objective, prerequisites, input dataset, exact
+  learner steps, verification checkpoints, visualization/reporting action,
+  optional recipe pointer, self-assessment, and a CTF-style end challenge.
 - Narrative lesson page.
 - Browser-rendered challenge lesson steps.
 - Exact SQL/evidence snippets.
@@ -112,6 +171,17 @@ Replace remaining sketch-like lessons with full lesson packs:
 - Known failure modes.
 - Automatically graded checks and question fixtures.
 - Optional cloud-applied branch only after browser-first equivalent exists.
+- A useful first in-app visualization feature attached to SQL task/challenge
+  results: when a result has at least one dimension-like column and one numeric
+  column, allow a learner to render a simple table/bar-chart view that supports
+  BI mechanics. Avoid dummy placeholder charts.
+- Separate Looker Studio recipe pages after tutorials, with upload/data-source
+  setup, field mapping, calculated-field instructions, chart configuration, and
+  user-driven verification.
+- A separate quiz-bank model for mixed 20-minute quizzes with difficulty,
+  recommended tasks, source facts, answers, explanations, and self-assessment.
+- Exam mode defined as untimed, independent, longer challenge cards; app
+  rendering can follow after task and quiz models stabilize.
 
 ### Phase D - Stronger Challenge And Grading Contracts
 

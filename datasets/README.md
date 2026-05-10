@@ -8,5 +8,6 @@ Current seed:
 
 - `deposits-seed/v0.1.0`: small hand-authored Romanian deposits/account ownership dataset for the first browser SQL and BI trap challenges.
 - `deposits-seed/v0.1.1`: synthetic changed-output fixture used to prove version pins; released challenges do not reference it.
+- `lending-month-end/v0.1.0`: hand-authored synthetic lending exposure snapshot pack for semi-additive month-end BI, date-role checks, missing mappings, and sensitive-field minimization exercises.
 
 Expansion planning lives in [Expansion Roadmap](EXPANSION_ROADMAP.md).

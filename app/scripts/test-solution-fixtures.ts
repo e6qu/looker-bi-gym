@@ -636,6 +636,15 @@ function assertExpectedFailedChecks(
   }
 }
 
+function formatCheckResults(evaluation: FixtureEvaluation): string {
+  return evaluation.checkResults
+    .map(
+      (check) =>
+        `${check.checkId}:${check.status}:${check.message.replace(/\s+/g, " ")}`,
+    )
+    .join("; ");
+}
+
 function assertFixtureCoverage(
   manifests: ReadonlyMap<string, ChallengeManifest>,
   fixtures: readonly SolutionFixture[],
@@ -719,7 +728,7 @@ async function main(): Promise<void> {
     assert.equal(
       evaluation.requiredPassed,
       expectedRequiredPassed,
-      `${fixture.challenge_id}/${fixture.fixture_id} expected required_passed=${String(expectedRequiredPassed)}.`,
+      `${fixture.challenge_id}/${fixture.fixture_id} expected required_passed=${String(expectedRequiredPassed)}. Checks: ${formatCheckResults(evaluation)}`,
     );
 
     if (fixture.kind === "known-good") {

@@ -1,0 +1,61 @@
+property_id,county,city,sector_or_district,neighborhood,neighborhood_tier,urban_rural,latitude,longitude,center_distance_km_band,transit_access_band,school_access_band,hospital_access_band,market_liquidity_band
+P0001,Bucuresti,Bucuresti,Sector 1,Aviatiei,central,urban,44.4560,26.0720,0-2,limited,medium,medium,high
+P0002,Bucuresti,Bucuresti,Sector 1,Baneasa,semi-central,urban,44.4620,26.0790,2-6,high,high,high,high
+P0003,Bucuresti,Bucuresti,Sector 1,Domenii,semi-central,urban,44.4680,26.0860,2-6,high,high,high,high
+P0004,Bucuresti,Bucuresti,Sector 1,Pajura,outer,urban,44.4740,26.0930,6-12,medium,high,high,medium
+P0005,Bucuresti,Bucuresti,Sector 1,Aviatiei,semi-central,urban,44.4800,26.1000,2-6,high,high,medium,high
+P0006,Bucuresti,Bucuresti,Sector 1,Baneasa,central,urban,44.4860,26.0720,0-2,high,medium,high,high
+P0007,Bucuresti,Bucuresti,Sector 1,Domenii,outer,urban,44.4920,26.0790,6-12,limited,high,high,medium
+P0008,Bucuresti,Bucuresti,Sector 1,Pajura,semi-central,urban,44.4560,26.0860,2-6,high,high,high,high
+P0009,Bucuresti,Bucuresti,Sector 1,Aviatiei,semi-central,urban,44.4620,26.0930,2-6,high,high,medium,high
+P0010,Bucuresti,Bucuresti,Sector 1,Baneasa,outer,urban,44.4680,26.1000,6-12,medium,high,high,medium
+P0011,Bucuresti,Bucuresti,Sector 1,Domenii,central,urban,44.4740,26.0720,0-2,high,medium,high,high
+P0012,Bucuresti,Bucuresti,Sector 1,Pajura,semi-central,urban,44.4800,26.0790,2-6,high,high,high,high
+P0013,Bucuresti,Bucuresti,Sector 3,Dristor,central,urban,44.4330,26.1390,0-2,limited,high,medium,high
+P0014,Bucuresti,Bucuresti,Sector 3,Titan,semi-central,urban,44.4390,26.1460,2-6,high,high,high,high
+P0015,Bucuresti,Bucuresti,Sector 3,Vitan,semi-central,urban,44.4030,26.1530,2-6,high,high,high,high
+P0016,Bucuresti,Bucuresti,Sector 3,Unirii,outer,urban,44.4090,26.1250,6-12,medium,medium,high,medium
+P0017,Bucuresti,Bucuresti,Sector 3,Dristor,semi-central,urban,44.4150,26.1320,2-6,high,high,medium,high
+P0018,Bucuresti,Bucuresti,Sector 3,Titan,central,urban,44.4210,26.1390,0-2,high,high,high,high
+P0019,Bucuresti,Bucuresti,Sector 3,Vitan,outer,urban,44.4270,26.1460,6-12,limited,high,high,medium
+P0020,Bucuresti,Bucuresti,Sector 3,Unirii,semi-central,urban,44.4330,26.1530,2-6,high,high,high,high
+P0021,Bucuresti,Bucuresti,Sector 3,Dristor,semi-central,urban,44.4390,26.1250,2-6,high,medium,medium,high
+P0022,Bucuresti,Bucuresti,Sector 3,Titan,outer,urban,44.4030,26.1320,6-12,medium,high,high,medium
+P0023,Cluj,Cluj-Napoca,Municipiu,Centru,central,urban,46.7590,23.6230,0-2,high,high,high,high
+P0024,Cluj,Cluj-Napoca,Municipiu,Marasti,semi-central,urban,46.7650,23.6300,2-6,high,high,high,high
+P0025,Cluj,Cluj-Napoca,Municipiu,Manastur,semi-central,urban,46.7710,23.6370,2-6,limited,high,medium,high
+P0026,Cluj,Cluj-Napoca,Municipiu,Zorilor,outer,urban,46.7770,23.6090,6-12,high,medium,high,medium
+P0027,Cluj,Cluj-Napoca,Municipiu,Centru,semi-central,urban,46.7830,23.6160,2-6,high,high,high,high
+P0028,Cluj,Cluj-Napoca,Municipiu,Marasti,central,urban,46.7890,23.6230,0-2,medium,high,high,high
+P0029,Cluj,Cluj-Napoca,Municipiu,Manastur,outer,urban,46.7530,23.6300,6-12,high,high,medium,medium
+P0030,Cluj,Cluj-Napoca,Municipiu,Zorilor,semi-central,urban,46.7590,23.6370,2-6,high,high,high,high
+P0031,Cluj,Cluj-Napoca,Municipiu,Centru,semi-central,urban,46.7650,23.6090,2-6,limited,medium,high,high
+P0032,Cluj,Cluj-Napoca,Municipiu,Marasti,outer,urban,46.7710,23.6160,6-12,high,high,high,medium
+P0033,Timis,Timisoara,Municipiu,Cetate,central,urban,45.7540,21.2270,0-2,high,high,medium,high
+P0034,Timis,Timisoara,Municipiu,Girocului,semi-central,urban,45.7600,21.2340,2-6,medium,high,high,high
+P0035,Timis,Timisoara,Municipiu,Lipovei,semi-central,urban,45.7660,21.2410,2-6,high,high,high,high
+P0036,Timis,Timisoara,Municipiu,Soarelui,outer,urban,45.7300,21.2130,6-12,high,medium,high,medium
+P0037,Timis,Timisoara,Municipiu,Cetate,semi-central,urban,45.7360,21.2200,2-6,limited,high,medium,high
+P0038,Timis,Timisoara,Municipiu,Girocului,central,urban,45.7420,21.2270,0-2,high,high,high,high
+P0039,Timis,Timisoara,Municipiu,Lipovei,outer,urban,45.7480,21.2340,6-12,high,high,high,medium
+P0040,Timis,Timisoara,Municipiu,Soarelui,semi-central,urban,45.7540,21.2410,2-6,medium,high,high,high
+P0041,Iasi,Iasi,Municipiu,Centru,central,urban,47.1700,27.5870,0-2,high,medium,medium,high
+P0042,Iasi,Iasi,Municipiu,Copou,semi-central,urban,47.1760,27.5940,2-6,high,high,high,high
+P0043,Iasi,Iasi,Municipiu,Pacurari,semi-central,urban,47.1400,27.6010,2-6,limited,high,high,high
+P0044,Iasi,Iasi,Municipiu,Tatarasi,outer,urban,47.1460,27.6080,6-12,high,high,high,medium
+P0045,Iasi,Iasi,Municipiu,Centru,semi-central,urban,47.1520,27.6150,2-6,high,high,medium,high
+P0046,Iasi,Iasi,Municipiu,Copou,central,urban,47.1580,27.5870,0-2,medium,medium,high,high
+P0047,Iasi,Iasi,Municipiu,Pacurari,outer,urban,47.1640,27.5940,6-12,high,high,high,medium
+P0048,Iasi,Iasi,Municipiu,Tatarasi,semi-central,urban,47.1700,27.6010,2-6,high,high,high,high
+P0049,Constanta,Constanta,Municipiu,Tomis,central,urban,44.1990,28.6410,0-2,limited,high,medium,high
+P0050,Constanta,Constanta,Municipiu,Faleza Nord,semi-central,urban,44.1630,28.6480,2-6,high,high,high,high
+P0051,Constanta,Constanta,Municipiu,Dacia,semi-central,urban,44.1690,28.6200,2-6,high,medium,high,high
+P0052,Constanta,Constanta,Municipiu,Coiciu,outer,urban,44.1750,28.6270,6-12,medium,high,high,medium
+P0053,Constanta,Constanta,Municipiu,Tomis,semi-central,urban,44.1810,28.6340,2-6,high,high,medium,high
+P0054,Constanta,Constanta,Municipiu,Faleza Nord,central,urban,44.1870,28.6410,0-2,high,high,high,high
+P0055,Brasov,Brasov,Municipiu,Centrul Civic,central,urban,45.6690,25.6150,0-2,limited,high,high,high
+P0056,Brasov,Brasov,Municipiu,Tractorul,semi-central,urban,45.6750,25.5870,2-6,high,medium,high,high
+P0057,Brasov,Brasov,Municipiu,Astra,semi-central,urban,45.6390,25.5940,2-6,high,high,medium,high
+P0058,Brasov,Brasov,Municipiu,Racadau,outer,urban,45.6450,25.6010,6-12,medium,high,high,medium
+P0059,Brasov,Brasov,Municipiu,Centrul Civic,semi-central,urban,45.6510,25.6080,2-6,high,high,high,high
+P0060,Brasov,Brasov,Municipiu,Tractorul,central,urban,45.6570,25.6150,0-2,high,high,high,high

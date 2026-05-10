@@ -4,9 +4,62 @@
 
 Numbered tasks 001 through 027 are implemented. PR #3, PR #4, and PR #5 were merged. Post-merge CI and GitHub Pages deployment for PR #5 passed, and the live Pages URL returned HTTP 200.
 
-Next implementation step:
+Current implementation step:
 
-- Continue with [024 - Deterministic Local Dataset Packs](tasks/024-deterministic-local-dataset-packs.md), using the source-backed BigQuery/Looker/BI facts database from [027 - Source-Backed BI Fact Database](tasks/027-source-backed-bi-fact-database.md).
+- Continue PR #6: `https://github.com/e6qu/looker-bi-gym/pull/6`.
+- PR #6 now includes the expanded Romania lending/real-estate collateral dataset
+  support, official Eurostat HPI source table, fact-backed collateral questions,
+  and the manual LLM question review/dreaming workbench. Local `bun run check`
+  passed on 2026-05-10 after the expansion.
+- PR #6 is mergeable and GitHub Actions `Validate, Test, And Build` passed for
+  commit `cc1957e7fc1ce8d771b0a07e14c903703d853717` on 2026-05-10.
+- The user explicitly wants implementation Task 025's learner-facing tutorial
+  model added to PR #6 before merge.
+- Keep terminology precise: `implementation tasks` are numbered repo work items
+  under `tasks/*.md`; `learner tasks` are curriculum exercise units shown to
+  learners.
+
+Next implementation step inside PR #6:
+
+1. Update or add learner-task content/schema for several complete 15-20 minute
+   learner tasks across multiple areas:
+   - BI fundamentals;
+   - BigQuery/SQL for BI;
+   - Looker Studio mechanics;
+   - data quality and controls;
+   - banking BI applications as realistic context, not legal/market theory.
+2. Each learner task must include:
+   - overall learning objective;
+   - prerequisites;
+   - input dataset;
+   - exact step-by-step learner actions;
+   - verification checkpoints;
+   - visualization/reporting action;
+   - optional recipe pointer;
+   - self-assessment;
+   - CTF-style end challenge.
+3. Start from general BI fundamentals, preferably using `deposits-seed/v0.1.0`
+   before leaning on lending/real-estate specifics.
+4. Add a useful in-app SQL result visualization path on task/challenge pages:
+   when a SQL result contains a dimension-like column and numeric column, allow a
+   simple deterministic table/bar-chart visualization. Avoid dummy or placeholder
+   visualization work.
+5. Add a separate quiz-bank format rather than overloading challenge manifests.
+   First quiz target: one mixed approximately 20-minute quiz, internally grouped
+   by `easy`, `medium`, and `hard`, with recommended learner-task IDs,
+   `source_facts`, answers, explanations, estimated seconds, and
+   self-assessment notes.
+6. Add a separate tutorials recipes section for Looker Studio recipes after the
+   browser-first tutorials. For PR #6, keep recipes manual/browser-driven and do
+   not introduce AWS CLI, Google CLI, BigQuery CLI, Python, Docker, or shell
+   upload scripts.
+7. Document exam mode as untimed independent challenge cards up to about 2 hours
+   each, selectable by the learner and self-assessed first. Defer full app exam
+   rendering unless it falls naturally out of the task/quiz data model.
+8. Cross-link `PLAN.md`, `STATUS.md`, `DO_NEXT.md`, `WHAT_WE_DID.md`, `BUGS.md`,
+   `tasks/024-deterministic-local-dataset-packs.md`,
+   `tasks/025-real-tutorial-instruction-packs.md`, and `AGENTS.md` so a future
+   session can resume without chat history.
 
 Preservation and verification steps:
 
@@ -14,7 +67,7 @@ Preservation and verification steps:
 - Keep rebuildable generated outputs ignored; regenerate them from committed source instead of committing them.
 - Keep DuckDB-WASM runtime files supplied by dependencies/local build output, not committed binary artifacts.
 - Keep config files in `app/configs/` as TypeScript and covered by `tsconfig.node.json`.
-- Keep `bun run format:check`, `bun run lint`, `bun run typecheck`, and `bun run check` clean before merging.
+- Keep `bun run format:check`, `bun run lint`, `bun run typecheck`, and `bun run check` clean before merging. Full `bun run check` passed locally for the Task 024 branch on 2026-05-10.
 - Preserve the frontend-only boundary: no backend calls, server session, API database, analytics beacon, or learner-data upload.
 - Preserve browser-local progress behavior: `localStorage` plus same-site cookie fallback, with reset clearing both.
 - Preserve the test pyramid documented in `docs/12-test-pyramid.md` and enforced by `bun run test:platform-boundary`.
@@ -28,6 +81,10 @@ Preservation and verification steps:
 - Preserve the Task 027 fact corpus boundary: learner facts should be banking BI, BigQuery, Looker Studio, and official regulatory/banking facts, not app implementation facts.
 - Preserve downloaded Google Cloud documentation snapshots under `sources/platforms/*/full/` as sanitized article-only Markdown wrappers with attribution.
 - Preserve `bun run test:facts-db` in the check pyramid so fact-source links, fact cross-links, and source snapshots stay queryable through SQLite.
+- Preserve the manual-only LLM workbench boundary: `var/llm-workbench/` stays
+  ignored, generated/reviewed questions are draft-only, and dreaming stays
+  manual through `make dream`, `make dream-codex`, or `make dream-claude` unless
+  a future task explicitly designs scheduler controls.
 
 ## Upcoming Tasks
 

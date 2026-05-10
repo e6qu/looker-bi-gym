@@ -13,6 +13,11 @@ All notable release changes are recorded here.
   and source fact IDs.
 - Content QA enforcement for source fact references and step-by-step tutorial
   sections.
+- Deterministic synthetic lending dataset pack `lending-month-end/v0.1.0` with
+  metadata, control totals, known-trap checks, and a released browser SQL
+  challenge.
+- Runtime dataset loading from committed dataset metadata, so browser SQL
+  challenges can use dataset packs beyond the original deposits seed.
 - Future tasks for deterministic local dataset packs, real tutorial instruction
   packs, and expanded grading contracts.
 

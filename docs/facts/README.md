@@ -22,6 +22,9 @@ privacy, compliance, or model-risk advice.
   DORA, EBA reporting frameworks, validation rules, and operational evidence.
 - [banking-deposits-us.md](banking-deposits-us.md): US FDIC deposit insurance
   facts for banking BI comparison with EU/Romanian deposit guarantee concepts.
+- [real-estate-collateral-romania.md](real-estate-collateral-romania.md):
+  Romania mortgage collateral, HPI, notarial reference-value, valuation-date,
+  and property-grain facts.
 
 ## Fact Format
 
@@ -65,6 +68,10 @@ Each fact should use this shape:
   `FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE`,
   `FACT-LOOKER-STUDIO-CREDENTIALS`, `FACT-BIGQUERY-VIEW-SCOPE`,
   `FACT-BIGQUERY-LOGICAL-VIEW`, and `FACT-BIGQUERY-VIEW-LIMITATIONS`.
+- Lending month-end snapshots use `FACT-REAL-ESTATE-COLLATERAL-GRAIN`,
+  `FACT-REAL-ESTATE-VALUATION-DATE-SEPARATION`,
+  `FACT-EUROSTAT-HPI-MARKET-PRICE-INDEX`, and
+  `FACT-ROMANIA-NOTARIAL-STUDIES-NOT-MARKET-VALUE`.
 
 ## Expansion Rule
 

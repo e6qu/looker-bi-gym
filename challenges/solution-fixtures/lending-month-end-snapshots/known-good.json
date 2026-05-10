@@ -1,0 +1,27 @@
+{
+  "fixture_id": "known-good",
+  "challenge_id": "lending-month-end-snapshots",
+  "mode": "browser-sql",
+  "kind": "known-good",
+  "description": "Currency-level month-end lending exposure result that keeps semi-additive snapshot logic explicit.",
+  "dataset_id": "lending-month-end",
+  "dataset_version": "v0.1.0",
+  "sql_file": "known-good.sql",
+  "answers": {
+    "q_semi_additive_balance": "latest_period_not_time_sum",
+    "q_non_month_end_count": "1",
+    "q_ron_time_sum_delta": "519000",
+    "q_stale_collateral_count": "3",
+    "q_latest_property_valuation_total": "11801400",
+    "q_notarial_minimum_reference": "reference_not_appraisal",
+    "q_output_minimisation": [
+      "loan_id",
+      "borrower_id",
+      "synthetic_contract_ref",
+      "property_id"
+    ]
+  },
+  "expected": {
+    "required_passed": true
+  }
+}

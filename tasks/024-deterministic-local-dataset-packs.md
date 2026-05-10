@@ -1,6 +1,6 @@
 # 024 - Deterministic Local Dataset Packs
 
-Status: planned.
+Status: implemented; PR pending.
 
 ## Goal
 
@@ -29,6 +29,39 @@ packs that can support richer automatically graded tutorials.
 - Dataset validation fails on row-count, control-total, schema, or known-trap
   drift.
 - Challenge fixtures pin dataset ID and version.
+
+Verification notes:
+
+- Added `lending-month-end/v0.1.0` as committed CSV/JSON only; no build, test,
+  grading, or learner runtime step downloads live data.
+- Added metadata with schema/grain, row counts, primary keys, sensitive fields,
+  date semantics, relationships, control-total checks, known-trap checks,
+  regulatory context, synthetic-only declaration, and fixture refresh rules.
+- Added the released `lending-month-end-snapshots` browser SQL challenge and a
+  pinned known-good solution fixture.
+- Extended dataset validation to cover generic control-total checks and known
+  trap checks beyond the original deposits-only assumptions.
+- Extended the browser SQL runtime to load challenge-declared dataset packs from
+  committed metadata.
+- `bun run check` passed locally after the user approved Playwright/Vite local
+  port binding.
+- PR #6 was expanded with deterministic Romania real-estate collateral and
+  mortgage-evaluation support:
+  - 60 synthetic property/collateral rows;
+  - 180 synthetic property valuation rows;
+  - 42 synthetic market price bands;
+  - 17 official Eurostat Romania annual HPI observations for 2009-2025 from
+    `PRC_HPI_A`;
+  - source cards and facts for HPI scope, notarial-study boundaries, valuation
+    date separation, and collateral/property/valuation grain.
+- The lending month-end challenge now tests collateral freshness, property
+  valuation totals, official HPI context, notarial reference-value boundaries,
+  and sensitive property identifier minimisation.
+- Added a manual LLM question generation/review/dreaming workbench. It writes
+  ignored artifacts under `var/llm-workbench/`, is not automatic, and is covered
+  by `bun run test:llm-workbench`.
+- Full `bun run check` passed again locally on 2026-05-10 after the PR #6
+  expansion, including all 8 Playwright rendered user-flow tests.
 
 ## Tests
 

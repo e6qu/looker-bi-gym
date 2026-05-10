@@ -6,6 +6,7 @@ test-results/
 .cache/
 .vite/
 app/.vite/
+var/
 app/src/generated/*.json
 app/src/generated/*.sqlite
 app/src/generated/*.ts

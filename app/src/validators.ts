@@ -406,6 +406,51 @@ function evaluateScalarAggregate(
       );
 }
 
+function evaluateAggregateTotal(
+  check: ChallengeCheck,
+  result: SqlValidationResult,
+): ValidationCheckResult {
+  const expectation = parseAggregateExpectation(check.expected);
+
+  if (expectation === undefined) {
+    return makeResult(
+      check,
+      "fail",
+      "Aggregate-total check expected must include column, value, and optional tolerance.",
+    );
+  }
+
+  let total = 0;
+
+  for (const row of result.rows) {
+    const actualValue = getNumericCell(row, expectation.column);
+
+    if (actualValue === undefined) {
+      return makeResult(
+        check,
+        "fail",
+        `Aggregate column ${expectation.column} is missing or not numeric.`,
+      );
+    }
+
+    total += actualValue;
+  }
+
+  const delta = Math.abs(total - expectation.value);
+
+  return delta <= expectation.tolerance
+    ? makeResult(
+        check,
+        "pass",
+        `${expectation.column} total matched expected value ${expectation.value}.`,
+      )
+    : makeResult(
+        check,
+        "fail",
+        `Expected ${expectation.column} total to be ${expectation.value}, got ${total}.`,
+      );
+}
+
 export function isSqlResultCheckSupported(check: ChallengeCheck): boolean {
   return sqlResultCheckTypes.has(check.type);
 }
@@ -425,6 +470,7 @@ export function evaluateSqlResultCheck(
     case "unique-key":
       return evaluateUniqueKey(check, result);
     case "aggregate-total":
+      return evaluateAggregateTotal(check, result);
     case "scalar-aggregate":
       return evaluateScalarAggregate(check, result);
     case "sensitive-field-exclusion":

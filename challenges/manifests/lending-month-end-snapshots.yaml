@@ -1,0 +1,252 @@
+id: lending-month-end-snapshots
+version: v0.1.0
+title: 024 - Lending Month-End Snapshots
+area: warehouse-modeling-and-metrics
+mode: browser-sql
+difficulty: intermediate
+estimated_minutes: 35
+prerequisites:
+  - account-owner-fanout
+business_scenario: Build a currency-level lending exposure result from synthetic loan snapshots and real-estate collateral data while keeping month-end exposure, valuation freshness, and market-index context separate.
+regulatory_context:
+  - EBA
+  - DORA
+  - GDPR
+required_tools: none
+inputs:
+  - id: lending_month_end
+    type: dataset
+    description: Static synthetic lending month-end dataset with loan contracts, exposure snapshots, products, branches, real-estate collateral, property location bands, and official Romania HPI observations.
+    dataset_id: lending-month-end
+    dataset_version: v0.1.0
+    tables:
+      - branches
+      - loan_products
+      - loan_accounts
+      - loan_monthly_snapshots
+      - collateral
+      - property_locations
+      - property_attributes
+      - property_valuations
+      - market_price_bands
+      - romania_house_price_index_annual
+    sensitive_fields:
+      - loan_id
+      - borrower_id
+      - synthetic_contract_ref
+      - property_id
+    date_semantics:
+      - as_of_date is the exposure snapshot date for outstanding_principal.
+      - origination_date and maturity_date are loan lifecycle dates, not exposure measurement dates.
+      - valuation_date is a collateral valuation date, not a lending exposure snapshot date.
+      - year in romania_house_price_index_annual is an annual market-index observation period, not a property valuation date.
+    grain: One row per loan per as_of_date in loan_monthly_snapshots; reduce to the chosen month-end date before currency-level exposure reporting.
+outputs:
+  - id: exposure_query
+    type: sql-text
+    description: SQL that returns currency-level latest month-end exposure, naive all-date exposure, and the reconciliation delta.
+  - id: exposure_result
+    type: sql-result
+    description: Two-row result by currency with latest principal, naive time sum, time-sum delta, non-month-end count, stage 3 principal, and collateral quality control columns.
+checks:
+  - id: required_columns
+    type: required-column
+    description: Result includes all month-end exposure control columns.
+    target: exposure_result
+    expected:
+      - latest_as_of_date
+      - currency_code
+      - latest_principal_total
+      - naive_time_sum_total
+      - time_sum_delta
+      - non_month_end_snapshot_count
+      - stage3_principal_total
+      - latest_property_valuation_total_eur
+      - stale_collateral_valuation_count
+      - latest_romania_hpi_2015_100
+  - id: no_sensitive_fields
+    type: sensitive-field-exclusion
+    description: Result must not expose loan-level or borrower-level identifiers.
+    target: exposure_result
+    expected:
+      - loan_id
+      - borrower_id
+      - synthetic_contract_ref
+      - property_id
+  - id: two_currency_rows
+    type: row-count
+    description: Result returns exactly one row for each currency in the latest month-end snapshot.
+    target: exposure_result
+    expected: 2
+  - id: unique_currency
+    type: unique-key
+    description: Result has one row per currency code.
+    target: exposure_result
+    expected:
+      - currency_code
+  - id: latest_principal_sum
+    type: aggregate-total
+    description: Latest month-end principal totals reconcile across both currencies.
+    target: exposure_result
+    expected:
+      column: latest_principal_total
+      value: 451000
+      tolerance: 0
+  - id: time_sum_delta_total
+    type: aggregate-total
+    description: Naive all-date summing overstates latest exposure by the known time-sum delta.
+    target: exposure_result
+    expected:
+      column: time_sum_delta
+      value: 576000
+      tolerance: 0
+questions:
+  - id: q_semi_additive_balance
+    type: multiple-choice
+    prompt: Why should outstanding_principal be filtered to the selected month-end before a currency-level exposure total is reported?
+    options:
+      - id: latest_period_not_time_sum
+        label: It is a balance snapshot that is additive across loans at one date, not across multiple dates.
+      - id: every_date_activity
+        label: It is an activity amount that must be summed across every date to measure exposure.
+      - id: lifecycle_date_only
+        label: It is only tied to origination_date and maturity_date, so as_of_date can be ignored.
+    answer: latest_period_not_time_sum
+    explanation: FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT describes why balance snapshots can be summed across accounts or loans for one date but not across time.
+    source_facts:
+      - FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT
+  - id: q_non_month_end_count
+    type: numeric
+    prompt: How many loan_monthly_snapshots rows have an as_of_date that is not one of the two declared month-end dates?
+    answer: 1
+    tolerance: 0
+    explanation: FACT-BIGQUERY-LAST-DAY-MONTH-END is the date-function basis for detecting the one synthetic non-month-end snapshot row.
+    source_facts:
+      - FACT-BIGQUERY-LAST-DAY-MONTH-END
+  - id: q_ron_time_sum_delta
+    type: numeric
+    prompt: For RON, what is the difference between summing all outstanding_principal snapshot rows and the 2026-03-31 latest month-end principal total?
+    answer: 519000
+    tolerance: 0
+    explanation: FACT-BI-REFERENCE-DATE-SEPARATION and FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION explain why the reference date and reporting grain must be explicit before aggregation.
+    source_facts:
+      - FACT-BI-REFERENCE-DATE-SEPARATION
+      - FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION
+  - id: q_output_minimisation
+    type: select-all
+    prompt: Which fields from the lending pack should stay out of this currency-level result under FACT-GDPR-DATA-MINIMISATION?
+    options:
+      - id: loan_id
+        label: loan_id
+      - id: borrower_id
+        label: borrower_id
+      - id: currency_code
+        label: currency_code
+      - id: synthetic_contract_ref
+        label: synthetic_contract_ref
+      - id: property_id
+        label: property_id
+    answer:
+      - loan_id
+      - borrower_id
+      - synthetic_contract_ref
+      - property_id
+    explanation: FACT-GDPR-DATA-MINIMISATION supports returning only fields needed for the stated BI purpose.
+    source_facts:
+      - FACT-GDPR-DATA-MINIMISATION
+  - id: q_stale_collateral_count
+    type: numeric
+    prompt: How many pledged collateral rows use the stale valuation date 2025-03-31 instead of the latest 2026-03-31 valuation date?
+    answer: 3
+    tolerance: 0
+    explanation: FACT-REAL-ESTATE-VALUATION-DATE-SEPARATION explains why collateral valuation dates must be managed separately from loan exposure snapshot dates.
+    source_facts:
+      - FACT-REAL-ESTATE-VALUATION-DATE-SEPARATION
+  - id: q_latest_property_valuation_total
+    type: numeric
+    prompt: What is the deterministic total market_value_eur for property_valuations at valuation_date 2026-03-31?
+    answer: 11801400
+    tolerance: 0
+    explanation: FACT-REAL-ESTATE-COLLATERAL-GRAIN explains why property valuation totals must be calculated at property valuation-date grain before joining to loan exposure.
+    source_facts:
+      - FACT-REAL-ESTATE-COLLATERAL-GRAIN
+  - id: q_notarial_minimum_reference
+    type: multiple-choice
+    prompt: What does FACT-ROMANIA-NOTARIAL-STUDIES-NOT-MARKET-VALUE imply about using Romanian notarial market studies in a mortgage BI dashboard?
+    options:
+      - id: reference_not_appraisal
+        label: They can provide minimum reference-value context, but they are not individual market valuations.
+      - id: direct_appraisal
+        label: They are sufficient as property-level mortgage appraisals.
+      - id: borrower_identity
+        label: They identify the borrower and exact pledged property.
+    answer: reference_not_appraisal
+    explanation: FACT-ROMANIA-NOTARIAL-STUDIES-NOT-MARKET-VALUE says Romanian notarial-study values are minimum reference values for specified legal/tax workflows, not market circulation values or loan-level appraisal outputs.
+    source_facts:
+      - FACT-ROMANIA-NOTARIAL-STUDIES-NOT-MARKET-VALUE
+lesson_steps:
+  - id: identify_snapshot_grain
+    title: Identify the exposure snapshot grain
+    instruction: Open the schema browser and confirm that loan_monthly_snapshots is one row per loan per as_of_date, while loan_accounts has lifecycle dates and loan identifiers.
+    expected_result: You can name as_of_date as the exposure measurement date and distinguish it from origination_date, maturity_date, and valuation_date.
+    why_it_matters: Dashboard exposure totals need a measurement date, not a mixture of lifecycle, valuation, and refresh dates.
+    failure_mode: Using origination_date or maturity_date as the exposure date produces plausible labels but wrong balances.
+    source_facts:
+      - FACT-BI-REFERENCE-DATE-SEPARATION
+      - FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION
+  - id: isolate_latest_month_end
+    title: Isolate the latest month-end rows
+    instruction: Filter loan_monthly_snapshots to as_of_date = '2026-03-31' before calculating latest_principal_total by currency_code.
+    expected_result: Latest principal totals are 55000 for EUR and 396000 for RON.
+    why_it_matters: Semi-additive balances can be summed across loans at a single selected date.
+    failure_mode: Summing every snapshot date reports historical row accumulation as if it were current exposure.
+    source_facts:
+      - FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT
+      - FACT-BIGQUERY-LAST-DAY-MONTH-END
+  - id: calculate_reconciliation_delta
+    title: Calculate the time-sum delta
+    instruction: Separately sum outstanding_principal across all snapshot rows by currency_code, then subtract the latest month-end total from the naive all-date total.
+    expected_result: The RON time_sum_delta is 519000 and the combined time_sum_delta is 576000.
+    why_it_matters: The reconciliation delta makes the semi-additive error mechanically visible.
+    failure_mode: Returning only latest_principal_total hides the magnitude of the all-date summing error.
+    source_facts:
+      - FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT
+      - FACT-BI-RECONCILIATION-WINDOWS
+  - id: count_non_month_end_rows
+    title: Count non-month-end snapshots
+    instruction: Count rows where as_of_date is not '2026-02-28' and not '2026-03-31', and return that count on each currency result row.
+    expected_result: non_month_end_snapshot_count is 1.
+    why_it_matters: Date quality checks catch rows that do not belong in month-end exposure reporting.
+    failure_mode: Treating every as_of_date as month-end lets a mid-month row contaminate month-end comparisons.
+    source_facts:
+      - FACT-BIGQUERY-LAST-DAY-MONTH-END
+  - id: minimise_serving_output
+    title: Minimise the serving output
+    instruction: Return only currency-level aggregate columns and exclude loan_id, borrower_id, and synthetic_contract_ref from the result.
+    expected_result: The result passes the sensitive-field exclusion check while keeping currency_code and aggregate metrics.
+    why_it_matters: A dashboard-ready metric result should not carry unnecessary loan-level identifiers.
+    failure_mode: Selecting raw identifiers alongside aggregates encourages accidental detail-level exposure in BI tools.
+    source_facts:
+      - FACT-GDPR-DATA-MINIMISATION
+  - id: add_collateral_quality_controls
+    title: Add collateral valuation controls
+    instruction: Build CTEs that join the collateral, property_valuations, and romania_house_price_index_annual tables only after calculating property-level latest valuation controls and stale collateral counts.
+    expected_result: latest_property_valuation_total_eur is 11801400, stale_collateral_valuation_count is 3, and latest_romania_hpi_2015_100 is 164.82.
+    why_it_matters: Mortgage BI work needs valuation freshness and market-index context without pretending that index values are property appraisals.
+    failure_mode: Joining every valuation date to every exposure row multiplies collateral values and confuses valuation_date with as_of_date.
+    source_facts:
+      - FACT-REAL-ESTATE-COLLATERAL-GRAIN
+      - FACT-REAL-ESTATE-VALUATION-DATE-SEPARATION
+      - FACT-EUROSTAT-HPI-MARKET-PRICE-INDEX
+flag:
+  id: flag-lending-month-end-snapshots
+  criteria:
+    - SQL checks pass for month-end exposure totals, time-sum deltas, and sensitive-field exclusion.
+    - Fact-backed snapshot, date, and minimisation questions are answered correctly.
+hints:
+  - level: 1
+    text: Start with a latest_snapshots CTE that filters as_of_date to 2026-03-31.
+  - level: 2
+    text: Keep naive all-date totals in a separate CTE so the final result can show the difference.
+next_challenges:
+  - looker-studio-evidence

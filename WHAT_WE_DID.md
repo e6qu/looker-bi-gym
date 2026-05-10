@@ -2,6 +2,116 @@
 
 ## 2026-05-10
 
+- Discussed and pinned the next PR #6 tutorial direction after the dataset and
+  LLM workbench expansion:
+  - add implementation Task 025's learner-facing tutorial model to PR #6 instead
+    of waiting for a separate PR;
+  - explicitly distinguish implementation tasks under `tasks/*.md` from learner
+    tasks shown to learners in the app/tutorials;
+  - implement several complete learner tasks across multiple areas, not only one
+    schema or placeholder proof of concept;
+  - each learner task should be 15-20 focused minutes with an overall learning
+    objective that is part of the learning path;
+  - prioritize BI mechanics and Looker/BigQuery behavior for a data analyst
+    moving into BI and banking;
+  - keep banking and real-estate details as realistic context, not the main
+    first-pass learning objective;
+  - start from general BI fundamentals, preferably with the deposits dataset
+    before relying on lending/real-estate specifics;
+  - put Looker Studio recipes in a separate section after tutorials;
+  - keep recipes manual/browser-driven for now, with no AWS CLI, Google CLI,
+    BigQuery CLI, Python, Docker, or learner-facing shell upload scripts in the
+    early path;
+  - if scripts are later introduced, they must be uncomplicated,
+    ShellCheck-verified, macOS/Linux compatible, and usable from both `bash` and
+    `zsh`;
+  - use a separate quiz-bank format instead of overloading challenge manifests;
+  - first quiz target is one mixed approximately 20-minute quiz organized by
+    `easy`, `medium`, and `hard`, with recommended learner-task IDs,
+    `source_facts`, answers, explanations, estimated seconds, and
+    self-assessment notes;
+  - exam mode should begin as untimed independent challenge cards up to roughly
+    2 hours, user-selected and self-assessed first.
+- Agreed implementation recommendation for visualization:
+  - add useful in-app visualization on SQL task/challenge result pages;
+  - show it only when the SQL result has at least one dimension-like column and
+    one numeric column;
+  - start with deterministic table/bar-chart views that support BI mechanics;
+  - avoid global dummy charts or placeholder visualization work.
+- Checked PR #6 after the pushed dataset/workbench commit:
+  - PR URL: `https://github.com/e6qu/looker-bi-gym/pull/6`;
+  - head commit: `cc1957e7fc1ce8d771b0a07e14c903703d853717`;
+  - state: open and mergeable;
+  - GitHub Actions `Validate, Test, And Build` passed on 2026-05-10.
+- Began finalizing continuity docs for the next session:
+  - `PLAN.md` now records the task/quiz/exam/recipe/visualization decisions;
+  - `AGENTS.md` now cross-links the continuity docs and gives a compact PR #6
+    implementation guide.
+- After the user warned not to confuse implementation work items with
+  learner-facing curriculum units, updated the continuity language:
+  - `implementation tasks` means numbered repo work under `tasks/*.md`;
+  - `learner tasks` means tutorial/app exercise units for learners.
+
+- Continued PR #6 after the user requested larger deterministic datasets,
+  Romania-only real-estate prices/location context, official historical/current
+  data, LLM generation plus review/refinement, and manual dreaming.
+- Added deterministic Romania real-estate collateral support to
+  `lending-month-end/v0.1.0`:
+  - `generate-real-estate-collateral.ts`;
+  - 60 synthetic collateral/property/location/attribute rows;
+  - 180 synthetic property valuation rows;
+  - 42 synthetic sector/city/neighborhood-tier/property-type price bands.
+- Added official Eurostat Romania annual HPI observations for 2009-2025 in
+  `official_house_price_index_ro_annual.csv`, with source cards and facts for
+  HPI scope, historical/current observations, and market-index boundaries.
+- Added Romania notarial-study source cards and facts to prevent treating
+  notarial reference values as property-level appraisals or market advice.
+- Updated lending dataset metadata with new tables, relationships, control
+  totals, known traps, date semantics, synthetic-only boundaries, and fixture
+  refresh rules.
+- Expanded `lending-month-end-snapshots` with collateral freshness, latest
+  property valuation, official HPI, notarial-reference, and sensitive
+  `property_id` minimisation checks/questions.
+- Updated the browser starter SQL and known-good fixture SQL/answers for the
+  richer collateral controls.
+- Added the manual LLM question workbench:
+  - `make questions-context`;
+  - `make questions-generate-codex`;
+  - `make questions-generate-claude`;
+  - `make questions-review-codex`;
+  - `make questions-review-claude`;
+  - `make dream`;
+  - `make dream-codex`;
+  - `make dream-claude`.
+- Added `docs/13-llm-question-and-dreaming-workbench.md` documenting that
+  dreaming is manual, no-provider-capable, no-edit, ignored-artifact review
+  tooling for now.
+- Added `bun run test:llm-workbench` and included it in `bun run check` and
+  `make test`.
+- Updated `.gitignore` and `.prettierignore` so ignored workbench artifacts under
+  `var/` are not committed or formatted.
+- Fixed validation issues found during the local check pass:
+  - removed a comma from generated CSV note text because the dataset validator
+    intentionally uses simple CSV parsing;
+  - made Bucharest price-band IDs sector-aware to avoid duplicate primary keys;
+  - aligned fixture/starter SQL with the loaded table name
+    `romania_house_price_index_annual`;
+  - updated the deterministic latest property valuation total to `11801400`;
+  - made the new notarial question explanation cite its `FACT-*` ID.
+- Ran focused checks:
+  - `bun run validate:datasets`;
+  - `bun run validate:manifests`;
+  - `bun run test:facts-db`;
+  - `bun run test:llm-workbench`;
+  - `bun run test:fixtures`;
+  - `bun run test:content-qa`;
+  - `bun run test:sql`;
+  - `bun run format:check`;
+  - `bun run typecheck`;
+  - `bun run lint`.
+- Ran full `bun run check` with approved local preview binding; it passed,
+  including all 8 Playwright rendered user-flow tests.
+
 - Resumed Task 027 wrap-up after sandbox git-index writes were blocked on
   2026-05-09.
 - Reviewed the staged working tree and continuity files before committing.
@@ -801,3 +911,91 @@
 - The first `bun check` after adding the SQL runtime failed lint on array type conventions, direct React state updates in an effect, and object stringification. Tightened the types, removed the effect-local loading reset, and switched the result formatter to explicit primitive handling.
 - `bun dev` still cannot bind `127.0.0.1:5173` in the sandbox, so manual browser refresh verification remains pending.
 - The escalated `bun dev` request was rejected by the environment, so the browser refresh check could not be run here.
+
+## Task 024 - Deterministic Local Dataset Packs
+
+- Continued Task 024 on branch `deterministic-local-dataset-packs`.
+- Added `datasets/lending-month-end/v0.1.0/` with committed synthetic CSVs for:
+  - `branches.csv`
+  - `loan_products.csv`
+  - `loan_accounts.csv`
+  - `loan_monthly_snapshots.csv`
+  - `collateral.csv`
+- Added lending metadata with synthetic-only declaration, schema/grain contracts,
+  row counts, primary keys, sensitive fields, date semantics, relationships,
+  generic control-total checks, known-trap checks, regulatory context tags, and
+  fixture refresh rules.
+- Added `app/src/datasetRegistry.ts` so browser SQL challenges can load the
+  dataset declared in their manifest from committed dataset metadata.
+- Updated `app/src/sqlRuntime.ts` to cache DuckDB runtimes per dataset pack
+  instead of loading only the deposits seed.
+- Updated `app/src/App.tsx` so SQL challenges display the active dataset, load
+  challenge tables, offer table sample buttons from the runtime schema, and
+  start the lending snapshot challenge with a relevant SQL starter query.
+- Extended `app/scripts/validate-datasets.ts` with generic control-total checks
+  and known-trap checks while preserving deposits-specific control checks when
+  present.
+- Added released challenge
+  `challenges/manifests/lending-month-end-snapshots.yaml` with fact-backed
+  questions, step-by-step lesson instructions, deterministic SQL checks, and
+  browser-only required tools.
+- Added a known-good solution fixture under
+  `challenges/solution-fixtures/lending-month-end-snapshots/`.
+- Corrected `aggregate-total` validator behavior to sum a numeric column across
+  result rows while keeping `scalar-aggregate` as the one-row validator.
+- Improved solution fixture assertion messages so failed fixture checks list
+  their check statuses and messages.
+- Updated dataset, fixture, authoring, roadmap, changelog, and continuity
+  documentation.
+- Confirmed `.gitignore` already excludes generated catalogs, generated SQLite,
+  build output, dependency directories, logs, environment files, TypeScript build
+  info, and WASM runtime artifacts.
+- Confirmed generated outputs remain ignored:
+  - `app/dist/`
+  - `app/src/generated/challengeCatalog.json`
+  - `app/src/generated/facts.sqlite`
+- Confirmed no package-lock, pnpm lockfile, yarn lockfile, generated app output,
+  or WASM runtime artifacts are tracked.
+- Committed the work as `98aaeb4 Add deterministic lending dataset pack`.
+- Pushed branch `deterministic-local-dataset-packs`.
+- Opened PR #6: `https://github.com/e6qu/looker-bi-gym/pull/6`.
+- GitHub Actions `Validate, Test, And Build` passed for the first PR commit in
+  1m33s.
+- Ran and passed:
+  - `bun run validate:datasets`
+  - `bun run validate:manifests`
+  - `bun run test:fixtures`
+  - `bun run test:sql`
+  - `bun run test:validators`
+  - `bun run test:quiz`
+  - `bun run test:cloud-evidence`
+  - `bun run test:progress-export`
+  - `bun run test:content-qa`
+  - `bun run test:facts-db`
+  - `bun run test:platform-boundary`
+  - `bun run format`
+  - `bun run format:check`
+  - `bun run lint`
+  - `bun run typecheck`
+  - `bun run build`
+  - `bun run validate:static-links`
+  - `bun run check`
+
+## Task 024 Tried And Failed
+
+- The first `bun run test:fixtures` attempt failed because the new challenge
+  used `aggregate-total`, but the validator still treated it as a one-row scalar
+  check. Split aggregate and scalar validator behavior, added validator coverage,
+  and reran successfully.
+- The next `bun run test:fixtures` attempt failed because the combined
+  `time_sum_delta` expected value was `631500`, while the actual deterministic
+  fixture total is `576000`. Corrected the challenge expected value and lesson
+  checkpoint, then reran successfully.
+- The first `bun run test:content-qa` attempt failed because the new dataset
+  README did not match the existing exact real-bank-data rejection pattern.
+  Updated the README and relaxed the test pattern to tolerate Markdown line
+  wrapping inside "not derived from real bank data".
+- The first `bun run check` escalation was rejected by the environment before
+  the command started. After the user explicitly approved continuing, reran
+  `bun run check`; it passed, including all 8 Playwright rendered UI tests,
+  production build, and static-link validation.

@@ -1,6 +1,6 @@
 BUN ?= bun
 
-.PHONY: help install lint typecheck format format-check validate validate-manifests validate-datasets validate-static-links test test-quiz test-sql test-fixtures test-cloud-evidence test-progress-export test-content-qa test-facts-db test-platform-boundary test-e2e test-validators build check dev preview
+.PHONY: help install lint typecheck format format-check validate validate-manifests validate-datasets validate-static-links test test-quiz test-sql test-fixtures test-cloud-evidence test-progress-export test-content-qa test-facts-db test-llm-workbench test-platform-boundary test-e2e test-validators questions-context questions-generate-codex questions-generate-claude questions-review-codex questions-review-claude dream dream-codex dream-claude build check dev preview
 
 help:
 	@printf '%s\n' \
@@ -22,9 +22,18 @@ help:
 		'  test-progress-export Run progress export structure tests' \
 		'  test-content-qa     Run content QA checks' \
 		'  test-facts-db       Build and validate the SQLite facts database' \
+		'  test-llm-workbench  Validate optional LLM question/dreaming workbench prompts' \
 		'  test-platform-boundary Run frontend-only architecture checks' \
 		'  test-e2e            Run Playwright rendered UI tests' \
 		'  test-validators     Run browser validator tests' \
+		'  questions-context   Export fact/dataset/fixture context for question generation' \
+		'  questions-generate-codex Generate draft questions with Codex CLI' \
+		'  questions-generate-claude Generate draft questions with Claude CLI' \
+		'  questions-review-codex Review latest draft questions with Codex CLI' \
+		'  questions-review-claude Review latest draft questions with Claude CLI' \
+		'  dream               Write a manual no-provider dreaming prompt/report artifact' \
+		'  dream-codex         Run manual Codex CLI dreaming review' \
+		'  dream-claude        Run manual Claude CLI dreaming review' \
 		'  build               Build the static app' \
 		'  check               Run lint, typecheck, validation, tests, and build' \
 		'  dev                 Start Vite dev server' \
@@ -56,7 +65,7 @@ validate-datasets:
 validate-static-links:
 	$(BUN) run validate:static-links
 
-test: test-quiz test-sql test-fixtures test-cloud-evidence test-progress-export test-content-qa test-facts-db test-platform-boundary test-validators test-e2e
+test: test-quiz test-sql test-fixtures test-cloud-evidence test-progress-export test-content-qa test-facts-db test-llm-workbench test-platform-boundary test-validators test-e2e
 
 test-quiz:
 	$(BUN) run test:quiz
@@ -79,6 +88,9 @@ test-content-qa:
 test-facts-db:
 	$(BUN) run test:facts-db
 
+test-llm-workbench:
+	$(BUN) run test:llm-workbench
+
 test-platform-boundary:
 	$(BUN) run test:platform-boundary
 
@@ -87,6 +99,30 @@ test-e2e:
 
 test-validators:
 	$(BUN) run test:validators
+
+questions-context:
+	$(BUN) run --filter @looker-bi-gym/app questions:context
+
+questions-generate-codex:
+	$(BUN) run --filter @looker-bi-gym/app questions:generate:codex
+
+questions-generate-claude:
+	$(BUN) run --filter @looker-bi-gym/app questions:generate:claude
+
+questions-review-codex:
+	$(BUN) run --filter @looker-bi-gym/app questions:review:codex
+
+questions-review-claude:
+	$(BUN) run --filter @looker-bi-gym/app questions:review:claude
+
+dream:
+	$(BUN) run --filter @looker-bi-gym/app dream:prompt
+
+dream-codex:
+	$(BUN) run --filter @looker-bi-gym/app dream:codex
+
+dream-claude:
+	$(BUN) run --filter @looker-bi-gym/app dream:claude
 
 build:
 	$(BUN) run build

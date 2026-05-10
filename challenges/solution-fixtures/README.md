@@ -42,6 +42,6 @@ A release-ready exception must be documented before the challenge is shipped. Do
 
 ## Dataset Version Pins
 
-Browser SQL fixtures pin the dataset version explicitly. Current SQL fixtures use `deposits-seed/v0.1.0`.
+Browser SQL fixtures pin the dataset version explicitly. Current SQL fixtures use `deposits-seed/v0.1.0` for the deposits track and `lending-month-end/v0.1.0` for the lending month-end exposure challenge.
 
 `deposits-seed/v0.1.1` intentionally changes expected outputs. If `first-banking-dataset` or `account-owner-fanout` is repointed to `v0.1.1`, refresh the fixture SQL, expected failing checks, and manifest validator values together.

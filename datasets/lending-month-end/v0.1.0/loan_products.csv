@@ -1,0 +1,6 @@
+product_id,product_name,secured_flag,stage_model
+LP-MORTGAGE,Retail Mortgage,true,ifrs9
+LP-SME,SME Term Loan,true,ifrs9
+LP-CONSUMER,Consumer Loan,false,ifrs9
+LP-OVERDRAFT,SME Overdraft,false,ifrs9
+LP-CARD,Credit Card,false,ifrs9
