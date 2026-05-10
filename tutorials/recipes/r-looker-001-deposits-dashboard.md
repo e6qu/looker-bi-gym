@@ -3,6 +3,15 @@
 Recipe area: Looker Studio mechanics. Optional follow-on after
 [LT-LOOKER-004](../learner-tasks/lt-looker-004-report-ready-data-source.md).
 
+Objective: manually reproduce the deposits dashboard shape in Looker Studio
+using a synthetic report-ready data source and documented credential mode.
+
+After this recipe, you will be able to:
+
+- Configure date, dimension, and metric field roles for a deposits dashboard.
+- Build a scorecard, bar chart, and detail table from the same governed metric.
+- Record report credential mode and latest-day control value outside this app.
+
 Training boundary: use synthetic training data only. This recipe is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.

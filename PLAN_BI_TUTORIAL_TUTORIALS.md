@@ -108,6 +108,16 @@ Area E - Capstone:
 - Learner answers numeric, multiple-choice, select-all, or matching questions.
 - Answers are mechanically graded.
 
+`flashcards`:
+
+- Future learning mode, not part of the current phase.
+- Learner studies topic-separated cards sourced from `docs/facts/`,
+  deterministic dataset outputs, and tutorial objectives.
+- The app schedules reviews with an Anki-style spaced repetition model and
+  stores timestamped review state only in the browser.
+- Flashcards are for recall and reinforcement; they do not replace tutorials,
+  challenges, quizzes, or exams.
+
 `cloud-evidence`:
 
 - Learner performs work in BigQuery or Looker Studio through browser instructions.
@@ -277,6 +287,18 @@ Fact-backed question checks:
   source values such as the FGDB/EU deposit guarantee ceiling.
 - No released quiz should ask only "what is this project preference?" unless the
   preference is part of the platform boundary and is checked by app behavior.
+
+Flashcard content checks:
+
+- Every factual card should cite one or more source fact IDs or a deterministic
+  dataset output.
+- Cards should be separated by topic/deck so learners can study one area at a
+  time.
+- Cards should include recommended tutorial or learner-task links where useful.
+- Avoid cards that teach project implementation trivia unless the card is in a
+  clearly marked app-navigation/help deck.
+- Deck content should be committed source; review state must be browser-local
+  and user-controlled.
 
 Golden solution checks:
 
@@ -462,6 +484,14 @@ Milestone T7 - Content QA:
 
 - Review challenge instructions for required tools, synthetic-data warnings, regulatory disclaimers, and measurable completion criteria.
 - Validate links and references across docs, regulations, tutorials, datasets, and challenges.
+
+Milestone T8 - Flashcards And Spaced Repetition:
+
+- Add topic-separated flashcard deck schema and sample complete decks.
+- Add fact-link validation for flashcards.
+- Add browser-local spaced repetition UI and scheduler.
+- Add flashcard state export/import as a single JSON file.
+- Add scheduler, import/export, content QA, and rendered UI tests.
 
 ## Resolved Tutorial Choices
 

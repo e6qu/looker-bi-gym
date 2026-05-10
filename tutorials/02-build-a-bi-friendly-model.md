@@ -14,6 +14,15 @@ Builds on:
 Required tools: browser SQL challenge path first; optional BigQuery browser UI
 for the cloud-applied version.
 
+Objective: turn raw-shaped deposits tables into BI-friendly facts and
+dimensions without changing metric grain or exposing unnecessary identifiers.
+
+After this tutorial, you will be able to:
+
+- Declare source-table grain before aggregation.
+- Separate fact, dimension, and serving-output responsibilities.
+- Document sensitive fields and safe dashboard fields.
+
 Produces:
 
 - Declared grains for dimensions and facts.

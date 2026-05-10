@@ -1,4 +1,4 @@
-# 01 - Connect Predefined Banking Data To Looker Studio
+# 01 - Connect Predefined Synthetic Banking Data To Looker Studio
 
 Area: A - Orientation And Source Data
 
@@ -13,6 +13,15 @@ Builds on:
 
 Required tools: optional browser UI access to BigQuery and Looker Studio. Do not
 use Google Cloud CLI, BigQuery CLI, service account keys, Python, or Docker.
+
+Objective: inspect a narrow synthetic serving view and understand how Looker
+Studio turns it into report fields.
+
+After this tutorial, you will be able to:
+
+- Explain what a Looker Studio data source adds between a query and a chart.
+- Check that a dashboard source exposes only report-ready fields.
+- Record credential mode without storing credentials in the app.
 
 Produces:
 

@@ -50,4 +50,7 @@ trap coverage.
 - `bun run check`
 
 Last local verification: all commands above passed on 2026-05-10, including
-full `bun run check` after the derived-expectation follow-up.
+full `bun run check` after the derived-expectation follow-up. Post-merge
+verification also confirmed PR #10 main CI, GitHub Pages deployment, live Pages
+HTTP 200, deployed UI click-through screenshots, and a follow-up
+`record-pr10-postmerge` branch with learner-flow content fixes.

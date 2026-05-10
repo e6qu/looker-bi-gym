@@ -4,8 +4,8 @@ mode: self_assessed
 estimated_minutes_per_card: 120
 description: >
   Untimed independent challenge cards for a data analyst moving into banking BI.
-  Cards use synthetic datasets and deterministic expected outputs first, with
-  self-assessment notes until full exam rendering is implemented.
+  Cards use synthetic datasets, deterministic expected outputs, and
+  self-assessment notes.
 cards:
   - id: exam-card-grain-and-fanout
     title: Grain And Fanout Review

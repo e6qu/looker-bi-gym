@@ -13,6 +13,15 @@ Builds on:
 Required tools: browser SQL path first; optional BigQuery and Looker Studio
 browser UI for applied work.
 
+Objective: decide where each metric belongs: upstream serving SQL, reusable
+data-source logic, or a chart-only visual calculation.
+
+After this tutorial, you will be able to:
+
+- Write a metric contract with owner, grain, formula, and allowed dimensions.
+- Identify which calculations are reusable business logic.
+- Explain why deposit-guarantee examples need depositor-bank grain.
+
 Produces:
 
 - `metrics/banking_metric_contracts.md`

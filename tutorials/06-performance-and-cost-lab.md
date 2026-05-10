@@ -12,6 +12,15 @@ Builds on:
 
 Required tools: optional BigQuery and Looker Studio browser UI.
 
+Objective: connect dashboard design choices to query work and define an
+operational control for BI cost and refresh behavior.
+
+After this tutorial, you will be able to:
+
+- Tie dashboard queries back to report sources.
+- Compare broad/raw sources with narrower serving views.
+- Draft a cost/freshness control table for BI operations.
+
 Produces:
 
 - `serve.bi_ops_cost_daily`

@@ -32,6 +32,7 @@ Task order:
 - [026 - Challenge Grading Contract Expansion](026-challenge-grading-contract-expansion.md)
 - [027 - Source-Backed BI Fact Database](027-source-backed-bi-fact-database.md)
 - [028 - Platform Component Organization](028-platform-component-organization.md)
+- [029 - Flashcards And Spaced Repetition](029-flashcards-and-spaced-repetition.md)
 
 Completion rule:
 

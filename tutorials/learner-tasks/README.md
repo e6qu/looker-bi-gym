@@ -7,6 +7,15 @@ Training boundary: use synthetic training data only. These tasks are technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
 
+Objective: give learners a browser-first sequence of short BI tasks that build
+from grain profiling to reporting controls.
+
+After this page, you will be able to:
+
+- Choose the next task in the browser-first learning path.
+- See which BI area each task belongs to.
+- Separate learner tasks from repository implementation tasks.
+
 ## Area Groups
 
 - BI fundamentals:

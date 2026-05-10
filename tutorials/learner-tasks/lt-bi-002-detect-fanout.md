@@ -6,6 +6,13 @@ Area: BI fundamentals. Timebox: 15-20 minutes. Dataset:
 Objective: reproduce a many-to-many owner join error, quantify the
 overstatement, and repair the reporting result at account-latest-date grain.
 
+After this task, you will be able to:
+
+- Reproduce a fanout error caused by joining owners before aggregation.
+- Quantify the overstatement and keep it as a control value.
+- Move the repaired metric logic into the serving SQL/model layer before
+  reporting.
+
 Training boundary: use synthetic training data only. This task is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
@@ -43,7 +50,7 @@ INNER JOIN account_owners ao USING (account_id);
 ```
 
 3. Record the unsafe result: `naive_joined_total = 164800`.
-4. Replace it with the fixture-backed repair query:
+4. Replace it with the checked repair query:
 
 ```sql
 WITH latest_balances AS (
@@ -143,9 +150,9 @@ the balance measure and name the CTE where the duplication is isolated.
 
 Capture the local flag for `020 - Account Owner Fanout CTF`.
 
-## Solution Notes
+## Answer Reference
 
-The known-good fixture is
+The reviewer reference is
 [`challenges/solution-fixtures/account-owner-fanout/known-good.sql`](../../challenges/solution-fixtures/account-owner-fanout/known-good.sql).
-The known-bad fixture is
+The intentionally unsafe reference is
 [`challenges/solution-fixtures/account-owner-fanout/known-bad-naive-owner-fanout.sql`](../../challenges/solution-fixtures/account-owner-fanout/known-bad-naive-owner-fanout.sql).
