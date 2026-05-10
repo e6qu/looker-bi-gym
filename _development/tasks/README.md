@@ -1,5 +1,10 @@
 # Task Index
 
+Path: `_development/tasks/`.
+
+These are repository implementation tasks. They are not the learner-facing task
+packs rendered from `tutorials/learner-tasks/`.
+
 These tasks convert the plans into executable work. Each task has required deliverables, verification, and tests.
 
 Task order:

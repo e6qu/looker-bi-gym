@@ -13,17 +13,21 @@ learner's device in `localStorage` plus a same-site cookie mirror.
 - `app/`: React + TypeScript + Vite GitHub Pages app.
 - `docs/`: learner and maintainer documentation, including the
   [platform component map](docs/14-platform-components.md).
-- `tutorials/`: current tutorial Markdown; future learner-task packs will grow
-  from implementation Task 025.
+- `tutorials/`: learner-facing tutorial Markdown.
+- `flashcards/`, `quizzes/`, and `exams/`: planned top-level learner content
+  areas. Quiz and exam YAML already live under `quizzes/` and `exams/`;
+  flashcards remain in app source until a later content-schema migration.
 - `challenges/`: challenge manifests, schema, authoring guide, and solution
   fixtures.
 - `datasets/`: deterministic synthetic datasets and dataset metadata.
-- `docs/facts/` and `sources/`: source-backed fact corpus for fact-grounded
-  questions, tutorials, and challenge explanations.
+- Current fact corpus path: `docs/facts/`.
+- Future canonical fact path after migration: root `facts/`.
+- `sources/`: source cards and permitted source snapshots backing the fact
+  corpus.
 - `regulations/`: technical regulatory-context briefs for training context, not
   advice.
-- `tasks/`: implementation tasks for building the repository. These are not the
-  same as learner tasks shown in the website.
+- `_development/tasks/`: implementation tasks for building the repository.
+  These are not the same as learner tasks shown in the website.
 
 ## Development
 
@@ -34,7 +38,9 @@ bun install
 bun run check
 ```
 
-Do not push directly to `main`; use pull requests.
+Do not push directly to `main`; use pull requests. Before opening or updating a
+PR, check for existing open PRs and keep only one working PR unless explicitly
+directed otherwise.
 
 ## State Boundary
 

@@ -4,14 +4,16 @@ This guide is the working contract for adding browser-first banking BI tutorials
 
 Start from these references:
 
-- [Task index](../tasks/README.md) and the current task file for execution order.
+- [Task index](../_development/tasks/README.md) and the current task file for execution order.
 - [Manifest schema](schema/challenge-manifest.schema.json) for the machine-readable field contract.
 - [Published manifests](manifests/) for released challenge examples.
 - [Draft manifests](drafts/) for validation-only authoring smoke tests.
 - [Solution fixtures](solution-fixtures/) for release-ready known-good and known-bad validator coverage.
 - [Deposits seed dataset](../datasets/deposits-seed/v0.1.0/README.md) and [dataset metadata](../datasets/deposits-seed/v0.1.0/metadata.json).
 - [Tutorial data-source contract](../tutorials/data-sources.md) and [tutorial index](../tutorials/README.md).
-- [Source fact register](../docs/facts/README.md) for fact-backed tutorial steps and quiz questions.
+- [Source fact register](../docs/facts/README.md) for current fact IDs used by
+  tutorial steps and quiz questions. The planned canonical location is root
+  `facts/` after the fact-corpus migration phase.
 - [Regulation briefs](../regulations/README.md) for EU/Romanian context notes.
 
 These materials are technical training content, not legal, regulatory, accounting, privacy, compliance, or model-risk advice.
@@ -106,7 +108,9 @@ For required tools, include `version` or a version range when tool behavior matt
 ## Source Facts And Lesson Steps
 
 Use `source_facts` for every released question and every `lesson_steps` entry.
-Fact IDs must exist in [docs/facts/README.md](../docs/facts/README.md).
+Fact IDs must exist in the current
+[source fact register](../docs/facts/README.md). After the fact-corpus
+migration phase, the canonical path will be root `facts/`.
 
 Good fact-backed prompts ask for a concrete source consequence:
 
@@ -219,7 +223,7 @@ A release-ready challenge must document how it is verified. Prefer automated tes
 - `bun run test:validators` for shared validator behavior.
 - `make check` before marking a task complete.
 
-Every released manifest under `challenges/manifests/` must have at least one known-good solution fixture under `challenges/solution-fixtures/{challenge_id}/`. Golden fixtures should prove both sides of a trap: one known-good solution passes and one known-bad solution fails for the expected check IDs. If a task cannot automate a check yet, write the manual procedure and residual risk in the relevant `tasks/*.md` file and continuity docs.
+Every released manifest under `challenges/manifests/` must have at least one known-good solution fixture under `challenges/solution-fixtures/{challenge_id}/`. Golden fixtures should prove both sides of a trap: one known-good solution passes and one known-bad solution fails for the expected check IDs. If a task cannot automate a check yet, write the manual procedure and residual risk in the relevant `_development/tasks/*.md` file and continuity docs.
 
 For browser-SQL challenges, exact `row-count`, `scalar-aggregate`, and
 `aggregate-total` expectations are not trusted by inspection alone. The

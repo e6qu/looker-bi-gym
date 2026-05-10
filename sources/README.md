@@ -7,9 +7,11 @@ Permissively licensed BigQuery and Looker Studio documentation is also mirrored
 as complete article HTML snapshots inside Markdown files under
 `sources/platforms/*/full/`.
 
-The facts database loader reads these files together with `docs/facts/` and
-builds a local SQLite database for programmatic verification and future question
-generation. Non-permissive third-party BI literature should not be copied in
+The facts database loader currently reads these files together with
+`docs/facts/` and builds a local SQLite database for programmatic verification
+and future question generation. The planned canonical fact corpus location is
+root `facts/`; until that migration lands, `docs/facts/` remains the committed
+source path. Non-permissive third-party BI literature should not be copied in
 full; keep source cards and short quotes unless the source license allows
 snapshotting.
 

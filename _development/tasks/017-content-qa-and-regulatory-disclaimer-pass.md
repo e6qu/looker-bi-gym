@@ -19,7 +19,7 @@ Review learning content for clarity, required-tool declarations, synthetic-data 
   - `docs/`
   - `regulations/`
   - `tutorials/`
-  - `tasks/`
+  - `_development/tasks/`
   - Challenge content.
 - Bug entries for broken or ambiguous content found during review.
 

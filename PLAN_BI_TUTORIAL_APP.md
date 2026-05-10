@@ -12,7 +12,8 @@ This plan covers the application shell and platform mechanics.
 
 It does not define the full tutorial curriculum. That is covered in [PLAN_BI_TUTORIAL_TUTORIALS.md](PLAN_BI_TUTORIAL_TUTORIALS.md).
 
-Execution tasks are tracked in [tasks/README.md](tasks/README.md).
+Execution tasks are tracked in
+[\_development/tasks/README.md](_development/tasks/README.md).
 
 ## Constraints
 

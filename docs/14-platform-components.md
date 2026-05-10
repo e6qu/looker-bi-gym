@@ -157,10 +157,12 @@ Datasets:
 
 Facts:
 
-- Location: `docs/facts/`.
+- Current location: `docs/facts/`.
+- Planned canonical location: root `facts/` after the fact-corpus migration
+  phase.
 - App route: `#/facts`.
-- Role: durable `FACT-*` IDs for fact-backed tutorials, quiz questions,
-  challenge explanations, and LLM workbench context.
+- Role: durable `FACT-*` IDs for sourced tutorials, quiz questions, challenge
+  explanations, and LLM workbench context.
 - Learner UI: show human-readable fact statements and area labels first; keep
   raw `FACT-*` IDs as metadata/links rather than primary learner-facing text.
 - Validation: `bun run test:facts-db` and `bun run test:quiz-facts-db`.
@@ -287,9 +289,9 @@ Rendered UI verification:
 
 ## Implementation Task Boundary
 
-`tasks/*.md` files are implementation tasks for the repository. They are not
-learner tasks. Learner tasks are curriculum exercise units that will be shown in
-the website after implementation Task 025 creates the model and content.
+`_development/tasks/*.md` files are implementation tasks for the repository.
+They are not learner tasks. Learner tasks are curriculum exercise units
+rendered from `tutorials/learner-tasks/`.
 
 When updating this project, keep these two meanings separate in plans, status,
 PR descriptions, and user-facing content.

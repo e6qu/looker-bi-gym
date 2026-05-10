@@ -52,8 +52,8 @@ Completed on 2026-05-06.
 
 Implementation notes:
 
-- Added [Dataset Versioning](../datasets/VERSIONING.md) with the immutable-version policy, metadata contract, and fixture-refresh record.
-- Added [Expansion Roadmap](../datasets/EXPANSION_ROADMAP.md) for lending/credit risk, payments/cards/PSD2/fraud, AML/CFT/sanctions, finance/GL/reconciliation, and DORA/operations/BI observability.
+- Added [Dataset Versioning](../../datasets/VERSIONING.md) with the immutable-version policy, metadata contract, and fixture-refresh record.
+- Added [Expansion Roadmap](../../datasets/EXPANSION_ROADMAP.md) for lending/credit risk, payments/cards/PSD2/fraud, AML/CFT/sanctions, finance/GL/reconciliation, and DORA/operations/BI observability.
 - Marked `deposits-seed/v0.1.0` metadata as released and immutable.
 - Added `deposits-seed/v0.1.1` as a synthetic changed-output simulation with an added `2026-04-01` balance snapshot.
 - Generalized `app/scripts/validate-datasets.ts` so `bun validate:datasets` discovers and validates every committed `datasets/{dataset_id}/{version}/metadata.json` instead of only the original seed version.
