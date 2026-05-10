@@ -48,6 +48,7 @@ Task order:
 - [037 - Fact Corpus Expansion](037-fact-corpus-expansion.md)
 - [038 - Assessment Content Expansion](038-assessment-content-expansion.md)
 - [039 - Tutorial Challenge Expansion](039-tutorial-challenge-expansion.md)
+- [040 - Learning Surface Verification](040-learning-surface-verification.md)
 
 Completion rule:
 

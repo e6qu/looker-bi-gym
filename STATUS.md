@@ -4,9 +4,17 @@ Last updated: 2026-05-10
 
 ## Current Branch And PR
 
-- Current branch: `phase-6-tutorial-challenge-expansion`, based on verified
+- Current branch: `phase-7-learning-surface-verification`, based on verified
   `main`.
-- Current PR: #25, `https://github.com/e6qu/looker-bi-gym/pull/25`.
+- Current PR: not opened yet.
+- PR #25, `https://github.com/e6qu/looker-bi-gym/pull/25`, is squash-merged
+  at `63aa59fb0791b37c09899ba96a45ba44ec023d2d`.
+- Main CI for `63aa59f` passed:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25640123958`.
+- GitHub Pages workflow for `63aa59f` passed:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25640123964`.
+- Live Pages URL verified HTTP 200 on 2026-05-10:
+  `https://e6qu.github.io/looker-bi-gym/`.
 - PR #24, `https://github.com/e6qu/looker-bi-gym/pull/24`, is squash-merged
   at `22ff713374382341bbc11474a2501ab9d5325908`.
 - Main CI for `22ff713` passed:
@@ -34,18 +42,18 @@ Last updated: 2026-05-10
 
 ## Active Task
 
-Task 039 - Tutorial Challenge Expansion.
+Task 040 - Learning Surface Verification.
 
 Current state:
 
 - PR #23 added the first Phase 4 fact expansion batch and was verified on main.
 - PR #24 added the first Phase 5 assessment expansion batch and was verified on
   main.
-- Started Phase 6 on branch `phase-6-tutorial-challenge-expansion`.
-- Added Task 039 and a first self-contained learner task locally:
-  `LT-DQ-006 - Define A Ratio Null Contract`.
-- Task 039 local verification passed; formal Claude review is blocked by the
-  same CLI hang.
+- PR #25 added the first Phase 6 tutorial/challenge expansion batch and was
+  verified on main.
+- Started Phase 7 on branch `phase-7-learning-surface-verification`.
+- Added Task 040 as the next implementation task. No Phase 7 verification work
+  has been implemented yet.
 
 ## Open Blockers
 
@@ -99,6 +107,15 @@ PR #24 post-merge verification passed on 2026-05-10:
   `22ff713`.
 - `curl -L -I https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
   `last-modified: Sun, 10 May 2026 21:11:23 GMT`.
+
+PR #25 post-merge verification passed on 2026-05-10:
+
+- PR #25 was squash-merged at `63aa59f`.
+- `gh run watch 25640123958` showed main CI success for `63aa59f`.
+- `gh run watch 25640123964` showed GitHub Pages deployment success for
+  `63aa59f`.
+- `curl -L -I https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
+  `last-modified: Sun, 10 May 2026 21:24:25 GMT`.
 
 Task 036 local verification passed on 2026-05-10:
 
@@ -187,6 +204,6 @@ Failed/blocked attempts:
 
 High for the local Phase 4 root-path migration, first fact expansion batch,
 Task 038 assessment expansion batch, Task 039 tutorial/challenge expansion
-batch, and automated gates. Phase 4, Phase 5, and Phase 6 must stay
-`implemented, not Claude-reviewed` until a non-hanging formal review path
-exists.
+batch, and automated gates. Task 040 is not started beyond task setup. Phase 4,
+Phase 5, and Phase 6 must stay `implemented, not Claude-reviewed` until a
+non-hanging formal review path exists.
