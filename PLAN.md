@@ -219,10 +219,12 @@ sketch-like lessons with full lesson packs and app-rendered learning surfaces:
   self-assessment.
 - Exam mode defined as untimed, independent, longer challenge cards; richer app
   rendering can follow after task and quiz models stabilize.
-- Follow-up direction: make tutorials self-contained lessons. If a tutorial
-  prepares a challenge, it should still include the objective, steps,
-  verification, expected outputs, common failures, and self-assessment in the
-  tutorial body instead of relying on the challenge page as the instruction.
+- Task 030 direction: tutorials are self-contained lessons. Released
+  learner-task tutorials should use neutral workbench routes such as
+  `#/workbench/deposits-seed/v0.1.0` for SQL execution and keep the objective,
+  steps, verification, expected outputs, common failures, self-assessment, and
+  CTF-style end check in the tutorial body instead of relying on challenge pages
+  as the instruction.
 
 ### Phase D - Stronger Challenge And Grading Contracts
 

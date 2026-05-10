@@ -3,24 +3,23 @@
 ## Immediate Next Step
 
 Numbered implementation tasks 001 through 028 are implemented. PR #3 through
-PR #12 were merged. PR #12 merged on 2026-05-10 at merge commit
-`3edd840e1c749a453f2834d8684211069dceae1d`.
+PR #13 were merged. PR #13 merged on 2026-05-10 at merge commit
+`f0deb549a3601559ffc1a6f81e386f95c5b36702`.
 
 Current implementation step:
 
-- PR #12 (`https://github.com/e6qu/looker-bi-gym/pull/12`) is merged and
+- PR #13 (`https://github.com/e6qu/looker-bi-gym/pull/13`) is merged and
   post-merge verified.
-- Main CI run `25629932439` passed for merge commit
-  `3edd840e1c749a453f2834d8684211069dceae1d`.
-- Main GitHub Pages deployment run `25629932430` passed for the same merge
+- Main CI run `25630673392` passed for merge commit
+  `f0deb549a3601559ffc1a6f81e386f95c5b36702`.
+- Main GitHub Pages deployment run `25630673398` passed for the same merge
   commit, and `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
-  `last-modified: Sun, 10 May 2026 13:28:52 GMT`.
-- Current branch: `record-pr12-postmerge`.
-- Current PR: `https://github.com/e6qu/looker-bi-gym/pull/13`.
-- Current branch purpose: record PR #12 post-merge verification and implement
-  the app-rendered learning-surface phase: quiz bank route, exam route, fact
-  graph route, human-readable source-evidence labels, and SQLite-backed quiz
-  fact grounding.
+  `last-modified: Sun, 10 May 2026 14:03:54 GMT`.
+- Current branch: `self-contained-tutorials`.
+- Current implementation task: [030 - Self-Contained Tutorial Workbench](tasks/030-self-contained-tutorial-workbench.md).
+- Current branch purpose: add neutral browser SQL workbench routes and make
+  released learner-task tutorials self-contained so the lesson does not point
+  learners to challenge pages for instruction.
 - Read `README.md`, `docs/14-platform-components.md`, `PLAN.md`, `STATUS.md`,
   `BUGS.md`, `tasks/025-real-tutorial-instruction-packs.md`, and
   `tasks/026-challenge-grading-contract-expansion.md` first.
@@ -28,46 +27,44 @@ Current implementation step:
   under `tasks/*.md`; `learner tasks` are curriculum exercise units shown to
   learners.
 
-Current PR #13 must finish before starting the next item:
+Current Task 030 must finish before starting the next item:
 
-- Keep `#/quiz`, `#/exam`, and `#/facts` rendered, responsive, and covered by
+- Keep `#/workbench/deposits-seed/v0.1.0` and
+  `#/workbench/lending-month-end/v0.1.0` rendered, responsive, and covered by
   Playwright.
-- Keep `bun run test:quiz-facts-db` in `bun run check`, CI, root scripts, and
-  `make test`.
-- Keep quiz numeric answers backed by dataset-control facts, not only generic BI
-  concepts.
-- Keep raw `FACT-*` IDs out of primary learner-facing labels; show human-readable
-  fact statements/areas and keep IDs as metadata/link targets.
+- Keep learner-task tutorials self-contained: they may name prerequisite docs or
+  facts, but their steps, SQL, expected outputs, checkpoint questions,
+  visualization/reporting action, and CTF-style end check must live in the
+  tutorial page.
+- Keep content QA failing if a released learner-task tutorial links to
+  `#/challenges/` or requires a local challenge flag for instruction.
 - Preserve the strict typing boundary: no `any`, `as any`, broad `object` type,
-  `as object`, `@ts-ignore`, or `@ts-expect-error`; YAML/Markdown/SQLite inputs
-  should be parsed as `unknown` and validated into domain types.
+  `as object`, `@ts-ignore`, or `@ts-expect-error`.
 
-PR #13 local verification passed on 2026-05-10:
+Task 030 local verification passed on 2026-05-10:
 
-- `bun run format`
+- `bun run typecheck`
+- `bun run lint`
+- `bun run test:content-qa`
+- `bun run test:e2e` after approved local Playwright/Vite preview port binding
 - `bun run check` after approved local Playwright/Vite preview port binding,
-  including all 10 rendered UI tests and production build/static-link checks
+  including all 11 rendered UI tests and production build/static-link checks
 - `git diff --check`
 - type-safety scan across app sources/scripts/tests/configs, with only the
   literal ESLint rule name `@typescript-eslint/no-explicit-any` matching
-- PR #13 GitHub Actions `Validate, Test, And Build` passed for commit
-  `69f2330ca46aaaa0ec10975e4d17dfa8a5653016`.
 
-Recommended next phases after PR #13:
+Recommended next phases after Task 030:
 
-1. Self-contained tutorial rewrite: tutorials should include prerequisite docs
-   at the start, then complete step-by-step instructions in the tutorial itself.
-   They should not send learners to challenges to understand the lesson.
-2. Browser-local JSON import: add Settings import for
+1. Browser-local JSON import: add Settings import for
    `looker-bi-gym.progress-export.v1` with local validation, preview, apply
    confirmation, and no upload.
-3. Flashcards and spaced repetition: implement Task 029 with topic-separated
+2. Flashcards and spaced repetition: implement Task 029 with topic-separated
    decks, fact-backed cards, Anki-style timestamps/due dates, and single-JSON
    flashcard state export/import.
-4. Richer challenges and datasets: add more deterministic synthetic dataset
+3. Richer challenges and datasets: add more deterministic synthetic dataset
    packs and browser-verifiable Looker/BigQuery/BI mechanics challenges, with
    fixtures and source-fact-backed questions.
-5. Optional cloud-applied track: expand Looker Studio recipes only after the
+4. Optional cloud-applied track: expand Looker Studio recipes only after the
    browser-first equivalent exists; keep it manual and UI-driven unless a future
    learner script is justified and ShellCheck-verified.
 

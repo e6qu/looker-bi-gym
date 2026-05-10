@@ -578,6 +578,21 @@ function assertMarkdownBoundaryLanguage(
         );
         assert.match(
           markdownFile.source,
+          /#\/workbench\//u,
+          `${markdownFile.path} must link to a browser SQL workbench instead of relying on a challenge page for the lesson.`,
+        );
+        assert.doesNotMatch(
+          markdownFile.source,
+          /#\/challenges\//u,
+          `${markdownFile.path} must be self-contained and must not point learners to challenge pages for tutorial instructions.`,
+        );
+        assert.doesNotMatch(
+          markdownFile.source,
+          /Capture the local flag/iu,
+          `${markdownFile.path} must use a tutorial-internal end check instead of requiring a challenge flag.`,
+        );
+        assert.match(
+          markdownFile.source,
           /\|.+\|/u,
           `${markdownFile.path} must include deterministic expected output.`,
         );

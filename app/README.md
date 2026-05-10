@@ -73,7 +73,7 @@ If a browser blocks WebAssembly workers or local storage, Markdown/content route
 
 ## Rendered UI Tests
 
-Playwright tests live in `app/tests/` and run with `bun run test:e2e`. They build and preview the static app, then verify real rendered routes, responsive overflow boundaries, challenge metadata, DuckDB-WASM SQL execution, cloud-evidence controls, Settings export metadata, and nonblank desktop/mobile rendering.
+Playwright tests live in `app/tests/` and run with `bun run test:e2e`. They build and preview the static app, then verify real rendered routes, responsive overflow boundaries, challenge metadata, the neutral tutorial SQL workbench, DuckDB-WASM SQL execution, cloud-evidence controls, Settings export metadata, and nonblank desktop/mobile rendering.
 
 ## Markdown Rendering
 

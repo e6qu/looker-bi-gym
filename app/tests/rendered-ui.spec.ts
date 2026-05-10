@@ -8,6 +8,8 @@ const responsiveRoutes = [
   "/#/tutorials/learner-tasks/lt-bi-001-profile-dataset-grain.md",
   "/#/tutorials/quiz-bank.md",
   "/#/tutorials/exam-mode.md",
+  "/#/workbench/deposits-seed/v0.1.0",
+  "/#/workbench/lending-month-end/v0.1.0",
   "/#/quiz",
   "/#/exam",
   "/#/facts",
@@ -282,6 +284,37 @@ test.describe("rendered UI", () => {
     await expect(page.getByText("164800").first()).toBeVisible();
     await expect(page.getByText("95700").first()).toBeVisible();
     await expect(page.getByText("69100").first()).toBeVisible();
+  });
+
+  test("browser SQL workbench supports self-contained tutorial queries", async ({
+    page,
+  }) => {
+    await page.goto("/#/workbench/deposits-seed/v0.1.0");
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Browser SQL Workbench" }),
+    ).toBeVisible();
+    await expect(page.getByText("deposits-seed/v0.1.0")).toBeVisible();
+    await page.getByLabel("SQL query").fill(`SELECT
+  COUNT(*) AS row_count,
+  CAST(MAX(business_date) AS VARCHAR) AS latest_balance_date
+FROM account_daily_balances;`);
+    await page.getByRole("button", { name: "Run Query" }).click();
+    await expect(
+      page.getByRole("table", { name: "SQL query result" }),
+    ).toContainText("18");
+    await expect(
+      page.getByRole("table", { name: "SQL query result" }),
+    ).toContainText("2026-03-31");
+
+    await page.goto("/#/workbench/lending-month-end/v0.1.0");
+    await expect(page.getByText("lending-month-end/v0.1.0")).toBeVisible();
+    await expect(
+      page.getByRole("button", {
+        exact: true,
+        name: "loan_monthly_snapshots",
+      }),
+    ).toBeVisible();
   });
 
   test("browser SQL challenge loads DuckDB-WASM and renders query results", async ({
