@@ -65,3 +65,8 @@ Improve usability, accessibility, and robustness of the first app release.
 - Source inspection with `rg` found no app `fetch`, `XMLHttpRequest`, `sendBeacon`, analytics, telemetry, or WebSocket calls. The only relevant runtime calls are browser-local `localStorage`, DuckDB `registerFileText`, and a DuckDB Web Worker loaded from the built static assets.
 - Safari 26.1 is installed, but `safaridriver` could not create a session because Safari's persistent "Allow remote automation" setting is disabled. Attempting to enable it was rejected as a persistent security-setting change. This second-browser verification remains documented in `BUGS.md` as a follow-up gap requiring explicit user action.
 - The approved preview server was stopped after verification and confirmed unreachable on `127.0.0.1:4173`.
+- Follow-up on 2026-05-10: branch `ci-ui-warning-checks` adds automated
+  Playwright diagnostics collection for browser console warnings, browser
+  console errors, uncaught page errors, and failed network requests. Local
+  `bun run test:e2e` and full `bun run check` passed with that guard enabled,
+  and no browser diagnostics were found in the covered rendered flows.

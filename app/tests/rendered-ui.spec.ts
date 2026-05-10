@@ -21,6 +21,50 @@ const viewports = [
   { width: 1366, height: 900, label: "desktop" },
 ] as const;
 
+type BrowserDiagnostic = {
+  readonly kind: "console" | "pageerror" | "requestfailed";
+  readonly message: string;
+  readonly url: string;
+};
+
+const diagnosticsByPage = new WeakMap<Page, BrowserDiagnostic[]>();
+
+function collectBrowserDiagnostics(page: Page): BrowserDiagnostic[] {
+  const diagnostics: BrowserDiagnostic[] = [];
+
+  page.on("console", (message) => {
+    const messageType = message.type();
+
+    if (messageType !== "error" && messageType !== "warning") {
+      return;
+    }
+
+    diagnostics.push({
+      kind: "console",
+      message: `${messageType}: ${message.text()}`,
+      url: message.location().url,
+    });
+  });
+
+  page.on("pageerror", (error) => {
+    diagnostics.push({
+      kind: "pageerror",
+      message: error.message,
+      url: page.url(),
+    });
+  });
+
+  page.on("requestfailed", (request) => {
+    diagnostics.push({
+      kind: "requestfailed",
+      message: `${request.method()} ${request.resourceType()} ${request.failure()?.errorText ?? "unknown failure"}`,
+      url: request.url(),
+    });
+  });
+
+  return diagnostics;
+}
+
 async function expectNoHorizontalOverflow(page: Page): Promise<void> {
   const overflow = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,
@@ -96,6 +140,17 @@ function collectUnexpectedNetworkRequests(page: Page): string[] {
 }
 
 test.describe("rendered UI", () => {
+  test.beforeEach(({ page }) => {
+    diagnosticsByPage.set(page, collectBrowserDiagnostics(page));
+  });
+
+  test.afterEach(({ page }) => {
+    const diagnostics = diagnosticsByPage.get(page) ?? [];
+
+    diagnosticsByPage.delete(page);
+    expect(diagnostics, "browser console/page/request diagnostics").toEqual([]);
+  });
+
   test("home page renders a real product UI on desktop and mobile", async ({
     page,
   }) => {

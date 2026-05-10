@@ -98,6 +98,7 @@ async function assertScriptPyramid(): Promise<void> {
   const checkScript = scripts["check"] ?? "";
 
   for (const requiredScript of [
+    "format:check",
     "lint",
     "typecheck",
     "test:quiz",
@@ -108,6 +109,8 @@ async function assertScriptPyramid(): Promise<void> {
     "test:browser-config",
     "test:progress-export",
     "test:content-qa",
+    "test:facts-db",
+    "test:llm-workbench",
     "test:platform-boundary",
     "test:validators",
     "test:e2e",

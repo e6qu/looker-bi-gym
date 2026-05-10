@@ -31,6 +31,9 @@ jobs:
       - name: Install Dependencies
         run: bun install --frozen-lockfile
 
+      - name: Format Check
+        run: bun run format:check
+
       - name: Validate Challenge Manifests
         run: bun run validate:manifests
 
@@ -52,14 +55,29 @@ jobs:
       - name: Test Solution Fixtures
         run: bun run test:fixtures
 
+      - name: Test Derived SQL Expectations
+        run: bun run test:derived-expectations
+
       - name: Test Cloud Evidence Runtime
         run: bun run test:cloud-evidence
+
+      - name: Test Browser Config Runtime
+        run: bun run test:browser-config
 
       - name: Test Progress Export
         run: bun run test:progress-export
 
       - name: Test Content QA
         run: bun run test:content-qa
+
+      - name: Test Fact Database
+        run: bun run test:facts-db
+
+      - name: Test LLM Workbench
+        run: bun run test:llm-workbench
+
+      - name: Test Platform Boundary
+        run: bun run test:platform-boundary
 
       - name: Test Browser Validators
         run: bun run test:validators
