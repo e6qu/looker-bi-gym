@@ -5,7 +5,7 @@ questions, but those runs are support tooling only. They do not replace source
 facts, deterministic fixtures, human review, or the repository test pyramid.
 
 The current workbench focuses on the Romania lending month-end and real-estate
-collateral dataset. It builds a local context bundle from `docs/facts/`,
+collateral dataset. It currently builds a local context bundle from `docs/facts/`,
 `sources/`, the challenge manifest, fixture SQL, fixture expected answers, and
 dataset metadata.
 

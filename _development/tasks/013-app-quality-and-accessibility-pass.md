@@ -42,7 +42,7 @@ Improve usability, accessibility, and robustness of the first app release.
 - Added clearer SQL runtime loading, error, disabled, and running states with status-region announcements.
 - Added a static SVG favicon so production previews no longer generate a browser console/network 404 for `/favicon.ico`.
 - Added browser compatibility and no-third-party-analytics notes to `app/README.md`.
-- Added [10 - App Quality And Browser QA](../docs/10-app-quality-browser-qa.md) with repeatable keyboard, challenge-form, responsive, compatibility, and network-boundary checks.
+- Added [10 - App Quality And Browser QA](../../docs/10-app-quality-browser-qa.md) with repeatable keyboard, challenge-form, responsive, compatibility, and network-boundary checks.
 
 ## Verification Notes
 

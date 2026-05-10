@@ -129,7 +129,9 @@ async function buildQuestionContext(): Promise<string> {
         "challenges/solution-fixtures/lending-month-end-snapshots/known-good.json",
       ),
       readRepoFile("datasets/lending-month-end/v0.1.0/README.md"),
-      readRepoFile("tasks/024-deterministic-local-dataset-packs.md"),
+      readRepoFile(
+        "_development/tasks/024-deterministic-local-dataset-packs.md",
+      ),
     ]);
 
   return `# LLM Question Workbench Context

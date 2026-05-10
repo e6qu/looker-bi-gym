@@ -5,6 +5,10 @@ BI tutorials, quiz questions, and challenge design. It stores short, cited
 source notes and derived training facts; it does not mirror full external
 documents.
 
+Planned migration: root `facts/` is the future canonical fact corpus location.
+Until that migration lands, `docs/facts/` remains the committed source path
+used by app routes and verification scripts.
+
 Facts here are technical training anchors, not legal, regulatory, accounting,
 privacy, compliance, or model-risk advice.
 

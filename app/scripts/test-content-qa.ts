@@ -76,12 +76,12 @@ const challengeDirs = [
 const quizDir = join(repoRoot, "quizzes");
 const examDir = join(repoRoot, "exams");
 const markdownRoots = [
+  "_development",
   "app/README.md",
   "challenges",
   "datasets",
   "docs",
   "regulations",
-  "tasks",
   "tutorials",
 ].map((path) => join(repoRoot, path));
 const disclaimerPattern =

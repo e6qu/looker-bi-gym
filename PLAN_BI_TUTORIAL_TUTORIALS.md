@@ -6,7 +6,8 @@ Design a layered banking BI curriculum where each tutorial is a mechanically ver
 
 The tutorial app is covered separately in [PLAN_BI_TUTORIAL_APP.md](PLAN_BI_TUTORIAL_APP.md).
 
-Execution tasks are tracked in [tasks/README.md](tasks/README.md).
+Execution tasks are tracked in
+[\_development/tasks/README.md](_development/tasks/README.md).
 
 The default tutorial path should work in the browser. Tutorials may require local tools only when explicitly listed in the tutorial setup and when those tools are common, cross-platform, and justified by the learning objective.
 
@@ -37,7 +38,9 @@ result to compare, and which fact-backed rule explains the checkpoint.
 
 Fact-backed instruction rules:
 
-- External facts live in [docs/facts/README.md](docs/facts/README.md).
+- External facts currently live in
+  [docs/facts/README.md](docs/facts/README.md).
+- Future canonical fact path after migration: root `facts/`.
 - Regulation, platform, browser-storage, and BI-tooling questions cite fact IDs.
 - Quiz prompts ask about a concrete source-backed consequence.
 - Explanations name the fact ID and the practical mistake it prevents.
@@ -111,7 +114,7 @@ Area E - Capstone:
 `flashcards`:
 
 - Future learning mode, not part of the current phase.
-- Learner studies topic-separated cards sourced from `docs/facts/`,
+- Learner studies topic-separated cards sourced from the fact corpus,
   deterministic dataset outputs, and tutorial objectives.
 - The app schedules reviews with an Anki-style spaced repetition model and
   stores timestamped review state only in the browser.

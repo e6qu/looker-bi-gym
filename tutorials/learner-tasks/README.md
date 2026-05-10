@@ -1,7 +1,7 @@
 # Learner Tasks
 
 Learner tasks are curriculum exercise units for the website. They are separate
-from repository implementation tasks under `tasks/`.
+from repository implementation tasks under `_development/tasks/`.
 
 Training boundary: use synthetic training data only. These tasks are technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or

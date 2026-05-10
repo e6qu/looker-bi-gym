@@ -45,8 +45,8 @@ Complete on 2026-05-09.
 ## Implementation Notes
 
 - Set the first tracked release version to `0.1.0` in root and app package metadata.
-- Added [Release Versioning](../VERSIONING.md) covering app/content, challenge catalog, datasets, regulation briefs, and the release checklist.
-- Added [Changelog](../CHANGELOG.md) with the `0.1.0` release contents, verification gates, known verification gaps, and breaking-change notes.
+- Added [Release Versioning](../../VERSIONING.md) covering app/content, challenge catalog, datasets, regulation briefs, and the release checklist.
+- Added [Changelog](../../CHANGELOG.md) with the `0.1.0` release contents, verification gates, known verification gaps, and breaking-change notes.
 - Added `app/src/release.ts` so the static app exposes app version, content version, and optional `VITE_BUILD_REF`.
 - Displayed version/build metadata in the app footer and Settings page.
 - Required top-level challenge `version` metadata in the manifest schema and added `v0.1.0` to released and draft challenge manifests.

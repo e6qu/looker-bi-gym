@@ -35,7 +35,7 @@ Before starting any task, review:
 - `DO_NEXT.md`
 - `WHAT_WE_DID.md`
 - `BUGS.md`
-- Relevant `tasks/*.md`
+- Relevant `_development/tasks/*.md`
 
 After finishing or pausing any task, update:
 
@@ -43,22 +43,26 @@ After finishing or pausing any task, update:
 - `WHAT_WE_DID.md`: actions taken, files changed, commands run, what worked, what failed.
 - `DO_NEXT.md`: next concrete steps.
 - `BUGS.md`: known bugs, regressions, broken assumptions, or follow-up fixes.
-- Relevant `tasks/*.md`: mark progress or update verification notes if the task format supports it.
+- Relevant `_development/tasks/*.md`: mark progress or update verification notes if the task format supports it.
 - `PLAN.md` or split plans only if the high-level direction changes.
 
-Do not rely on chat history as the source of truth. Keep these files current so work can resume after context loss.
+Do not rely on chat history as the source of truth. Keep these files current so work can resume after context loss. Remove stale or irrelevant continuity detail when it blocks clarity.
 
 ## Task Discipline
 
-- Work from `tasks/README.md` in order unless the user explicitly reprioritizes.
+- Work from `_development/tasks/README.md` in order unless the user explicitly reprioritizes.
 - A task is not complete until its `Verification` and `Tests` sections are satisfied or the remaining gaps are documented.
+- Never mark work complete unless the task file, tests, review notes, and continuity docs agree.
 - Before implementing a task, restate the task number and check the continuity files.
 - After implementing a task, update the continuity files before giving the final response.
 - After each completed task, commit the task changes to git.
 - Keep `.gitignore` current so dependency directories, build outputs, generated catalogs, generated TypeScript artifacts, and local OS/editor noise are not committed.
 - Do not commit bundled or generated artifacts that can be rebuilt locally from committed source files and repository scripts.
 - Do not commit WASM or other binary runtime artifacts when they can be supplied by package dependencies or produced by the local build.
-- After each task, reassess the plan and downstream tasks. If implementation uncovered a true blocker, wrong assumption, or better path, update `PLAN.md`, split plans, and affected `tasks/*.md` before continuing.
+- After each task, reassess the plan and downstream tasks. If implementation uncovered a true blocker, wrong assumption, or better path, update `PLAN.md`, split plans, and affected `_development/tasks/*.md` before continuing.
+- Before marking any phase complete, run formal Claude CLI review:
+  `claude --print --permission-mode plan --output-format text "<phase-specific review prompt>"`.
+  If Claude CLI hangs, is unavailable, or cannot authenticate, record the phase as blocked or implemented but not Claude-reviewed.
 
 ## Git And PR Discipline
 
@@ -97,7 +101,7 @@ Do not rely on chat history as the source of truth. Keep these files current so 
 ## Documentation Rules
 
 - Keep plans high-level.
-- Put execution details in `tasks/`.
+- Put execution details in `_development/tasks/`.
 - Put regulatory summaries in `regulations/`.
 - Put learning-source docs in `docs/`.
 - Put tutorial sketches/contracts in `tutorials/`.
@@ -116,17 +120,16 @@ or challenge behavior:
 - `BUGS.md`: known defects and follow-up verification gaps.
 - `docs/14-platform-components.md`: current website, content, runtime, data,
   state, export/import, and verification component map.
-- `tasks/024-deterministic-local-dataset-packs.md`: merged PR #6 dataset work.
-- `tasks/025-real-tutorial-instruction-packs.md`: next implementation task for
-  learner-facing tutorial work.
-- `tasks/028-platform-component-organization.md`: current component
-  organization implementation task.
+- `_development/tasks/README.md`: implementation task index.
+- `_development/tasks/024-deterministic-local-dataset-packs.md`: merged PR #6 dataset work.
+- `_development/tasks/025-real-tutorial-instruction-packs.md`: learner-facing tutorial work.
+- `_development/tasks/028-platform-component-organization.md`: component organization implementation task.
 - `docs/13-llm-question-and-dreaming-workbench.md`: manual LLM generation,
   review, refinement, and dreaming boundaries.
 
 Terminology matters:
 
-- `implementation tasks` are numbered repository work items under `tasks/*.md`;
+- `implementation tasks` are numbered repository work items under `_development/tasks/*.md`;
 - `learner tasks` are curriculum exercise units shown to learners in tutorials
   or app flows.
 
