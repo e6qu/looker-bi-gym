@@ -127,6 +127,12 @@
 - Reviewed ignored/generated outputs after verification. `app/dist/`,
   `app/src/generated/`, `screenshots/`, and `var/` remain ignored and were not
   staged.
+- Committed the PR #13 implementation as
+  `69f2330 Render learning surfaces and verify quiz facts`, pushed
+  `record-pr12-postmerge`, and updated PR #13:
+  `https://github.com/e6qu/looker-bi-gym/pull/13`.
+- PR #13 GitHub Actions `Validate, Test, And Build` passed for commit
+  `69f2330ca46aaaa0ec10975e4d17dfa8a5653016` in 1m43s.
 - Failed attempts during verification:
   - sandboxed `bun install --frozen-lockfile` could not write to Bun tempdir;
     approved rerun passed;
