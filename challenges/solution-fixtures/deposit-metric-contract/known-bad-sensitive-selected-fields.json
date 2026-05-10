@@ -1,0 +1,18 @@
+{
+  "fixture_id": "known-bad-sensitive-selected-fields",
+  "challenge_id": "deposit-metric-contract",
+  "mode": "browser-config",
+  "kind": "known-bad",
+  "description": "Metric contract lists sensitive identifiers in selected_fields, which must fail the browser-config validator.",
+  "evidence": {
+    "metric_contract_json": "{\n  \"metric_id\": \"latest_ledger_total\",\n  \"source_table\": \"account_daily_balances\",\n  \"grain\": \"business_date + currency_code\",\n  \"measure\": \"ledger_balance\",\n  \"aggregation\": \"SUM\",\n  \"date_role\": \"business_date\",\n  \"selected_fields\": [\"business_date\", \"currency_code\", \"ledger_total\", \"account_id\", \"customer_id\"],\n  \"excluded_fields\": [\"account_id\", \"customer_id\", \"synthetic_iban\"],\n  \"owner\": \"upstream serving SQL or reusable data-source field\"\n}"
+  },
+  "answers": {
+    "q_metric_owner": "upstream_or_datasource",
+    "q_metric_grain": "grain_before_aggregation"
+  },
+  "expected": {
+    "required_passed": false,
+    "failed_check_ids": ["selected_fields_exclude_sensitive_identifiers"]
+  }
+}

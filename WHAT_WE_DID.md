@@ -2,6 +2,42 @@
 
 ## 2026-05-10
 
+- Merged PR #9 with `gh pr merge 9 --squash --delete-branch`, fast-forwarded
+  local `main`, and created branch `task026-grading-contracts`.
+- Implemented Task 026 - Challenge Grading Contract Expansion.
+- Added `app/src/configEvidence.ts` with browser-local JSON artifact validators:
+  required fields, exact field equality, required array entries, and forbidden
+  array entries.
+- Updated challenge rendering so `browser-config` challenges use the same local
+  no-backend evidence page pattern as cloud-evidence challenges.
+- Added released challenge `deposit-metric-contract`, a metric-contract review
+  exercise that asks the learner to paste JSON and grades grain, owner, serving
+  shape, and sensitive-field minimisation choices.
+- Added known-good and known-bad browser-config solution fixtures for the metric
+  contract challenge.
+- Expanded fixture tests so browser-config exclusion checks require known-bad
+  coverage.
+- Added `bun run test:browser-config` and wired it into `bun run check` and the
+  platform-boundary test.
+- Expanded content QA so non-quiz checks must be supported by the declared
+  challenge mode.
+- Added Playwright coverage for completing the browser-config metric-contract
+  learner flow locally and earning the local flag.
+- Updated authoring, fixture, test-pyramid, and platform-component docs for the
+  browser-config grading contract.
+- Verification run:
+  - `bun run format`;
+  - `bun run format:check`;
+  - `bun run validate:manifests`;
+  - `bun run test:browser-config`;
+  - `bun run test:content-qa`;
+  - `bun run test:fixtures`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run check` after approved local preview binding.
+- Full `bun run check` passed, including all 9 Playwright rendered UI tests and
+  the production build.
+
 - After the user merged PR #8, confirmed it merged at
   `5db7663ee0d76be809cb383a4dfeb4390eb5ed6f`, switched to `main`, and pulled
   the merge.

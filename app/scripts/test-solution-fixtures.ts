@@ -5,10 +5,12 @@ import { readdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { parse } from "yaml";
 import { evaluateCloudEvidenceChecks } from "../src/cloudEvidence";
+import { evaluateBrowserConfigChecks } from "../src/configEvidence";
 import { evaluateChallengeQuestions } from "../src/quiz";
 import { evaluateSqlResultChecks } from "../src/validators";
 import type { ChallengeManifest, ChallengeMode } from "../src/challengeTypes";
 import type { CloudEvidenceAnswerState } from "../src/cloudEvidence";
+import type { BrowserConfigAnswerState } from "../src/configEvidence";
 import type { QuizAnswerState } from "../src/quiz";
 import type {
   SqlValidationResult,
@@ -86,7 +88,7 @@ type SolutionFixture = {
   readonly dataset_version?: string;
   readonly sql_file?: string;
   readonly answers?: QuizAnswerState;
-  readonly evidence?: CloudEvidenceAnswerState;
+  readonly evidence?: CloudEvidenceAnswerState | BrowserConfigAnswerState;
   readonly expected?: FixtureExpected;
   readonly path: string;
 };
@@ -592,6 +594,20 @@ function evaluateCloudEvidenceFixture(
   };
 }
 
+function evaluateBrowserConfigFixture(
+  challenge: ChallengeManifest,
+  fixture: SolutionFixture,
+): FixtureEvaluation {
+  const evidence = fixture.evidence ?? {};
+  const evidenceEvaluation = evaluateBrowserConfigChecks(challenge, evidence);
+  const questionsPassed = evaluateQuestions(challenge, fixture);
+
+  return {
+    requiredPassed: evidenceEvaluation.requiredPassed && questionsPassed,
+    checkResults: evidenceEvaluation.checks,
+  };
+}
+
 async function evaluateFixture(
   challenge: ChallengeManifest,
   fixture: SolutionFixture,
@@ -604,6 +620,7 @@ async function evaluateFixture(
     case "cloud-evidence":
       return evaluateCloudEvidenceFixture(challenge, fixture);
     case "browser-config":
+      return evaluateBrowserConfigFixture(challenge, fixture);
     case "capstone":
       throw new Error(
         `Fixture runner does not support mode ${challenge.mode} for ${challenge.id}.`,
@@ -614,7 +631,11 @@ async function evaluateFixture(
 function requiresKnownBadFixture(challenge: ChallengeManifest): boolean {
   const haystack =
     `${challenge.title} ${challenge.business_scenario}`.toLowerCase();
-  return haystack.includes("ctf") || haystack.includes("trap");
+  return (
+    haystack.includes("ctf") ||
+    haystack.includes("trap") ||
+    challenge.checks.some((check) => check.type === "json-array-excludes")
+  );
 }
 
 function assertExpectedFailedChecks(

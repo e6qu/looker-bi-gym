@@ -69,6 +69,10 @@ No known app bugs after the Bun-only tooling, typed config, formatting, rendered
   Playwright verification caught an incorrect expected EUR/RON latest-balance
   split in the new learner-task docs; the expected values were corrected to
   `EUR = 16400` and `RON = 79300`.
+- Task 026 full `bun run check` verification passed locally on 2026-05-10 after
+  the user approved Playwright/Vite local port binding. The browser-config
+  metric-contract path now has unit, fixture, content QA, type/lint, Playwright,
+  and production-build coverage.
 - JSON import is planned but not implemented. Current Settings supports JSON
   export and reset only. Future import must stay browser-local and validate the
   `looker-bi-gym.progress-export.v1` structure before applying state.

@@ -8,6 +8,7 @@ const responsiveRoutes = [
   "/#/tutorials/learner-tasks/lt-bi-001-profile-dataset-grain.md",
   "/#/challenges",
   "/#/challenges/first-banking-dataset",
+  "/#/challenges/deposit-metric-contract",
   "/#/challenges/looker-studio-evidence",
   "/#/settings",
 ] as const;
@@ -425,6 +426,51 @@ GROUP BY business_date, currency_code;`);
         ),
       )
       .toContain("looker-studio-evidence");
+
+    expect(unexpectedRequests).toEqual([]);
+  });
+
+  test("learner completes browser config metric contract flow locally", async ({
+    page,
+  }) => {
+    const unexpectedRequests = collectUnexpectedNetworkRequests(page);
+
+    await page.goto("/#/challenges/deposit-metric-contract");
+
+    await expect(
+      page.getByRole("heading", {
+        level: 1,
+        name: "050 - Deposit Metric Contract Review",
+      }),
+    ).toBeVisible();
+    await expect(page.getByText("Contract checkpoint")).toBeVisible();
+    await page.getByLabel("Metric contract JSON").fill(`{
+  "metric_id": "latest_ledger_total",
+  "source_table": "account_daily_balances",
+  "grain": "business_date + currency_code",
+  "measure": "ledger_balance",
+  "aggregation": "SUM",
+  "date_role": "business_date",
+  "selected_fields": ["business_date", "currency_code", "ledger_total"],
+  "excluded_fields": ["account_id", "customer_id", "synthetic_iban"],
+  "owner": "upstream serving SQL or reusable data-source field"
+}`);
+    await page
+      .getByLabel("Upstream serving SQL or a reusable data-source field.")
+      .check();
+    await page.getByLabel("FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION").check();
+
+    await expect(
+      page.getByText("Challenge complete. Flag: flag-deposit-metric-contract"),
+    ).toBeVisible();
+    await expect
+      .poll(() =>
+        page.evaluate(
+          (key) => window.localStorage.getItem(key),
+          browserProgressStorageKeys.localStorage,
+        ),
+      )
+      .toContain("deposit-metric-contract");
 
     expect(unexpectedRequests).toEqual([]);
   });

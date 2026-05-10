@@ -135,6 +135,8 @@ Challenge runtime:
   evaluation.
 - `app/src/cloudEvidence.ts`: frontend-only evidence checks for optional cloud
   workflows.
+- `app/src/configEvidence.ts`: frontend-only browser-config checks for JSON
+  metric contracts and similar structured local artifacts.
 
 Dataset and SQL runtime:
 

@@ -22,6 +22,7 @@ The lower and middle layers run deterministic checks without a browser:
 - `bun run test:sql` covers DuckDB-WASM SQL loading and query behavior.
 - `bun run test:validators` covers browser challenge validators.
 - `bun run test:cloud-evidence` covers local evidence parsing and validation.
+- `bun run test:browser-config` covers local JSON config parsing and validation.
 - `bun run test:progress-export` covers browser-local progress, cookie fallback, reset, and export boundaries.
 - `bun run test:fixtures` covers known-good and known-bad challenge solution fixtures.
 - `bun run test:content-qa` covers required-tool declarations, synthetic-data boundaries, regulatory links, disclaimers, and Markdown links.
@@ -34,6 +35,8 @@ The lower and middle layers run deterministic checks without a browser:
 - Clear `localStorage`, reload from the cookie mirror, and verify Settings still shows completion evidence.
 - Run the browser SQL challenge, answer its grain question, and verify a local flag is produced.
 - Fill cloud-evidence fields, answer the credential boundary question, and verify local completion without backend calls.
+- Fill browser-config metric contract JSON, answer contract questions, and
+  verify local completion without backend calls.
 - Check responsive routes, rendered UI structure, nonblank screenshots, no horizontal overflow, and control text fit.
 
 ## Full Gate

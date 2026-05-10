@@ -3,7 +3,10 @@ import { access, readdir, readFile, stat } from "node:fs/promises";
 import { dirname, extname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse } from "yaml";
+import { isBrowserConfigCheckSupported } from "../src/configEvidence";
+import { isCloudEvidenceCheckSupported } from "../src/cloudEvidence";
 import { regulatoryContextReferences } from "../src/regulatoryContext";
+import { isSqlResultCheckSupported } from "../src/validators";
 import type {
   ChallengeManifest,
   ChallengeRequiredTools,
@@ -421,6 +424,24 @@ function assertChallengeContentBoundaries(
         JSON.stringify(challenge),
         /credentials? must not be collected|no .*credentials/iu,
         `${challenge.id} must state that credentials are not collected.`,
+      );
+    }
+
+    for (const check of challenge.checks.filter(
+      (candidate) => candidate.type !== "quiz-answer",
+    )) {
+      const isSupported =
+        challenge.mode === "browser-sql"
+          ? isSqlResultCheckSupported(check)
+          : challenge.mode === "cloud-evidence"
+            ? isCloudEvidenceCheckSupported(check)
+            : challenge.mode === "browser-config"
+              ? isBrowserConfigCheckSupported(check)
+              : false;
+
+      assert.ok(
+        isSupported,
+        `${challenge.id}:${check.id} uses unsupported ${challenge.mode} check type ${check.type}.`,
       );
     }
 
