@@ -21,7 +21,14 @@ Current implementation step:
 2. Watch PR checks and keep the branch mergeable.
 3. After merge, verify main-branch CI, GitHub Pages deployment, and the live
    Pages URL.
-4. Then choose the next implementation task. Good candidates are a browser-local
+4. After the merge and Pages deployment, perform a real deployed-UI click-through
+   with Playwright/browser automation and screenshots. Do not infer from build
+   output alone. At minimum open the deployed GitHub Pages app, capture the home
+   page, challenge catalog, `deposit-metric-contract`, one browser SQL flow,
+   one cloud-evidence flow, Settings export/reset surfaces, and a mobile
+   viewport. Follow actual controls and record screenshots/checkpoints in the
+   continuity notes.
+5. Then choose the next implementation task. Good candidates are a browser-local
    JSON import flow for Settings, richer browser-config/metric-contract
    challenges, or dataset-derived expected-answer generation for challenges
    where generated targets add real value.

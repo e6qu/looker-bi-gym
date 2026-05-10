@@ -37,6 +37,10 @@
   - `bun run check` after approved local preview binding.
 - Full `bun run check` passed, including all 9 Playwright rendered UI tests and
   the production build.
+- After PR #10 checks passed, recorded the user's post-merge requirement to
+  actually click through the deployed GitHub Pages UI with screenshots and
+  real learner-flow interactions after the PR is merged. This is a post-merge
+  verification step, not a substitute for local or CI tests.
 
 - After the user merged PR #8, confirmed it merged at
   `5db7663ee0d76be809cb383a4dfeb4390eb5ed6f`, switched to `main`, and pulled

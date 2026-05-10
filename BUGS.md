@@ -73,6 +73,10 @@ No known app bugs after the Bun-only tooling, typed config, formatting, rendered
   the user approved Playwright/Vite local port binding. The browser-config
   metric-contract path now has unit, fixture, content QA, type/lint, Playwright,
   and production-build coverage.
+- After PR #10 is merged, perform an actual deployed GitHub Pages UI
+  click-through with screenshots and real control interactions across the main
+  learner flows. Do not treat local build success or CI success as a visual
+  deployment smoke test.
 - JSON import is planned but not implemented. Current Settings supports JSON
   export and reset only. Future import must stay browser-local and validate the
   `looker-bi-gym.progress-export.v1` structure before applying state.
