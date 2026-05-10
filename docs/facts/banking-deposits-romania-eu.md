@@ -1,3 +1,15 @@
+---
+{
+  "id": "facts-banking-deposits-romania-eu",
+  "title": "Banking Deposits Romania And EU Facts",
+  "content_type": "fact_register",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "facts",
+  "tags": ["facts", "source-backed"],
+}
+---
+
 # Banking Deposits Romania And EU Facts
 
 These facts anchor Romanian/EU banking BI scenarios. They are technical training

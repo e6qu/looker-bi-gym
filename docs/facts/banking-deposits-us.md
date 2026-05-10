@@ -1,3 +1,15 @@
+---
+{
+  "id": "facts-banking-deposits-us",
+  "title": "US Banking Deposit Insurance Facts",
+  "content_type": "fact_register",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "facts",
+  "tags": ["facts", "source-backed"],
+}
+---
+
 # US Banking Deposit Insurance Facts
 
 These facts support US banking BI comparison exercises. They are technical

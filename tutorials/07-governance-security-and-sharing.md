@@ -1,3 +1,23 @@
+---
+{
+  "id": "tutorial-tutorials-07-governance-security-and-sharing",
+  "title": "07 - Governance, Security, And Sharing",
+  "content_type": "tutorial",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "core",
+  "source_facts":
+    [
+      "FACT-BIGQUERY-VIEW-SCOPE",
+      "FACT-GDPR-DATA-MINIMISATION",
+      "FACT-GDPR-PERSONAL-DATA",
+      "FACT-GDPR-PROCESSING-PRINCIPLES",
+      "FACT-LOOKER-STUDIO-CREDENTIALS",
+    ],
+  "tags": ["tutorial", "synthetic-data"],
+}
+---
+
 # 07 - Governance, Security, And Sharing
 
 Area: D - Governance, Security, And Operations

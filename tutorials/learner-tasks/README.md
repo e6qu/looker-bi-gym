@@ -1,3 +1,15 @@
+---
+{
+  "id": "tutorial-tutorials-learner-tasks-readme",
+  "title": "Learner Tasks",
+  "content_type": "tutorial_index",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "learner-tasks",
+  "tags": ["tutorial", "synthetic-data"],
+}
+---
+
 # Learner Tasks
 
 Learner tasks are curriculum exercise units for the website. They are separate

@@ -1,3 +1,5 @@
+import { generatedContentDocuments } from "./generated/contentCatalog";
+
 export type ContentSectionId = "docs" | "regulations" | "tutorials";
 
 export type ContentDocument = {
@@ -6,6 +8,20 @@ export type ContentDocument = {
   readonly filePath: string;
   readonly title: string;
   readonly markdown: string;
+  readonly metadata?: {
+    readonly id: string;
+    readonly title: string;
+    readonly content_type: string;
+    readonly status: string;
+    readonly version: string;
+    readonly topic?: string;
+    readonly difficulty?: string;
+    readonly estimated_minutes?: number;
+    readonly source_facts?: readonly string[];
+    readonly recommended_learner_tasks?: readonly string[];
+    readonly prerequisites?: readonly string[];
+    readonly tags?: readonly string[];
+  };
 };
 
 export type ContentSection = {
@@ -15,57 +31,9 @@ export type ContentSection = {
   readonly documents: readonly ContentDocument[];
 };
 
-const rawDocs = import.meta.glob<string>("../../docs/**/*.md", {
-  eager: true,
-  import: "default",
-  query: "?raw",
-});
-
-const rawRegulations = import.meta.glob<string>("../../regulations/*.md", {
-  eager: true,
-  import: "default",
-  query: "?raw",
-});
-
-const rawTutorials = import.meta.glob<string>("../../tutorials/**/*.md", {
-  eager: true,
-  import: "default",
-  query: "?raw",
-});
-
-function titleFromMarkdown(markdown: string, fileName: string): string {
-  const heading = /^#\s+(.+)$/m.exec(markdown)?.[1]?.trim();
-  if (heading !== undefined && heading.length > 0) {
-    return heading;
-  }
-
-  return fileName
-    .replace(/\.md$/, "")
-    .replace(/^\d+-/, "")
-    .replaceAll("-", " ")
-    .replace(/\b\w/g, (letter: string) => letter.toUpperCase());
-}
-
-function toDocuments(
-  section: ContentSectionId,
-  files: Readonly<Record<string, string>>,
-): ContentDocument[] {
-  const sectionPrefix = `../../${section}/`;
-
-  return Object.entries(files)
-    .map(([importPath, markdown]) => {
-      const maybeFileName = importPath.startsWith(sectionPrefix)
-        ? importPath.slice(sectionPrefix.length)
-        : importPath.split("/").at(-1);
-      const fileName = maybeFileName ?? importPath;
-      return {
-        section,
-        fileName,
-        filePath: `${section}/${fileName}`,
-        title: titleFromMarkdown(markdown, fileName),
-        markdown,
-      };
-    })
+function toDocuments(section: ContentSectionId): readonly ContentDocument[] {
+  return generatedContentDocuments
+    .filter((document) => document.section === section)
     .sort((left, right) => {
       if (left.fileName === "README.md") {
         return -1;
@@ -83,21 +51,21 @@ export const contentSections: readonly ContentSection[] = [
     label: "Docs",
     description:
       "Source notes and technical references for BI foundations, banking context, and tooling decisions.",
-    documents: toDocuments("docs", rawDocs),
+    documents: toDocuments("docs"),
   },
   {
     id: "regulations",
     label: "Regulations",
     description:
       "EU and Romanian regulatory context labels for synthetic banking BI scenarios.",
-    documents: toDocuments("regulations", rawRegulations),
+    documents: toDocuments("regulations"),
   },
   {
     id: "tutorials",
     label: "Tutorials",
     description:
       "Layered tutorial sketches and contracts for browser-first technical BI practice.",
-    documents: toDocuments("tutorials", rawTutorials),
+    documents: toDocuments("tutorials"),
   },
 ];
 

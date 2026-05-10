@@ -5,8 +5,9 @@ context. The project is a static GitHub Pages app: no backend, no server
 session, no real banking data, no credentials, and no learner-data upload.
 
 The learner uses the website UI. Browser SQL challenges run with DuckDB-WASM,
-content is bundled from Markdown/YAML/CSV files, and progress stays on the
-learner's device in `localStorage` plus a same-site cookie mirror.
+authored learner content is bundled from Markdown frontmatter catalogs, dataset
+inputs stay in CSV/JSON files, and progress stays on the learner's device in
+`localStorage` plus a same-site cookie mirror.
 
 ## Main Sections
 
@@ -14,9 +15,8 @@ learner's device in `localStorage` plus a same-site cookie mirror.
 - `docs/`: learner and maintainer documentation, including the
   [platform component map](docs/14-platform-components.md).
 - `tutorials/`: learner-facing tutorial Markdown.
-- `flashcards/`, `quizzes/`, and `exams/`: planned top-level learner content
-  areas. Quiz and exam YAML already live under `quizzes/` and `exams/`;
-  flashcards remain in app source until a later content-schema migration.
+- `flashcards/`, `quizzes/`, and `exams/`: top-level Markdown learner content
+  areas for generated app catalogs.
 - `challenges/`: challenge manifests, schema, authoring guide, and solution
   fixtures.
 - `datasets/`: deterministic synthetic datasets and dataset metadata.

@@ -38,8 +38,9 @@ Last updated: 2026-05-10
   - Area: phase review gates.
   - Severity: high.
   - Description: Claude CLI formal review is required before any phase can be
-    marked complete. A previous approved elevated run hung and was stopped.
-  - Fix plan: Retry with explicit approval and session readiness using the
-    documented `claude --print --permission-mode plan --output-format text`
-    command shape.
+    marked complete. Non-TUI `claude --print` works for a tiny prompt, but the
+    Task 034 formal review hung with no output and was stopped.
+  - Fix plan: Retry only with a known-good non-hanging formal review path, or
+    use an explicitly accepted alternate formal review process and record the
+    result in continuity docs.
   - Status: open.

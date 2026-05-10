@@ -1,3 +1,25 @@
+---
+{
+  "id": "tutorial-tutorials-00-orientation-and-stack",
+  "title": "00 - Orientation And Stack",
+  "content_type": "tutorial",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "core",
+  "source_facts":
+    [
+      "FACT-BIGQUERY-LOGICAL-VIEW",
+      "FACT-BIGQUERY-VIEW-SCOPE",
+      "FACT-DGSD-100K-EU",
+      "FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK",
+      "FACT-GDPR-DATA-MINIMISATION",
+      "FACT-GDPR-PERSONAL-DATA",
+      "FACT-LOOKER-STUDIO-DATA-SOURCE",
+    ],
+  "tags": ["tutorial", "synthetic-data"],
+}
+---
+
 # 00 - Orientation And Stack
 
 Area: A - Orientation And Source Data

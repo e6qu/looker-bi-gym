@@ -1,3 +1,15 @@
+---
+{
+  "id": "tutorial-tutorials-quiz-bank",
+  "title": "Quiz Bank",
+  "content_type": "tutorial",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "core",
+  "tags": ["tutorial", "synthetic-data"],
+}
+---
+
 # Quiz Bank
 
 Use this page after the learner tasks when you want a 20-minute self-check.
@@ -17,7 +29,8 @@ Training boundary: use synthetic training data only. This quiz is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
 
-Source file in the repository: `quizzes/bi-foundations-mixed.yaml`.
+Source file in the repository:
+`quizzes/bi-foundations/bi-foundations-mixed.md`.
 
 ## Easy
 

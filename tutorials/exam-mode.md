@@ -1,3 +1,15 @@
+---
+{
+  "id": "tutorial-tutorials-exam-mode",
+  "title": "Exam Mode",
+  "content_type": "tutorial",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "core",
+  "tags": ["tutorial", "synthetic-data"],
+}
+---
+
 # Exam Mode
 
 Exam mode is a set of longer practical cards. Pick one card, work in your own
@@ -18,7 +30,8 @@ Training boundary: use synthetic training data only. These cards are technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
 
-Source file in the repository: `exams/bi-foundations-exam.yaml`.
+Source file in the repository:
+`exams/bi-foundations/bi-foundations-exam.md`.
 
 ## Card 1 - Grain And Fanout Review
 

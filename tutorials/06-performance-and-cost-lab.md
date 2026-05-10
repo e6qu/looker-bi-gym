@@ -1,3 +1,22 @@
+---
+{
+  "id": "tutorial-tutorials-06-performance-and-cost-lab",
+  "title": "06 - Performance And Cost Lab",
+  "content_type": "tutorial",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "core",
+  "source_facts":
+    [
+      "FACT-BIGQUERY-LOGICAL-VIEW",
+      "FACT-BIGQUERY-VIEW-LIMITATIONS",
+      "FACT-DORA-ICT-RISK-FRAMEWORK",
+      "FACT-LOOKER-STUDIO-DATA-SOURCE",
+    ],
+  "tags": ["tutorial", "synthetic-data"],
+}
+---
+
 # 06 - Performance And Cost Lab
 
 Area: C - Looker Studio Dashboards

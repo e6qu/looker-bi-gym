@@ -1,3 +1,15 @@
+---
+{
+  "id": "facts-bi-modeling-banking",
+  "title": "Banking BI Modeling Facts",
+  "content_type": "fact_register",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "facts",
+  "tags": ["facts", "source-backed"],
+}
+---
+
 # Banking BI Modeling Facts
 
 These facts anchor the analytical layer for banking BI tutorials across

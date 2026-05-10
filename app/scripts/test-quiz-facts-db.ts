@@ -1,10 +1,9 @@
 import assert from "node:assert/strict";
 import { Database } from "bun:sqlite";
-import { readdir, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { parse } from "yaml";
+import { quizBanks } from "../src/learningContent";
 import { buildFactDatabase } from "./fact-database";
 
 type Difficulty = "easy" | "medium" | "hard";
@@ -38,116 +37,8 @@ type FactTextRow = {
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const appRoot = join(scriptDir, "..");
 const repoRoot = join(appRoot, "..");
-const quizDir = join(repoRoot, "quizzes");
 const outputPath = join(tmpdir(), "looker-bi-gym-quiz-facts.sqlite");
 const difficulties = ["easy", "medium", "hard"] as const;
-
-function isRecord(value: unknown): value is Readonly<Record<string, unknown>> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function requireString(value: unknown, context: string): string {
-  if (typeof value !== "string") {
-    throw new TypeError(`${context} must be a string.`);
-  }
-
-  assert.ok(value.length > 0, `${context} must not be empty.`);
-
-  return value;
-}
-
-function requireStringArray(
-  value: unknown,
-  context: string,
-): readonly string[] {
-  assert.ok(Array.isArray(value), `${context} must be an array.`);
-  const entries: readonly unknown[] = value;
-
-  return entries.map((entry, index) =>
-    requireString(entry, `${context}[${index}]`),
-  );
-}
-
-function parseAnswer(
-  value: unknown,
-  context: string,
-): string | number | readonly string[] {
-  if (typeof value === "string" || typeof value === "number") {
-    return value;
-  }
-
-  return requireStringArray(value, context);
-}
-
-function parseOptions(
-  value: unknown,
-  context: string,
-): ReadonlyArray<{ readonly id: string; readonly label: string }> | undefined {
-  if (value === undefined) {
-    return undefined;
-  }
-
-  assert.ok(Array.isArray(value), `${context} must be an array.`);
-  const entries: readonly unknown[] = value;
-
-  return entries.map((option, index) => {
-    assert.ok(isRecord(option), `${context}[${index}] must be a mapping.`);
-
-    return {
-      id: requireString(option["id"], `${context}[${index}].id`),
-      label: requireString(option["label"], `${context}[${index}].label`),
-    };
-  });
-}
-
-function parseQuestion(value: unknown, context: string): QuizQuestion {
-  assert.ok(isRecord(value), `${context} must be a mapping.`);
-  const options = parseOptions(value["options"], `${context}.options`);
-
-  return {
-    id: requireString(value["id"], `${context}.id`),
-    type: requireString(value["type"], `${context}.type`),
-    source_facts: requireStringArray(
-      value["source_facts"],
-      `${context}.source_facts`,
-    ),
-    prompt: requireString(value["prompt"], `${context}.prompt`),
-    ...(options === undefined ? {} : { options }),
-    answer: parseAnswer(value["answer"], `${context}.answer`),
-    explanation: requireString(value["explanation"], `${context}.explanation`),
-  };
-}
-
-function parseQuizBank(source: string, context: string): QuizBank {
-  const parsed = parse(source) as unknown;
-
-  assert.ok(isRecord(parsed), `${context} must be a mapping.`);
-  const questions = parsed["questions"];
-  assert.ok(isRecord(questions), `${context}.questions must be a mapping.`);
-
-  return {
-    id: requireString(parsed["id"], `${context}.id`),
-    questions: {
-      easy: parseQuestionArray(questions["easy"], `${context}.questions.easy`),
-      medium: parseQuestionArray(
-        questions["medium"],
-        `${context}.questions.medium`,
-      ),
-      hard: parseQuestionArray(questions["hard"], `${context}.questions.hard`),
-    },
-  };
-}
-
-function parseQuestionArray(
-  value: unknown,
-  context: string,
-): readonly QuizQuestion[] {
-  assert.ok(Array.isArray(value), `${context} must be an array.`);
-
-  return value.map((question, index) =>
-    parseQuestion(question, `${context}[${index}]`),
-  );
-}
 
 function formatAnswer(answer: QuizQuestion["answer"]): string {
   return Array.isArray(answer) ? answer.join(",") : String(answer);
@@ -155,18 +46,6 @@ function formatAnswer(answer: QuizQuestion["answer"]): string {
 
 function normalizeForSearch(value: string): string {
   return value.toLowerCase().replace(/\s+/gu, " ");
-}
-
-async function readQuizBanks(): Promise<readonly QuizBank[]> {
-  const quizFiles = (await readdir(quizDir))
-    .filter((fileName) => fileName.endsWith(".yaml"))
-    .sort();
-
-  return Promise.all(
-    quizFiles.map(async (fileName) =>
-      parseQuizBank(await readFile(join(quizDir, fileName), "utf8"), fileName),
-    ),
-  );
 }
 
 function createQuizTables(database: Database): void {
@@ -324,7 +203,6 @@ function assertNumericAnswersAppearInCitedFactText(
   );
 }
 
-const quizBanks = await readQuizBanks();
 const summary = await buildFactDatabase({ repoRoot, outputPath });
 const database = new Database(outputPath);
 

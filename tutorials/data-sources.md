@@ -1,3 +1,15 @@
+---
+{
+  "id": "tutorial-tutorials-data-sources",
+  "title": "Predefined Synthetic Banking Data Sources",
+  "content_type": "tutorial",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "core",
+  "tags": ["tutorial", "synthetic-data"],
+}
+---
+
 # Predefined Synthetic Banking Data Sources
 
 This project uses synthetic banking data only. Do not use real customer,

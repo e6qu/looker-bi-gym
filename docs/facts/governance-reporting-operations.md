@@ -1,3 +1,15 @@
+---
+{
+  "id": "facts-governance-reporting-operations",
+  "title": "Governance Reporting And Operations Facts",
+  "content_type": "fact_register",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "facts",
+  "tags": ["facts", "source-backed"],
+}
+---
+
 # Governance Reporting And Operations Facts
 
 These facts anchor reporting, validation, resilience, and operations tutorials.

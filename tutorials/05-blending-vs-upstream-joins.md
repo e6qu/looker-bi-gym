@@ -1,3 +1,23 @@
+---
+{
+  "id": "tutorial-tutorials-05-blending-vs-upstream-joins",
+  "title": "05 - Blending Vs Upstream Joins",
+  "content_type": "tutorial",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "core",
+  "source_facts":
+    [
+      "FACT-BI-FANOUT-JOIN-RISK",
+      "FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT",
+      "FACT-BIGQUERY-LOGICAL-VIEW",
+      "FACT-BIGQUERY-VIEW-SCOPE",
+      "FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK",
+    ],
+  "tags": ["tutorial", "synthetic-data"],
+}
+---
+
 # 05 - Blending Vs Upstream Joins
 
 Area: B - Warehouse Modeling And Metrics

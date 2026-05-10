@@ -1,3 +1,24 @@
+---
+{
+  "id": "tutorial-tutorials-01-connect-public-data",
+  "title": "01 - Connect Predefined Synthetic Banking Data To Looker Studio",
+  "content_type": "tutorial",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "core",
+  "source_facts":
+    [
+      "FACT-BIGQUERY-LOGICAL-VIEW",
+      "FACT-BIGQUERY-VIEW-LIMITATIONS",
+      "FACT-BIGQUERY-VIEW-SCOPE",
+      "FACT-GDPR-DATA-MINIMISATION",
+      "FACT-LOOKER-STUDIO-CREDENTIALS",
+      "FACT-LOOKER-STUDIO-DATA-SOURCE",
+    ],
+  "tags": ["tutorial", "synthetic-data"],
+}
+---
+
 # 01 - Connect Predefined Synthetic Banking Data To Looker Studio
 
 Area: A - Orientation And Source Data

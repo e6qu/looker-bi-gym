@@ -1,3 +1,22 @@
+---
+{
+  "id": "LT-DQ-005",
+  "title": "LT-DQ-005 - Reconcile Dashboard Controls",
+  "content_type": "learner_task",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "learner-tasks",
+  "source_facts":
+    [
+      "FACT-BI-RECONCILIATION-WINDOWS",
+      "FACT-BI-REFERENCE-DATE-SEPARATION",
+      "FACT-BIGQUERY-LAST-DAY-MONTH-END",
+      "FACT-GDPR-ACCURACY",
+    ],
+  "tags": ["tutorial", "synthetic-data"],
+}
+---
+
 # LT-DQ-005 - Reconcile Dashboard Controls
 
 Area: data quality and controls. Timebox: 15-20 minutes. Dataset:

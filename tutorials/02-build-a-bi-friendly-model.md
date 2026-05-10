@@ -1,3 +1,23 @@
+---
+{
+  "id": "tutorial-tutorials-02-build-a-bi-friendly-model",
+  "title": "02 - Build A BI-Friendly Model",
+  "content_type": "tutorial",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "core",
+  "source_facts":
+    [
+      "FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION",
+      "FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT",
+      "FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK",
+      "FACT-GDPR-DATA-MINIMISATION",
+      "FACT-GDPR-PERSONAL-DATA",
+    ],
+  "tags": ["tutorial", "synthetic-data"],
+}
+---
+
 # 02 - Build A BI-Friendly Model
 
 Area: B - Warehouse Modeling And Metrics

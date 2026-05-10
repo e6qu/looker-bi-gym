@@ -1,3 +1,15 @@
+---
+{
+  "id": "facts-real-estate-collateral-romania",
+  "title": "Real Estate Collateral Facts",
+  "content_type": "fact_register",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "facts",
+  "tags": ["facts", "source-backed"],
+}
+---
+
 # Real Estate Collateral Facts
 
 Facts for Romania mortgage collateral, residential property price indices,

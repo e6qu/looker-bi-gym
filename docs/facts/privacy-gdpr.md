@@ -1,3 +1,15 @@
+---
+{
+  "id": "facts-privacy-gdpr",
+  "title": "Privacy And GDPR Facts",
+  "content_type": "fact_register",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "facts",
+  "tags": ["facts", "source-backed"],
+}
+---
+
 # Privacy And GDPR Facts
 
 These facts anchor privacy-sensitive BI exercises. They are technical training

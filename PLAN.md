@@ -10,9 +10,10 @@ Looker Studio UI, but it must not require a backend, credentials, learner-data
 upload, CLI tools for early tutorials, or real banking data.
 
 This plan is the canonical multi-stage realignment plan. Broad claims such as
-"complete", "comprehensive", "real", or "fact-backed" are not trusted for
-curriculum quality unless they are supported by named automated checks, human
-review notes, and Claude CLI review.
+"complete", "comprehensive", "real", "reality-verified",
+"externally verified", or "fact-backed" are not trusted for curriculum quality
+unless they are supported by named automated checks, coverage matrices, external
+source review, human review notes, and Claude CLI review.
 
 ## Status Labels
 
@@ -79,6 +80,8 @@ Review gates before this phase can be called complete:
 
 - Markdown with typed frontmatter is the durable source of truth.
 - Generate typed catalogs for app consumption.
+- Move current tutorial metadata, facts metadata, flashcards, quiz banks, and
+  exam cards onto the shared Markdown-frontmatter contract.
 - CI fails on stale generated catalogs, duplicate IDs, missing facts, or
   missing sources.
 - Generated artifacts that can be rebuilt locally stay out of git unless a
@@ -102,8 +105,8 @@ Review gates before this phase can be called complete:
 
 ## Phase 5 - Flashcards, Quizzes, Exams
 
-- Move hardcoded flashcards into topic-grouped Markdown.
-- Target at least 500 flashcards, 200 quiz questions, and 30 exam cards.
+- Expand generated Markdown catalogs toward at least 500 flashcards, 200 quiz
+  questions, and 30 exam cards.
 - Require fact/source support, deterministic checks where possible, and quality
   review, not only item counts.
 
@@ -136,6 +139,90 @@ documented as blocking:
 - Claude CLI formal review.
 - Browser walkthrough of the deployed GitHub Pages site when release-facing.
 - Continuity docs updated with acceptance notes and unresolved gaps.
+
+This phase can release an implemented learning platform, but it still must not
+claim the full curriculum is complete or comprehensive unless Phase 9 has
+passed.
+
+## Phase 9 - Curriculum Completeness And External Verification
+
+This phase is the only gate that may permit claims such as "complete",
+"comprehensive", "reality-verified", or "externally verified" for the learning
+materials.
+
+Required coverage artifacts:
+
+- A competency matrix for the full target learner path: BI foundations, SQL for
+  BI, BigQuery serving patterns, Looker Studio mechanics, data quality controls,
+  privacy/security boundaries, banking-domain context, metric contracts,
+  observability/operations, and exam readiness.
+- A content coverage matrix tying every competency to at least one tutorial,
+  one deterministic challenge or workbench exercise, quiz questions,
+  flashcards, source facts, and expected outputs.
+- A gap matrix that explicitly lists missing or weak competencies, shallow
+  content, unverified claims, missing learner tasks, missing challenge fixtures,
+  and missing external sources.
+- A source coverage matrix tying every factual, platform, regulatory, and
+  banking-domain claim to `FACT-*` IDs and external source cards.
+
+Required tutorial standard:
+
+- Every tutorial must be step-by-step, self-contained, runnable by a learner
+  from the website, and tied to a named learner outcome.
+- Every tutorial must include objective, prerequisites, exact steps,
+  checkpoints, expected outputs, visualization/reporting action,
+  self-assessment, common failure modes, and an end challenge.
+- If a tutorial requires a file, the page must provide exact browser download
+  or `curl` instructions, expected file name/location, row counts or checksums
+  where practical, and a recovery path for common download/import failures.
+- Early learner paths must remain browser-first and must not require Google
+  Cloud CLI, BigQuery CLI, Python, Docker, credentials, learner-data upload, or
+  real banking data.
+
+Required question, exam, and flashcard standard:
+
+- Quiz banks must cover each competency at multiple difficulties, with clear
+  explanations, recommended learner tasks, source facts, and deterministic
+  evidence where the answer is numeric or dataset-derived.
+- Exam cards must represent realistic end-to-end BI work products with
+  expected outputs, known-good fixtures where applicable, and self-assessment
+  rubrics.
+- Flashcards must cover definitions, traps, platform mechanics, dataset
+  controls, source-backed facts, and troubleshooting patterns without copying
+  third-party deck text.
+- Counts are minimum scale checks, not quality proof: at least 500 flashcards,
+  200 quiz questions, and 30 exam cards must be reviewed against the competency
+  matrix before any completeness claim.
+
+Required external verification:
+
+- Platform behavior must be backed by official vendor documentation where
+  available.
+- Regulatory and banking-domain context must be backed by regulator, official
+  legal, standards-body, or clearly identified authoritative sources.
+- Dataset-derived claims must be reproducible from committed synthetic data and
+  deterministic fixtures.
+- External review notes must identify which official or authoritative sources
+  were checked, what was accepted, what was rejected, and what remains uncertain.
+- Third-party community material may be used only as coverage signal unless its
+  licensing and provenance permit direct reuse.
+
+Required review gates:
+
+- Automation: `bun run check`, content QA, facts DB tests, quiz/fact grounding,
+  flashcard tests, static-link validation, and stale-reference scans.
+- Browser walkthrough of every learner surface on the deployed GitHub Pages
+  site.
+- Human curriculum review for accuracy, completeness, and learner usefulness.
+- Local judge or subagent review for shallow, fake, circular, or non-runnable
+  content.
+- Claude CLI formal review, or an explicitly documented blocker if the CLI
+  cannot complete.
+- Continuity docs updated with acceptance notes and unresolved gaps.
+
+Until every Phase 9 artifact and review gate passes, continuity docs and user
+responses must say the curriculum is implemented first pass or partially
+verified, not complete or comprehensive.
 
 Claude CLI command shape:
 

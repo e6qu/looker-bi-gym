@@ -1,5 +1,70 @@
 # What We Did
 
+## 2026-05-10 - Phase 2 Content Schema And Generated Catalogs
+
+- Added `PLAN.md` Phase 9 - Curriculum Completeness And External Verification,
+  which defines the required competency matrix, content coverage matrix,
+  tutorial standard, question/exam/flashcard standard, external verification,
+  and review gates before the project may claim complete or comprehensive
+  learning materials.
+- Verified PR #19 post-merge state:
+  - PR #19 is merged at `1484ca1159f494421ab857107ef4d49d017fdd00`.
+  - Main CI passed for `1484ca1`.
+  - GitHub Pages workflow passed for `1484ca1`.
+  - Live Pages URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200.
+- Confirmed no open PRs before starting the Phase 2 branch.
+- Created branch `phase-2-content-schema-catalogs` from updated `main`.
+- Added `_development/tasks/034-content-schema-and-generated-catalogs.md`.
+- Added typed frontmatter to tutorial Markdown and `docs/facts/` Markdown.
+- Moved flashcard authoring from `app/src/flashcards.ts` into
+  `flashcards/{topic}/` Markdown.
+- Moved quiz and exam authoring from YAML into:
+  - `quizzes/bi-foundations/bi-foundations-mixed.md`;
+  - `exams/bi-foundations/bi-foundations-exam.md`.
+- Removed old authored YAML files:
+  - `quizzes/bi-foundations-mixed.yaml`;
+  - `exams/bi-foundations-exam.yaml`.
+- Added `app/scripts/generate-content-catalog.ts`, which validates required
+  frontmatter, content IDs, source facts, quiz/exam learner-task links, and
+  stale generated catalog parity.
+- Updated app loaders so docs/tutorials/facts, flashcards, quiz banks, and exam
+  packs consume generated catalog exports.
+- Updated package scripts to run catalog generation before lint, typecheck,
+  build, and catalog-dependent tests.
+- Updated docs and implementation task references away from old quiz/exam YAML
+  and hardcoded flashcard assumptions.
+- Updated `test-platform-boundary` so ignored generated catalog data is not
+  scanned as handwritten runtime source.
+- Fixed a post-migration e2e ordering regression by adding authored
+  `sort_order` metadata to the first BI Fundamentals flashcard.
+- Verification passed:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run format:check`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:content-qa`;
+  - `bun run test:facts-db`;
+  - `bun run test:quiz-facts-db`;
+  - `bun run test:flashcards`;
+  - `bun run test:platform-boundary`;
+  - `bun run test:e2e` after approved local Vite preview binding;
+  - `bun run check` after approved local Vite preview binding, with all 12
+    Playwright tests passing;
+  - stale quiz/exam YAML and hardcoded-flashcard reference scan;
+  - fact-canonical wording scan;
+  - type-safety scan for banned casts/types;
+  - `git diff --check`.
+- Failed/blocked attempts recorded:
+  - first sandboxed `bun run test:e2e` failed only because Vite preview could
+    not bind `127.0.0.1:4173`;
+  - first post-migration e2e run failed because generated sorting changed the
+    first BI Fundamentals flashcard;
+  - initial Claude CLI formal review attempt was rejected by escalation policy;
+  - after explicit user approval, non-TUI `claude --print` and `codex exec`
+    both worked for tiny prompts, but the Task 034 Claude formal review hung
+    with no output for about one minute and was terminated.
+
 ## 2026-05-10 - Realignment Decision And Continuity Reset
 
 - Fetched `origin/main`; it had advanced to

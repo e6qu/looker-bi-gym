@@ -1,3 +1,15 @@
+---
+{
+  "id": "tutorial-tutorials-curriculum",
+  "title": "Layered Curriculum Map",
+  "content_type": "tutorial",
+  "status": "published",
+  "version": "0.1.0",
+  "topic": "core",
+  "tags": ["tutorial", "synthetic-data"],
+}
+---
+
 # Layered Curriculum Map
 
 Each tutorial is a learning task that builds on previous artifacts. The goal is not to create disconnected dashboards; the goal is to build a small banking BI platform incrementally.
