@@ -2,6 +2,50 @@
 
 ## 2026-05-10
 
+- Discussed and pinned the next PR #6 tutorial direction after the dataset and
+  LLM workbench expansion:
+  - add the Task 025 tutorial model to PR #6 instead of waiting for a separate
+    PR;
+  - implement several complete tasks across multiple areas, not only one schema
+    or placeholder proof of concept;
+  - each task should be 15-20 focused minutes with an overall learning objective
+    that is part of the learning path;
+  - prioritize BI mechanics and Looker/BigQuery behavior for a data analyst
+    moving into BI and banking;
+  - keep banking and real-estate details as realistic context, not the main
+    first-pass learning objective;
+  - start from general BI fundamentals, preferably with the deposits dataset
+    before relying on lending/real-estate specifics;
+  - put Looker Studio recipes in a separate section after tutorials;
+  - keep recipes manual/browser-driven for now, with no AWS CLI, Google CLI,
+    BigQuery CLI, Python, Docker, or learner-facing shell upload scripts in the
+    early path;
+  - if scripts are later introduced, they must be uncomplicated,
+    ShellCheck-verified, macOS/Linux compatible, and usable from both `bash` and
+    `zsh`;
+  - use a separate quiz-bank format instead of overloading challenge manifests;
+  - first quiz target is one mixed approximately 20-minute quiz organized by
+    `easy`, `medium`, and `hard`, with recommended tutorial task IDs,
+    `source_facts`, answers, explanations, estimated seconds, and
+    self-assessment notes;
+  - exam mode should begin as untimed independent challenge cards up to roughly
+    2 hours, user-selected and self-assessed first.
+- Agreed implementation recommendation for visualization:
+  - add useful in-app visualization on SQL task/challenge result pages;
+  - show it only when the SQL result has at least one dimension-like column and
+    one numeric column;
+  - start with deterministic table/bar-chart views that support BI mechanics;
+  - avoid global dummy charts or placeholder visualization work.
+- Checked PR #6 after the pushed dataset/workbench commit:
+  - PR URL: `https://github.com/e6qu/looker-bi-gym/pull/6`;
+  - head commit: `cc1957e7fc1ce8d771b0a07e14c903703d853717`;
+  - state: open and mergeable;
+  - GitHub Actions `Validate, Test, And Build` passed on 2026-05-10.
+- Began finalizing continuity docs for the next session:
+  - `PLAN.md` now records the task/quiz/exam/recipe/visualization decisions;
+  - `AGENTS.md` now cross-links the continuity docs and gives a compact PR #6
+    implementation guide.
+
 - Continued PR #6 after the user requested larger deterministic datasets,
   Romania-only real-estate prices/location context, official historical/current
   data, LLM generation plus review/refinement, and manual dreaming.

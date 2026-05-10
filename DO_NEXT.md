@@ -6,15 +6,57 @@ Numbered tasks 001 through 027 are implemented. PR #3, PR #4, and PR #5 were mer
 
 Current implementation step:
 
-- Review and merge PR #6: `https://github.com/e6qu/looker-bi-gym/pull/6`.
+- Continue PR #6: `https://github.com/e6qu/looker-bi-gym/pull/6`.
 - PR #6 now includes the expanded Romania lending/real-estate collateral dataset
   support, official Eurostat HPI source table, fact-backed collateral questions,
   and the manual LLM question review/dreaming workbench. Local `bun run check`
   passed on 2026-05-10 after the expansion.
+- PR #6 is mergeable and GitHub Actions `Validate, Test, And Build` passed for
+  commit `cc1957e7fc1ce8d771b0a07e14c903703d853717` on 2026-05-10.
+- The user explicitly wants the next Task 025 tutorial-model work added to PR
+  #6 before merge.
 
-Next implementation step after the Task 024 PR:
+Next implementation step inside PR #6:
 
-- After PR #6 merges, start [025 - Real Tutorial Instruction Packs](tasks/025-real-tutorial-instruction-packs.md), using the source-backed BigQuery/Looker/BI facts database from [027 - Source-Backed BI Fact Database](tasks/027-source-backed-bi-fact-database.md) and the new deterministic lending pack from [024 - Deterministic Local Dataset Packs](tasks/024-deterministic-local-dataset-packs.md).
+1. Update or add tutorial task content/schema for several complete 15-20 minute
+   tasks across multiple areas:
+   - BI fundamentals;
+   - BigQuery/SQL for BI;
+   - Looker Studio mechanics;
+   - data quality and controls;
+   - banking BI applications as realistic context, not legal/market theory.
+2. Each task must include:
+   - overall learning objective;
+   - prerequisites;
+   - input dataset;
+   - exact step-by-step learner actions;
+   - verification checkpoints;
+   - visualization/reporting action;
+   - optional recipe pointer;
+   - self-assessment;
+   - CTF-style end challenge.
+3. Start from general BI fundamentals, preferably using `deposits-seed/v0.1.0`
+   before leaning on lending/real-estate specifics.
+4. Add a useful in-app SQL result visualization path on task/challenge pages:
+   when a SQL result contains a dimension-like column and numeric column, allow a
+   simple deterministic table/bar-chart visualization. Avoid dummy or placeholder
+   visualization work.
+5. Add a separate quiz-bank format rather than overloading challenge manifests.
+   First quiz target: one mixed approximately 20-minute quiz, internally grouped
+   by `easy`, `medium`, and `hard`, with recommended tutorial task IDs,
+   `source_facts`, answers, explanations, estimated seconds, and
+   self-assessment notes.
+6. Add a separate tutorials recipes section for Looker Studio recipes after the
+   browser-first tutorials. For PR #6, keep recipes manual/browser-driven and do
+   not introduce AWS CLI, Google CLI, BigQuery CLI, Python, Docker, or shell
+   upload scripts.
+7. Document exam mode as untimed independent challenge cards up to about 2 hours
+   each, selectable by the learner and self-assessed first. Defer full app exam
+   rendering unless it falls naturally out of the task/quiz data model.
+8. Cross-link `PLAN.md`, `STATUS.md`, `DO_NEXT.md`, `WHAT_WE_DID.md`, `BUGS.md`,
+   `tasks/024-deterministic-local-dataset-packs.md`,
+   `tasks/025-real-tutorial-instruction-packs.md`, and `AGENTS.md` so a future
+   session can resume without chat history.
 
 Preservation and verification steps:
 
