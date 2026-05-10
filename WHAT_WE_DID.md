@@ -2,6 +2,17 @@
 
 ## 2026-05-10
 
+- After the user merged PR #7, confirmed it merged at
+  `954a128fd65b2b117b5fe23a3295c722cd6ae3f5`, switched to `main`, and pulled
+  the merge.
+- Checked post-merge PR #7 automation:
+  - main-branch CI run `25626931569` passed for merge commit
+    `954a128fd65b2b117b5fe23a3295c722cd6ae3f5`;
+  - main-branch Pages deployment run `25626931571` passed for the same commit;
+  - `curl -I https://e6qu.github.io/looker-bi-gym/` returned HTTP 200.
+- Created branch `record-pr7-postmerge` to record the post-merge baseline without
+  pushing to `main`.
+
 - After the user merged PR #6, confirmed it merged at
   `1da6272efb1c219bfcdf8981e4014af4b4a899e4`, switched to `main`, pulled the
   merge, and created branch `organize-platform-components`.

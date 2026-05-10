@@ -55,6 +55,9 @@ No known app bugs after the Bun-only tooling, typed config, formatting, rendered
   commit `1da6272efb1c219bfcdf8981e4014af4b4a899e4`, and the deployed Pages URL
   returned HTTP 200 on 2026-05-10. A browser-rendered smoke pass of the new
   lending challenge route remains optional follow-up if needed.
+- Post-merge PR #7 GitHub Actions and GitHub Pages deployment passed for merge
+  commit `954a128fd65b2b117b5fe23a3295c722cd6ae3f5`, and the deployed Pages URL
+  returned HTTP 200 on 2026-05-10.
 - JSON import is planned but not implemented. Current Settings supports JSON
   export and reset only. Future import must stay browser-local and validate the
   `looker-bi-gym.progress-export.v1` structure before applying state.

@@ -2,60 +2,16 @@
 
 ## Immediate Next Step
 
-Numbered implementation tasks 001 through 027 are implemented. PR #3, PR #4, PR #5, and PR #6 were merged. PR #6 merged on 2026-05-10 at `1da6272efb1c219bfcdf8981e4014af4b4a899e4`. Post-merge CI and GitHub Pages deployment for PR #6 passed, and the live Pages URL returned HTTP 200.
+Numbered implementation tasks 001 through 028 are implemented. PR #3, PR #4, PR #5, PR #6, and PR #7 were merged. PR #7 merged on 2026-05-10 at `954a128fd65b2b117b5fe23a3295c722cd6ae3f5`. Post-merge CI and GitHub Pages deployment for PR #7 passed, and the live Pages URL returned HTTP 200.
 
 Current implementation step:
 
-- Review PR #7: `https://github.com/e6qu/looker-bi-gym/pull/7`.
-- Task 028 is implemented on branch `organize-platform-components`; PR #7 is
-  open, mergeable, and CI is in progress for commit
-  `de20dea8717a803aa64d9b3be29a4dd48753a479`.
-- Organize the whole project into clear components and sections from the
-  learner's GitHub Pages website perspective.
-- Keep the frontend-only boundary explicit: no backend, no server session, no
-  API database, no analytics beacon, no server-side grading, no learner-data
-  upload.
-- Keep state explicit: browser `localStorage` plus same-site cookie for progress,
-  Settings JSON export implemented, Settings JSON import planned as a local
-  validate/preview/apply workflow.
+- Start implementation Task 025 - Real Tutorial Instruction Packs.
+- Read `README.md`, `docs/14-platform-components.md`, `PLAN.md`, `STATUS.md`,
+  `BUGS.md`, and `tasks/025-real-tutorial-instruction-packs.md` first.
 - Keep terminology precise: `implementation tasks` are numbered repo work items
   under `tasks/*.md`; `learner tasks` are curriculum exercise units shown to
   learners.
-
-Task 028 concrete steps:
-
-1. Add a root `README.md` that orients contributors to the static website,
-   frontend-only boundary, component directories, and browser-local state.
-2. Add `docs/14-platform-components.md` as the component map covering:
-   - website sections;
-   - tutorials, learner tasks, challenges, recipes, quizzes, and exams;
-   - datasets, facts, sources, and regulations;
-   - app runtime modules;
-   - browser SQL and validation;
-   - `localStorage`, cookie mirror, JSON export, planned JSON import;
-   - verification gates.
-3. Link the component map from `docs/README.md`, `PLAN.md`, `AGENTS.md`, and
-   relevant continuity docs.
-4. Update `app/README.md` to clarify JSON export and planned browser-local JSON
-   import.
-5. Update Task 028, `STATUS.md`, `WHAT_WE_DID.md`, `DO_NEXT.md`, and `BUGS.md`.
-6. Run `bun run format:check` and `bun run test:content-qa`.
-7. Commit on `organize-platform-components`, push the branch, and open a PR.
-
-Task 028 implementation status:
-
-- `README.md` added.
-- `docs/14-platform-components.md` added.
-- `docs/README.md`, `app/README.md`, `PLAN.md`, `STATUS.md`, `WHAT_WE_DID.md`,
-  `DO_NEXT.md`, `BUGS.md`, `tasks/README.md`, and
-  `tasks/028-platform-component-organization.md` updated.
-- `bun run format`, `bun run format:check`, and `bun run test:content-qa`
-  passed.
-- Post-merge PR #6 CI and Pages deployment passed, and Pages returned HTTP 200.
-- Remaining: wait for PR #7 CI, merge after review, then verify post-merge CI
-  and Pages.
-
-Next implementation step after Task 028:
 
 1. Update or add learner-task content/schema for several complete 15-20 minute
    learner tasks across multiple areas:
