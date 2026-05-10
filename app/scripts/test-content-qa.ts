@@ -649,6 +649,7 @@ function assertQuizBanks(
   learnerTaskIds: ReadonlySet<string>,
 ): void {
   assert.ok(quizBanks.length > 0, "At least one quiz bank must exist.");
+  let totalQuestionCount = 0;
 
   for (const quizBank of quizBanks) {
     assertNonEmptyString(quizBank.id, `${quizBank.id}:id`);
@@ -660,6 +661,7 @@ function assertQuizBanks(
 
     for (const difficulty of ["easy", "medium", "hard"] as const) {
       const questions = quizBank.questions[difficulty];
+      totalQuestionCount += questions.length;
 
       assert.ok(
         questions.length >= 2,
@@ -693,6 +695,11 @@ function assertQuizBanks(
       }
     }
   }
+
+  assert.ok(
+    totalQuestionCount >= 14,
+    "Assessment catalog must include at least 14 quiz questions.",
+  );
 }
 
 function assertExamPacks(
@@ -701,6 +708,7 @@ function assertExamPacks(
   learnerTaskIds: ReadonlySet<string>,
 ): void {
   assert.ok(examPacks.length > 0, "At least one exam pack must exist.");
+  let totalExamCardCount = 0;
 
   for (const examPack of examPacks) {
     assertNonEmptyString(examPack.id, `${examPack.id}:id`);
@@ -715,6 +723,7 @@ function assertExamPacks(
     );
 
     for (const card of examPack.cards) {
+      totalExamCardCount += 1;
       const context = `${examPack.id}:${card.id}`;
 
       assertNonEmptyString(card.title, `${context}:title`);
@@ -735,6 +744,11 @@ function assertExamPacks(
       );
     }
   }
+
+  assert.ok(
+    totalExamCardCount >= 4,
+    "Assessment catalog must include at least four exam cards.",
+  );
 }
 
 const factRegister = await readFactRegister();

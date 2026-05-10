@@ -110,8 +110,8 @@ const totalCardCount = flashcardDecks.reduce(
 
 assert.ok(flashcardDecks.length >= 10, "Expected at least ten topic decks.");
 assert.ok(
-  totalCardCount >= 40,
-  "Expected at least 40 flashcards across the topic decks.",
+  totalCardCount >= 59,
+  "Expected at least 59 flashcards across the topic decks.",
 );
 
 for (const deck of flashcardDecks) {

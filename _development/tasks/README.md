@@ -46,6 +46,7 @@ Task order:
 - [035 - Facts DB App Workspace](035-facts-db-app-workspace.md)
 - [036 - Root Facts Corpus Migration](036-root-facts-corpus-migration.md)
 - [037 - Fact Corpus Expansion](037-fact-corpus-expansion.md)
+- [038 - Assessment Content Expansion](038-assessment-content-expansion.md)
 
 Completion rule:
 

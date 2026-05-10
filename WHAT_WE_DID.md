@@ -1,5 +1,54 @@
 # What We Did
 
+## 2026-05-10 - Phase 5 Assessment Content Expansion Batch 1
+
+- Verified PR #23 post-merge state:
+  - PR #23 was squash-merged at
+    `1ba5fefdb169c74b633b02d6ef0a66014bf96006`.
+  - Main CI passed for `1ba5fef`.
+  - GitHub Pages workflow passed for `1ba5fef`.
+  - Live Pages URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200
+    with `last-modified: Sun, 10 May 2026 20:53:44 GMT`.
+- Confirmed no open PRs before starting the Phase 5 branch.
+- Created branch `phase-5-assessment-content-expansion` from verified `main`.
+- Added `_development/tasks/038-assessment-content-expansion.md`.
+- Started a first assessment expansion batch:
+  - 10 flashcards for BigQuery `SAFE_DIVIDE`, `SAFE_CAST`, `QUALIFY`, Looker
+    Studio freshness/cost/blend behavior, ratio contracts, and refresh
+    operations;
+  - 6 quiz questions across easy, medium, and hard;
+  - 2 exam cards for ratio null contracts and dashboard refresh operations.
+- Raised guardrails to at least 59 flashcards, 14 quiz questions, and 4 exam
+  cards.
+- Fixed a rendered UI e2e regression by deriving the expected flashcard count
+  from the generated catalog instead of hardcoding the previous 49-card count.
+- Verification passed:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run test:content-qa`;
+  - `bun run test:quiz-facts-db`;
+  - `bun run test:flashcards`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:platform-boundary`;
+  - `bun run validate:static-links`;
+  - `bun run format:check`;
+  - `bun run check` after approved local Vite preview binding, with all 12
+    Playwright tests passing;
+  - stale scan for unsupported completeness claims;
+  - `git diff --check`.
+- Failed/blocked attempts recorded:
+  - first sandboxed `bun run check` reached Playwright but Vite preview could
+    not bind `127.0.0.1:4173`;
+  - the first approved `bun run check` failed on a stale e2e expectation for
+    the old 49-card flashcard count;
+  - the Task 038 formal Claude CLI review used non-TUI
+    `claude --print --permission-mode plan --output-format text ...`, produced
+    no output for about 50 seconds, and was terminated.
+- Acceptance note: this is a first Phase 5 expansion batch only. It does not
+  satisfy the 500 flashcard, 200 quiz question, 30 exam card, or Phase 9
+  completeness targets.
+
 ## 2026-05-10 - Phase 4 Fact Corpus Expansion Batch 1
 
 - Continued Task 037 on branch `phase-4-fact-corpus-expansion`.
