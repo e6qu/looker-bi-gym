@@ -57,12 +57,16 @@ Challenges:
 - Location: `challenges/manifests/*.yaml`.
 - Role: browser-rendered challenge contracts, questions, checks, flags, inputs,
   outputs, lesson steps, and hints.
-- Validation: `bun run validate:manifests` and `bun run test:fixtures`.
+- Validation: `bun run validate:manifests`, `bun run test:fixtures`, and
+  `bun run test:derived-expectations`.
 
 Solution fixtures:
 
 - Location: `challenges/solution-fixtures/`.
 - Role: known-good and known-bad expected behavior for released challenges.
+- Dataset-derived expectation checks execute known-good browser-SQL fixture SQL
+  against the pinned dataset and compare derived row counts and aggregate values
+  to manifest expectations.
 
 Recipes:
 
@@ -185,6 +189,7 @@ Focused gates:
 - `bun run validate:manifests`;
 - `bun run validate:datasets`;
 - `bun run test:fixtures`;
+- `bun run test:derived-expectations`;
 - `bun run test:content-qa`;
 - `bun run test:facts-db`;
 - `bun run test:progress-export`;

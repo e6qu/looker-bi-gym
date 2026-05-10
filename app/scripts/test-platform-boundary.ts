@@ -103,6 +103,7 @@ async function assertScriptPyramid(): Promise<void> {
     "test:quiz",
     "test:sql",
     "test:fixtures",
+    "test:derived-expectations",
     "test:cloud-evidence",
     "test:browser-config",
     "test:progress-export",

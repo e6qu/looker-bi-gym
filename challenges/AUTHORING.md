@@ -211,6 +211,8 @@ A release-ready challenge must document how it is verified. Prefer automated tes
 - `bun run test:quiz` for quiz grading changes.
 - `bun run test:sql` for browser SQL runtime smoke coverage.
 - `bun run test:fixtures` for released challenge known-good and expected known-bad solution fixtures.
+- `bun run test:derived-expectations` for browser-SQL row-count and aggregate
+  values derived from the pinned dataset through known-good fixture SQL.
 - `bun run test:cloud-evidence` for cloud evidence parser and validator changes.
 - `bun run test:browser-config` for browser-config parser and validator
   changes.
@@ -218,6 +220,12 @@ A release-ready challenge must document how it is verified. Prefer automated tes
 - `make check` before marking a task complete.
 
 Every released manifest under `challenges/manifests/` must have at least one known-good solution fixture under `challenges/solution-fixtures/{challenge_id}/`. Golden fixtures should prove both sides of a trap: one known-good solution passes and one known-bad solution fails for the expected check IDs. If a task cannot automate a check yet, write the manual procedure and residual risk in the relevant `tasks/*.md` file and continuity docs.
+
+For browser-SQL challenges, exact `row-count`, `scalar-aggregate`, and
+`aggregate-total` expectations are not trusted by inspection alone. The
+known-good fixture SQL is executed against the pinned committed dataset, and
+`bun run test:derived-expectations` fails if the manifest value differs from
+the derived result.
 
 ## Tutorial Conversion Checklist
 

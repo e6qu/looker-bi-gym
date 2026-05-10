@@ -6,6 +6,10 @@ app/src/generated
 sources/platforms/*/full
 app/test-results
 var
+derived-expectations
+screenshots
+app/derived-expectations
+app/screenshots
 coverage
 playwright-report
 *.log

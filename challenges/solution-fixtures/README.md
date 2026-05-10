@@ -53,4 +53,9 @@ A release-ready exception must be documented before the challenge is shipped. Do
 
 Browser SQL fixtures pin the dataset version explicitly. Current SQL fixtures use `deposits-seed/v0.1.0` for the deposits track and `lending-month-end/v0.1.0` for the lending month-end exposure challenge.
 
+`bun run test:derived-expectations` executes known-good browser SQL fixture SQL
+against the pinned dataset and derives exact row-count, scalar-aggregate, and
+aggregate-total values. The test fails if those derived values drift from the
+manifest's expected grading contract.
+
 `deposits-seed/v0.1.1` intentionally changes expected outputs. If `first-banking-dataset` or `account-owner-fanout` is repointed to `v0.1.1`, refresh the fixture SQL, expected failing checks, and manifest validator values together.

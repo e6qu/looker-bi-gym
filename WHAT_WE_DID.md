@@ -41,6 +41,26 @@
   actually click through the deployed GitHub Pages UI with screenshots and
   real learner-flow interactions after the PR is merged. This is a post-merge
   verification step, not a substitute for local or CI tests.
+- After the user asked to finish the only non-post-merge Task 026 omission,
+  added `bun run test:derived-expectations`. It executes known-good browser-SQL
+  fixture SQL against pinned committed datasets, derives exact row counts and
+  aggregate values, and verifies the manifest grading contract matches those
+  derived values.
+- Wired the derived-expectation check into `bun run check`, `make test`, and the
+  platform-boundary test pyramid guard.
+- Added `.gitignore` and `.prettierignore` protections for local generated
+  expectation reports and screenshot artifacts:
+  `derived-expectations/`, `screenshots/`, `app/derived-expectations/`, and
+  `app/screenshots/`.
+- Focused verification run:
+  - `bun run test:derived-expectations`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:platform-boundary`;
+  - `bun run format:check`.
+- Full `bun run check` passed after this follow-up, including the new
+  derived-expectation step, all 9 Playwright rendered UI tests, the production
+  build, and static-link validation.
 
 - After the user merged PR #8, confirmed it merged at
   `5db7663ee0d76be809cb383a4dfeb4390eb5ed6f`, switched to `main`, and pulled

@@ -1,6 +1,6 @@
 BUN ?= bun
 
-.PHONY: help install lint typecheck format format-check validate validate-manifests validate-datasets validate-static-links test test-quiz test-sql test-fixtures test-cloud-evidence test-progress-export test-content-qa test-facts-db test-llm-workbench test-platform-boundary test-e2e test-validators questions-context questions-generate-codex questions-generate-claude questions-review-codex questions-review-claude dream dream-codex dream-claude build check dev preview
+.PHONY: help install lint typecheck format format-check validate validate-manifests validate-datasets validate-static-links test test-quiz test-sql test-fixtures test-derived-expectations test-cloud-evidence test-progress-export test-content-qa test-facts-db test-llm-workbench test-platform-boundary test-e2e test-validators questions-context questions-generate-codex questions-generate-claude questions-review-codex questions-review-claude dream dream-codex dream-claude build check dev preview
 
 help:
 	@printf '%s\n' \
@@ -18,6 +18,7 @@ help:
 		'  test-quiz           Run quiz evaluator tests' \
 		'  test-sql            Run SQL runtime smoke tests' \
 		'  test-fixtures       Run solution fixture golden tests' \
+		'  test-derived-expectations Derive SQL expected values from pinned datasets' \
 		'  test-cloud-evidence Run cloud evidence parser and validator tests' \
 		'  test-progress-export Run progress export structure tests' \
 		'  test-content-qa     Run content QA checks' \
@@ -65,7 +66,7 @@ validate-datasets:
 validate-static-links:
 	$(BUN) run validate:static-links
 
-test: test-quiz test-sql test-fixtures test-cloud-evidence test-progress-export test-content-qa test-facts-db test-llm-workbench test-platform-boundary test-validators test-e2e
+test: test-quiz test-sql test-fixtures test-derived-expectations test-cloud-evidence test-progress-export test-content-qa test-facts-db test-llm-workbench test-platform-boundary test-validators test-e2e
 
 test-quiz:
 	$(BUN) run test:quiz
@@ -75,6 +76,9 @@ test-sql:
 
 test-fixtures:
 	$(BUN) run test:fixtures
+
+test-derived-expectations:
+	$(BUN) run test:derived-expectations
 
 test-cloud-evidence:
 	$(BUN) run test:cloud-evidence

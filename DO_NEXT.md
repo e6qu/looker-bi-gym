@@ -17,8 +17,9 @@ Current implementation step:
   under `tasks/*.md`; `learner tasks` are curriculum exercise units shown to
   learners.
 
-1. Open the PR for branch `task026-grading-contracts`.
-2. Watch PR checks and keep the branch mergeable.
+1. Push the Task 026 follow-up commit to PR #10.
+2. Watch PR #10 checks and keep the branch mergeable. The user will merge the
+   PR after CI passes.
 3. After merge, verify main-branch CI, GitHub Pages deployment, and the live
    Pages URL.
 4. After the merge and Pages deployment, perform a real deployed-UI click-through
@@ -29,9 +30,8 @@ Current implementation step:
    viewport. Follow actual controls and record screenshots/checkpoints in the
    continuity notes.
 5. Then choose the next implementation task. Good candidates are a browser-local
-   JSON import flow for Settings, richer browser-config/metric-contract
-   challenges, or dataset-derived expected-answer generation for challenges
-   where generated targets add real value.
+   JSON import flow for Settings or richer browser-config/metric-contract
+   challenges.
 
 Preservation and verification steps:
 
@@ -47,7 +47,9 @@ Preservation and verification steps:
 - Preserve the Task 015 fixture coverage rule: every released manifest needs a known-good solution fixture or a documented exception, and CTF/trap challenges need expected known-bad coverage.
 - Preserve the Task 026 grading-contract rule: browser-config challenges use
   local JSON evidence only, supported checks must be covered by content QA, and
-  exclusion-style artifact checks need known-bad fixture coverage.
+  exclusion-style artifact checks need known-bad fixture coverage. Browser-SQL
+  exact row-count and aggregate manifest expectations must stay covered by
+  `bun run test:derived-expectations`.
 - Preserve the Task 016 export boundary: progress export must stay local, user-controlled, and free of credentials, raw answers, pasted cloud evidence, sensitive synthetic field names, real banking data, storage keys, and hidden app internals.
 - Preserve the Task 017 content QA boundary: `bun run test:content-qa` must keep required tools, regulatory-context links, disclaimer language, synthetic-data warnings, dataset synthetic-only notes, and internal Markdown links covered.
 - Preserve the rendered UI boundary: `bun run test:e2e` must keep the real built app, responsive layout, challenge pages, DuckDB-WASM SQL execution, cloud-evidence controls, Settings export metadata, and overflow checks covered.

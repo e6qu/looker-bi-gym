@@ -25,6 +25,9 @@ The lower and middle layers run deterministic checks without a browser:
 - `bun run test:browser-config` covers local JSON config parsing and validation.
 - `bun run test:progress-export` covers browser-local progress, cookie fallback, reset, and export boundaries.
 - `bun run test:fixtures` covers known-good and known-bad challenge solution fixtures.
+- `bun run test:derived-expectations` executes known-good browser-SQL fixtures
+  against their pinned datasets and verifies manifest row-count and aggregate
+  expectations match the dataset-derived values.
 - `bun run test:content-qa` covers required-tool declarations, synthetic-data boundaries, regulatory links, disclaimers, and Markdown links.
 
 ## Rendered User Flows

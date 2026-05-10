@@ -20,11 +20,10 @@ trap coverage.
   challenge mode.
 - Added rendered Playwright coverage for the learner completing the metric
   contract challenge locally.
-
-Dataset-derived expected-answer generation remains a future enhancement when a
-challenge needs generated targets. The current metric-contract challenge uses a
-committed artifact fixture because the grading target is a learner-authored
-configuration contract, not a dataset aggregate.
+- Added dataset-derived expected-answer verification for browser-SQL challenges:
+  known-good fixture SQL is executed against pinned committed datasets, and
+  exact row-count plus aggregate expectations are compared back to the manifest
+  contract.
 
 ## Verification
 
@@ -35,6 +34,8 @@ configuration contract, not a dataset aggregate.
   corpus.
 - Browser-config challenge checks are validated against the supported local
   validator list.
+- Browser-SQL row-count, scalar-aggregate, and aggregate-total expectations are
+  derived from the pinned dataset through known-good fixture SQL.
 
 ## Tests
 
@@ -43,8 +44,10 @@ configuration contract, not a dataset aggregate.
 - `bun run test:browser-config`
 - `bun run test:content-qa`
 - `bun run test:fixtures`
+- `bun run test:derived-expectations`
 - `bun run typecheck`
 - `bun run lint`
 - `bun run check`
 
-Last local verification: all commands above passed on 2026-05-10.
+Last local verification: all commands above passed on 2026-05-10, including
+full `bun run check` after the derived-expectation follow-up.

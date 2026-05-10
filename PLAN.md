@@ -208,7 +208,9 @@ Add richer challenge modes and validators:
 
 - Browser config/metric contract validators. Initial browser-config JSON
   validators and a metric-contract challenge are implemented in Task 026.
-- Dataset-derived expected answer generation.
+- Dataset-derived expected answer generation. Initial browser-SQL row-count and
+  aggregate expectation checks are implemented in Task 026 through known-good
+  fixture SQL executed against pinned committed datasets.
 - Golden answer explanations.
 - Known-bad fixtures for every CTF/trap challenge.
 - Fact ID coverage checks for every released lesson step and question.
