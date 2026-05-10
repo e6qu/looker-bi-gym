@@ -59,6 +59,11 @@ The lower and middle layers run deterministic checks without a browser:
 - Review a flashcard, record timestamped spaced-repetition state, and verify the
   flashcard JSON export contains review and due timestamps. Validate and apply
   that JSON through the flashcard import controls.
+- Search the expanded flashcard corpus, switch between due-only and all-card
+  study mode, and reset flashcard review state without touching challenge
+  progress.
+- Open flashcard source-review metadata so reviewed Anki/shared-flashcard
+  sources remain visible without copying third-party deck text.
 - Fill browser-config metric contract JSON, answer contract questions, and
   verify local completion without backend calls.
 - Render quiz-bank YAML, exam-card YAML, and the in-app fact graph as real

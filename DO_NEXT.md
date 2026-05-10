@@ -2,24 +2,26 @@
 
 ## Immediate Next Step
 
-Numbered implementation tasks 001 through 031 are implemented. PR #3 through
-PR #16 were merged. PR #16 merged on 2026-05-10 at merge commit
-`6bcf0ba64f9985b98db69ddc178b310707af661c`.
+Numbered implementation tasks 001 through 032 are implemented. PR #3 through
+PR #17 were merged. PR #17 merged on 2026-05-10 at merge commit
+`d7ace564745b9f160679d5c8a3583ff4fd43cc34`.
 
 Current implementation step:
 
-- PR #16 (`https://github.com/e6qu/looker-bi-gym/pull/16`) is merged and
+- PR #17 (`https://github.com/e6qu/looker-bi-gym/pull/17`) is merged and
   post-merge verified.
-- Main CI run `25632812238` passed for merge commit
-  `6bcf0ba64f9985b98db69ddc178b310707af661c`.
-- Main GitHub Pages deployment run `25632812244` passed for the same merge
+- Main CI run `25633063645` passed for merge commit
+  `d7ace564745b9f160679d5c8a3583ff4fd43cc34`.
+- Main GitHub Pages deployment run `25633063642` passed for the same merge
   commit, and `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
-  `last-modified: Sun, 10 May 2026 15:43:11 GMT`.
-- Current branch: `expand-flashcard-coverage`.
-- Current implementation task: [032 - Expanded Flashcard Coverage](tasks/032-expanded-flashcard-coverage.md).
-- Current branch purpose: expand the flashcard corpus from the first starter
-  slice to ten topic decks and 40 fact-backed cards, while strengthening
-  `bun run test:flashcards` coverage.
+  `last-modified: Sun, 10 May 2026 15:54:17 GMT`.
+- Current branch: `agent-pr-discipline`.
+- Current implementation task: Task 033 - Flashcard Study Usability.
+- Current branch purpose: improve the browser flashcard study workflow with
+  selected-deck search, due-only/all-card review mode, deck/card/due totals,
+  flashcard-only reset, external flashcard source-review metadata for Looker
+  Studio, BigQuery, and BI coverage sweeps, a 49-card fact-backed corpus,
+  rendered UI coverage, and the user-requested Git/PR discipline in `AGENTS.md`.
 - Read `README.md`, `docs/14-platform-components.md`, `PLAN.md`, `STATUS.md`,
   `BUGS.md`, `tasks/025-real-tutorial-instruction-packs.md`, and
   `tasks/026-challenge-grading-contract-expansion.md` first.
@@ -27,20 +29,19 @@ Current implementation step:
   under `tasks/*.md`; `learner tasks` are curriculum exercise units shown to
   learners.
 
-Current Task 032 must finish before starting the next item:
+Current PR #18 must finish before starting the next item:
 
-- Keep flashcard state frontend-only: pasted JSON is validated in the browser
-  and never uploaded.
-- Keep flashcard state separate from challenge progress.
-- Keep deck cards grounded in known source facts and recommended in-app paths.
-- Keep scheduler timestamps explicit in export/import state.
-- Keep the expanded corpus mechanics-first: BI, BigQuery, Looker Studio,
-  metric-contract, operations, and privacy/security cards should dominate;
-  banking, deposit-guarantee, and real-estate cards provide applied context.
+- Reuse PR #18 and do not open another PR for this phase.
+- Keep this as the only in-flight PR.
+- Before merging, fetch `origin/main` and rebase this branch on top of it.
+- Merge only if CI passes on the rebased branch.
+- After merge, verify main CI, GitHub Pages deployment, and live Pages HTTP 200.
 - Preserve the strict typing boundary: no `any`, `as any`, broad `object` type,
   `as object`, `@ts-ignore`, or `@ts-expect-error`.
+- Task 033 local verification passed. Commit, rebase on `origin/main`, push to
+  PR #18, rename/update PR #18, and wait for CI. Do not open another PR.
 
-Task 032 verification passed on 2026-05-10:
+Task 032 verification passed on 2026-05-10 and PR #17 is post-merge verified:
 
 - `bun run typecheck`
 - `bun run lint`
@@ -52,6 +53,22 @@ Task 032 verification passed on 2026-05-10:
 - `git diff --check`
 - type-safety scan across app sources/scripts/tests/configs, with only the
   literal ESLint rule name `@typescript-eslint/no-explicit-any` matching
+
+Task 033 local verification passed on 2026-05-10:
+
+- `bun run typecheck`
+- `bun run lint`
+- `bun run test:flashcards`
+- `bun run test:platform-boundary`
+- `bun run test:e2e` after approved local Playwright/Vite preview port binding,
+  including all 12 rendered UI tests
+- `bun run format`
+- `bun run check` after approved local Playwright/Vite preview port binding
+- `git diff --check`
+- type-safety scan across app sources/scripts/tests/configs, with only the
+  literal ESLint rule name `@typescript-eslint/no-explicit-any` matching
+- ignored-output review confirmed `app/dist/`, `app/src/generated/`,
+  `screenshots/`, and `var/` are ignored
 
 Recommended next phases after Task 032:
 

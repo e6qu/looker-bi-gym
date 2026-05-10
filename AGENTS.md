@@ -60,6 +60,19 @@ Do not rely on chat history as the source of truth. Keep these files current so 
 - Do not commit WASM or other binary runtime artifacts when they can be supplied by package dependencies or produced by the local build.
 - After each task, reassess the plan and downstream tasks. If implementation uncovered a true blocker, wrong assumption, or better path, update `PLAN.md`, split plans, and affected `tasks/*.md` before continuing.
 
+## Git And PR Discipline
+
+- Never push directly to `main`.
+- Keep exactly one working PR open at a time unless the user explicitly asks for
+  multiple concurrent PRs.
+- Before creating a new PR, check for existing open PRs and either continue the
+  existing PR or ask the user how to proceed.
+- Before merging a PR, fetch `origin/main` and rebase the PR branch on top of
+  `origin/main`.
+- Merge only after CI is passing on the rebased PR branch.
+- After merging, verify main-branch CI, GitHub Pages deployment, and the live
+  GitHub Pages URL before starting another implementation PR.
+
 ## Tooling Rules
 
 - Use `bun` for package management and scripts.

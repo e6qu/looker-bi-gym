@@ -8,11 +8,27 @@ export type Flashcard = {
   readonly recommendedPaths: readonly string[];
 };
 
+export type ExternalFlashcardSourceKind =
+  | "anki-search"
+  | "anki-manual"
+  | "brainscape"
+  | "quizlet";
+
+export type ExternalFlashcardSourceReview = {
+  readonly sourceKind: ExternalFlashcardSourceKind;
+  readonly title: string;
+  readonly url: string;
+  readonly reviewedAt: string;
+  readonly coverageNote: string;
+  readonly incorporationNote: string;
+};
+
 export type FlashcardDeck = {
   readonly id: string;
   readonly title: string;
   readonly topic: string;
   readonly cards: readonly Flashcard[];
+  readonly sourceReviews?: readonly ExternalFlashcardSourceReview[];
 };
 
 export type FlashcardReviewEvent = {
@@ -97,6 +113,48 @@ export const flashcardDecks: readonly FlashcardDeck[] = [
     id: "bigquery-sql",
     title: "BigQuery And SQL",
     topic: "Views, month ends, and serving results",
+    sourceReviews: [
+      {
+        sourceKind: "anki-search",
+        title: "AnkiWeb shared deck search for BigQuery",
+        url: "https://ankiweb.net/shared/decks?search=BigQuery",
+        reviewedAt: "2026-05-10",
+        coverageNote:
+          "Indexed web search did not expose a directly reusable BigQuery AnkiWeb deck with clear source and license metadata.",
+        incorporationNote:
+          "No Anki deck content was copied; BigQuery cards are authored from official Google Cloud-backed repo facts.",
+      },
+      {
+        sourceKind: "brainscape",
+        title: "Brainscape Bigquery flashcards index",
+        url: "https://www.brainscape.com/subjects/bigquery",
+        reviewedAt: "2026-05-10",
+        coverageNote:
+          "Coverage signal for BigQuery SQL, data engineering, GCP certification, and BigQuery feature terminology.",
+        incorporationNote:
+          "Used as a topic-coverage signal only; no Brainscape card text was copied.",
+      },
+      {
+        sourceKind: "quizlet",
+        title: "Quizlet BigQuery flashcard set",
+        url: "https://quizlet.com/307466959/bigquery-flash-cards/",
+        reviewedAt: "2026-05-10",
+        coverageNote:
+          "Coverage signal for BigQuery basics, datasets/tables/jobs, IAM, query cost, and SQL usage.",
+        incorporationNote:
+          "Used as a topic-coverage signal only; new cards use official BigQuery facts already in this repo.",
+      },
+      {
+        sourceKind: "quizlet",
+        title: "Quizlet BigQuery external tables and federated queries set",
+        url: "https://quizlet.com/1043631721/bigquery-external-tables-federated-queries-flash-cards/",
+        reviewedAt: "2026-05-10",
+        coverageNote:
+          "Coverage signal for external tables, federated queries, and source-system boundaries.",
+        incorporationNote:
+          "Not incorporated as card text in this phase because the committed fact corpus does not yet include enough official external-table facts.",
+      },
+    ],
     cards: [
       {
         id: "fc-bigquery-view",
@@ -135,12 +193,78 @@ export const flashcardDecks: readonly FlashcardDeck[] = [
         sourceFacts: ["FACT-BIGQUERY-PARTITION-FILTERS"],
         recommendedPaths: ["#/tutorials/06-performance-and-cost-lab.md"],
       },
+      {
+        id: "fc-bigquery-jobs-bytes",
+        front:
+          "Which BigQuery job fields help a BI analyst review query cost behavior?",
+        back: "`total_bytes_billed` and `total_bytes_processed` help compare query scans and billing behavior.",
+        sourceFacts: ["FACT-BIGQUERY-JOBS-BYTES"],
+        recommendedPaths: ["#/tutorials/06-performance-and-cost-lab.md"],
+      },
+      {
+        id: "fc-bigquery-view-region",
+        front:
+          "What location rule should be checked before creating a BigQuery logical view?",
+        back: "A logical view must reference resources in the same location as the view.",
+        sourceFacts: ["FACT-BIGQUERY-VIEW-SAME-REGION"],
+        recommendedPaths: ["#/docs/03-bigquery-for-bi.md"],
+      },
+      {
+        id: "fc-bigquery-view-sql-versioning",
+        front:
+          "Why should BI teams version the SQL behind a BigQuery serving view?",
+        back: "The view name can stay stable while the SQL contract changes downstream report behavior.",
+        sourceFacts: ["FACT-BIGQUERY-VIEW-SQL-VERSIONING"],
+        recommendedPaths: [
+          "#/tutorials/learner-tasks/lt-sql-003-month-end-serving-result.md",
+        ],
+      },
+      {
+        id: "fc-bigquery-jobs-window",
+        front:
+          "Why should a BigQuery jobs query include an explicit time window?",
+        back: "`INFORMATION_SCHEMA.JOBS` is partitioned by creation time, so bounded time filters make cost and freshness evidence safer to inspect.",
+        sourceFacts: ["FACT-BIGQUERY-JOBS-CREATION-TIME"],
+        recommendedPaths: ["#/tutorials/06-performance-and-cost-lab.md"],
+      },
     ],
   },
   {
     id: "looker-studio",
     title: "Looker Studio",
     topic: "Data sources and chart fields",
+    sourceReviews: [
+      {
+        sourceKind: "anki-search",
+        title: "AnkiWeb shared deck search for Looker Studio",
+        url: "https://ankiweb.net/shared/decks?search=Looker%20Studio",
+        reviewedAt: "2026-05-10",
+        coverageNote:
+          "No directly reusable Looker Studio Anki shared deck was found during the indexed web search sweep.",
+        incorporationNote:
+          "Used as a licensing boundary: no Anki deck content was copied; cards stay authored from official project facts.",
+      },
+      {
+        sourceKind: "quizlet",
+        title: "Quizlet Looker Studio 1 flashcard set",
+        url: "https://quizlet.com/936877770/looker-studio-1-flash-cards/",
+        reviewedAt: "2026-05-10",
+        coverageNote:
+          "Coverage signal for data sources, fields, credentials, controls, and chart behavior in Looker Studio study material.",
+        incorporationNote:
+          "No third-party card text was copied; the deck coverage was mapped to official Looker Studio facts already in this repo.",
+      },
+      {
+        sourceKind: "quizlet",
+        title: "Quizlet Looker Studio 3 flashcard set",
+        url: "https://quizlet.com/936889614/looker-studio-3-flash-cards/",
+        reviewedAt: "2026-05-10",
+        coverageNote:
+          "Coverage signal for blends, aggregation behavior, null handling, and BigQuery export topics.",
+        incorporationNote:
+          "No third-party card text was copied; new cards use repo source facts for reusable data sources, dimensions, and aggregation context.",
+      },
+    ],
     cards: [
       {
         id: "fc-looker-source",
@@ -180,6 +304,40 @@ export const flashcardDecks: readonly FlashcardDeck[] = [
           "FACT-LOOKER-STUDIO-BLEND-FIELD-SUBSET",
         ],
         recommendedPaths: ["#/tutorials/05-blending-vs-upstream-joins.md"],
+      },
+      {
+        id: "fc-looker-reusable-source",
+        front:
+          "When is a reusable Looker Studio data source preferable to an embedded one?",
+        back: "Use a reusable data source when a governed field model should be shared consistently across reports.",
+        sourceFacts: ["FACT-LOOKER-STUDIO-EMBEDDED-REUSABLE-DATA-SOURCES"],
+        recommendedPaths: [
+          "#/tutorials/learner-tasks/lt-looker-004-report-ready-data-source.md",
+        ],
+      },
+      {
+        id: "fc-looker-dimensions-metrics",
+        front:
+          "What is the core difference between Looker Studio dimensions and metrics?",
+        back: "Dimensions group the data; metrics are the aggregated values shown within that grouping context.",
+        sourceFacts: [
+          "FACT-LOOKER-STUDIO-DIMENSIONS-METRICS",
+          "FACT-LOOKER-STUDIO-DIMENSION-CONTEXT",
+        ],
+        recommendedPaths: [
+          "#/tutorials/learner-tasks/lt-looker-004-report-ready-data-source.md",
+        ],
+      },
+      {
+        id: "fc-looker-aggregation-context",
+        front:
+          "Why can adding a dimension change a Looker Studio chart total or row set?",
+        back: "Aggregation is evaluated in the context of the selected dimensions, so the grouping context changes the displayed metric.",
+        sourceFacts: [
+          "FACT-LOOKER-STUDIO-DIMENSION-CONTEXT",
+          "FACT-LOOKER-STUDIO-DEFAULT-AGGREGATION",
+        ],
+        recommendedPaths: ["#/tutorials/04-metrics-and-calculated-fields.md"],
       },
     ],
   },
@@ -329,6 +487,28 @@ export const flashcardDecks: readonly FlashcardDeck[] = [
     id: "metric-contracts",
     title: "Metric Contracts",
     topic: "Serving views, fields, and contract boundaries",
+    sourceReviews: [
+      {
+        sourceKind: "brainscape",
+        title: "Brainscape Looker flashcards index",
+        url: "https://www.brainscape.com/subjects/looker",
+        reviewedAt: "2026-05-10",
+        coverageNote:
+          "Found user-generated Looker and Looker developer decks, mostly LookML-oriented rather than Looker Studio-specific.",
+        incorporationNote:
+          "Used as a topic-coverage signal for access/security/field contracts; no Brainscape card text was copied.",
+      },
+      {
+        sourceKind: "anki-manual",
+        title: "Anki Manual: shared decks guidance",
+        url: "https://docs.ankiweb.net/getting-started.html#shared-decks",
+        reviewedAt: "2026-05-10",
+        coverageNote:
+          "The Anki manual frames shared decks as supplements and recommends creating your own deck for complex subjects.",
+        incorporationNote:
+          "Supports keeping project cards fact-backed, explanatory, and locally authored instead of importing opaque third-party decks.",
+      },
+    ],
     cards: [
       {
         id: "fc-contract-view-scope",
@@ -373,6 +553,25 @@ export const flashcardDecks: readonly FlashcardDeck[] = [
         back: "It can expose controlled query results without giving report consumers direct access to every underlying table.",
         sourceFacts: ["FACT-BIGQUERY-AUTHORIZED-VIEW-ACCESS-CONTROL"],
         recommendedPaths: ["#/tutorials/07-governance-security-and-sharing.md"],
+      },
+      {
+        id: "fc-contract-blend-join-config",
+        front:
+          "What should a Looker Studio blend contract state before a chart is trusted?",
+        back: "State the join keys, source order, retained fields, and expected fanout risk before accepting blended totals.",
+        sourceFacts: [
+          "FACT-LOOKER-STUDIO-BLEND-JOIN-CONFIG",
+          "FACT-LOOKER-STUDIO-BLEND-MORE-ROWS",
+        ],
+        recommendedPaths: ["#/tutorials/05-blending-vs-upstream-joins.md"],
+      },
+      {
+        id: "fc-contract-calculation-location",
+        front:
+          "Why should a metric contract say where a calculated field lives?",
+        back: "A data-source calculated field is reusable, while a chart-specific calculated field exists only in that chart.",
+        sourceFacts: ["FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE"],
+        recommendedPaths: ["#/tutorials/04-metrics-and-calculated-fields.md"],
       },
     ],
   },

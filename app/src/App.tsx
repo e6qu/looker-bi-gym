@@ -27,6 +27,7 @@ import {
   getFlashcardState,
   parseFlashcardImport,
   reviewFlashcard,
+  type ExternalFlashcardSourceReview,
   type FlashcardRating,
   type FlashcardState,
 } from "./flashcards";
@@ -723,6 +724,54 @@ function SourceFactList({
         );
       })}
     </p>
+  );
+}
+
+function formatExternalFlashcardSourceKind(
+  sourceKind: ExternalFlashcardSourceReview["sourceKind"],
+): string {
+  const labels: Readonly<
+    Record<ExternalFlashcardSourceReview["sourceKind"], string>
+  > = {
+    "anki-search": "Anki search",
+    "anki-manual": "Anki manual",
+    brainscape: "Brainscape",
+    quizlet: "Quizlet",
+  };
+
+  return labels[sourceKind];
+}
+
+function ExternalFlashcardSourceReviewList({
+  deckId,
+  sourceReviews,
+}: {
+  readonly deckId: string | undefined;
+  readonly sourceReviews: readonly ExternalFlashcardSourceReview[] | undefined;
+}): JSX.Element | null {
+  if (sourceReviews === undefined || sourceReviews.length === 0) {
+    return null;
+  }
+
+  return (
+    <details className="sourceReviewPanel" key={deckId}>
+      <summary>External flashcard source review</summary>
+      <ul>
+        {sourceReviews.map((sourceReview) => (
+          <li key={`${sourceReview.sourceKind}:${sourceReview.url}`}>
+            <a href={sourceReview.url} rel="noreferrer" target="_blank">
+              {sourceReview.title}
+            </a>{" "}
+            <span className="status statusPlanned">
+              {formatExternalFlashcardSourceKind(sourceReview.sourceKind)}
+            </span>
+            <p>{sourceReview.coverageNote}</p>
+            <p>{sourceReview.incorporationNote}</p>
+            <small>Reviewed {sourceReview.reviewedAt}</small>
+          </li>
+        ))}
+      </ul>
+    </details>
   );
 }
 
@@ -2936,6 +2985,8 @@ function FlashcardsPage(): JSX.Element {
     flashcardDecks[0]?.id ?? "",
   );
   const [showBack, setShowBack] = useState<boolean>(false);
+  const [searchText, setSearchText] = useState<string>("");
+  const [reviewMode, setReviewMode] = useState<"due" | "all">("due");
   const [importJson, setImportJson] = useState<string>("");
   const [importMessage, setImportMessage] = useState<string>("");
   const [importPreview, setImportPreview] = useState<
@@ -2945,11 +2996,53 @@ function FlashcardsPage(): JSX.Element {
     flashcardDecks.find((deck) => deck.id === selectedDeckId) ??
     flashcardDecks[0];
   const nowIso = new Date().toISOString();
+  const searchTerms = searchText
+    .trim()
+    .toLowerCase()
+    .split(/\s+/u)
+    .filter((term) => term.length > 0);
+  const totalCardCount = flashcardDecks.reduce(
+    (count, deck) => count + deck.cards.length,
+    0,
+  );
+  const totalDueCount = flashcardDecks.reduce(
+    (count, deck) =>
+      count +
+      deck.cards.filter(
+        (card) => getFlashcardState(state, card.id, nowIso).dueAt <= nowIso,
+      ).length,
+    0,
+  );
   const dueCards =
     selectedDeck?.cards.filter(
       (card) => getFlashcardState(state, card.id, nowIso).dueAt <= nowIso,
     ) ?? [];
-  const activeCard = dueCards[0] ?? selectedDeck?.cards[0];
+  const filteredCards =
+    selectedDeck?.cards.filter((card) => {
+      if (searchTerms.length === 0) {
+        return true;
+      }
+
+      const searchableText = [
+        card.front,
+        card.back,
+        card.id,
+        ...card.sourceFacts,
+        ...card.recommendedPaths,
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      return searchTerms.every((term) => searchableText.includes(term));
+    }) ?? [];
+  const reviewCards = filteredCards.filter((card) => {
+    if (reviewMode === "all") {
+      return true;
+    }
+
+    return getFlashcardState(state, card.id, nowIso).dueAt <= nowIso;
+  });
+  const activeCard = reviewCards[0];
   const exportJson = useMemo(() => JSON.stringify(state, null, 2), [state]);
 
   function persistState(nextState: FlashcardState): void {
@@ -2995,6 +3088,15 @@ function FlashcardsPage(): JSX.Element {
     setImportMessage("Flashcard review state imported locally.");
   }
 
+  function resetFlashcards(): void {
+    const nextState = createEmptyFlashcardState(new Date().toISOString());
+
+    persistState(nextState);
+    setShowBack(false);
+    setImportPreview(undefined);
+    setImportMessage("Flashcard review state has been reset in this browser.");
+  }
+
   return (
     <section className="page" aria-labelledby="flashcards-title">
       <PageTitle
@@ -3012,8 +3114,43 @@ function FlashcardsPage(): JSX.Element {
             </p>
           </div>
           <span className="status statusReady">
-            {flashcardDecks.length} decks
+            {flashcardDecks.length} decks / {totalCardCount} cards /{" "}
+            {totalDueCount} due
           </span>
+        </div>
+        <label className="exportNotesField" htmlFor="flashcard-search">
+          <span className="fieldLabel">Search flashcards</span>
+          <input
+            id="flashcard-search"
+            onChange={(event) => {
+              setSearchText(event.currentTarget.value);
+              setShowBack(false);
+            }}
+            type="search"
+            value={searchText}
+          />
+        </label>
+        <div className="settingsButtonRow" aria-label="Review mode">
+          <button
+            aria-pressed={reviewMode === "due"}
+            onClick={() => {
+              setReviewMode("due");
+              setShowBack(false);
+            }}
+            type="button"
+          >
+            Due Cards
+          </button>
+          <button
+            aria-pressed={reviewMode === "all"}
+            onClick={() => {
+              setReviewMode("all");
+              setShowBack(false);
+            }}
+            type="button"
+          >
+            All Cards
+          </button>
         </div>
         <div className="learningMeta">
           {flashcardDecks.map((deck) => {
@@ -3029,6 +3166,7 @@ function FlashcardsPage(): JSX.Element {
                 onClick={() => {
                   setSelectedDeckId(deck.id);
                   setShowBack(false);
+                  setSearchText("");
                 }}
                 type="button"
               >
@@ -3037,6 +3175,10 @@ function FlashcardsPage(): JSX.Element {
             );
           })}
         </div>
+        <ExternalFlashcardSourceReviewList
+          deckId={selectedDeck?.id}
+          sourceReviews={selectedDeck?.sourceReviews}
+        />
       </div>
 
       {selectedDeck !== undefined && activeCard !== undefined ? (
@@ -3070,7 +3212,22 @@ function FlashcardsPage(): JSX.Element {
             </button>
           )}
         </section>
-      ) : null}
+      ) : (
+        <section className="learningPanel" aria-labelledby="review-card-title">
+          <div className="learningPanelHeader">
+            <div>
+              <p className="eyebrow">{selectedDeck?.topic ?? "Flashcards"}</p>
+              <h2 id="review-card-title">No matching cards</h2>
+            </div>
+            <span className="status statusPlanned">
+              {reviewMode === "due" ? "0 due" : "0 matches"}
+            </span>
+          </div>
+          <p>
+            Switch to all cards, choose another deck, or change the search text.
+          </p>
+        </section>
+      )}
 
       <section className="settingsActionPanel progressExportPanel">
         <div>
@@ -3127,6 +3284,11 @@ function FlashcardsPage(): JSX.Element {
             {importMessage}
           </div>
         ) : null}
+        <div className="settingsButtonRow">
+          <button type="button" onClick={resetFlashcards}>
+            Reset Flashcards
+          </button>
+        </div>
       </section>
     </section>
   );

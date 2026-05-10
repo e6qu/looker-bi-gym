@@ -127,10 +127,27 @@ No known app bugs after the Bun-only tooling, typed config, formatting, rendered
 - Post-merge PR #16 GitHub Actions and GitHub Pages deployment passed for merge
   commit `6bcf0ba64f9985b98db69ddc178b310707af661c`, and the deployed Pages URL
   returned HTTP 200 on 2026-05-10.
-- Task 032 is in progress to resolve the flashcard expansion follow-up by
-  broadening the corpus to ten decks and 40 fact-backed cards. Local focused
-  checks and full `bun run check` passed on 2026-05-10 after approved local
-  Playwright/Vite preview port binding.
+- Task 032 resolved the flashcard expansion follow-up by broadening the corpus
+  to ten decks and 40 fact-backed cards. Local focused checks and full
+  `bun run check` passed on 2026-05-10 after approved local Playwright/Vite
+  preview port binding. PR #17 merged at
+  `d7ace564745b9f160679d5c8a3583ff4fd43cc34`; main CI and Pages deployment
+  passed, and the deployed Pages URL returned HTTP 200 on 2026-05-10.
+- New PR discipline requirement from 2026-05-10: keep only one working PR open
+  at a time, rebase the PR branch on `origin/main` before merge, and merge only
+  after CI passes on that rebased branch. This is recorded in `AGENTS.md` and
+  is part of the Task 033 implementation PR because the user does not want
+  docs-only PRs.
+- Task 033 is in progress to make the expanded flashcard corpus practical to
+  study: selected-deck search, due-only/all-card review mode, deck/card/due
+  totals, flashcard-only reset, external flashcard source-review metadata, and
+  rendered UI coverage.
+- Task 033 verification exposed two issues before commit: flashcard search used
+  a raw substring match that missed natural multi-word searches such as
+  `authorized view`, and source-review `<details>` state could remain hidden
+  after switching decks. Search now matches all terms, and the details panel
+  remounts per selected deck. Full local `bun run check` passed on 2026-05-10
+  after approved local Playwright/Vite preview port binding.
 
 ## Template
 

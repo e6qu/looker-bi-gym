@@ -783,6 +783,43 @@ h3 {
   font-weight: 700;
 }
 
+.sourceReviewPanel {
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-strong);
+}
+
+.sourceReviewPanel summary {
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.sourceReviewPanel ul {
+  display: grid;
+  gap: 12px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sourceReviewPanel li {
+  display: grid;
+  gap: 6px;
+}
+
+.sourceReviewPanel a {
+  color: var(--accent-strong);
+  font-weight: 800;
+}
+
+.sourceReviewPanel p,
+.sourceReviewPanel small {
+  margin: 0;
+  color: var(--muted);
+}
+
 .regulatoryContextList {
   display: grid;
   gap: 8px;
