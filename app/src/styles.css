@@ -1005,6 +1005,74 @@ h3 {
   border-bottom: 0;
 }
 
+.sqlResultVisualization {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+}
+
+.sqlResultVisualizationHeader {
+  display: grid;
+  gap: 4px;
+}
+
+.sqlResultVisualizationHeader h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.sqlResultBars {
+  display: grid;
+  gap: 10px;
+}
+
+.sqlResultBarRow {
+  display: grid;
+  grid-template-columns: minmax(82px, 0.9fr) minmax(96px, 2fr) minmax(
+      64px,
+      0.7fr
+    );
+  gap: 10px;
+  align-items: center;
+  min-height: 28px;
+}
+
+.sqlResultBarLabel,
+.sqlResultBarValue {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.86rem;
+}
+
+.sqlResultBarLabel {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.sqlResultBarValue {
+  justify-self: end;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.sqlResultBarTrack {
+  min-width: 0;
+  height: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #d8e4e0;
+}
+
+.sqlResultBarFill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+}
+
 .sqlEmptyState {
   padding: 14px 16px;
   color: var(--muted);

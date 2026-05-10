@@ -36,6 +36,10 @@ The first platform release and PR #3 established:
 - [docs/14-platform-components.md](docs/14-platform-components.md) is the
   component map for the GitHub Pages website, content, datasets, facts, runtime,
   browser-local state, JSON export/import direction, and verification gates.
+- Open PR #8 now includes the first real learner-task packs, a separate quiz
+  bank, an exam-card pack, an optional Looker Studio recipe, recursive tutorial
+  rendering, and SQL result bar-chart visualization for browser SQL challenge
+  results.
 
 ## Split Plans
 
@@ -159,7 +163,8 @@ coverage.
 
 ### Phase C - Real Tutorial Instruction Packs
 
-Replace remaining sketch-like lessons with full lesson packs:
+Initial implementation is in place on PR #8. Continue replacing remaining
+sketch-like lessons with full lesson packs and app-rendered learning surfaces:
 
 - Area-grouped task packs for:
   - BI fundamentals;
@@ -167,8 +172,8 @@ Replace remaining sketch-like lessons with full lesson packs:
   - Looker Studio mechanics;
   - data quality and controls;
   - banking BI applications as realistic context.
-- Several complete 15-20 minute learner tasks across multiple areas in the next
-  PR #6 continuation, not only a schema proof of concept.
+- Several complete 15-20 minute learner tasks across multiple areas, not only a
+  schema proof of concept.
 - Each learner task includes an objective, prerequisites, input dataset, exact
   learner steps, verification checkpoints, visualization/reporting action,
   optional recipe pointer, self-assessment, and a CTF-style end challenge.
@@ -180,16 +185,17 @@ Replace remaining sketch-like lessons with full lesson packs:
 - Known failure modes.
 - Automatically graded checks and question fixtures.
 - Optional cloud-applied branch only after browser-first equivalent exists.
-- A useful first in-app visualization feature attached to SQL task/challenge
-  results: when a result has at least one dimension-like column and one numeric
-  column, allow a learner to render a simple table/bar-chart view that supports
-  BI mechanics. Avoid dummy placeholder charts.
-- Separate Looker Studio recipe pages after tutorials, with upload/data-source
-  setup, field mapping, calculated-field instructions, chart configuration, and
-  user-driven verification.
+- A useful first in-app visualization feature attached to SQL challenge results:
+  when a result has at least one dimension-like column and one numeric column,
+  the app renders a deterministic table plus bar chart that supports BI
+  mechanics. Avoid dummy placeholder charts.
+- Separate Looker Studio recipe pages after tutorials, with field mapping,
+  calculated-field instructions, chart configuration, and user-driven
+  verification.
 - A separate quiz-bank model for mixed 20-minute quizzes with difficulty,
-  recommended tasks, source facts, answers, explanations, and self-assessment.
-- Exam mode defined as untimed, independent, longer challenge cards; app
+  recommended learner tasks, source facts, answers, explanations, and
+  self-assessment.
+- Exam mode defined as untimed, independent, longer challenge cards; richer app
   rendering can follow after task and quiz models stabilize.
 
 ### Phase D - Stronger Challenge And Grading Contracts

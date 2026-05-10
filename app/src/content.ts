@@ -27,7 +27,7 @@ const rawRegulations = import.meta.glob<string>("../../regulations/*.md", {
   query: "?raw",
 });
 
-const rawTutorials = import.meta.glob<string>("../../tutorials/*.md", {
+const rawTutorials = import.meta.glob<string>("../../tutorials/**/*.md", {
   eager: true,
   import: "default",
   query: "?raw",

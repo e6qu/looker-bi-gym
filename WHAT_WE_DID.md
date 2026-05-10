@@ -2,6 +2,50 @@
 
 ## 2026-05-10
 
+- Continued on open PR #8 branch `record-pr7-postmerge` after PR #7 merged and
+  implemented Task 025 - Real Tutorial Instruction Packs.
+- Added area-grouped learner-task packs:
+  - `LT-BI-001` profile dataset grain;
+  - `LT-BI-002` detect fanout before reporting;
+  - `LT-SQL-003` build a month-end serving result;
+  - `LT-LOOKER-004` prepare a report-ready data source;
+  - `LT-DQ-005` reconcile dashboard controls.
+- Added `tutorials/learner-tasks/README.md` to keep learner tasks distinct from
+  repository implementation tasks.
+- Added optional browser-driven Looker Studio recipe
+  `tutorials/recipes/r-looker-001-deposits-dashboard.md`.
+- Added separate structured content:
+  - `quizzes/bi-foundations-mixed.yaml`;
+  - `exams/bi-foundations-exam.yaml`.
+- Updated `app/src/content.ts` so tutorial Markdown is loaded recursively and
+  nested learner-task/recipe pages render in the GitHub Pages UI.
+- Added deterministic SQL result visualization in `app/src/App.tsx`: when a SQL
+  result has a dimension-like column and numeric column, the app renders the
+  existing table plus a bar chart.
+- Added CSS for the SQL result visualization.
+- Expanded `app/scripts/test-content-qa.ts` so content QA validates learner-task
+  headings, objectives, timeboxes, SQL snippets, deterministic expected outputs,
+  known source facts, quiz-bank difficulty groups, recommended learner-task IDs,
+  and exam-card source facts/verification.
+- Extended Playwright coverage to visit a learner-task tutorial page, continue
+  to the browser SQL challenge, run a grouped SQL result, and verify the rendered
+  chart values.
+- Corrected an expected-output mistake found by Playwright/manual inspection:
+  latest `deposits-seed/v0.1.0` currency totals for 2026-03-31 are `EUR = 16400`
+  and `RON = 79300`, not `12500` and `83200`.
+- Formatting note: sandboxed `bun run format` initially hit EPERM rewriting new
+  Markdown files; rerunning with approved escalation succeeded.
+- Verification run:
+  - `bun run format`;
+  - `bun run format:check`;
+  - `bun run lint`;
+  - `bun run typecheck`;
+  - `bun run test:content-qa`;
+  - `bun run test:fixtures`;
+  - `bun run test:e2e` after approved local preview binding;
+  - `bun run check` after approved local preview binding.
+- Full `bun run check` passed, including all 8 Playwright rendered UI tests.
+
 - After the user merged PR #7, confirmed it merged at
   `954a128fd65b2b117b5fe23a3295c722cd6ae3f5`, switched to `main`, and pulled
   the merge.

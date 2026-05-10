@@ -224,6 +224,94 @@ function formatSqlCellValue(value: unknown): string {
   return Object.prototype.toString.call(value);
 }
 
+type SqlVisualizationPoint = {
+  readonly label: string;
+  readonly value: number;
+  readonly formattedValue: string;
+};
+
+type SqlResultVisualizationModel = {
+  readonly dimensionColumn: string;
+  readonly metricColumn: string;
+  readonly points: readonly SqlVisualizationPoint[];
+};
+
+function asFiniteSqlNumber(value: unknown): number | undefined {
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : undefined;
+  }
+
+  if (typeof value === "bigint") {
+    return Number(value);
+  }
+
+  if (typeof value === "string" && value.trim().length > 0) {
+    const numericValue = Number(value);
+    return Number.isFinite(numericValue) ? numericValue : undefined;
+  }
+
+  return undefined;
+}
+
+function isMetricColumn(
+  rows: ReadonlyArray<Record<string, unknown>>,
+  column: string,
+): boolean {
+  return rows.some((row) => asFiniteSqlNumber(row[column]) !== undefined);
+}
+
+function isDimensionColumn(
+  rows: ReadonlyArray<Record<string, unknown>>,
+  column: string,
+): boolean {
+  return rows.some((row) => asFiniteSqlNumber(row[column]) === undefined);
+}
+
+function buildSqlResultVisualization(
+  result: SqlQueryResult,
+): SqlResultVisualizationModel | undefined {
+  if (result.rows.length === 0 || result.columns.length < 2) {
+    return undefined;
+  }
+
+  const dimensionColumn = result.columns.find((column) =>
+    isDimensionColumn(result.rows, column),
+  );
+  const metricColumn = result.columns.find(
+    (column) =>
+      column !== dimensionColumn && isMetricColumn(result.rows, column),
+  );
+
+  if (dimensionColumn === undefined || metricColumn === undefined) {
+    return undefined;
+  }
+
+  const points = result.rows
+    .map((row) => {
+      const value = asFiniteSqlNumber(row[metricColumn]);
+
+      if (value === undefined) {
+        return undefined;
+      }
+
+      return {
+        label: formatSqlCellValue(row[dimensionColumn]),
+        value,
+        formattedValue: formatSqlCellValue(row[metricColumn]),
+      };
+    })
+    .filter((point): point is SqlVisualizationPoint => point !== undefined)
+    .slice(0, 12);
+
+  return points.length > 0
+    ? {
+        dimensionColumn,
+        metricColumn,
+        points,
+      }
+    : undefined;
+}
+
 function getStarterSql(challenge: ChallengeManifest): string {
   if (challenge.id === "lending-month-end-snapshots") {
     return `WITH latest_snapshots AS (
@@ -811,6 +899,13 @@ function SqlResultTable({
 }: {
   readonly result: SqlQueryResult;
 }): JSX.Element {
+  const visualization = buildSqlResultVisualization(result);
+  const maxAbsValue =
+    visualization?.points.reduce(
+      (maxValue, point) => Math.max(maxValue, Math.abs(point.value)),
+      0,
+    ) ?? 0;
+
   return (
     <div className="sqlResultWrap">
       <div className="sqlResultMeta">
@@ -845,6 +940,46 @@ function SqlResultTable({
           ))}
         </div>
       </div>
+      {visualization !== undefined ? (
+        <section
+          aria-label="SQL result visualization"
+          className="sqlResultVisualization"
+        >
+          <div className="sqlResultVisualizationHeader">
+            <p className="eyebrow">Visualization</p>
+            <h2>
+              {visualization.metricColumn} by {visualization.dimensionColumn}
+            </h2>
+          </div>
+          <div
+            aria-label={`Bar chart of ${visualization.metricColumn} by ${visualization.dimensionColumn}`}
+            className="sqlResultBars"
+            role="img"
+          >
+            {visualization.points.map((point) => {
+              const barWidth =
+                maxAbsValue > 0
+                  ? `${Math.max((Math.abs(point.value) / maxAbsValue) * 100, 2)}%`
+                  : "2%";
+
+              return (
+                <div className="sqlResultBarRow" key={point.label}>
+                  <span className="sqlResultBarLabel">{point.label}</span>
+                  <span className="sqlResultBarTrack">
+                    <span
+                      className="sqlResultBarFill"
+                      style={{ width: barWidth }}
+                    />
+                  </span>
+                  <span className="sqlResultBarValue">
+                    {point.formattedValue}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }

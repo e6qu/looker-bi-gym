@@ -22,6 +22,47 @@ type MarkdownFile = {
 
 type FactRegister = ReadonlySet<string>;
 
+type Difficulty = "easy" | "medium" | "hard";
+
+type QuizQuestion = {
+  readonly id: string;
+  readonly type: string;
+  readonly estimated_seconds: number;
+  readonly recommended_learner_tasks: readonly string[];
+  readonly source_facts: readonly string[];
+  readonly prompt: string;
+  readonly answer: unknown;
+  readonly explanation: string;
+  readonly self_assessment: string;
+};
+
+type QuizBank = {
+  readonly id: string;
+  readonly title: string;
+  readonly estimated_minutes: number;
+  readonly questions: Readonly<Record<Difficulty, readonly QuizQuestion[]>>;
+};
+
+type ExamCard = {
+  readonly id: string;
+  readonly title: string;
+  readonly recommended_learner_tasks: readonly string[];
+  readonly source_facts: readonly string[];
+  readonly objective: string;
+  readonly verification: {
+    readonly expected_outputs: readonly string[];
+    readonly self_assessment: string;
+  };
+};
+
+type ExamPack = {
+  readonly id: string;
+  readonly title: string;
+  readonly mode: string;
+  readonly estimated_minutes_per_card: number;
+  readonly cards: readonly ExamCard[];
+};
+
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const appRoot = join(scriptDir, "..");
 const repoRoot = join(appRoot, "..");
@@ -29,6 +70,8 @@ const challengeDirs = [
   join(repoRoot, "challenges", "manifests"),
   join(repoRoot, "challenges", "drafts"),
 ];
+const quizDir = join(repoRoot, "quizzes");
+const examDir = join(repoRoot, "exams");
 const markdownRoots = [
   "app/README.md",
   "challenges",
@@ -169,6 +212,26 @@ async function readMarkdownFiles(): Promise<MarkdownFile[]> {
   );
 }
 
+async function readQuizBanks(): Promise<QuizBank[]> {
+  const quizPaths = await listFiles(quizDir, new Set([".yaml", ".yml"]));
+
+  return Promise.all(
+    quizPaths.map(
+      async (path) => parse(await readFile(path, "utf8")) as QuizBank,
+    ),
+  );
+}
+
+async function readExamPacks(): Promise<ExamPack[]> {
+  const examPaths = await listFiles(examDir, new Set([".yaml", ".yml"]));
+
+  return Promise.all(
+    examPaths.map(
+      async (path) => parse(await readFile(path, "utf8")) as ExamPack,
+    ),
+  );
+}
+
 async function readFactRegister(): Promise<FactRegister> {
   const factPaths = await listFiles(
     join(repoRoot, "docs", "facts"),
@@ -213,6 +276,32 @@ function assertKnownSourceFacts(
       `${context} references unknown source fact ${sourceFact}.`,
     );
   }
+}
+
+function assertNonEmptyString(value: string, context: string): void {
+  assert.ok(value.trim().length > 0, `${context} must not be empty.`);
+}
+
+function readLearnerTaskIds(
+  markdownFiles: readonly MarkdownFile[],
+): Set<string> {
+  const learnerTaskIds = new Set<string>();
+
+  for (const markdownFile of markdownFiles) {
+    if (!markdownFile.path.includes(`${repoRoot}/tutorials/learner-tasks/`)) {
+      continue;
+    }
+
+    const headingMatch = /^#\s+(LT-[A-Z]+-\d+)\s+-\s+/mu.exec(
+      markdownFile.source,
+    );
+
+    if (headingMatch?.[1] !== undefined) {
+      learnerTaskIds.add(headingMatch[1]);
+    }
+  }
+
+  return learnerTaskIds;
 }
 
 async function assertMarkdownLinksResolve(
@@ -423,6 +512,177 @@ function assertMarkdownBoundaryLanguage(
           );
         }
       }
+
+      if (
+        markdownFile.path.includes(`${repoRoot}/tutorials/learner-tasks/lt-`)
+      ) {
+        for (const requiredHeading of [
+          "## Source Facts",
+          "## Prerequisites",
+          "## Steps",
+          "## Checkpoints",
+          "## Visualization Or Reporting Action",
+          "## Common Failure Modes",
+          "## Self-Assessment",
+          "## End Challenge",
+          "## Solution Notes",
+        ]) {
+          assert.ok(
+            markdownFile.source.includes(requiredHeading),
+            `${markdownFile.path} must include ${requiredHeading}.`,
+          );
+        }
+
+        assert.match(
+          markdownFile.source,
+          /Objective:/u,
+          `${markdownFile.path} must define an objective.`,
+        );
+        assert.match(
+          markdownFile.source,
+          /Timebox:\s+15-20 minutes/u,
+          `${markdownFile.path} must declare the 15-20 minute timebox.`,
+        );
+        assert.match(
+          markdownFile.source,
+          /```sql/u,
+          `${markdownFile.path} must include copyable SQL.`,
+        );
+        assert.match(
+          markdownFile.source,
+          /\|.+\|/u,
+          `${markdownFile.path} must include deterministic expected output.`,
+        );
+
+        const factIds = Array.from(
+          markdownFile.source.matchAll(sourceFactIdPattern),
+          (match) => match[1],
+        ).filter((factId): factId is string => factId !== undefined);
+
+        assert.ok(
+          factIds.length > 0,
+          `${markdownFile.path} must cite source fact IDs.`,
+        );
+
+        for (const factId of factIds) {
+          assert.ok(
+            factRegister.has(factId),
+            `${markdownFile.path} references unknown source fact ${factId}.`,
+          );
+        }
+      }
+    }
+  }
+}
+
+function assertRecommendedLearnerTasks(
+  recommendedLearnerTasks: readonly string[],
+  learnerTaskIds: ReadonlySet<string>,
+  context: string,
+): void {
+  assert.ok(
+    recommendedLearnerTasks.length > 0,
+    `${context} must reference at least one learner task.`,
+  );
+
+  for (const taskId of recommendedLearnerTasks) {
+    assert.ok(
+      learnerTaskIds.has(taskId),
+      `${context} references unknown learner task ${taskId}.`,
+    );
+  }
+}
+
+function assertQuizBanks(
+  quizBanks: readonly QuizBank[],
+  factRegister: FactRegister,
+  learnerTaskIds: ReadonlySet<string>,
+): void {
+  assert.ok(quizBanks.length > 0, "At least one quiz bank must exist.");
+
+  for (const quizBank of quizBanks) {
+    assertNonEmptyString(quizBank.id, `${quizBank.id}:id`);
+    assertNonEmptyString(quizBank.title, `${quizBank.id}:title`);
+    assert.ok(
+      quizBank.estimated_minutes <= 20,
+      `${quizBank.id} should stay answerable in about 20 minutes.`,
+    );
+
+    for (const difficulty of ["easy", "medium", "hard"] as const) {
+      const questions = quizBank.questions[difficulty];
+
+      assert.ok(
+        questions.length >= 2,
+        `${quizBank.id}:${difficulty} must include at least two questions.`,
+      );
+
+      for (const question of questions) {
+        const context = `${quizBank.id}:${difficulty}:${question.id}`;
+
+        assertNonEmptyString(question.prompt, `${context}:prompt`);
+        assertNonEmptyString(question.explanation, `${context}:explanation`);
+        assertNonEmptyString(
+          question.self_assessment,
+          `${context}:self_assessment`,
+        );
+        assert.ok(
+          question.estimated_seconds > 0,
+          `${context} must estimate seconds.`,
+        );
+        assertRecommendedLearnerTasks(
+          question.recommended_learner_tasks,
+          learnerTaskIds,
+          context,
+        );
+        assertKnownSourceFacts(question.source_facts, factRegister, context);
+        assert.match(
+          question.explanation,
+          /FACT-[A-Z0-9]+(?:-[A-Z0-9]+)*/u,
+          `${context} explanation must name a source fact ID.`,
+        );
+      }
+    }
+  }
+}
+
+function assertExamPacks(
+  examPacks: readonly ExamPack[],
+  factRegister: FactRegister,
+  learnerTaskIds: ReadonlySet<string>,
+): void {
+  assert.ok(examPacks.length > 0, "At least one exam pack must exist.");
+
+  for (const examPack of examPacks) {
+    assertNonEmptyString(examPack.id, `${examPack.id}:id`);
+    assert.equal(
+      examPack.mode,
+      "self_assessed",
+      `${examPack.id} should start as self-assessed.`,
+    );
+    assert.ok(
+      examPack.estimated_minutes_per_card <= 120,
+      `${examPack.id} cards should stay at or under two hours.`,
+    );
+
+    for (const card of examPack.cards) {
+      const context = `${examPack.id}:${card.id}`;
+
+      assertNonEmptyString(card.title, `${context}:title`);
+      assertNonEmptyString(card.objective, `${context}:objective`);
+      assertRecommendedLearnerTasks(
+        card.recommended_learner_tasks,
+        learnerTaskIds,
+        context,
+      );
+      assertKnownSourceFacts(card.source_facts, factRegister, context);
+      assert.ok(
+        card.verification.expected_outputs.length > 0,
+        `${context} must define expected outputs.`,
+      );
+      assertNonEmptyString(
+        card.verification.self_assessment,
+        `${context}:self_assessment`,
+      );
     }
   }
 }
@@ -430,9 +690,14 @@ function assertMarkdownBoundaryLanguage(
 const factRegister = await readFactRegister();
 const manifests = await readChallengeManifests();
 const markdownFiles = await readMarkdownFiles();
+const learnerTaskIds = readLearnerTaskIds(markdownFiles);
+const quizBanks = await readQuizBanks();
+const examPacks = await readExamPacks();
 
 assertChallengeContentBoundaries(manifests, factRegister);
 await assertRegulatoryContextLinks(manifests);
 assertMarkdownBoundaryLanguage(markdownFiles, factRegister);
+assertQuizBanks(quizBanks, factRegister, learnerTaskIds);
+assertExamPacks(examPacks, factRegister, learnerTaskIds);
 await assertDatasetBoundaries();
 await assertMarkdownLinksResolve(markdownFiles);

@@ -27,12 +27,13 @@ Current rendered sections:
 
 - Home: entry point, scope, and navigation.
 - Docs: rendered Markdown from `docs/`.
-- Tutorials: rendered Markdown from `tutorials/`.
+- Tutorials: rendered Markdown from `tutorials/`, including nested learner tasks
+  and optional recipes.
 - Challenges: generated challenge catalog and challenge detail pages.
 - Regulations: rendered context briefs from `regulations/`.
 - Settings: browser-local state, JSON export, and reset controls.
 
-Planned learner-facing sections:
+Learner-facing content shapes:
 
 - Learner tasks: area-grouped 15-20 minute curriculum exercise units with an
   objective, steps, checkpoints, visualization/reporting action,
@@ -47,9 +48,9 @@ Planned learner-facing sections:
 
 Tutorials:
 
-- Current location: `tutorials/*.md`.
+- Current location: `tutorials/**/*.md`.
 - Role: learner-facing lessons and narrative guidance.
-- Next shape: structured learner-task packs produced by implementation Task 025.
+- Learner-task packs live under `tutorials/learner-tasks/`.
 
 Challenges:
 
@@ -65,24 +66,24 @@ Solution fixtures:
 
 Recipes:
 
-- Planned location: `tutorials/recipes/` or a dedicated `recipes/` directory.
+- Current location: `tutorials/recipes/`.
 - Role: optional Looker Studio browser UI instructions after the core
   browser-first tutorial path.
 - Constraint: no cloud CLI or shell upload scripts in the early path.
 
 Quizzes:
 
-- Planned location: `quizzes/`.
+- Current location: `quizzes/`.
 - Role: reusable question banks separate from challenge manifests.
-- First target: one mixed 20-minute quiz with `easy`, `medium`, and `hard`
-  questions, recommended learner-task IDs, source facts, answers, explanations,
-  estimated seconds, and self-assessment notes.
+- First bank: one mixed 20-minute quiz with `easy`, `medium`, and `hard`
+  questions, recommended learner-task IDs, source facts, answers,
+  explanations, estimated seconds, and self-assessment notes.
 
 Exam cards:
 
-- Planned location: `exams/`.
+- Current location: `exams/`.
 - Role: optional independent longer challenge specifications.
-- First target: untimed, self-assessed cards with deterministic verification
+- First pack: untimed, self-assessed cards with deterministic verification
   where feasible.
 
 ## Data Components
@@ -118,9 +119,10 @@ Sources:
 App shell:
 
 - `app/src/App.tsx`: routes, rendered pages, challenge views, Settings, and the
-  current browser SQL challenge UI.
+  browser SQL challenge UI, including a deterministic result bar chart when a
+  query returns at least one dimension-like column and one numeric column.
 - `app/src/content.ts`: Markdown discovery for docs, regulations, and
-  tutorials.
+  recursive tutorial content.
 - `app/src/markdown.ts`: Markdown rendering and internal link rewriting for
   GitHub Pages hash routes.
 
