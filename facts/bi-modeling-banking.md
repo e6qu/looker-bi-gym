@@ -212,6 +212,53 @@ model-risk advice.
 - Related facts: [`FACT-BIGQUERY-JOBS-BYTES`](bi-platforms-bigquery-looker-studio.md#fact-bigquery-jobs-bytes),
   [`FACT-BI-REFERENCE-DATE-SEPARATION`](#fact-bi-reference-date-separation).
 
+### FACT-BIGQUERY-SAFE-DIVIDE-RATIO-GUARD
+
+- Statement: BigQuery `SAFE_DIVIDE` behaves like division but returns `NULL`
+  instead of failing when an error such as division by zero occurs.
+- Source: [`SRC-BIGQUERY-MATH-SAFE-DIVIDE`](../sources/platforms/bigquery-sql-bi.md#src-bigquery-math-safe-divide).
+- Source quote: "division by zero".
+- Derived implication: Ratio metrics such as approval rate, delinquency rate,
+  and reconciliation variance should make zero-denominator behavior explicit in
+  the metric contract.
+- Related facts: [`FACT-BI-RATIO-SUM-COMPONENTS-FIRST`](#fact-bi-ratio-sum-components-first),
+  [`FACT-BIGQUERY-SUM-NULLS`](#fact-bigquery-sum-nulls).
+
+### FACT-BIGQUERY-SAFE-CAST-DQ-NULL
+
+- Statement: BigQuery `SAFE_CAST` returns `NULL` when a runtime cast error is
+  produced, rather than stopping the query.
+- Source: [`SRC-BIGQUERY-CONVERSION-SAFE-CAST`](../sources/platforms/bigquery-sql-bi.md#src-bigquery-conversion-safe-cast).
+- Source quote: "returns `NULL`".
+- Derived implication: Data-quality tutorials can parse messy source fields
+  without crashing, but they must count and reconcile the resulting `NULL`
+  values.
+- Related facts: [`FACT-GDPR-ACCURACY`](privacy-gdpr.md#fact-gdpr-accuracy),
+  [`FACT-BIGQUERY-SUM-NULLS`](#fact-bigquery-sum-nulls).
+
+### FACT-BIGQUERY-QUALIFY-WINDOW-FILTER
+
+- Statement: BigQuery `QUALIFY` filters the results of window functions after a
+  window function is present in the `QUALIFY` clause or `SELECT` list.
+- Source: [`SRC-BIGQUERY-QUERY-QUALIFY`](../sources/platforms/bigquery-sql-bi.md#src-bigquery-query-qualify).
+- Source quote: "filters the results of window functions".
+- Derived implication: Latest-snapshot and top-N tutorials can compute row
+  rankings with window functions and then filter to the intended dashboard
+  grain.
+- Related facts: [`FACT-BIGQUERY-WINDOW-PRESERVES-ROWS`](#fact-bigquery-window-preserves-rows),
+  [`FACT-BIGQUERY-LAST-VALUE-FRAME`](#fact-bigquery-last-value-frame).
+
+### FACT-BIGQUERY-QUALIFY-TRUE-ONLY
+
+- Statement: BigQuery `QUALIFY` keeps only rows whose boolean expression
+  evaluates to `TRUE`; rows evaluating to `NULL` or `FALSE` are discarded.
+- Source: [`SRC-BIGQUERY-QUERY-QUALIFY`](../sources/platforms/bigquery-sql-bi.md#src-bigquery-query-qualify).
+- Source quote: "evaluates to `TRUE`".
+- Derived implication: Challenge validators should include missing-rank and
+  tie-handling cases when learners filter latest records or top-N rows.
+- Related facts: [`FACT-BIGQUERY-QUALIFY-WINDOW-FILTER`](#fact-bigquery-qualify-window-filter),
+  [`FACT-BI-RECONCILIATION-WINDOWS`](#fact-bi-reconciliation-windows).
+
 ### FACT-LOOKER-STUDIO-AGGREGATION-METHODS
 
 - Statement: Looker Studio fields support aggregation methods including Sum,

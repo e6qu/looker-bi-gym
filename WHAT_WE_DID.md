@@ -1,5 +1,52 @@
 # What We Did
 
+## 2026-05-10 - Phase 4 Fact Corpus Expansion Batch 1
+
+- Continued Task 037 on branch `phase-4-fact-corpus-expansion`.
+- Verified official Google Cloud source pages on 2026-05-10 for:
+  - BigQuery `SAFE_DIVIDE`;
+  - BigQuery `SAFE_CAST`;
+  - BigQuery `QUALIFY`;
+  - Looker Studio data freshness.
+- Added 4 source cards under `sources/platforms/` for those official docs.
+- Added 8 new source-backed fact cards:
+  - `FACT-BIGQUERY-SAFE-DIVIDE-RATIO-GUARD`;
+  - `FACT-BIGQUERY-SAFE-CAST-DQ-NULL`;
+  - `FACT-BIGQUERY-QUALIFY-WINDOW-FILTER`;
+  - `FACT-BIGQUERY-QUALIFY-TRUE-ONLY`;
+  - `FACT-LOOKER-STUDIO-DATA-FRESHNESS-TRADEOFF`;
+  - `FACT-LOOKER-STUDIO-FRESHNESS-MEMORY`;
+  - `FACT-LOOKER-STUDIO-BIGQUERY-REFRESH-COST`;
+  - `FACT-LOOKER-STUDIO-BLEND-FRESHNESS-MINIMUM`.
+- Raised fact database guardrails to at least 50 source cards and 109
+  executable fact cards.
+- Verification passed:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run test:facts-db`;
+  - `bun run facts:build-db`;
+  - `bun run test:content-qa`;
+  - `bun run test:quiz-facts-db`;
+  - `bun run test:flashcards`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:platform-boundary`;
+  - `bun run validate:static-links`;
+  - `bun run format:check`;
+  - `bun run check` after approved local Vite preview binding, with all 12
+    Playwright tests passing;
+  - stale scan for old fact path and unsupported completeness claims;
+  - `git diff --check`.
+- Failed/blocked attempts recorded:
+  - the Task 037 formal Claude CLI review used non-TUI
+    `claude --print --permission-mode plan --output-format text ...`, produced
+    no output for over 40 seconds, and was terminated.
+- Acceptance note: this is a first stable expansion batch only. It does not
+  satisfy the Phase 4 500-fact target or Phase 9 completeness gate.
+- Committed `428f4cc Expand source-backed fact corpus`.
+- Pushed branch `phase-4-fact-corpus-expansion` and opened PR #23:
+  `https://github.com/e6qu/looker-bi-gym/pull/23`.
+
 ## 2026-05-10 - Phase 4 Root Facts Corpus Migration
 
 - Verified PR #21 post-merge state:
@@ -46,6 +93,15 @@
 - Committed `93e8a4f Move fact corpus to root facts`.
 - Pushed branch `phase-4-root-facts-corpus` and opened PR #22:
   `https://github.com/e6qu/looker-bi-gym/pull/22`.
+- PR #22 CI passed, then PR #22 was squash-merged at
+  `9e9e709ff76eb90f21f837a3d0c2570200c34d7a`.
+- Main CI passed for `9e9e709`.
+- GitHub Pages workflow passed for `9e9e709`.
+- Live Pages URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200
+  after the PR #22 deployment.
+- Created branch `phase-4-fact-corpus-expansion` from verified `main`.
+- Added `_development/tasks/037-fact-corpus-expansion.md` as the next
+  implementation task. No fact expansion has been implemented yet.
 
 ## 2026-05-10 - Phase 3 Facts DB App Workspace
 

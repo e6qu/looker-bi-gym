@@ -11,8 +11,8 @@
    gh pr list --state open --limit 10
    ```
 
-3. Continue Phase 4 PR #22:
-   `https://github.com/e6qu/looker-bi-gym/pull/22`.
+3. Continue Task 037 on PR #23:
+   `https://github.com/e6qu/looker-bi-gym/pull/23`.
 4. If updating this branch, run:
 
    ```sh
@@ -32,14 +32,17 @@
    git diff --check
    ```
 
-5. Before merging the Phase 4 PR, fetch `origin/main`, rebase the branch on
+5. Before merging PR #23, fetch `origin/main`, rebase the branch on
    `origin/main`, verify CI is passing, and then squash-merge.
 6. After merge, verify main CI, GitHub Pages deployment, and the live Pages URL
-   before starting fact-count expansion.
+   before moving on.
 
 ## Review Requirement
 
-Phase 4 root-path migration is locally implemented but not Claude-reviewed.
+Phase 4 root-path migration is merged and main-verified, but not
+Claude-reviewed. Task 037 fact expansion batch 1 is locally implemented,
+verified, pushed, and opened as PR #23, but not Claude-reviewed. The Task 037
+formal review attempt also hung with no output and was terminated.
 
 `PLAN.md` Phase 9 now defines the required gate for any claim that tutorials,
 questions, exams, or flashcards are complete, comprehensive, reality-verified,
@@ -52,9 +55,9 @@ claude --print --permission-mode plan --output-format text "<phase-specific revi
 ```
 
 The latest small non-TUI Claude CLI check succeeded, but the Task 034 formal
-review, Task 035 formal review, and Task 036 formal review hung with no output
-and were terminated. Do not mark Phase 2, Phase 3, or the Phase 4 path
-migration complete until a completed formal review is available and recorded.
+review, Task 035 formal review, Task 036 formal review, and Task 037 formal
+review hung with no output and were terminated. Do not mark Phase 2, Phase 3,
+or Phase 4 complete until a completed formal review is available and recorded.
 
 ## PR Discipline
 
