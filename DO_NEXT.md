@@ -11,9 +11,12 @@
    gh pr list --state open --limit 10
    ```
 
-3. Open the Task 040 PR from branch `phase-7-learning-surface-verification`
-   after confirming there is still no open PR.
-4. If updating this branch before PR creation, rerun:
+3. Continue Task 041 on branch `curriculum-completeness-audit`; no PR is open
+   yet.
+4. Next useful implementation step: expand
+   `docs/17-curriculum-completeness-matrix.md` into actionable rewrite tickets
+   for the top-level tutorial spine, starting with tutorials 01 and 03.
+5. If updating this branch before PR creation, rerun:
 
    ```sh
    bun run content:generate
@@ -29,17 +32,14 @@
    bun run test:platform-boundary
    bun run validate:static-links
    bun run check
-   DEPLOYED_BASE_URL=http://127.0.0.1:4174/ bun run verify:deployed-surface
    git diff --check
    ```
 
-5. Before opening the next PR, confirm there is still no open PR. Before
+6. Before opening the next PR, confirm there is still no open PR. Before
    merging it, fetch `origin/main`, rebase the branch on `origin/main`, verify
    CI is passing, and then squash-merge.
-6. After merge, verify main CI, GitHub Pages deployment, the live Pages URL,
-   and `bun run verify:deployed-surface` against the live URL before moving on.
-7. Next implementation task after Task 040 is
-   `_development/tasks/041-curriculum-completeness-audit.md`.
+7. After merge, verify main CI, GitHub Pages deployment, and the live Pages URL
+   before moving on.
 
 ## Review Requirement
 
@@ -55,9 +55,10 @@ Task 039 tutorial/challenge expansion batch 1 is merged, deployed, and
 main-verified, but not Claude-reviewed. It adds `LT-DQ-006 - Define A Ratio
 Null Contract`.
 
-Task 040 learning surface verification is implemented first pass locally but
-not PR-reviewed, deployed, or Claude-reviewed. Local preview verification
-passed; live deployed verification must be rerun after merge and Pages deploy.
+Task 040 learning surface verification is merged, main-verified,
+Pages-verified, and live deployed-surface verified, but not Claude-reviewed.
+Task 041 is active and has a first-pass matrix in
+`docs/17-curriculum-completeness-matrix.md`.
 
 `PLAN.md` Phase 9 now defines the required gate for any claim that tutorials,
 questions, exams, or flashcards are complete, comprehensive, reality-verified,

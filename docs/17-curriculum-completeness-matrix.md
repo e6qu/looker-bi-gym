@@ -1,0 +1,85 @@
+# Curriculum Completeness Matrix
+
+Status: Task 041 first-pass audit.
+
+This matrix is a curriculum-quality gate, not a release note. It records what
+exists now and what is still required before the platform can claim complete,
+comprehensive, reality-verified, or externally verified learning materials.
+
+## Inventory Snapshot
+
+| Surface                                    | Current count | Current verdict                                         |
+| ------------------------------------------ | ------------: | ------------------------------------------------------- |
+| Top-level tutorials                        |            10 | Outline-quality spine; not fully runnable.              |
+| Self-contained learner tasks               |             6 | Stronger practical core; still too small for full path. |
+| Released challenge manifests               |             6 | Useful deterministic practice; coverage is narrow.      |
+| Flashcards                                 |            59 | Useful first deck set; far below 500-card target.       |
+| Quiz questions                             |            14 | One mixed quiz; far below 200-question target.          |
+| Exam cards                                 |             4 | Work-product prompts; not a complete exam suite.        |
+| Unique fact IDs in `facts/`                |           185 | Good base; still below 500-fact target.                 |
+| Source cards excluding captured full pages |            13 | Needs broader official and regulator coverage.          |
+
+## Competency Matrix
+
+| Competency                    | Current coverage                                                   | Gap before completeness                                                                                        |
+| ----------------------------- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| BI grain and aggregation      | Covered by learner tasks, challenges, quiz, flashcards, and facts. | Add more datasets, join patterns, and edge-case drills.                                                        |
+| Fanout and many-to-many joins | Covered for deposits and ownership.                                | Add non-deposit examples and Looker Studio blend comparisons with fixtures.                                    |
+| Semi-additive balances        | Covered for deposits/lending snapshots.                            | Add more time-window, month-end, and reconciliation variations.                                                |
+| SQL for BI                    | Covered by browser workbench and several tasks.                    | Add a linear SQL module from SELECT through window functions and controls.                                     |
+| BigQuery serving patterns     | Fact and flashcard coverage exists.                                | Tutorials need exact BigQuery UI steps, verified SQL, and official-doc source notes.                           |
+| Looker Studio mechanics       | Fact and flashcard coverage exists; optional recipes exist.        | Needs current UI-verified step-by-step tutorials with screenshots/checkpoints or equivalent observable states. |
+| Data quality controls         | Covered by reconciliation and ratio/null tasks.                    | Needs systematic parse, freshness, completeness, and exception-handling sequence.                              |
+| Privacy/security boundaries   | Covered conceptually and in several questions.                     | Needs scenario practice for field minimisation, credential modes, and report sharing.                          |
+| Banking context               | Deposit guarantee and collateral context exists.                   | Needs broader banking BI scenarios without becoming legal/regulatory advice.                                   |
+| Regulations context           | Thin context exists for GDPR, FGDB/DGSD, DORA, EBA.                | Needs a mapping of each regulatory mention to source facts and practical BI implications.                      |
+| Operations/observability      | Some flashcards and capstone outline exist.                        | Needs hands-on evidence review: freshness, job bytes, incidents, owner/runbook notes.                          |
+| Exam readiness                | Four cards exist.                                                  | Needs rubrics, fixtures, more scenarios, and scoring criteria.                                                 |
+
+## Tutorial Audit
+
+| Tutorial                                | Current issue                                                                                                                                  | Required fix                                                                                                                              |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `00-orientation-and-stack.md`           | Mostly orientation quiz navigation; useful but introductory.                                                                                   | Keep, but remove any visible raw fact-ID answer references and add a concise path map.                                                    |
+| `01-connect-public-data.md`             | Says to create or inspect `serving_deposit_dashboard` but does not provide full BigQuery SQL, setup state, dataset creation path, or fallback. | Rewrite as a fully self-contained browser/UI tutorial with exact SQL, expected schema, field list, and no missing prerequisite artifacts. |
+| `02-build-a-bi-friendly-model.md`       | Conceptual BI-model outline rather than a fully verified model-building lab.                                                                   | Tie to committed synthetic data, exact SQL, expected outputs, and model contract artifacts.                                               |
+| `03-first-executive-dashboard.md`       | Depends on "the Looker Studio report created in tutorial 01"; that prerequisite is not currently a guaranteed artifact.                        | Either create the report in a prior verified tutorial or make this tutorial start from a complete explicit setup.                         |
+| `04-metrics-and-calculated-fields.md`   | Needs current Looker Studio UI validation and exact field formulas/checkpoints.                                                                | Add step-by-step field creation, expected chart behavior, and failure cases.                                                              |
+| `05-blending-vs-upstream-joins.md`      | Good topic, but needs a verified hands-on blend/upstream comparison.                                                                           | Add deterministic SQL outputs and Looker Studio blend configuration evidence.                                                             |
+| `06-performance-and-cost-lab.md`        | Needs concrete query/job evidence, not only concepts.                                                                                          | Add BigQuery job metadata steps or a browser-local simulation with clearly separated limits.                                              |
+| `07-governance-security-and-sharing.md` | Needs practical sharing/credential scenarios and visible expected states.                                                                      | Add official-doc-backed UI checks and evidence patterns without collecting credentials.                                                   |
+| `08-observability-and-operations.md`    | Mostly checklist-shaped.                                                                                                                       | Add an operations walkthrough with freshness, bytes, owner, incident, and reconciliation artifacts.                                       |
+| `09-technical-bi-capstone.md`           | Capstone is currently a package outline, not a complete end-to-end capstone.                                                                   | Add rubric, fixture-backed expected outputs, concrete artifacts, and review workflow.                                                     |
+
+## Assessment Matrix
+
+| Assessment type     | Current status                                                                    | Required fix                                                                                                                   |
+| ------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Quiz bank           | One 14-question mixed quiz with fact metadata and improved non-meta explanations. | Build multi-bank coverage by competency and difficulty; add dataset-derived evidence for numeric answers.                      |
+| Flashcards          | 59 cards across 10 decks; first pass now avoids repo/app-meta cards.              | Expand to 500 reviewed cards and remove low-value policy cards in favor of definitions, traps, mechanics, and troubleshooting. |
+| Exam cards          | 4 self-assessed cards with deterministic expected outputs.                        | Add rubrics, scoring levels, more realistic deliverables, and fixture-backed review where possible.                            |
+| Challenge questions | Improved visible wording; metadata keeps fact links.                              | Audit all hints, scenarios, and lesson steps for practical value and external grounding.                                       |
+
+## Source Verification Matrix
+
+| Claim type             | Current source base                                           | Missing before external verification                                                                      |
+| ---------------------- | ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| BigQuery behavior      | Official BigQuery source cards and captured pages exist.      | Source map for every tutorial SQL claim and UI instruction.                                               |
+| Looker Studio behavior | Official Looker Studio source cards and captured pages exist. | Current UI walkthrough evidence for data sources, blends, credentials, fields, freshness.                 |
+| GDPR/privacy           | EU GDPR and related fact cards exist.                         | Practical BI-only framing for each privacy mention; avoid legal advice.                                   |
+| Deposit guarantee      | FGDB, DGSD, and FDIC context exists.                          | More EU/Romanian source-backed examples and clear boundary between BI context and compliance advice.      |
+| Real-estate collateral | Romanian and Eurostat context exists.                         | More practical mortgage/valuation BI examples with deterministic synthetic data.                          |
+| Dataset-derived values | Some deterministic SQL fixtures exist.                        | Every numeric quiz/exam/tutorial value must be reproducible from committed synthetic data or inline rows. |
+
+## Non-Negotiable Rewrite Gates
+
+- No tutorial can reference a non-existing file, report, route, or setup state.
+- If a file is needed, the page must provide a browser download path or exact
+  `curl` command, expected filename, row count, and checksum where practical.
+- Every BigQuery or Looker Studio tutorial must be verified against current
+  official documentation and, where possible, the current browser UI.
+- Every practical step must have an expected result and a recovery path.
+- Visible course text must not ask about repository structure, generated
+  catalogs, source IDs, task IDs, app storage internals, or meta learning
+  policy.
+- The next content work should rewrite the tutorial spine before scaling counts.

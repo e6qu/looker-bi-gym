@@ -1,5 +1,25 @@
 # What We Did
 
+## 2026-05-11 - Task 041 Curriculum Completeness Audit Start
+
+- Verified PR #26 post-merge state:
+  - PR #26 was squash-merged at `666b964`.
+  - Main CI passed for `666b964`.
+  - GitHub Pages workflow passed for `666b964`.
+  - Live Pages URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200
+    with `last-modified: Sun, 10 May 2026 23:04:52 GMT`.
+  - `bun run verify:deployed-surface` passed against the live Pages URL.
+- Confirmed no open PRs before starting Task 041.
+- Created branch `curriculum-completeness-audit` from verified `main`.
+- Added `docs/17-curriculum-completeness-matrix.md` with first-pass inventory,
+  competency, tutorial, assessment, source-verification, and rewrite-gate
+  matrices.
+- Updated `docs/README.md` and
+  `_development/tasks/041-curriculum-completeness-audit.md`.
+- Inventory confirms the curriculum is not complete: 10 top-level tutorials, 6
+  self-contained learner tasks, 6 released challenges, 59 flashcards, 14 quiz
+  questions, 4 exam cards, and 185 unique fact IDs.
+
 ## 2026-05-11 - Phase 7 Learning Surface Verification First Pass
 
 - Implemented Task 040 on `phase-7-learning-surface-verification`.

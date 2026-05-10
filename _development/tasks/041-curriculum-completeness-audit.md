@@ -1,6 +1,6 @@
 # 041 - Curriculum Completeness Audit
 
-Status: planned after Task 040.
+Status: active on branch `curriculum-completeness-audit`.
 
 ## Goal
 
@@ -45,3 +45,14 @@ before scaling content volume or making completeness claims.
   expansion task.
 - Do not mark the curriculum complete until Phase 9 artifacts and review gates
   pass.
+
+## Progress Notes
+
+- Added `docs/17-curriculum-completeness-matrix.md` with first-pass inventory,
+  competency, tutorial, assessment, source-verification, and rewrite-gate
+  matrices.
+- Current inventory confirms the curriculum is not complete: 10 top-level
+  tutorials, 6 self-contained learner tasks, 6 released challenges, 59
+  flashcards, 14 quiz questions, 4 exam cards, and 185 unique fact IDs.
+- The most important near-term finding is that the tutorial spine must be
+  rewritten and verified before scaling content counts.
