@@ -414,8 +414,67 @@ ORDER BY adb.currency_code;`);
       page.getByRole("button", { name: "Export JSON" }),
     ).toBeVisible();
     await expect(
+      page.getByRole("button", { name: "Validate Import" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Apply Import" }),
+    ).toBeDisabled();
+    await expect(
       page.getByRole("button", { name: "Reset Progress" }),
     ).toBeVisible();
+
+    const importJson = JSON.stringify({
+      app_version: "0.1.0",
+      completed_challenge_ids: ["orientation-quiz"],
+      completed_challenges: [
+        {
+          challenge_id: "orientation-quiz",
+          challenge_version: "v0.1.0",
+          completed_at: "2026-05-10T12:00:00.000Z",
+          dataset_versions: [],
+          flag: "flag-orientation-quiz",
+          mode: "quiz",
+          passed_check_ids: [],
+          passed_question_ids: [
+            "q_view",
+            "q_data_source",
+            "q_sensitive_fields",
+            "q_guarantee_limit",
+          ],
+          title: "000 - Orientation Quiz",
+        },
+      ],
+      content_version: "0.1.0",
+      exported_at: "2026-05-10T12:30:00.000Z",
+      format: "looker-bi-gym.progress-export.v1",
+      privacy: {
+        backend_required: false,
+        created_locally: true,
+        includes_credentials: false,
+        includes_raw_answers: false,
+        includes_real_banking_data: false,
+        state_scope: "browser-only",
+        storage_mediums: ["localStorage", "same-site-cookie"],
+      },
+      storage_version: 1,
+    });
+
+    await page.getByLabel("Progress import JSON").fill(importJson);
+    await page.getByRole("button", { name: "Validate Import" }).click();
+    await expect(page.getByLabel("Progress import preview")).toContainText(
+      "orientation-quiz",
+    );
+    await page.getByRole("button", { name: "Apply Import" }).click();
+    await expect(
+      page.getByText("Imported progress was applied locally in this browser."),
+    ).toBeVisible();
+
+    const importedProgress = await page.evaluate(
+      (key) => window.localStorage.getItem(key),
+      browserProgressStorageKeys.localStorage,
+    );
+
+    expect(importedProgress).toContain("orientation-quiz");
   });
 
   test("learner completes orientation quiz and state survives localStorage loss through the same-site cookie", async ({

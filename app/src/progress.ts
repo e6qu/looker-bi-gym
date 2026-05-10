@@ -52,6 +52,31 @@ export type LearnerProgressExport = {
   readonly learner_notes?: string;
 };
 
+export type LearnerProgressImportPreview = {
+  readonly exportedAt: string;
+  readonly appVersion: string;
+  readonly contentVersion: string;
+  readonly importedChallengeIds: readonly string[];
+  readonly unknownChallengeIds: readonly string[];
+  readonly progress: LearnerProgressState;
+  readonly warnings: readonly string[];
+};
+
+export type LearnerProgressImportResult =
+  | {
+      readonly status: "valid";
+      readonly preview: LearnerProgressImportPreview;
+    }
+  | {
+      readonly status: "invalid";
+      readonly message: string;
+    };
+
+type LearnerProgressImportInvalid = Extract<
+  LearnerProgressImportResult,
+  { readonly status: "invalid" }
+>;
+
 export type ChallengeCompletionInput = {
   readonly challengeId: string;
   readonly flag: string;
@@ -94,6 +119,44 @@ function isStringArray(value: unknown): value is readonly string[] {
   return (
     Array.isArray(value) && value.every((item) => typeof item === "string")
   );
+}
+
+function getNonEmptyString(
+  value: unknown,
+  context: string,
+): string | LearnerProgressImportInvalid {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    return {
+      status: "invalid",
+      message: `${context} must be a non-empty string.`,
+    };
+  }
+
+  return value;
+}
+
+function getStringArray(
+  value: unknown,
+  context: string,
+): readonly string[] | LearnerProgressImportInvalid {
+  if (!isStringArray(value)) {
+    return {
+      status: "invalid",
+      message: `${context} must be a string array.`,
+    };
+  }
+
+  return value;
+}
+
+function getImportInvalid(message: string): LearnerProgressImportInvalid {
+  return { status: "invalid", message };
+}
+
+function isImportInvalid(
+  value: unknown,
+): value is LearnerProgressImportInvalid {
+  return isRecord(value) && value["status"] === "invalid";
 }
 
 function isChallengeProgress(value: unknown): value is ChallengeProgress {
@@ -405,6 +468,230 @@ export function buildLearnerProgressExport(
   return learnerNotes.length > 0
     ? { ...baseExport, learner_notes: learnerNotes }
     : baseExport;
+}
+
+function validateImportPrivacy(
+  value: unknown,
+): LearnerProgressImportInvalid | undefined {
+  if (!isRecord(value)) {
+    return getImportInvalid("privacy must be an object.");
+  }
+
+  if (
+    value["created_locally"] !== true ||
+    value["backend_required"] !== false ||
+    value["state_scope"] !== "browser-only" ||
+    !isStringArray(value["storage_mediums"]) ||
+    value["includes_credentials"] !== false ||
+    value["includes_real_banking_data"] !== false ||
+    value["includes_raw_answers"] !== false
+  ) {
+    return getImportInvalid(
+      "privacy must match the browser-local progress export boundary.",
+    );
+  }
+
+  return undefined;
+}
+
+export function parseLearnerProgressImport(
+  source: string,
+  challenges: readonly ChallengeManifest[],
+): LearnerProgressImportResult {
+  let parsed: unknown;
+
+  try {
+    parsed = JSON.parse(source) as unknown;
+  } catch {
+    return getImportInvalid("Import JSON could not be parsed.");
+  }
+
+  if (!isRecord(parsed)) {
+    return getImportInvalid("Import JSON must be an object.");
+  }
+
+  if (parsed["format"] !== "looker-bi-gym.progress-export.v1") {
+    return getImportInvalid(
+      "Import format must be looker-bi-gym.progress-export.v1.",
+    );
+  }
+
+  if (parsed["storage_version"] !== 1) {
+    return getImportInvalid("Import storage_version must be 1.");
+  }
+
+  const exportedAt = getNonEmptyString(parsed["exported_at"], "exported_at");
+  const appVersionValue = getNonEmptyString(
+    parsed["app_version"],
+    "app_version",
+  );
+  const contentVersionValue = getNonEmptyString(
+    parsed["content_version"],
+    "content_version",
+  );
+
+  if (isImportInvalid(exportedAt)) {
+    return exportedAt;
+  }
+
+  if (isImportInvalid(appVersionValue)) {
+    return appVersionValue;
+  }
+
+  if (isImportInvalid(contentVersionValue)) {
+    return contentVersionValue;
+  }
+
+  if (Number.isNaN(Date.parse(exportedAt))) {
+    return getImportInvalid("exported_at must be an ISO-like date string.");
+  }
+
+  const privacyResult = validateImportPrivacy(parsed["privacy"]);
+
+  if (privacyResult !== undefined) {
+    return privacyResult;
+  }
+
+  const completedChallengeIds = getStringArray(
+    parsed["completed_challenge_ids"],
+    "completed_challenge_ids",
+  );
+
+  if (isImportInvalid(completedChallengeIds)) {
+    return completedChallengeIds;
+  }
+
+  const completedChallenges = parsed["completed_challenges"];
+
+  if (!Array.isArray(completedChallenges)) {
+    return getImportInvalid("completed_challenges must be an array.");
+  }
+
+  const knownChallengeIds = new Set(
+    challenges.map((challenge) => challenge.id),
+  );
+  const declaredChallengeIds = new Set(completedChallengeIds);
+  const importedChallengeIds: string[] = [];
+  const unknownChallengeIds = new Set<string>();
+  const progressEntries: Array<readonly [string, ChallengeProgress]> = [];
+  const seenChallengeIds = new Set<string>();
+
+  for (const [index, rawChallenge] of completedChallenges.entries()) {
+    if (!isRecord(rawChallenge)) {
+      return getImportInvalid(
+        `completed_challenges[${index}] must be an object.`,
+      );
+    }
+
+    const challengeId = getNonEmptyString(
+      rawChallenge["challenge_id"],
+      `completed_challenges[${index}].challenge_id`,
+    );
+    const completedAt = getNonEmptyString(
+      rawChallenge["completed_at"],
+      `completed_challenges[${index}].completed_at`,
+    );
+    const flag = getNonEmptyString(
+      rawChallenge["flag"],
+      `completed_challenges[${index}].flag`,
+    );
+    const passedCheckIds = getStringArray(
+      rawChallenge["passed_check_ids"],
+      `completed_challenges[${index}].passed_check_ids`,
+    );
+    const passedQuestionIds = getStringArray(
+      rawChallenge["passed_question_ids"],
+      `completed_challenges[${index}].passed_question_ids`,
+    );
+
+    if (isImportInvalid(challengeId)) {
+      return challengeId;
+    }
+
+    if (isImportInvalid(completedAt)) {
+      return completedAt;
+    }
+
+    if (isImportInvalid(flag)) {
+      return flag;
+    }
+
+    if (isImportInvalid(passedCheckIds)) {
+      return passedCheckIds;
+    }
+
+    if (isImportInvalid(passedQuestionIds)) {
+      return passedQuestionIds;
+    }
+
+    if (seenChallengeIds.has(challengeId)) {
+      return getImportInvalid(`Duplicate imported challenge ${challengeId}.`);
+    }
+
+    if (!declaredChallengeIds.has(challengeId)) {
+      return getImportInvalid(
+        `completed_challenge_ids is missing ${challengeId}.`,
+      );
+    }
+
+    if (Number.isNaN(Date.parse(completedAt))) {
+      return getImportInvalid(
+        `completed_challenges[${index}].completed_at must be an ISO-like date string.`,
+      );
+    }
+
+    seenChallengeIds.add(challengeId);
+    importedChallengeIds.push(challengeId);
+
+    if (!knownChallengeIds.has(challengeId)) {
+      unknownChallengeIds.add(challengeId);
+    }
+
+    progressEntries.push([
+      challengeId,
+      {
+        completed: true,
+        completedAt,
+        flag,
+        passedCheckIds,
+        passedQuestionIds,
+      },
+    ]);
+  }
+
+  const missingExportRows = completedChallengeIds.filter(
+    (challengeId) => !seenChallengeIds.has(challengeId),
+  );
+
+  if (missingExportRows.length > 0) {
+    return getImportInvalid(
+      `completed_challenges is missing ${missingExportRows.join(", ")}.`,
+    );
+  }
+
+  const unknownIds = [...unknownChallengeIds].sort();
+  const warnings =
+    unknownIds.length > 0
+      ? [
+          `Import includes challenge IDs not in the current catalog: ${unknownIds.join(", ")}.`,
+        ]
+      : [];
+
+  return {
+    status: "valid",
+    preview: {
+      exportedAt,
+      appVersion: appVersionValue,
+      contentVersion: contentVersionValue,
+      importedChallengeIds,
+      progress: {
+        version: 1,
+        challenges: Object.fromEntries(progressEntries),
+      },
+      unknownChallengeIds: unknownIds,
+      warnings,
+    },
+  };
 }
 
 export function getPassedQuestionIds(

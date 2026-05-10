@@ -200,6 +200,56 @@
 - Reviewed ignored/generated outputs after verification. `app/dist/`,
   `app/src/generated/`, `screenshots/`, and `var/` remain ignored and were not
   staged.
+- Opened PR #14: `https://github.com/e6qu/looker-bi-gym/pull/14`.
+- Confirmed PR #14 CI `Validate, Test, And Build` passed in 2m02s.
+- Merged PR #14 with squash merge and fast-forwarded local `main`.
+- Confirmed PR #14 merged on 2026-05-10 at merge commit
+  `add376a9b6766871a6b46ed574c547fb322c21e7`.
+- Confirmed main CI run `25631925236` passed for merge commit
+  `add376a9b6766871a6b46ed574c547fb322c21e7`.
+- Confirmed main GitHub Pages deployment run `25631925233` passed for the same
+  merge commit.
+- Confirmed `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
+  `last-modified: Sun, 10 May 2026 15:01:49 GMT`.
+- Created branch `browser-progress-import` from updated `main`; no work was
+  pushed directly to `main`.
+- Started Task 031 - Browser-Local Progress Import.
+- Added `parseLearnerProgressImport` in `app/src/progress.ts` to parse JSON as
+  `unknown`, validate the `looker-bi-gym.progress-export.v1` format, enforce
+  storage version and privacy-boundary fields, validate completion rows,
+  timestamps, flags, and passed check/question arrays, and build a typed
+  `LearnerProgressState`.
+- Added Settings import UI: paste JSON, validate import, preview imported
+  challenge IDs and source versions, and apply only after confirmation. Apply
+  writes browser-local `localStorage` plus same-site cookie state; no upload or
+  backend is involved.
+- Expanded `bun run test:progress-export` to cover valid import round-trip and
+  invalid privacy-boundary rejection.
+- Expanded Playwright Settings coverage to validate and apply a pasted progress
+  export, then verify `localStorage` contains the imported challenge completion.
+- Updated app/test/component docs from planned import to implemented
+  browser-local export/import.
+- Verification so far for Task 031:
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:progress-export`;
+  - `bun run test:e2e` after approved local preview binding; all 11 rendered UI
+    tests passed.
+- Final local verification for Task 031:
+  - `bun run test:platform-boundary`;
+  - `bun run check` after approved local Playwright/Vite preview port binding;
+  - `git diff --check`;
+  - type-safety scan across `app/src`, `app/scripts`, `app/tests`, and
+    `app/configs`.
+- `bun run check` passed with all 11 Playwright rendered UI tests, production
+  build, static-link validation, fact DB checks, quiz facts DB verification,
+  content QA, platform-boundary checks, typecheck, lint, and format check.
+- The type-safety scan found no `any`, `as any`, broad `object` type,
+  `as object`, `@ts-ignore`, or `@ts-expect-error` usage in app code; the only
+  match was the ESLint rule name `@typescript-eslint/no-explicit-any`.
+- Reviewed ignored/generated outputs after verification. `app/dist/`,
+  `app/src/generated/`, `screenshots/`, and `var/` remain ignored and were not
+  staged.
 
 - Merged PR #9 with `gh pr merge 9 --squash --delete-branch`, fast-forwarded
   local `main`, and created branch `task026-grading-contracts`.

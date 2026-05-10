@@ -40,6 +40,7 @@ import {
   getCompletedChallengeIds,
   getPassedQuestionIds,
   maybeCreateLocalFlag,
+  parseLearnerProgressImport,
   readBrowserLearnerProgress,
   resetBrowserLearnerProgress,
   writeBrowserLearnerProgress,
@@ -65,6 +66,7 @@ import type {
 import type { ContentDocument, ContentSectionId } from "./content";
 import type {
   BrowserProgressPersistence,
+  LearnerProgressImportResult,
   LearnerProgressState,
 } from "./progress";
 import type {
@@ -2906,6 +2908,11 @@ function SettingsPage(): JSX.Element {
   );
   const [learnerNotes, setLearnerNotes] = useState<string>("");
   const [exportMessage, setExportMessage] = useState<string>("");
+  const [importJson, setImportJson] = useState<string>("");
+  const [importResult, setImportResult] = useState<
+    LearnerProgressImportResult | undefined
+  >();
+  const [importMessage, setImportMessage] = useState<string>("");
   const progressExport = useMemo(
     () =>
       buildLearnerProgressExport(progress, challengeCatalog, {
@@ -2924,6 +2931,7 @@ function SettingsPage(): JSX.Element {
     setProgress(resetBrowserLearnerProgress(getBrowserProgressPersistence()));
     setResetMessage("Local progress has been reset in this browser.");
     setExportMessage("");
+    setImportMessage("");
   }
 
   function exportProgress(): void {
@@ -2941,6 +2949,31 @@ function SettingsPage(): JSX.Element {
       "Progress export was prepared locally as a JSON download.",
     );
     setResetMessage("");
+    setImportMessage("");
+  }
+
+  function validateImport(): void {
+    const result = parseLearnerProgressImport(importJson, challengeCatalog);
+
+    setImportResult(result);
+    setImportMessage("");
+    setResetMessage("");
+    setExportMessage("");
+  }
+
+  function applyImport(): void {
+    if (importResult?.status !== "valid") {
+      return;
+    }
+
+    writeBrowserLearnerProgress(
+      importResult.preview.progress,
+      getBrowserProgressPersistence(),
+    );
+    setProgress(importResult.preview.progress);
+    setImportMessage("Imported progress was applied locally in this browser.");
+    setResetMessage("");
+    setExportMessage("");
   }
 
   return (
@@ -3016,6 +3049,78 @@ function SettingsPage(): JSX.Element {
         {exportMessage.length > 0 ? (
           <div className="feedbackBox feedbackPass" role="status">
             {exportMessage}
+          </div>
+        ) : null}
+      </div>
+      <div className="settingsActionPanel progressExportPanel">
+        <div>
+          <h3>Progress Import</h3>
+          <p>
+            Paste a `looker-bi-gym.progress-export.v1` JSON export to validate
+            it locally. The app previews the import before applying it and never
+            uploads the file.
+          </p>
+        </div>
+        <label className="exportNotesField" htmlFor="progress-import-json">
+          <span className="fieldLabel">Progress import JSON</span>
+          <textarea
+            id="progress-import-json"
+            onChange={(event) => {
+              setImportJson(event.currentTarget.value);
+              setImportResult(undefined);
+              setImportMessage("");
+            }}
+            placeholder="Paste exported progress JSON here. Do not paste credentials or real banking data."
+            value={importJson}
+          />
+        </label>
+        <div className="settingsButtonRow">
+          <button type="button" onClick={validateImport}>
+            Validate Import
+          </button>
+          <button
+            disabled={importResult?.status !== "valid"}
+            type="button"
+            onClick={applyImport}
+          >
+            Apply Import
+          </button>
+        </div>
+        {importResult?.status === "invalid" ? (
+          <div className="feedbackBox feedbackFail" role="status">
+            {importResult.message}
+          </div>
+        ) : null}
+        {importResult?.status === "valid" ? (
+          <div className="exportPreview" aria-label="Progress import preview">
+            <div>
+              <h3>Import Preview</h3>
+              <p>
+                {importResult.preview.importedChallengeIds.length} completed
+                challenges from export {importResult.preview.exportedAt}.
+              </p>
+              <p>
+                Source versions: app {importResult.preview.appVersion}, content{" "}
+                {importResult.preview.contentVersion}.
+              </p>
+              {importResult.preview.warnings.length > 0 ? (
+                <ul>
+                  {importResult.preview.warnings.map((warning) => (
+                    <li key={warning}>{warning}</li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+            <textarea
+              aria-label="Progress import challenge IDs preview"
+              readOnly
+              value={importResult.preview.importedChallengeIds.join("\n")}
+            />
+          </div>
+        ) : null}
+        {importMessage.length > 0 ? (
+          <div className="feedbackBox feedbackPass" role="status">
+            {importMessage}
           </div>
         ) : null}
       </div>

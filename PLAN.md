@@ -123,9 +123,9 @@ The first platform release and PR #3 established:
   governance, and banking-context topics, with an Anki-style spaced repetition
   UI and browser-local flashcard state that can be exported and imported as a
   single JSON file.
-- JSON export is implemented in Settings. JSON import is planned as an optional
-  browser-local workflow: validate the export format locally, preview imported
-  evidence, apply only after user confirmation, and never upload learner data.
+- JSON export and import are implemented in Settings. Import is a browser-local
+  workflow: validate the export format locally, preview imported evidence, apply
+  only after user confirmation, and never upload learner data.
 - Quiz banks and exam cards should be rendered as first-class app surfaces when
   they become core learner flows. Markdown summaries are useful navigation aids,
   but the website should not require the learner to read repository YAML or a

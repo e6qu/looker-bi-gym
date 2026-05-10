@@ -3,6 +3,7 @@ import {
   browserProgressStorageKeys,
   buildLearnerProgressExport,
   completeChallenge,
+  parseLearnerProgressImport,
   readBrowserLearnerProgress,
   resetBrowserLearnerProgress,
   writeBrowserLearnerProgress,
@@ -184,6 +185,33 @@ assert.deepEqual(progressExport.privacy, {
 });
 
 const exportedJson = JSON.stringify(progressExport);
+const importResult = parseLearnerProgressImport(exportedJson, [challenge]);
+
+if (importResult.status !== "valid") {
+  throw new Error("Expected valid import result.");
+}
+
+assert.deepEqual(importResult.preview.importedChallengeIds, [challenge.id]);
+assert.deepEqual(importResult.preview.unknownChallengeIds, []);
+assert.equal(
+  importResult.preview.progress.challenges[challenge.id]?.flag,
+  challenge.flag.id,
+);
+assert.equal(
+  importResult.preview.progress.challenges[challenge.id]?.completedAt,
+  "2026-05-06T09:30:00.000Z",
+);
+
+const invalidImportResult = parseLearnerProgressImport(
+  JSON.stringify({
+    ...progressExport,
+    privacy: { ...progressExport.privacy, includes_credentials: true },
+  }),
+  [challenge],
+);
+
+assert.equal(invalidImportResult.status, "invalid");
+
 assert.equal(
   exportedJson.includes(browserProgressStorageKeys.localStorage),
   false,
