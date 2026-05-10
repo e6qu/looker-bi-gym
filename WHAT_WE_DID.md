@@ -43,6 +43,9 @@
     no output for over 40 seconds, and was terminated.
 - Acceptance note: this is a first stable expansion batch only. It does not
   satisfy the Phase 4 500-fact target or Phase 9 completeness gate.
+- Committed `428f4cc Expand source-backed fact corpus`.
+- Pushed branch `phase-4-fact-corpus-expansion` and opened PR #23:
+  `https://github.com/e6qu/looker-bi-gym/pull/23`.
 
 ## 2026-05-10 - Phase 4 Root Facts Corpus Migration
 

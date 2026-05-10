@@ -1,7 +1,7 @@
 # 037 - Fact Corpus Expansion
 
-Status: implemented locally on branch `phase-4-fact-corpus-expansion`; PR not
-opened yet; formal Claude review blocked by CLI hang.
+Status: implemented locally on branch `phase-4-fact-corpus-expansion`; PR #23
+open; formal Claude review blocked by CLI hang.
 
 ## Goal
 

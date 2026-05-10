@@ -5,7 +5,7 @@ Last updated: 2026-05-10
 ## Current Branch And PR
 
 - Current branch: `phase-4-fact-corpus-expansion`, based on verified `main`.
-- Current PR: not opened yet.
+- Current PR: #23, `https://github.com/e6qu/looker-bi-gym/pull/23`.
 - PR #22, `https://github.com/e6qu/looker-bi-gym/pull/22`, is squash-merged
   at `9e9e709ff76eb90f21f837a3d0c2570200c34d7a`.
 - Main CI for `9e9e709` passed:
@@ -50,8 +50,8 @@ Current state:
 - Generated catalog validation now checks required metadata, duplicate IDs,
   source facts, quiz/exam learner-task links, and rebuild parity, but generated
   TypeScript remains ignored by design.
-- Fact corpus expansion toward the Phase 4 500-fact target remains open; this
-  branch is only the first stable expansion batch.
+- Fact corpus expansion toward the Phase 4 500-fact target remains open; PR #23
+  is only the first stable expansion batch.
 
 ## Verification
 
