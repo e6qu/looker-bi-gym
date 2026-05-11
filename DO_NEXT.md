@@ -11,18 +11,19 @@
    gh pr list --state open --limit 10
    ```
 
-3. Continue PR #40 on branch `looker-bigquery-corpus-expansion`:
-   `https://github.com/e6qu/looker-bi-gym/pull/40`.
-4. Wait for PR #40 CI. If it fails, fix failures on the same branch and rerun
-   the relevant local checks.
-5. Before merging, fetch `origin/main`, rebase the branch on top of it, and
-   merge only after CI passes on the rebased branch.
+3. Continue PR #41 on branch `remove-tutorial-evidence-basis`:
+   `https://github.com/e6qu/looker-bi-gym/pull/41`.
+4. Wait for PR #41 CI. If it fails, fix failures on the same branch and rerun
+   relevant local checks.
+5. Before merging, fetch
+   `origin/main`, rebase the branch on top of it, and merge only after CI passes
+   on the rebased branch.
 6. After merge, verify main CI, GitHub Pages deployment, live HTTP 200, and
    `bun run verify:deployed-surface` before starting another implementation PR.
 
 ## Verification To Preserve
 
-Task 055 local verification has passed:
+Task 056 focused verification has passed:
 
 ```sh
 bun run content:generate
@@ -32,25 +33,17 @@ bun run test:content-qa
 bun run validate:static-links
 bun run typecheck
 bun run lint
-bun run test:facts-db
-bun run test:flashcards
-bun run test:quiz-facts-db
-bun run test:platform-boundary
-bun run test:e2e
-bun run verify:deployed-surface
 bun run check
 git diff --check
 ```
 
-Also preserve stale scans proving the new and repaired learner-facing content
-does not expose implementation scaffolding:
+Stale scan:
 
 ```sh
-rg -n "BI training evidence|CTF|training workflow|this website|this page|this repo|this repository|generated catalog|implementation task|Source Facts|Recommended learner tasks" tutorials quizzes exams flashcards
-rg -n "#/challenges|Capture the local flag" tutorials/learner-tasks quizzes exams flashcards
+rg -n "Evidence Basis" tutorials app/scripts/test-content-qa.ts
 ```
 
-Both scans returned no matches for the checked surfaces.
+The scan returned no matches.
 
 ## Review Requirement
 

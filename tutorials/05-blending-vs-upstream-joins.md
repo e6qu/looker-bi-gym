@@ -64,12 +64,6 @@ Produces:
 - Optional Looker Studio blend comparison notes.
 - `notes/05-blend-and-upstream-join-check.md`, if you keep external notes.
 
-## Evidence Basis
-
-This material is backed by source notes for BI grain, fanout risk,
-semi-additive balance snapshots, BigQuery views, Looker Studio blends, and
-depositor-bank guarantee grain.
-
 ## Goal
 
 Create this decision table:

@@ -38,10 +38,6 @@ Training boundary: use synthetic training data only. This task is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
 
-## Evidence Basis
-
-This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
-
 ## Prerequisites
 
 - Complete [LT-BI-001](lt-bi-001-profile-dataset-grain.md).

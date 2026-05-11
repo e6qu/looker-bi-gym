@@ -61,12 +61,6 @@ Produces:
 - Chart settings and expected values for a metric QA page.
 - `notes/04-metric-contracts-and-fields.md`, if you keep external notes.
 
-## Evidence Basis
-
-This material is backed by source notes for BI grain, semi-additive balance
-snapshots, BigQuery logical views, Looker Studio calculated-field scope, and
-depositor-bank guarantee grain.
-
 ## Goal
 
 Create this metric contract:
