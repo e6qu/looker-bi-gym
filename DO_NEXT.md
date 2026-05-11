@@ -11,9 +11,11 @@
    gh pr list --state open --limit 10
    ```
 
-3. Continue Task 044 on branch `tutorial-spine-repair-batch-3`; no PR is open
+3. Continue Task 045 on branch `rendered-route-sweep-stabilization`; no PR is
+   open
    yet.
-4. Next useful implementation step: commit Task 044, push, open a PR, watch CI,
+4. Next useful implementation step: verify, commit Task 045, push, open a PR,
+   watch CI,
    and squash-merge if CI passes.
 5. If updating this branch before PR creation or after rebasing, rerun:
 
@@ -63,7 +65,8 @@ Pages-verified after one workflow rerun, and live deployed-surface verified,
 but not Claude-reviewed. Task 043 tutorial spine repair batch 2 is merged,
 main-verified, Pages-verified after one workflow rerun, and live
 deployed-surface verified, but not Claude-reviewed. Task 044 tutorial spine
-repair batch 3 is active.
+repair batch 3 is merged and main CI passed, but PR #30 Pages deployment failed
+in the local gate. Task 045 route-sweep stabilization is active.
 
 `PLAN.md` Phase 9 now defines the required gate for any claim that tutorials,
 questions, exams, or flashcards are complete, comprehensive, reality-verified,

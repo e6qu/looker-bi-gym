@@ -56,16 +56,18 @@ Last updated: 2026-05-11
 
 - ID: PAGES-E2E-FLAKE-2026-05-11.
   - Area: GitHub Pages local gate.
-  - Severity: medium.
+  - Severity: high.
   - Description: After PR #28 merged, the first Pages workflow failed once in
     the local gate because the responsive route sweep timed out waiting for the
     primary navigation. The same Pages local-gate timeout recurred after PR #29
-    merged. In both cases, main CI had passed the same suite, and a rerun of the
-    failed Pages workflow passed.
-  - Fix plan: Prioritize hardening the rendered UI route sweep around initial
-    navigation readiness or reduce route-sweep flake in the Pages workflow if
-    it appears again.
-  - Status: monitoring.
+    merged. After PR #30 merged, Pages failed again in the same broad rendered
+    UI route sweep, this time while waiting for the main landmark. The route
+    sweep exhausts the global 60s Playwright test timeout on the slower Pages
+    runner.
+  - Fix plan: Task 045 gives the route sweep its own 180s timeout and uses
+    `domcontentloaded` route navigation readiness while preserving route and
+    viewport coverage.
+  - Status: active fix.
 
 - ID: CLAUDE-REVIEW-2026-05-10.
   - Area: phase review gates.

@@ -4,8 +4,17 @@ Last updated: 2026-05-11
 
 ## Current Branch And PR
 
-- Current branch: `tutorial-spine-repair-batch-3`, based on verified `main`.
+- Current branch: `rendered-route-sweep-stabilization`, based on `main` after
+  PR #30.
 - Current PR: not opened yet.
+- PR #30, `https://github.com/e6qu/looker-bi-gym/pull/30`, is squash-merged
+  at `8f52a85`.
+- Main CI for `8f52a85` passed:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25645250930`.
+- GitHub Pages workflow for `8f52a85` failed in the local gate:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25645250931`.
+- Live Pages URL and deployed-surface verification for PR #30 are blocked until
+  Task 045 lands.
 - PR #29, `https://github.com/e6qu/looker-bi-gym/pull/29`, is squash-merged
   at `1b00a6b`.
 - Main CI for `1b00a6b` passed:
@@ -82,7 +91,7 @@ Last updated: 2026-05-11
 
 ## Active Task
 
-Task 044 - Tutorial Spine Repair Batch 3.
+Task 045 - Rendered Route Sweep Stabilization.
 
 Current state:
 
@@ -99,7 +108,21 @@ Current state:
   URL, and deployed surface after a Pages workflow rerun.
 - PR #29 added Task 043 tutorial 02 repair and was verified on main, Pages, live
   URL, and deployed surface after a Pages workflow rerun.
-- Started Task 044 on branch `tutorial-spine-repair-batch-3`.
+- PR #30 added Task 044 tutorial 04 repair and was merged. Main CI passed, but
+  GitHub Pages deployment failed in the local gate with the repeated rendered
+  route-sweep timeout.
+- Started Task 045 on branch `rendered-route-sweep-stabilization`.
+- Added `_development/tasks/045-rendered-route-sweep-stabilization.md`.
+- Updated the route-sweep Playwright test to use a 180s timeout and
+  `domcontentloaded` navigation readiness while keeping route and viewport
+  coverage intact.
+- Local verification passed:
+  - `bun run test:e2e` after approved local Vite preview binding;
+  - `bun run format:check`;
+  - `git diff --check`;
+  - `bun run check` after approved local Vite preview binding.
+- Task 044 summary:
+  - Started Task 044 on branch `tutorial-spine-repair-batch-3`.
 - Added `_development/tasks/044-tutorial-spine-repair-batch-3.md`.
 - Rewrote `tutorials/04-metrics-and-calculated-fields.md` as a browser-first
   metric-contract lab with exact SQL, expected values, reusable Looker Studio
@@ -233,6 +256,15 @@ PR #29 post-merge verification passed on 2026-05-11:
 - `curl -L -I https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
   `last-modified: Mon, 11 May 2026 01:01:47 GMT`.
 - `bun run verify:deployed-surface` passed against the live Pages URL.
+
+PR #30 post-merge verification is blocked on 2026-05-11:
+
+- PR #30 was squash-merged at `8f52a85`.
+- `gh run watch 25645250930` showed main CI success for `8f52a85`.
+- GitHub Pages run `25645250931` failed in the local gate on a Playwright
+  timeout in the broad responsive route sweep.
+- Live URL and deployed-surface verification were not run for `8f52a85` because
+  the Pages deployment did not complete.
 
 Task 040 local verification passed on 2026-05-11:
 
