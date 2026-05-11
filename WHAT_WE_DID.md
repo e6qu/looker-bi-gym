@@ -1,5 +1,56 @@
 # What We Did
 
+## 2026-05-11 - Task 051 Tutorial Spine Repair Batch 8
+
+- Verified PR #36 post-merge state:
+  - PR #36 was squash-merged at `afc23df`.
+  - Main CI passed for `afc23df`:
+    `https://github.com/e6qu/looker-bi-gym/actions/runs/25647765967`.
+  - GitHub Pages workflow passed for `afc23df`:
+    `https://github.com/e6qu/looker-bi-gym/actions/runs/25647765964`.
+  - Live Pages URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200
+    with `last-modified: Mon, 11 May 2026 02:54:08 GMT`.
+  - `bun run verify:deployed-surface` passed against the live Pages URL.
+- Confirmed no open PRs before starting Task 051.
+- Created branch `tutorial-spine-repair-batch-8` from verified `main`.
+- Added `_development/tasks/051-tutorial-spine-repair-batch-8.md` and updated
+  the implementation task index.
+- Rewrote `tutorials/09-technical-bi-capstone.md` as a browser-first capstone
+  package lab:
+  - artifact checklist;
+  - governed serving source;
+  - source controls and fanout proof;
+  - metric contract register;
+  - dashboard page specification;
+  - governance and operations evidence summary;
+  - rubric score and review workflow;
+  - optional BigQuery and Looker Studio applied checks;
+  - recovery checks and an end challenge.
+- Updated `docs/17-curriculum-completeness-matrix.md` so T041-TUT-09 is marked
+  first-pass implemented.
+- Verification passed:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run format:check`;
+  - `bun run test:content-qa`;
+  - `bun run validate:static-links`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:facts-db`;
+  - `bun run test:quiz-facts-db`;
+  - `bun run test:flashcards`;
+  - `bun run test:platform-boundary`;
+  - stale scan for learner-facing repo/app/source-ID implementation wording in
+    tutorial 09;
+  - `git diff --check`;
+  - `bun run test:e2e` after approved local Vite preview binding, with all 65
+    Playwright tests passing;
+  - `bun run check` after approved local Vite preview binding, with all 65
+    Playwright tests passing.
+- Failed/blocked attempts recorded:
+  - formal Claude CLI review in non-TUI `--print` mode produced no output for
+    about 30 seconds and was killed.
+
 ## 2026-05-11 - Task 050 Tutorial Spine Repair Batch 7
 
 - Verified PR #35 post-merge state:

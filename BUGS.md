@@ -84,10 +84,10 @@ Last updated: 2026-05-11
     `claude --print` hung with no output and were stopped. The Task 041 attempt
     returned `Not logged in · Please run /login`; Task 042 returned the same
     auth blocker, as did Task 043. Task 044 hung with no output for about 40
-    seconds and was killed, as did Tasks 046 and 047. Tasks 049 and 050 hung
-    with no output for about 30 seconds and were killed. Codex CLI non-TUI mode
-    works outside the sandbox via `codex exec`; a sandboxed attempt failed to
-    initialize the in-process app-server client.
+    seconds and was killed, as did Tasks 046 and 047. Tasks 049, 050, and 051
+    hung with no output for about 30 seconds and were killed. Codex CLI non-TUI
+    mode works outside the sandbox via `codex exec`; a sandboxed attempt failed
+    to initialize the in-process app-server client.
   - Fix plan: Retry only with a known-good non-hanging formal review path, or
     use an explicitly accepted alternate formal review process and record the
     result in continuity docs.

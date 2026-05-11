@@ -4,9 +4,20 @@ Last updated: 2026-05-11
 
 ## Current Branch And PR
 
-- Current branch: `tutorial-spine-repair-batch-7`, based on verified `main`
-  after PR #35.
+- Current branch: `tutorial-spine-repair-batch-8`, based on verified `main`
+  after PR #36.
 - Current PR: not opened yet.
+- PR #36, `https://github.com/e6qu/looker-bi-gym/pull/36`, is squash-merged
+  at `afc23df`.
+- Main CI for `afc23df` passed:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25647765967`.
+- GitHub Pages workflow for `afc23df` passed:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25647765964`.
+- Live Pages URL verified HTTP 200 on 2026-05-11:
+  `https://e6qu.github.io/looker-bi-gym/`, with
+  `last-modified: Mon, 11 May 2026 02:54:08 GMT`.
+- Deployed learning-surface verifier passed on 2026-05-11:
+  `bun run verify:deployed-surface`.
 - PR #35, `https://github.com/e6qu/looker-bi-gym/pull/35`, is squash-merged
   at `bfbc615`.
 - Main CI for `bfbc615` passed:
@@ -136,7 +147,7 @@ Last updated: 2026-05-11
 
 ## Active Task
 
-Task 050 - Tutorial Spine Repair Batch 7.
+Task 051 - Tutorial Spine Repair Batch 8.
 
 Current state:
 
@@ -167,6 +178,39 @@ Current state:
   verified on main, Pages, live URL, and deployed surface.
 - PR #35 added Task 049 tutorial 07 repair and was verified on main, Pages,
   live URL, and deployed surface.
+- PR #36 added Task 050 tutorial 08 repair and was verified on main, Pages,
+  live URL, and deployed surface.
+- Started Task 051 on branch `tutorial-spine-repair-batch-8`.
+- Added `_development/tasks/051-tutorial-spine-repair-batch-8.md`.
+- Rewrote `tutorials/09-technical-bi-capstone.md` as a browser-first capstone
+  package lab with exact artifact checklist, governed source, source controls,
+  metric contracts, dashboard specs, governance/operations controls, rubric
+  score, review workflow, recovery checks, and end-challenge evidence.
+- Updated `docs/17-curriculum-completeness-matrix.md` to mark T041-TUT-09 as
+  first-pass implemented.
+- Local verification passed:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run format:check`;
+  - `bun run test:content-qa`;
+  - `bun run validate:static-links`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:facts-db`;
+  - `bun run test:quiz-facts-db`;
+  - `bun run test:flashcards`;
+  - `bun run test:platform-boundary`;
+  - stale scan for learner-facing repo/app/source-ID implementation wording in
+    tutorial 09;
+  - `git diff --check`;
+  - `bun run test:e2e` after approved local Vite preview binding, with all 65
+    Playwright tests passing;
+  - `bun run check` after approved local Vite preview binding, with all 65
+    Playwright tests passing.
+- Claude CLI review is blocked: non-TUI
+  `claude --print --permission-mode plan --output-format text ...` produced no
+  output for about 30 seconds and was killed.
+- Task 050 summary:
 - Started Task 050 on branch `tutorial-spine-repair-batch-7`.
 - Added `_development/tasks/050-tutorial-spine-repair-batch-7.md`.
 - Rewrote `tutorials/08-observability-and-operations.md` as a browser-first
