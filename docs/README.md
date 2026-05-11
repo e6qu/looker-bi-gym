@@ -19,6 +19,7 @@ Start here:
 - [14 - Platform Components](14-platform-components.md): website sections, content components, datasets, facts, runtime modules, state model, export/import direction, and verification.
 - [15 - Learning Surface Walkthrough](15-learning-surface-walkthrough.md): deployed GitHub Pages learner-surface verification notes.
 - [16 - Curriculum Critical Review](16-curriculum-critical-review.md): skeptical curriculum-quality review and remaining completeness gaps.
+- [17 - Curriculum Completeness Matrix](17-curriculum-completeness-matrix.md): competency, tutorial, assessment, and source-verification gap matrix.
 - [Source Fact Register](../facts/README.md): canonical fact IDs and source links for fact-backed tutorials and quiz questions.
 - [Release Versioning](../VERSIONING.md): app/content, challenge, dataset, and regulation-brief version policy.
 - [Changelog](../CHANGELOG.md): tracked release contents and known verification gaps.

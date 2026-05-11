@@ -52,11 +52,7 @@ Produces:
 
 ## Source Facts
 
-- `FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION`
-- `FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT`
-- `FACT-GDPR-PERSONAL-DATA`
-- `FACT-GDPR-DATA-MINIMISATION`
-- `FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK`
+This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
 
 ## Goal
 

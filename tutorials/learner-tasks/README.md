@@ -12,8 +12,8 @@
 
 # Learner Tasks
 
-Learner tasks are curriculum exercise units for the website. They are separate
-from repository implementation tasks under `_development/tasks/`.
+Learner tasks are curriculum exercise units for the website. They focus on BI
+practice rather than how the course is built.
 
 Training boundary: use synthetic training data only. These tasks are technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
@@ -26,7 +26,7 @@ After this page, you will be able to:
 
 - Choose the next task in the browser-first learning path.
 - See which BI area each task belongs to.
-- Separate learner tasks from repository implementation tasks.
+- Separate BI practice tasks from course-building work.
 
 ## Area Groups
 

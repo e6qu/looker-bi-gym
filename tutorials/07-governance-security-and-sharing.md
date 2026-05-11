@@ -40,7 +40,7 @@ After this tutorial, you will be able to:
 
 - Classify serving fields by sensitivity and dashboard purpose.
 - Record Looker Studio credential behavior safely.
-- Link governance controls to source facts and regulatory context.
+- Link governance controls to source notes and regulatory context.
 
 Produces:
 
@@ -50,11 +50,7 @@ Produces:
 
 ## Source Facts
 
-- `FACT-GDPR-PERSONAL-DATA`
-- `FACT-GDPR-DATA-MINIMISATION`
-- `FACT-GDPR-PROCESSING-PRINCIPLES`
-- `FACT-LOOKER-STUDIO-CREDENTIALS`
-- `FACT-BIGQUERY-VIEW-SCOPE`
+This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
 
 ## Goal
 
@@ -67,18 +63,18 @@ without turning the training app into a credential store.
 2. Mark each field as aggregate, dimension, masked identifier, or prohibited raw
    identifier.
 3. Remove or mask fields that are not needed for the dashboard purpose.
-4. For each page, record a regulatory-context tag and the source fact that
+4. For each page, record a regulatory-context tag and the source note that
    explains the control.
 5. Inspect Looker Studio data credentials and record the sharing implication
    without storing tokens or keys.
-6. Draft `serve.reg_context_register` with dashboard page, metric, source fact,
+6. Draft `serve.reg_context_register` with dashboard page, metric, source note,
    owner, and review date.
 
 ## Checkpoints
 
 - Raw account/customer identifiers are not visible in serving outputs.
 - Credential behavior is documented as a Looker Studio data-source setting.
-- The regulation-context register links each control to a source fact.
+- The regulation-context register links each control to a source note.
 
 ## Common Failure Modes
 

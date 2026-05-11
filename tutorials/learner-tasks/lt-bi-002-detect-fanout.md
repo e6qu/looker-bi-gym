@@ -38,10 +38,7 @@ model-risk advice.
 
 ## Source Facts
 
-- `FACT-BI-FANOUT-JOIN-RISK`
-- `FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT`
-- `FACT-BIGQUERY-REDUCE-BEFORE-JOIN`
-- `FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK`
+This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
 
 ## Prerequisites
 

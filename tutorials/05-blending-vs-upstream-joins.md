@@ -48,11 +48,7 @@ Produces:
 
 ## Source Facts
 
-- `FACT-BI-FANOUT-JOIN-RISK`
-- `FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT`
-- `FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK`
-- `FACT-BIGQUERY-LOGICAL-VIEW`
-- `FACT-BIGQUERY-VIEW-SCOPE`
+This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
 
 ## Goal
 

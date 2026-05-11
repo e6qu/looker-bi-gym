@@ -47,10 +47,7 @@ Produces:
 
 ## Source Facts
 
-- `FACT-BIGQUERY-LOGICAL-VIEW`
-- `FACT-BIGQUERY-VIEW-LIMITATIONS`
-- `FACT-LOOKER-STUDIO-DATA-SOURCE`
-- `FACT-DORA-ICT-RISK-FRAMEWORK`
+This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
 
 ## Goal
 

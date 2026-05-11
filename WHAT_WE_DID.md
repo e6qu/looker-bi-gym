@@ -1,5 +1,56 @@
 # What We Did
 
+## 2026-05-11 - Task 041 Curriculum Completeness Audit Start
+
+- Verified PR #26 post-merge state:
+  - PR #26 was squash-merged at `666b964`.
+  - Main CI passed for `666b964`.
+  - GitHub Pages workflow passed for `666b964`.
+  - Live Pages URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200
+    with `last-modified: Sun, 10 May 2026 23:04:52 GMT`.
+  - `bun run verify:deployed-surface` passed against the live Pages URL.
+- Confirmed no open PRs before starting Task 041.
+- Created branch `curriculum-completeness-audit` from verified `main`.
+- Added `docs/17-curriculum-completeness-matrix.md` with first-pass inventory,
+  competency, tutorial, assessment, source-verification, and rewrite-gate
+  matrices.
+- Updated `docs/README.md` and
+  `_development/tasks/041-curriculum-completeness-audit.md`.
+- Inventory confirms the curriculum is not complete: 10 top-level tutorials, 6
+  self-contained learner tasks, 6 released challenges, 59 flashcards, 14 quiz
+  questions, 4 exam cards, and 185 unique fact IDs.
+- Added rewrite tickets to `docs/17-curriculum-completeness-matrix.md` for the
+  top-level tutorial spine.
+- Rewrote `tutorials/01-connect-public-data.md` as the first concrete repair:
+  browser-first SQL path, exact expected outputs, optional BigQuery setup SQL,
+  optional Looker Studio checks, recovery checks, and end challenge.
+- Updated content QA so released tutorials and learner tasks cite source fact
+  IDs from typed frontmatter metadata instead of requiring raw IDs in visible
+  tutorial prose.
+- Removed visible raw `FACT-*` source-ID lists from tutorials, learner tasks,
+  and the Looker recipe; cleaned remaining scanned repo/app implementation
+  phrasing from tutorials, the orientation challenge, and flashcard deck review
+  notes.
+- Verification passed:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run format:check`;
+  - `bun run test:content-qa`;
+  - `bun run test:quiz-facts-db`;
+  - `bun run test:flashcards`;
+  - `bun run validate:static-links`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - stale scan for learner-facing repo/app/source-fact implementation wording;
+  - `git diff --check`;
+  - `bun run check` after approved local Vite preview binding, with all 12
+    Playwright tests passing.
+- Failed/blocked attempts recorded:
+  - first sandboxed `bun run check` reached Playwright but Vite preview could
+    not bind `127.0.0.1:4173`;
+  - formal Claude CLI review in non-TUI `--print` mode returned
+    `Not logged in · Please run /login`.
+
 ## 2026-05-11 - Phase 7 Learning Surface Verification First Pass
 
 - Implemented Task 040 on `phase-7-learning-surface-verification`.

@@ -48,10 +48,7 @@ Produces:
 
 ## Source Facts
 
-- `FACT-LOOKER-STUDIO-DATA-SOURCE`
-- `FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE`
-- `FACT-BIGQUERY-VIEW-SCOPE`
-- `FACT-GDPR-DATA-MINIMISATION`
+This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
 
 ## Goal
 

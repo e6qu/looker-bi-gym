@@ -119,6 +119,10 @@ const releasedTutorialFiles = new Set([
 const tutorialObjectivePattern =
   /After this (?:tutorial|task|recipe|page), you will be able to:/u;
 
+function isRecord(value: unknown): value is Readonly<Record<string, unknown>> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
 function isExternalLink(target: string): boolean {
   return /^(?:https?:|mailto:|data:|#)/u.test(target);
 }
@@ -286,6 +290,35 @@ function assertKnownSourceFacts(
 
 function assertNonEmptyString(value: string, context: string): void {
   assert.ok(value.trim().length > 0, `${context} must not be empty.`);
+}
+
+function readFrontmatterSourceFacts(source: string): readonly string[] {
+  const match = /^---\n([\s\S]*?)\n---/u.exec(source);
+
+  if (match?.[1] === undefined) {
+    return [];
+  }
+
+  const parsed = parse(match[1]) as unknown;
+
+  if (!isRecord(parsed)) {
+    return [];
+  }
+
+  const sourceFacts = parsed["source_facts"];
+
+  if (
+    !Array.isArray(sourceFacts) ||
+    !sourceFacts.every((sourceFact) => typeof sourceFact === "string")
+  ) {
+    return [];
+  }
+
+  return sourceFacts;
+}
+
+function readMarkdownBody(source: string): string {
+  return source.replace(/^---\n[\s\S]*?\n---\n/u, "");
 }
 
 function assertLearnerFacingText(value: string, context: string): void {
@@ -538,6 +571,14 @@ function assertMarkdownBoundaryLanguage(
     }
 
     if (markdownFile.path.includes(`${repoRoot}/tutorials/`)) {
+      const markdownBody = readMarkdownBody(markdownFile.source);
+
+      assert.doesNotMatch(
+        markdownBody,
+        /\bFACT-[A-Z0-9]+(?:-[A-Z0-9]+)*\b/u,
+        `${markdownFile.path} must keep raw source fact IDs in metadata instead of visible tutorial prose.`,
+      );
+
       assert.match(
         markdownFile.source,
         /synthetic/iu,
@@ -559,14 +600,11 @@ function assertMarkdownBoundaryLanguage(
           );
         }
 
-        const factIds = Array.from(
-          markdownFile.source.matchAll(sourceFactIdPattern),
-          (match) => match[1],
-        ).filter((factId): factId is string => factId !== undefined);
+        const factIds = readFrontmatterSourceFacts(markdownFile.source);
 
         assert.ok(
           factIds.length > 0,
-          `${markdownFile.path} must cite source fact IDs.`,
+          `${markdownFile.path} must cite source fact IDs in typed metadata.`,
         );
 
         for (const factId of factIds) {
@@ -638,14 +676,11 @@ function assertMarkdownBoundaryLanguage(
           `${markdownFile.path} must include deterministic expected output.`,
         );
 
-        const factIds = Array.from(
-          markdownFile.source.matchAll(sourceFactIdPattern),
-          (match) => match[1],
-        ).filter((factId): factId is string => factId !== undefined);
+        const factIds = readFrontmatterSourceFacts(markdownFile.source);
 
         assert.ok(
           factIds.length > 0,
-          `${markdownFile.path} must cite source fact IDs.`,
+          `${markdownFile.path} must cite source fact IDs in typed metadata.`,
         );
 
         for (const factId of factIds) {
