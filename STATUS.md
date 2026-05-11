@@ -4,8 +4,18 @@ Last updated: 2026-05-11
 
 ## Current Branch And PR
 
-- Current branch: `curriculum-completeness-audit`, based on verified `main`.
+- Current branch: `tutorial-spine-repair-batch-1`, based on verified `main`.
 - Current PR: not opened yet.
+- PR #27, `https://github.com/e6qu/looker-bi-gym/pull/27`, is squash-merged
+  at `040969c`.
+- Main CI for `040969c` passed:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25644021794`.
+- GitHub Pages workflow for `040969c` passed:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25644021788`.
+- Live Pages URL verified HTTP 200 on 2026-05-11:
+  `https://e6qu.github.io/looker-bi-gym/`.
+- Deployed learning-surface verifier passed on 2026-05-11:
+  `bun run verify:deployed-surface`.
 - PR #26, `https://github.com/e6qu/looker-bi-gym/pull/26`, is squash-merged
   at `666b964`.
 - Main CI for `666b964` passed:
@@ -51,7 +61,7 @@ Last updated: 2026-05-11
 
 ## Active Task
 
-Task 041 - Curriculum Completeness Audit.
+Task 042 - Tutorial Spine Repair Batch 1.
 
 Current state:
 
@@ -62,22 +72,18 @@ Current state:
   verified on main.
 - PR #26 added the Phase 7 learning-surface verifier and was verified on main,
   Pages, live URL, and deployed surface.
-- Started Task 041 on branch `curriculum-completeness-audit`.
-- Added `docs/17-curriculum-completeness-matrix.md` with first-pass inventory,
-  competency, tutorial, assessment, source-verification, and rewrite-gate
-  matrices.
-- Task 041 confirms the curriculum is not complete: current inventory is 10
-  top-level tutorials, 6 self-contained learner tasks, 6 released challenges,
-  59 flashcards, 14 quiz questions, 4 exam cards, and 185 unique fact IDs.
-- Added rewrite tickets for the tutorial spine and rewrote
-  `tutorials/01-connect-public-data.md` as the first self-contained repair with
-  browser SQL, expected outputs, optional BigQuery setup SQL, optional Looker
-  Studio checks, recovery checks, and an end challenge.
-- Removed visible raw `FACT-*` source IDs and repo/app implementation phrasing
-  from scanned tutorial, learner-task, recipe, orientation-challenge, and
-  flashcard deck wording while keeping source links in typed metadata.
-- Local Task 041 checks now pass, including `bun run check` after approved
-  local Vite preview binding.
+- PR #27 added Task 041 curriculum completeness audit work and was verified on
+  main, Pages, live URL, and deployed surface.
+- Started Task 042 on branch `tutorial-spine-repair-batch-1`.
+- Added `_development/tasks/042-tutorial-spine-repair-batch-1.md`.
+- Rewrote `tutorials/03-first-executive-dashboard.md` so it no longer depends
+  on an assumed existing Looker Studio report. The browser-first path now has
+  exact SQL, expected KPI values, trend values, latest currency breakdown,
+  freshness label, chart specification, sensitive-field exclusions, recovery
+  checks, and an end challenge.
+- Updated `docs/17-curriculum-completeness-matrix.md` to mark T041-TUT-03 as
+  first-pass implemented, with optional BigQuery/Looker Studio UI verification
+  still open.
 
 Task 040 summary:
 
@@ -94,10 +100,11 @@ Task 040 summary:
 
 - Claude CLI formal review remains blocked. The Task 041 formal review attempt
   used non-TUI `claude --print --permission-mode plan --output-format text ...`
-  and returned `Not logged in · Please run /login`. Task 040 hung with no
-  output for about one minute and was killed; Tasks 034-039 also had formal
-  Claude review attempts hang with no output. Do not mark any phase complete
-  until a completed formal review is recorded.
+  and returned `Not logged in · Please run /login`; the Task 042 attempt
+  returned the same auth blocker. Task 040 hung with no output for about one
+  minute and was killed; Tasks 034-039 also had formal Claude review attempts
+  hang with no output. Do not mark any phase complete until a completed formal
+  review is recorded.
 - Codex CLI non-TUI mode works: `codex -a never exec --ephemeral --sandbox
 read-only --json "Reply exactly: codex-cli-ok"` returned `codex-cli-ok`.
 - Safari second-browser verification remains open until Safari remote
@@ -116,8 +123,9 @@ read-only --json "Reply exactly: codex-cli-ok"` returned `codex-cli-ok`.
   is only the first stable expansion batch.
 - Phase 5 expansion toward 500 flashcards, 200 quiz questions, and 30 exam
   cards remains open; Task 038 is only a first assessment-content batch.
-- Task 041 is required before any curriculum-completeness claim. Current
-  tutorials, questions, flashcards, and exams are not complete or comprehensive.
+- Task 041 confirmed the curriculum is not complete or comprehensive. Current
+  tutorials, questions, flashcards, and exams remain below Phase 9 completeness
+  targets and review gates.
 
 ## Verification
 
@@ -165,6 +173,16 @@ PR #26 post-merge verification passed on 2026-05-11:
   `last-modified: Sun, 10 May 2026 23:04:52 GMT`.
 - `bun run verify:deployed-surface` passed against the live Pages URL.
 
+PR #27 post-merge verification passed on 2026-05-11:
+
+- PR #27 was squash-merged at `040969c`.
+- `gh run watch 25644021794` showed main CI success for `040969c`.
+- `gh run watch 25644021788` showed GitHub Pages deployment success for
+  `040969c`.
+- `curl -L -I https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
+  `last-modified: Mon, 11 May 2026 00:29:32 GMT`.
+- `bun run verify:deployed-surface` passed against the live Pages URL.
+
 Task 040 local verification passed on 2026-05-11:
 
 - `bun run content:check`
@@ -206,6 +224,26 @@ Task 041 blocked review:
 
 - Claude CLI formal review in non-TUI `--print` mode returned
   `Not logged in · Please run /login`; Task 041 is not Claude-reviewed.
+
+Task 042 local verification passed on 2026-05-11:
+
+- `bun run content:generate`
+- `bun run content:check`
+- `bun run format:check`
+- `bun run test:content-qa`
+- `bun run validate:static-links`
+- `bun run typecheck`
+- `bun run lint`
+- stale scan for learner-facing repo/app/source-ID implementation wording in
+  tutorial 03
+- `git diff --check`
+- `bun run check` after approved local Vite preview binding, with all 12
+  Playwright tests passing
+
+Task 042 blocked review:
+
+- Claude CLI formal review in non-TUI `--print` mode returned
+  `Not logged in · Please run /login`; Task 042 is not Claude-reviewed.
 
 Task 036 local verification passed on 2026-05-10:
 

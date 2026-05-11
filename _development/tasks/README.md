@@ -50,6 +50,7 @@ Task order:
 - [039 - Tutorial Challenge Expansion](039-tutorial-challenge-expansion.md)
 - [040 - Learning Surface Verification](040-learning-surface-verification.md)
 - [041 - Curriculum Completeness Audit](041-curriculum-completeness-audit.md)
+- [042 - Tutorial Spine Repair Batch 1](042-tutorial-spine-repair-batch-1.md)
 
 Completion rule:
 
