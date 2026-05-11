@@ -15,6 +15,8 @@
 - Created branch `quiz-standalone-question-polish` from verified `main`.
 - Added `_development/tasks/058-quiz-standalone-question-polish.md` and updated
   the implementation task index.
+- Opened PR #43:
+  `https://github.com/e6qu/looker-bi-gym/pull/43`.
 - Rewrote the first quiz prompt from worksheet wording:
   `You are asked to build a scorecard... Before writing SUM(...)`
   into a concrete branch-dashboard scenario about account-day balance grain.

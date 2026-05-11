@@ -14,7 +14,7 @@ Last updated: 2026-05-11
     balance-grain question and adds content QA guardrails against similar
     course-scaffolded quiz wording.
   - Status: fixed and locally verified on branch
-    `quiz-standalone-question-polish`; PR not opened yet.
+    `quiz-standalone-question-polish`; open in PR #43.
 
 - ID: QUIZ-QUESTION-QUALITY-2026-05-11.
   - Area: quiz bank and rendered quiz UI.

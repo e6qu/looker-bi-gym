@@ -11,13 +11,13 @@
    gh pr list --state open --limit 10
    ```
 
-3. Continue Task 058 on branch `quiz-standalone-question-polish`.
-4. Commit the local Task 058 changes, push the branch, and open one PR.
-5. Wait for Task 058 PR CI. If it fails, fix failures on the same branch and
+3. Continue PR #43 on branch `quiz-standalone-question-polish`:
+   `https://github.com/e6qu/looker-bi-gym/pull/43`.
+4. Wait for PR #43 CI. If it fails, fix failures on the same branch and
    rerun relevant local checks.
-6. Before merging, fetch `origin/main`, rebase the branch on top of it, and
+5. Before merging, fetch `origin/main`, rebase the branch on top of it, and
    merge only after CI passes on the rebased branch.
-7. After merge, verify main CI, GitHub Pages deployment, live HTTP 200, and
+6. After merge, verify main CI, GitHub Pages deployment, live HTTP 200, and
    `bun run verify:deployed-surface` before starting another implementation PR.
 
 ## Verification To Preserve

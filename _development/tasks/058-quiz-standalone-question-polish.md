@@ -1,7 +1,7 @@
 # 058 - Quiz Standalone Question Polish
 
-Status: locally verified on branch `quiz-standalone-question-polish`; PR not
-opened yet.
+Status: locally verified on branch `quiz-standalone-question-polish`; open in
+PR #43.
 
 ## Goal
 

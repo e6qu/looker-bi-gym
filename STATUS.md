@@ -6,7 +6,8 @@ Last updated: 2026-05-11
 
 - Current branch: `quiz-standalone-question-polish`, based on verified `main`
   at `1509ed8`.
-- Current PR: not opened yet.
+- Current PR: #43,
+  `https://github.com/e6qu/looker-bi-gym/pull/43`.
 - PR #42, `https://github.com/e6qu/looker-bi-gym/pull/42`, is squash-merged at
   `1509ed8`.
 - Main CI for `1509ed8` passed:
@@ -51,7 +52,8 @@ Current state:
 
 ## Blockers And Gaps
 
-- Task 058 is locally verified but not yet committed or opened as a PR.
+- Task 058 is locally verified and open in PR #43. CI is pending unless checked
+  later.
 - Claude CLI formal review remains blocked by authentication or prior hangs;
   Task 058 does not mark any phase complete.
 - Curriculum completeness, external verification, and full assessment coverage
