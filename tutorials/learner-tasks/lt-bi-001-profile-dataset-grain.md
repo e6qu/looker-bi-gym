@@ -36,10 +36,6 @@ Training boundary: use synthetic training data only. This task is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
 
-## Evidence Basis
-
-This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
-
 ## Prerequisites
 
 - Open the [deposits seed workbench](#/workbench/deposits-seed/v0.1.0).

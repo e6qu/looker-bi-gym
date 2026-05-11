@@ -55,12 +55,6 @@ Produces:
 - Browser-first SQL result for a safe latest-day branch/currency serving output.
 - `notes/02-grain-and-model-contract.md`, if you keep external notes.
 
-## Evidence Basis
-
-This material is backed by source notes for BI grain, semi-additive balance
-snapshots, data minimisation, personal-data boundaries, and depositor-bank
-coverage grain.
-
 ## Goal
 
 Create this model contract:

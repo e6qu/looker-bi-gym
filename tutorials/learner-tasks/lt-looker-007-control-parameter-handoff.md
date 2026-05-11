@@ -38,12 +38,6 @@ Training boundary: use synthetic training data only. This task is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
 
-## Evidence Basis
-
-This material is backed by source notes for Looker Studio controls, BigQuery
-query parameters, BigQuery pre-run cost estimates, and the synthetic deposits
-dataset.
-
 ## Prerequisites
 
 - Complete [LT-LOOKER-004](lt-looker-004-report-ready-data-source.md).

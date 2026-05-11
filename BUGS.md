@@ -4,6 +4,17 @@ Last updated: 2026-05-11
 
 ## Open Issues
 
+- ID: TUTORIAL-EVIDENCE-BASIS-FILLER-2026-05-11.
+  - Area: learner-facing tutorials and content QA.
+  - Severity: low.
+  - Description: The visible `Evidence Basis` sections added noise without
+    helping learners complete the BI tasks. Source grounding belongs in
+    metadata and validation rather than filler tutorial prose.
+  - Fix plan: Task 056 removes the visible sections and updates content QA while
+    preserving `source_facts` validation.
+  - Status: fixed and locally verified on branch
+    `remove-tutorial-evidence-basis`.
+
 - ID: DEPLOYED-SURFACE-METADATA-EXPECTATION-2026-05-11.
   - Area: deployed learning-surface verifier.
   - Severity: medium.

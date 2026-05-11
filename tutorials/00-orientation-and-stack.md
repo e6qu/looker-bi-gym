@@ -46,10 +46,6 @@ Produces:
   minimisation, and depositor-bank grain assumptions you will use in later
   tutorials.
 
-## Evidence Basis
-
-This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
-
 ## Goal
 
 Confirm the BigQuery, Looker Studio, data minimisation, and

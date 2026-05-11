@@ -56,11 +56,6 @@ Produces:
 - Optional Looker Studio report page.
 - `notes/03-executive-dashboard-check.md`, if you keep external notes.
 
-## Evidence Basis
-
-This material is backed by source notes for Looker Studio data sources,
-calculated-field scope, BigQuery view scope, and data minimisation.
-
 ## Goal
 
 Create this first executive dashboard contract:

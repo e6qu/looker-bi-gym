@@ -78,14 +78,6 @@ Produces:
 - Rubric score and review workflow.
 - `notes/09-capstone-package.md`, if you keep external notes.
 
-## Evidence Basis
-
-This material is backed by source notes for BI grain and fanout, semi-additive
-balances, reconciliation windows, BigQuery views and job evidence, Looker Studio
-data sources and credential modes, GDPR minimisation and pseudonymisation, FGDB
-depositor-bank grain context, and DORA-style dependency and operations
-documentation.
-
 ## Goal
 
 Create this capstone review result:

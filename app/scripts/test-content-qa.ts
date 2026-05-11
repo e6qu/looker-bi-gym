@@ -589,7 +589,6 @@ function assertMarkdownBoundaryLanguage(
 
       if (fileName !== undefined && releasedTutorialFiles.has(fileName)) {
         for (const requiredHeading of [
-          "## Evidence Basis",
           "## Steps",
           "## Checkpoints",
           "## Common Failure Modes",
@@ -619,7 +618,6 @@ function assertMarkdownBoundaryLanguage(
         markdownFile.path.includes(`${repoRoot}/tutorials/learner-tasks/lt-`)
       ) {
         for (const requiredHeading of [
-          "## Evidence Basis",
           "## Prerequisites",
           "## Steps",
           "## Checkpoints",

@@ -73,14 +73,6 @@ Produces:
 - Optional BigQuery authorized-view and Looker Studio credential-mode notes.
 - `notes/07-governance-sharing.md`, if you keep external notes.
 
-## Evidence Basis
-
-This material is backed by source notes for BigQuery views and authorized
-views, narrow select lists, Looker Studio data sources and credential modes,
-GDPR purpose limitation, data minimisation, pseudonymisation, integrity and
-confidentiality, and DORA-style confidentiality/integrity context for technical
-BI controls.
-
 ## Goal
 
 Create this governed dashboard release record:

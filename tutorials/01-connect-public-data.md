@@ -57,11 +57,6 @@ Produces:
 - Optional Looker Studio data source and report page.
 - `notes/01-serving-view-check.md`, if you keep external notes.
 
-## Evidence Basis
-
-This tutorial is backed by source notes for BigQuery logical views, Looker
-Studio data sources, Looker Studio credential modes, and data minimisation.
-
 ## Goal
 
 Create the smallest useful dashboard source from synthetic balances:

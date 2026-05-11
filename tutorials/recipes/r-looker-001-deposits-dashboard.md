@@ -36,10 +36,6 @@ Training boundary: use synthetic training data only. This recipe is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
 
-## Evidence Basis
-
-This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
-
 ## Steps
 
 1. In Looker Studio, create a report from a synthetic data source that exposes

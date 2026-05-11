@@ -64,6 +64,7 @@ Task order:
 - [053 - Tutorial Verification Separation Sweep](053-tutorial-verification-separation-sweep.md)
 - [054 - Curriculum Self-Reference Remediation](054-curriculum-self-reference-remediation.md)
 - [055 - Looker And BigQuery Corpus Expansion](055-looker-bigquery-corpus-expansion.md)
+- [056 - Remove Tutorial Evidence Basis Headings](056-remove-tutorial-evidence-basis.md)
 
 Completion rule:
 

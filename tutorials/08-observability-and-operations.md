@@ -74,13 +74,6 @@ Produces:
 - Optional BigQuery job-metadata and Looker Studio freshness notes.
 - `notes/08-bi-operations.md`, if you keep external notes.
 
-## Evidence Basis
-
-This material is backed by source notes for DORA-style dependency and incident
-documentation, BigQuery job metadata, Looker Studio data freshness, dashboard
-refresh cost, reconciliation windows, GDPR accuracy, and EBA reporting
-framework validation/reference-date concepts.
-
 ## Goal
 
 Create this daily operations record:

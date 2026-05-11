@@ -1,5 +1,37 @@
 # What We Did
 
+## 2026-05-11 - Task 056 Remove Tutorial Evidence Basis Headings
+
+- Confirmed no open PRs before starting Task 056.
+- Created branch `remove-tutorial-evidence-basis` from verified `main`.
+- Added `_development/tasks/056-remove-tutorial-evidence-basis.md` and updated
+  the task index.
+- Opened PR #41:
+  `https://github.com/e6qu/looker-bi-gym/pull/41`.
+- Removed visible `## Evidence Basis` sections from released tutorials,
+  practice labs, and the Looker Studio recipe.
+- Updated content QA so tutorials no longer require that heading.
+- Kept `source_facts` metadata requirements and fact-ID validation intact.
+- Verification passed:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run format:check`;
+  - `bun run test:content-qa`;
+  - `bun run validate:static-links`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - stale scan for `Evidence Basis` in tutorials and content QA;
+  - `git diff --check`;
+  - `bun run check` after approved local Vite preview binding, with all 93
+    Playwright tests passing.
+- Failed/blocked attempts recorded:
+  - one parallel `bun run content:check` raced content generation and reported
+    a stale generated catalog; rerunning serially passed.
+  - formatting was required after the mechanical heading removal; Prettier
+    normalized the edited Markdown files.
+  - the first `bun run check` attempt stopped at `DO_NEXT.md` formatting;
+    Prettier normalized the continuity file before rerunning.
+
 ## 2026-05-11 - Task 055 Looker And BigQuery Corpus Expansion
 
 - Verified PR #39 post-merge state:

@@ -70,12 +70,6 @@ Produces:
 - Optional BigQuery job metadata query notes.
 - `notes/06-performance-cost-findings.md`, if you keep external notes.
 
-## Evidence Basis
-
-This material is backed by source notes for BigQuery job metadata, logical
-views, partition filters, narrow select lists, Looker Studio data freshness,
-Looker Studio BigQuery refresh cost, and DORA-style dependency documentation.
-
 ## Goal
 
 Create this operations handoff:
