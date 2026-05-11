@@ -830,24 +830,6 @@ function answerMatchesQuestion(
   return typeof answer === "string" && answer === question.answer;
 }
 
-function LearnerTaskLinks({
-  taskIds,
-}: {
-  readonly taskIds: readonly string[];
-}): JSX.Element {
-  return (
-    <p className="sourceFactList">
-      <span>Recommended learner tasks:</span>{" "}
-      {taskIds.map((taskId, index) => (
-        <Fragment key={taskId}>
-          <a href="#/tutorials/learner-tasks/README.md">{taskId}</a>
-          {index < taskIds.length - 1 ? ", " : ""}
-        </Fragment>
-      ))}
-    </p>
-  );
-}
-
 function QuizQuestionCard({
   question,
   questionIndex,
@@ -875,8 +857,6 @@ function QuizQuestionCard({
         </span>
         {question.prompt}
       </legend>
-      <SourceFactList sourceFacts={question.source_facts} />
-      <LearnerTaskLinks taskIds={question.recommended_learner_tasks} />
 
       {question.type === "multiple_choice" && question.options !== undefined ? (
         <div className="answerOptions">
@@ -1050,7 +1030,7 @@ function QuizBankPage(): JSX.Element {
     <section className="page quizBankPage" aria-labelledby="quiz-bank-title">
       <PageTitle
         title="Quiz"
-        description="Fact-backed self-check questions grouped by difficulty. Answers stay in this browser view and are not uploaded."
+        description="Scenario-based self-check questions grouped by difficulty. Answers stay in this browser view and are not uploaded."
         id="quiz-bank-title"
       />
       {quizBanks.map((quizBank) => (
@@ -1068,8 +1048,6 @@ function ExamCardView({ card }: { readonly card: ExamCard }): JSX.Element {
         <span className="status statusReady">Self-assessed</span>
       </div>
       <p>{card.objective}</p>
-      <LearnerTaskLinks taskIds={card.recommended_learner_tasks} />
-      <SourceFactList sourceFacts={card.source_facts} />
       <section>
         <h4>Expected Outputs</h4>
         <ul>
@@ -1128,7 +1106,7 @@ function ExamPage(): JSX.Element {
     <section className="page examPage" aria-labelledby="exam-title">
       <PageTitle
         title="Exam"
-        description="Longer independent practical cards. The learner keeps their own time and self-assesses against deterministic expected outputs."
+        description="Longer independent practical cards. Keep your own time and self-assess against deterministic expected outputs."
         id="exam-title"
       />
       {examPacks.map((examPack) => (
@@ -2671,8 +2649,8 @@ function WorkbenchRuntimePage({
                 {queryState.status === "running" ? "Running..." : "Run Query"}
               </button>
               <p id={sqlEditorHelpId}>
-                Use this page for tutorial SQL. It does not grade answers or
-                send data outside the browser.
+                Use this SQL workbench to run tutorial queries. It does not
+                grade answers or send data outside the browser.
               </p>
             </div>
           </div>
@@ -3109,8 +3087,8 @@ function FlashcardsPage(): JSX.Element {
           <div>
             <h2>Decks</h2>
             <p>
-              Review state stays in this browser. Each card cites source facts
-              and records timestamped review history.
+              Review state stays in this browser. Cards are grouped by BI topic
+              and record timestamped review history.
             </p>
           </div>
           <span className="status statusReady">

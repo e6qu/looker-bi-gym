@@ -13,13 +13,12 @@
 # Exam Mode
 
 Exam mode is a set of longer practical cards. Pick one card, work in your own
-time, and use the expected outputs to self-assess before comparing your notes to
-the learner tasks.
+time, and use the expected outputs to self-assess the result.
 
 Objective: practice longer BI review tasks that combine SQL results,
 reconciliation controls, and written self-assessment.
 
-After this page, you will be able to:
+After this exam guide, you will be able to:
 
 - Pick an independent exam card that matches your current learning goal.
 - Compare your work against deterministic expected outputs.
@@ -35,14 +34,12 @@ against the deterministic expected outputs.
 
 ## Card 1 - Grain And Fanout Review
 
-Recommended tasks:
-
-- [LT-BI-001 - Profile Dataset Grain](learner-tasks/lt-bi-001-profile-dataset-grain.md)
-- [LT-BI-002 - Detect Fanout Before Reporting](learner-tasks/lt-bi-002-detect-fanout.md)
-
 Objective: produce a one-page review note and SQL result proving that current
 balance reporting stays at latest account-date grain before ownership analysis
 is introduced.
+
+Inputs: synthetic account balances and account ownership rows. Treat balances
+as one row per account and business date before any owner join.
 
 Expected outputs:
 
@@ -61,13 +58,12 @@ Self-assessment:
 
 ## Card 2 - Month-End Controls Review
 
-Recommended tasks:
-
-- [LT-SQL-003 - Build A Month-End Serving Result](learner-tasks/lt-sql-003-month-end-serving-result.md)
-- [LT-DQ-005 - Reconcile Dashboard Controls](learner-tasks/lt-dq-005-reconcile-dashboard-controls.md)
-
 Objective: build a currency-level month-end exposure result and attach controls
 for non-month-end rows, stale collateral valuation, and output minimisation.
+
+Inputs: synthetic lending snapshots, collateral valuation dates, and currency
+codes. Treat exposure date, valuation date, and dashboard control date as
+separate concepts.
 
 Expected outputs:
 

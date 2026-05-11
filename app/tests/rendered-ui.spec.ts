@@ -328,7 +328,7 @@ test.describe("rendered UI", () => {
     });
   }
 
-  test("quiz, exam, and fact graph surfaces render source-backed learning content", async ({
+  test("quiz, exam, and fact graph surfaces keep assessment prompts independent", async ({
     page,
   }) => {
     await page.goto("/#/quiz");
@@ -347,11 +347,8 @@ test.describe("rendered UI", () => {
     ).toBeVisible();
     await page.getByLabel("One row per account and business date.").check();
     await page.getByRole("button", { name: "Check Quiz" }).click();
-    await expect(
-      page
-        .locator('a[title="FACT-DEPOSITS-ACCOUNT-DAILY-BALANCES-GRAIN"]')
-        .first(),
-    ).toBeVisible();
+    await expect(page.getByText("Recommended learner tasks")).not.toBeVisible();
+    await expect(page.getByText("Source evidence")).not.toBeVisible();
 
     await page.goto("/#/exam");
 
@@ -362,6 +359,8 @@ test.describe("rendered UI", () => {
       page.getByRole("heading", { level: 3, name: "Grain And Fanout Review" }),
     ).toBeVisible();
     await expect(page.getByText("fanout_delta = 69100")).toBeVisible();
+    await expect(page.getByText("Recommended learner tasks")).not.toBeVisible();
+    await expect(page.getByText("Source evidence")).not.toBeVisible();
 
     await page.goto("/#/facts/fact-deposits-fanout-control-totals");
 

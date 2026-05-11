@@ -22,35 +22,36 @@ Objective: follow a browser-first learning path for BI fundamentals, Looker
 Studio mechanics, BigQuery-style SQL, and banking dashboard controls without a
 backend or real banking data.
 
-After this page, you will be able to:
+After this index, you will be able to:
 
-- Pick the next learner task in the intended browser-first order.
-- Distinguish core learner tasks from optional applied Looker Studio recipes.
+- Follow the browser-first practice path in the intended order.
+- Distinguish core practice labs from optional applied Looker Studio recipes.
 - Find the quiz, exam mode, data-source notes, and regulatory-context briefs.
 
 ## Start Here - Browser-First Path
 
 1. [00 - Orientation And Stack](00-orientation-and-stack.md)
-2. [LT-BI-001 - Profile Dataset Grain](learner-tasks/lt-bi-001-profile-dataset-grain.md)
-3. [LT-BI-002 - Detect Fanout Before Reporting](learner-tasks/lt-bi-002-detect-fanout.md)
-4. [LT-SQL-003 - Build A Month-End Serving Result](learner-tasks/lt-sql-003-month-end-serving-result.md)
-5. [LT-LOOKER-004 - Prepare A Report-Ready Data Source](learner-tasks/lt-looker-004-report-ready-data-source.md)
-6. [LT-DQ-005 - Reconcile Dashboard Controls](learner-tasks/lt-dq-005-reconcile-dashboard-controls.md)
-7. [Quiz Bank](quiz-bank.md)
-8. [Exam Mode](exam-mode.md)
+2. [Profile Dataset Grain](learner-tasks/lt-bi-001-profile-dataset-grain.md)
+3. [Detect Fanout Before Reporting](learner-tasks/lt-bi-002-detect-fanout.md)
+4. [Build A Month-End Serving Result](learner-tasks/lt-sql-003-month-end-serving-result.md)
+5. [Prepare A Report-Ready Data Source](learner-tasks/lt-looker-004-report-ready-data-source.md)
+6. [Reconcile Dashboard Controls](learner-tasks/lt-dq-005-reconcile-dashboard-controls.md)
+7. [Define A Ratio Null Contract](learner-tasks/lt-dq-006-ratio-null-contract.md)
+8. [Quiz Bank](quiz-bank.md)
+9. [Exam Mode](exam-mode.md)
 
-The path above is the main learner sequence for GitHub Pages. It runs in the
-browser, stores progress locally, and uses synthetic datasets. The numbered
-00-09 tutorials below are reference and applied-track material; some later
-items describe optional Google Cloud Console, BigQuery UI, and Looker Studio UI
-work that happens in those browser tools.
+The path above is the core sequence. It runs in the browser, stores progress
+locally, and uses synthetic datasets. The numbered 01-09 tutorials below are
+longer reference and applied-track labs; some later items describe optional
+Google Cloud Console, BigQuery UI, and Looker Studio UI work that happens in
+those browser tools.
 
 ## Shared Contracts
 
 - [Data Sources](data-sources.md): canonical synthetic schemas, grains, sensitive fields, and target marts.
 - [Curriculum Map](curriculum.md): dependency graph, areas, and artifacts.
-- [Learner Tasks](learner-tasks/README.md): focused 15-20 minute browser-first
-  exercise units with checkpoints and CTF-style endings.
+- [Practice Labs](learner-tasks/README.md): focused 15-20 minute browser-first
+  BI exercises with checkpoints and end challenges.
 - Browser SQL workbench:
   [deposits seed](#/workbench/deposits-seed/v0.1.0) and
   [lending month-end](#/workbench/lending-month-end/v0.1.0) run tutorial SQL
@@ -89,6 +90,6 @@ work that happens in those browser tools.
 ## Learner Artifact Rule
 
 Each tutorial should leave you with a visible artifact: a SQL result, a metric
-contract, a CTF-style end-check answer, a note, or a report recipe checkpoint.
+contract, an end-challenge answer, a note, or a report recipe checkpoint.
 Later tutorials reuse those artifacts instead of rebuilding the same logic in a
 chart.

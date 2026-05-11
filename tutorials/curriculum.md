@@ -17,7 +17,7 @@ Each tutorial is a learning task that builds on previous artifacts. The goal is 
 Objective: see how the browser-first tasks, optional applied-track tutorials,
 and capstone artifacts fit into one learning progression.
 
-After this page, you will be able to:
+After this map, you will be able to:
 
 - Identify which artifacts unlock later tutorial areas.
 - Separate browser-first work from optional Google Cloud and Looker Studio UI

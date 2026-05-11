@@ -11,8 +11,9 @@
    gh pr list --state open --limit 10
    ```
 
-3. Continue Task 053 on branch `tutorial-verification-separation-sweep`; no PR
-   is open, and the user asked not to open a new PR.
+3. Continue from locally verified Task 054 on branch
+   `tutorial-verification-separation-sweep`; no PR is open, and the user asked
+   not to open a new PR.
 4. Next useful implementation step: if the user wants these local changes
    published, push the existing branch and open a PR only after explicit
    direction. Do not open a PR otherwise.
@@ -80,6 +81,7 @@ repair batch 8 is merged, main-verified, Pages-verified, and live
 deployed-surface verified, but not Claude-reviewed. Task 052 orientation
 tutorial self-contained fix is merged, main-verified, Pages-verified, and live
 deployed-surface verified. Task 053 tutorial verification separation sweep is
+locally verified and local. Task 054 curriculum self-reference remediation is
 locally verified and local; do not open a PR unless the user asks.
 
 `PLAN.md` Phase 9 now defines the required gate for any claim that tutorials,
@@ -96,10 +98,13 @@ The latest Task 041 formal Claude CLI review ran in non-TUI mode but returned
 `Not logged in · Please run /login`; Task 042 returned the same auth blocker.
 Task 043 returned the same auth blocker. Task 044 hung with no output for about
 40 seconds and was killed, as did Tasks 046 and 047. The previous Task 040
-review hung with no output and was killed. Codex CLI non-TUI mode works outside
-the sandbox via `codex exec`; Claude CLI formal review does not currently
-complete. Do not mark Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, Phase 7, or
-Phase 9 complete until a completed formal review is available and recorded.
+review hung with no output and was killed. Task 054 tried the user-requested
+`claude -s ...` shape, but this installed Claude CLI returned `unknown option
+'-s'`; the documented `claude --print ...` non-TUI retry returned
+`Not logged in · Please run /login`. Codex CLI non-TUI mode works outside the
+sandbox via `codex exec`; Claude CLI formal review does not currently complete.
+Do not mark Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, Phase 7, or Phase 9
+complete until a completed formal review is available and recorded.
 
 ## PR Discipline
 

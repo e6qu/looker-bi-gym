@@ -39,7 +39,7 @@ Training boundary: use synthetic training data only. This task is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
 
-## Source Facts
+## Evidence Basis
 
 This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
 
@@ -50,7 +50,7 @@ This material is backed by source notes for the BI, platform, dataset, and regul
 - Open the [deposits seed workbench](#/workbench/deposits-seed/v0.1.0).
 - Treat this as a local evidence-pattern design exercise unless you also
   complete the optional Looker Studio recipe.
-- Use this task page as the complete instruction source; the workbench is only
+- Use the instructions below as the complete practice sequence; the workbench is only
   where you validate the SQL shape.
 
 ## Steps
@@ -145,5 +145,5 @@ The expected answer is:
 ## Answer Reference
 
 Use the serving-view SQL, expected control output, latest-day total, and
-expected end-challenge answer on this page as the complete reference for
+expected end-challenge answer below as the complete reference for
 checking your work.

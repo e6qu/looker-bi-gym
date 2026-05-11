@@ -36,7 +36,7 @@ Training boundary: use synthetic training data only. This task is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
 
-## Source Facts
+## Evidence Basis
 
 This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
 
@@ -44,7 +44,7 @@ This material is backed by source notes for the BI, platform, dataset, and regul
 
 - Complete [LT-DQ-005](lt-dq-005-reconcile-dashboard-controls.md).
 - Open the [deposits seed workbench](#/workbench/deposits-seed/v0.1.0).
-- Use this task page as the complete instruction source; the workbench is only
+- Use the instructions below as the complete practice sequence; the workbench is only
   where you run the SQL.
 
 ## Steps

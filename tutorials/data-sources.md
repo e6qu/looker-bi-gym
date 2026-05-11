@@ -19,7 +19,7 @@ this learning path.
 Objective: understand which synthetic tables are available in the browser today
 and which warehouse objects are applied-track design targets.
 
-After this page, you will be able to:
+After this reference, you will be able to:
 
 - Name the browser-loaded tables used by the current SQL workbench exercises.
 - Avoid writing tutorial steps against tables that are only design targets.

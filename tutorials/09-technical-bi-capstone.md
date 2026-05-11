@@ -51,7 +51,7 @@ Builds on:
 
 Required tools:
 
-- Browser-first path: this website and the browser SQL workbench.
+- Browser-first path: browser SQL workbench for the synthetic datasets.
 - Optional applied path: browser UI access to BigQuery and Looker Studio.
 - Do not use Google Cloud CLI, BigQuery CLI, service account keys, Python, or
   Docker.
@@ -78,7 +78,7 @@ Produces:
 - Rubric score and review workflow.
 - `notes/09-capstone-package.md`, if you keep external notes.
 
-## Source Facts
+## Evidence Basis
 
 This material is backed by source notes for BI grain and fanout, semi-additive
 balances, reconciliation windows, BigQuery views and job evidence, Looker Studio

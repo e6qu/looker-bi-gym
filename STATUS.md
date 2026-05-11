@@ -24,29 +24,43 @@ Last updated: 2026-05-11
 
 ## Active Task
 
-Task 053 - Tutorial Verification Separation Sweep.
+Task 054 - Curriculum Self-Reference Remediation.
 
 Current state:
 
-- Added `_development/tasks/053-tutorial-verification-separation-sweep.md` and
+- Added `_development/tasks/054-curriculum-self-reference-remediation.md` and
   updated the task index.
-- Converted tutorial workbench hash routes from inline code into clickable
-  links.
-- Removed learner-facing references to challenge manifests, solution fixtures,
-  repository paths, and challenge internals from learner-task pages.
-- Removed meta wording such as "no separate quiz" and "hidden reference file."
-- Added rendered UI coverage across tutorial routes to catch inline hash-route
-  code and learner-facing implementation wording.
+- Claude second-opinion attempt:
+  - `claude -s --print --permission-mode plan --output-format text ...`
+    failed because this Claude CLI does not support `-s`;
+  - `claude --print --permission-mode plan --output-format text ...` ran in
+    non-TUI mode but returned `Not logged in · Please run /login`.
+- Reworked the tutorial and practice-lab indexes into one browser-first path,
+  including the ratio-null lab.
+- Replaced visible `Source Facts` tutorial sections with `Evidence Basis`,
+  removed `this website/page/task page` and `CTF-style` wording, and kept raw
+  IDs in metadata rather than learner-facing prose.
+- Reworked quiz-bank prose so it is a scenario self-check with answers hidden
+  in expandable sections instead of inline recommended-task references.
+- Reworked exam-mode prose to remove recommended-task references and include
+  card-specific inputs.
+- Stopped rendering recommended learner-task links and source-fact plumbing on
+  quiz and exam prompts while keeping metadata for validation.
+- Reworded the remaining flashcard challenge phrasing and source-review note.
+- Updated content QA and rendered UI tests to enforce the assessment
+  independence boundary.
 - Local verification passed:
   - `bun run content:generate`;
   - `bun run content:check`;
   - `bun run format:check`;
   - `bun run test:content-qa`;
-  - `bun run validate:static-links`;
   - `bun run typecheck`;
   - `bun run lint`;
-  - stale scan for inline hash-route code and learner-facing challenge/fixture
-    implementation wording;
+  - `bun run test:flashcards`;
+  - `bun run test:quiz-facts-db`;
+  - `bun run test:platform-boundary`;
+  - `bun run validate:static-links`;
+  - stale scan for self-referential learner-facing wording;
   - `git diff --check`;
   - `bun run test:e2e` after approved local Vite preview binding, with all 89
     Playwright tests passing;
@@ -55,10 +69,9 @@ Current state:
 
 ## Blockers And Gaps
 
-- Task 053 is locally verified and local by user request; no PR should be
+- Task 054 is locally verified and local by user request; no PR should be
   opened unless explicitly directed.
-- Claude CLI formal review remains blocked from prior attempts that either hung
-  with no output or could not authenticate. Task 053 does not mark any phase
-  complete.
+- Claude CLI second-opinion/formal review remains blocked by authentication.
+  Task 054 does not mark any phase complete.
 - Curriculum completeness, external verification, and full assessment coverage
   remain Phase 9 gaps.

@@ -34,7 +34,7 @@ Builds on:
 
 Required tools:
 
-- Browser-first path: this website and the browser SQL workbench.
+- Browser-first path: browser SQL workbench for the synthetic datasets.
 - Do not use Google Cloud CLI, BigQuery CLI, service account keys, Python, or
   Docker.
 
@@ -55,7 +55,7 @@ Produces:
 - Browser-first SQL result for a safe latest-day branch/currency serving output.
 - `notes/02-grain-and-model-contract.md`, if you keep external notes.
 
-## Source Facts
+## Evidence Basis
 
 This material is backed by source notes for BI grain, semi-additive balance
 snapshots, data minimisation, personal-data boundaries, and depositor-bank

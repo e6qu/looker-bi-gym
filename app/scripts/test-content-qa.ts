@@ -117,7 +117,7 @@ const releasedTutorialFiles = new Set([
   "09-technical-bi-capstone.md",
 ]);
 const tutorialObjectivePattern =
-  /After this (?:tutorial|task|recipe|page), you will be able to:/u;
+  /After this (?:tutorial|task|recipe|index|reference|map|quiz|exam guide), you will be able to:/u;
 
 function isRecord(value: unknown): value is Readonly<Record<string, unknown>> {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -589,7 +589,7 @@ function assertMarkdownBoundaryLanguage(
 
       if (fileName !== undefined && releasedTutorialFiles.has(fileName)) {
         for (const requiredHeading of [
-          "## Source Facts",
+          "## Evidence Basis",
           "## Steps",
           "## Checkpoints",
           "## Common Failure Modes",
@@ -619,7 +619,7 @@ function assertMarkdownBoundaryLanguage(
         markdownFile.path.includes(`${repoRoot}/tutorials/learner-tasks/lt-`)
       ) {
         for (const requiredHeading of [
-          "## Source Facts",
+          "## Evidence Basis",
           "## Prerequisites",
           "## Steps",
           "## Checkpoints",

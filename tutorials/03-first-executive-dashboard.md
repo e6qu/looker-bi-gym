@@ -32,7 +32,7 @@ Builds on:
 
 Required tools:
 
-- Browser-first path: this website and the browser SQL workbench.
+- Browser-first path: browser SQL workbench for the synthetic datasets.
 - Optional applied path: browser UI access to BigQuery and Looker Studio.
 - Do not use Google Cloud CLI, BigQuery CLI, service account keys, Python, or
   Docker.
@@ -56,7 +56,7 @@ Produces:
 - Optional Looker Studio report page.
 - `notes/03-executive-dashboard-check.md`, if you keep external notes.
 
-## Source Facts
+## Evidence Basis
 
 This material is backed by source notes for Looker Studio data sources,
 calculated-field scope, BigQuery view scope, and data minimisation.

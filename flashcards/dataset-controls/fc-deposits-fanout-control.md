@@ -1,7 +1,7 @@
 ---
 {
   "id": "fc-deposits-fanout-control",
-  "title": "What deterministic control should a fanout challenge compare after a risky owner join?",
+  "title": "What deterministic control should a fanout check compare after a risky owner join?",
   "content_type": "flashcard",
   "status": "published",
   "version": "0.1.0",
@@ -13,11 +13,11 @@
 }
 ---
 
-# What deterministic control should a fanout challenge compare after a risky owner join?
+# What deterministic control should a fanout check compare after a risky owner join?
 
 ## Front
 
-What deterministic control should a fanout challenge compare after a risky owner join?
+What deterministic control should a fanout check compare after a risky owner join?
 
 ## Back
 
