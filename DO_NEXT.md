@@ -11,18 +11,18 @@
    gh pr list --state open --limit 10
    ```
 
-3. Continue PR #42 on branch `quiz-question-quality-expansion`:
-   `https://github.com/e6qu/looker-bi-gym/pull/42`.
-4. Wait for PR #42 CI. If it fails, fix failures on the same branch and
+3. Continue Task 058 on branch `quiz-standalone-question-polish`.
+4. Commit the local Task 058 changes, push the branch, and open one PR.
+5. Wait for Task 058 PR CI. If it fails, fix failures on the same branch and
    rerun relevant local checks.
-5. Before merging, fetch `origin/main`, rebase the branch on top of it, and
+6. Before merging, fetch `origin/main`, rebase the branch on top of it, and
    merge only after CI passes on the rebased branch.
-6. After merge, verify main CI, GitHub Pages deployment, live HTTP 200, and
+7. After merge, verify main CI, GitHub Pages deployment, live HTTP 200, and
    `bun run verify:deployed-surface` before starting another implementation PR.
 
 ## Verification To Preserve
 
-Task 057 focused verification has passed:
+Task 058 focused verification has passed:
 
 ```sh
 bun run content:generate
@@ -42,11 +42,10 @@ Stale scans:
 ```sh
 rg -n "this repo|this repository|repo structure|source file in the repository|generated catalog|implementation task|training workflow|course source register|Evidence Basis|Source evidence|Recommended learner tasks" quizzes/bi-foundations/bi-foundations-mixed.md tutorials/quiz-bank.md
 rg -n "this repo|this repository|repo structure|source file in the repository|generated catalog|implementation task|training workflow|course source register|Evidence Basis|Source evidence|Recommended learner tasks|FACT-[A-Z0-9-]+|LT-[A-Z]+-[0-9]{3}" tutorials/quiz-bank.md app/tests/rendered-ui.spec.ts app/scripts/verify-deployed-learning-surface.ts
+rg -n "you are asked to|before writing|which source grain must be stated|complete the quiz|answer the quiz|quiz question|course material|curriculum page" quizzes/bi-foundations app/tests/rendered-ui.spec.ts app/scripts/verify-deployed-learning-surface.ts tutorials/quiz-bank.md
 ```
 
-The quiz/guide surface scan returned no matches. The test/verifier scan only
-returned deliberate assertions that hidden metadata stays hidden or fact routes
-render fact IDs on fact pages.
+The Task 058 course-scaffolded quiz wording scan returned no matches.
 
 ## Review Requirement
 

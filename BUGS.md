@@ -4,6 +4,18 @@ Last updated: 2026-05-11
 
 ## Open Issues
 
+- ID: QUIZ-WORKSHEET-SCAFFOLDING-2026-05-11.
+  - Area: quiz bank and content QA.
+  - Severity: high.
+  - Description: The first BI Foundations quiz question still read like a
+    worksheet instruction about building a scorecard and writing `SUM(...)`
+    rather than a standalone BI assessment scenario.
+  - Fix plan: Task 058 rewrites the prompt as a concrete branch-dashboard
+    balance-grain question and adds content QA guardrails against similar
+    course-scaffolded quiz wording.
+  - Status: fixed and locally verified on branch
+    `quiz-standalone-question-polish`; PR not opened yet.
+
 - ID: QUIZ-QUESTION-QUALITY-2026-05-11.
   - Area: quiz bank and rendered quiz UI.
   - Severity: high.

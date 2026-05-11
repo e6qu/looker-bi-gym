@@ -104,6 +104,8 @@ const learnerFacingIdPattern =
   /\b(?:FACT-[A-Z0-9]+(?:-[A-Z0-9]+)*|LT-[A-Z]+-\d{3})\b/u;
 const learnerFacingImplementationPattern =
   /\b(?:localStorage|this app|this static app|this repo|this repository|repo structure|source file in the repository|generated catalog|implementation task|learners?|training workflow|course source register|project (?:cards|facts|rule|constraints|prefers))\b/iu;
+const assessmentScaffoldingPattern =
+  /\b(?:you are asked to|before writing|which source grain must be stated|complete the quiz|answer the quiz|quiz question|course material|curriculum page)\b/iu;
 const releasedTutorialFiles = new Set([
   "00-orientation-and-stack.md",
   "01-connect-public-data.md",
@@ -332,6 +334,11 @@ function assertLearnerFacingText(value: string, context: string): void {
     value,
     learnerFacingImplementationPattern,
     `${context} must stay focused on BI, Looker Studio, BigQuery, and regulatory context instead of implementation details.`,
+  );
+  assert.doesNotMatch(
+    value,
+    assessmentScaffoldingPattern,
+    `${context} must read as standalone BI assessment content instead of course or worksheet scaffolding.`,
   );
 }
 

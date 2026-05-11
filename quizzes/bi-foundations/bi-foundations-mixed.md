@@ -17,9 +17,10 @@ questions:
         - FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION
         - FACT-DEPOSITS-ACCOUNT-DAILY-BALANCES-GRAIN
       prompt: >
-        You are asked to build a scorecard from `account_daily_balances`.
-        Before writing `SUM(ledger_balance)`, which source grain must be
-        stated?
+        A branch dashboard scorecard shows total deposit balance by currency
+        for 2026-03-31. The balance source stores one snapshot per account per
+        business date. At what grain does a single balance row exist before it
+        is aggregated?
       options:
         - id: account_business_date
           label: One row per account and business date.
@@ -29,8 +30,8 @@ questions:
           label: One row per product family.
       answer: account_business_date
       explanation: >
-        The balance source is a daily account snapshot. Summing it is meaningful
-        only after the account-and-business-date grain is explicit.
+        The source row is an account-day balance snapshot. Dashboard totals can
+        be interpreted only after that account-and-business-date grain is clear.
       self_assessment: >
         If the grain is unclear, profile rows and keys before interpreting a
         total.

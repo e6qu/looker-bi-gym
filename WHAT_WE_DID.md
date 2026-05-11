@@ -1,5 +1,43 @@
 # What We Did
 
+## 2026-05-11 - Task 058 Quiz Standalone Question Polish
+
+- Verified PR #42 post-merge state:
+  - PR #42 was squash-merged at `1509ed8`.
+  - Main CI passed for `1509ed8`:
+    `https://github.com/e6qu/looker-bi-gym/actions/runs/25668973306`.
+  - GitHub Pages workflow passed for `1509ed8`:
+    `https://github.com/e6qu/looker-bi-gym/actions/runs/25668973301`.
+  - Live Pages URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200
+    with `last-modified: Mon, 11 May 2026 12:06:45 GMT`.
+  - `bun run verify:deployed-surface` passed against the live site.
+  - `gh pr list --state open --limit 10` returned no open PRs.
+- Created branch `quiz-standalone-question-polish` from verified `main`.
+- Added `_development/tasks/058-quiz-standalone-question-polish.md` and updated
+  the implementation task index.
+- Rewrote the first quiz prompt from worksheet wording:
+  `You are asked to build a scorecard... Before writing SUM(...)`
+  into a concrete branch-dashboard scenario about account-day balance grain.
+- Added content QA guardrails to reject course-scaffolded assessment wording
+  such as `you are asked to`, `before writing`, and `which source grain must be
+stated`.
+- Updated rendered UI and deployed-surface verifier expectations for the new
+  prompt.
+- Verification passed:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run format:check`;
+  - `bun run test:content-qa`;
+  - `bun run test:quiz-facts-db`;
+  - `bun run validate:static-links`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - stale scan for course-scaffolded quiz wording in quiz-facing surfaces;
+  - `bun run test:e2e` after approved local Vite preview binding, with all 93
+    Playwright tests passing;
+  - `bun run check` after approved local Vite preview binding, with all 93
+    Playwright tests passing.
+
 ## 2026-05-11 - Task 057 Quiz Question Quality Expansion
 
 - Verified PR #41 post-merge state:
