@@ -1,5 +1,27 @@
 # What We Did
 
+## 2026-05-11 - Task 048 Rendered Route Sweep Hash Stabilization
+
+- PR #33 was squash-merged at `5636297`, but post-merge main CI failed:
+  - main CI run `25646609440` failed in `bun run test:e2e`;
+  - 13 rendered UI tests passed;
+  - the mobile primary-route sweep timed out at 120s on
+    `page.goto(..., waitUntil: "domcontentloaded")`.
+- Created branch `rendered-route-sweep-hash-stabilization` from `main`.
+- Added `_development/tasks/048-rendered-route-sweep-hash-stabilization.md` and
+  updated the implementation task index.
+- Updated `app/tests/rendered-ui.spec.ts` so the primary route sweep creates
+  one Playwright test per route and viewport. This preserves coverage but gives
+  each hash route a fresh page instead of serially navigating many hash routes
+  in one test.
+- Verification passed:
+  - `bun run format:check`;
+  - `git diff --check`;
+  - `bun run test:e2e` after approved local Vite preview binding, with all 65
+    Playwright tests passing;
+  - `bun run check` after approved local Vite preview binding, with all 65
+    Playwright tests passing.
+
 ## 2026-05-11 - Task 047 Tutorial Spine Repair Batch 5
 
 - Verified PR #32 post-merge state:

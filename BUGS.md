@@ -69,9 +69,11 @@ Last updated: 2026-05-11
   - Fix plan: Task 045 gives the route sweep its own 180s timeout and uses
     `domcontentloaded` route navigation readiness while preserving route and
     viewport coverage. PR #31 passed main CI, Pages deployment, live HTTP 200,
-    and deployed-surface verification. Task 047 splits the broad route sweep
-    into one test per viewport so CI can parallelize the coverage.
-  - Status: fixed locally; pending PR #33 CI rerun.
+    and deployed-surface verification. Task 047 split the broad route sweep into
+    one test per viewport, but post-merge main CI still failed on the mobile
+    sweep. Task 048 splits the route sweep into one test per route and viewport
+    so every hash route starts from a fresh page.
+  - Status: fixed locally; pending Task 048 PR and main CI rerun.
 
 - ID: CLAUDE-REVIEW-2026-05-10.
   - Area: phase review gates.

@@ -4,9 +4,15 @@ Last updated: 2026-05-11
 
 ## Current Branch And PR
 
-- Current branch: `tutorial-spine-repair-batch-5`, based on verified `main`
-  after PR #32.
+- Current branch: `rendered-route-sweep-hash-stabilization`, based on `main`
+  after PR #33.
 - Current PR: not opened yet.
+- PR #33, `https://github.com/e6qu/looker-bi-gym/pull/33`, is squash-merged
+  at `5636297`, but post-merge main CI failed in rendered UI route-sweep
+  verification:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25646609440`.
+- Task 048 hotfix is active to repair main CI before continuing curriculum
+  implementation.
 - PR #32, `https://github.com/e6qu/looker-bi-gym/pull/32`, is squash-merged
   at `5cf22e3`.
 - Main CI for `5cf22e3` passed:
@@ -112,7 +118,7 @@ Last updated: 2026-05-11
 
 ## Active Task
 
-Task 047 - Tutorial Spine Repair Batch 5.
+Task 048 - Rendered Route Sweep Hash Stabilization.
 
 Current state:
 
@@ -136,36 +142,35 @@ Current state:
   Pages, live URL, and deployed surface.
 - PR #32 added Task 046 tutorial 05 repair and was verified on main, Pages,
   live URL, and deployed surface.
-- Started Task 047 on branch `tutorial-spine-repair-batch-5`.
-- Added `_development/tasks/047-tutorial-spine-repair-batch-5.md`.
-- Rewrote `tutorials/06-performance-and-cost-lab.md` as a browser-first
-  cost/performance lab with source profiling, safe serving output,
-  deterministic job-evidence simulation, daily operations control, optional
-  BigQuery/Looker Studio UI checks, recovery paths, and an end challenge.
-- Split the broad rendered route sweep into one Playwright test per viewport
-  after PR #33 CI timed out at 180s while running all route/viewport checks
-  serially in one test.
+- PR #33 added Task 047 tutorial 06 repair and was squash-merged, but
+  post-merge main CI failed in rendered UI because the mobile route sweep still
+  timed out after the viewport split.
+- Started Task 048 on branch `rendered-route-sweep-hash-stabilization`.
+- Added `_development/tasks/048-rendered-route-sweep-hash-stabilization.md`.
+- Split the broad rendered route sweep into one Playwright test per route and
+  viewport so each test starts from a fresh page instead of serially navigating
+  many hash routes in one page.
+- Local verification passed:
+  - `bun run format:check`;
+  - `git diff --check`;
+  - `bun run test:e2e` after approved local Vite preview binding, with all 65
+    Playwright tests passing;
+  - `bun run check` after approved local Vite preview binding, with all 65
+    Playwright tests passing.
+- Task 047 summary:
+  - Started Task 047 on branch `tutorial-spine-repair-batch-5`.
+  - Added `_development/tasks/047-tutorial-spine-repair-batch-5.md`.
+  - Rewrote `tutorials/06-performance-and-cost-lab.md` as a browser-first
+    cost/performance lab with source profiling, safe serving output,
+    deterministic job-evidence simulation, daily operations control, optional
+    BigQuery/Looker Studio UI checks, recovery paths, and an end challenge.
+  - Split the broad rendered route sweep into one Playwright test per viewport
+    after PR #33 CI timed out at 180s while running all route/viewport checks
+    serially in one test.
 - Updated `docs/17-curriculum-completeness-matrix.md` to mark T041-TUT-06 as
   first-pass implemented.
-- Local verification passed:
-  - `bun run content:generate`;
-  - `bun run content:check`;
-  - `bun run format:check`;
-  - `bun run test:content-qa`;
-  - `bun run validate:static-links`;
-  - `bun run typecheck`;
-  - `bun run lint`;
-  - `bun run test:facts-db`;
-  - `bun run test:quiz-facts-db`;
-  - `bun run test:flashcards`;
-  - `bun run test:platform-boundary`;
-  - stale scan for learner-facing repo/app/source-ID implementation wording in
-    tutorial 06;
-  - `git diff --check`;
-  - `bun run test:e2e` after approved local Vite preview binding, with all 14
-    Playwright tests passing;
-  - `bun run check` after approved local Vite preview binding, with all 14
-    Playwright tests passing.
+  - Local verification passed before merge, but post-merge main CI failed in
+    rendered UI and requires Task 048.
 - Task 046 summary:
   - Started Task 046 on branch `tutorial-spine-repair-batch-4`.
   - Added `_development/tasks/046-tutorial-spine-repair-batch-4.md`.
@@ -520,6 +525,15 @@ Task 047 blocked review:
 
 - Claude CLI formal review in non-TUI `--print` mode produced no output for
   about 40 seconds and was killed; Task 047 is not Claude-reviewed.
+
+Task 048 local verification passed on 2026-05-11:
+
+- `bun run format:check`
+- `git diff --check`
+- `bun run test:e2e` after approved local Vite preview binding, with all 65
+  Playwright tests passing
+- `bun run check` after approved local Vite preview binding, with all 65
+  Playwright tests passing
 
 Task 036 local verification passed on 2026-05-10:
 
