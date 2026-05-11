@@ -72,8 +72,9 @@ Last updated: 2026-05-11
     and deployed-surface verification. Task 047 split the broad route sweep into
     one test per viewport, but post-merge main CI still failed on the mobile
     sweep. Task 048 splits the route sweep into one test per route and viewport
-    so every hash route starts from a fresh page.
-  - Status: fixed locally; pending Task 048 PR and main CI rerun.
+    so every hash route starts from a fresh page. PR #34 passed main CI, Pages
+    deployment, live HTTP 200, and deployed-surface verification.
+  - Status: closed.
 
 - ID: CLAUDE-REVIEW-2026-05-10.
   - Area: phase review gates.
@@ -83,7 +84,8 @@ Last updated: 2026-05-11
     `claude --print` hung with no output and were stopped. The Task 041 attempt
     returned `Not logged in · Please run /login`; Task 042 returned the same
     auth blocker, as did Task 043. Task 044 hung with no output for about 40
-    seconds and was killed, as did Tasks 046 and 047. Codex CLI non-TUI mode works
+    seconds and was killed, as did Tasks 046 and 047. Task 049 hung with no
+    output for about 30 seconds and was killed. Codex CLI non-TUI mode works
     outside the sandbox via `codex exec`; a sandboxed attempt failed to
     initialize the in-process app-server client.
   - Fix plan: Retry only with a known-good non-hanging formal review path, or
