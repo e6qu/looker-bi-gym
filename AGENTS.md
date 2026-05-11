@@ -123,6 +123,10 @@ Do not rely on chat history as the source of truth. Keep these files current so 
   BI questions about grain, metrics, SQL, dashboard behavior, data quality,
   privacy boundaries, BigQuery, Looker Studio, and the limited regulatory
   context needed for the BI scenario.
+- Keep tutorials and verification separate. Tutorial steps must be
+  self-contained instructional work; quizzes, challenges, and exams verify the
+  competencies with distinct scenario prompts and must not be the tutorial's
+  worksheet or deliverable.
 - Source fact IDs, learner-task IDs, file paths, and generated catalog details
   belong in metadata, QA scripts, implementation docs, or authoring notes, not
   in the question/prompt/explanation text shown as course material.

@@ -4,7 +4,7 @@
   "title": "00 - Orientation And Stack",
   "content_type": "tutorial",
   "status": "published",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "topic": "core",
   "source_facts":
     [
@@ -31,9 +31,8 @@ Builds on: none.
 
 Required tools: browser only.
 
-Objective: confirm the static-app, browser-storage, synthetic-data, BigQuery,
-Looker Studio, and regulatory-context boundaries before starting banking BI
-work.
+Objective: confirm the browser-first, synthetic-data, BigQuery, Looker Studio,
+and regulatory-context boundaries before starting banking BI work.
 
 After this tutorial, you will be able to:
 
@@ -43,8 +42,9 @@ After this tutorial, you will be able to:
 
 Produces:
 
-- Completed `000 - Orientation Quiz`.
-- `notes/00-stack-decisions.md`, if you are keeping external notes.
+- An orientation decision log with the BI serving, reporting, data
+  minimisation, and depositor-bank grain assumptions you will use in later
+  tutorials.
 
 ## Source Facts
 
@@ -57,25 +57,36 @@ regulatory-context boundaries before you touch any banking BI examples.
 
 ## Steps
 
-1. Open `#/challenges/orientation-quiz`.
-2. Read the scenario and the step-by-step work section.
-3. Identify BigQuery logical views as SQL-defined virtual tables used for
-   governed dashboard serving layers.
-4. Identify the Looker Studio data source as the conduit and field-schema layer
-   between external data and report charts.
-5. Review the seed sensitive fields: `account_id`, `customer_id`, and
-   `synthetic_iban`.
-6. Answer the data-minimisation question by selecting the raw identifiers that
-   should not appear in serving outputs.
-7. Answer the deposit-guarantee ceiling question using the FGDB/EU fact IDs.
+1. Create a short orientation decision log. Use four headings:
+   `Serving layer`, `Reporting layer`, `Sensitive fields`, and
+   `Banking grain`.
+2. Under `Serving layer`, write that reusable dashboard logic belongs upstream
+   in governed SQL. In BigQuery, a logical view is a virtual table defined by a
+   SQL query and queried like a table.
+3. Under `Reporting layer`, write that Looker Studio charts read fields through
+   a data source. Before charting, inspect the data-source fields, aggregation
+   defaults, and credential mode.
+4. Under `Sensitive fields`, write that raw account, customer, and synthetic
+   IBAN identifiers should stay out of dashboard-ready serving outputs unless a
+   specific approved purpose requires them.
+5. Under `Banking grain`, write that account balances are account-level facts
+   for a business date, while deposit-guarantee checks require depositor-bank
+   grain. The standard ceiling used in this course context is EUR 100,000 per
+   depositor per bank.
+6. Add one ready/not-ready rule: a dashboard source is not ready if it exposes
+   raw identifiers, hides metric logic inside chart-only calculations, or
+   compares account-balance totals to guarantee wording without changing grain.
+7. Review the decision log and confirm that it uses only synthetic training
+   data and browser-first work for the required path.
 
 ## Checkpoints
 
-- The quiz completes locally and displays `flag-orientation-quiz`.
 - You can explain why reusable BigQuery SQL belongs upstream of dashboard
   charts.
 - You can explain why Looker Studio data-source fields, aggregation, and
   credentials must be inspected before charting.
+- You can identify account, customer, and synthetic IBAN identifiers as fields
+  that should be excluded from routine BI serving outputs.
 - You can name the EUR 100,000 deposit guarantee ceiling and distinguish it from
   an account balance total.
 
@@ -87,8 +98,40 @@ regulatory-context boundaries before you touch any banking BI examples.
   identifiers.
 - Confusing account-balance grain with depositor-bank guarantee grain.
 
+## Self-Assessment
+
+For each statement, mark ready or not ready:
+
+- A dashboard page computes the official deposit total only in a chart formula.
+- A reporting source exposes account and customer identifiers to a branch-level
+  balance page.
+- A guarantee note compares one account balance total directly to the
+  per-depositor-per-bank ceiling.
+- A governed serving source exposes branch, currency, business date, and
+  documented aggregate measures.
+
+Only the final statement is ready for the later beginner tutorials.
+
+## End Challenge
+
+A stakeholder asks for a branch balance dashboard and wants to include account
+IDs so reviewers can drill into details. Write three corrections before work
+starts:
+
+- Move reusable metric logic into the governed serving layer.
+- Keep raw identifiers out of the routine dashboard source.
+- Treat guarantee-related wording as depositor-bank grain, not account-balance
+  grain.
+
+## Separate Verification
+
+After the decision log is complete, use
+[Start the separate orientation quiz](#/challenges/orientation-quiz) to verify
+the concepts with scenario questions. The quiz is separate from this tutorial
+and is not the tutorial deliverable.
+
 ## Deliverable
 
-Complete the browser quiz. Optional note: record the runtime, storage, synthetic
-data, BigQuery, Looker Studio, and depositor-bank grain assumptions in
-`notes/00-stack-decisions.md`.
+Keep the orientation decision log for reference when later tutorials ask you to
+judge whether a serving source, dashboard field list, or guarantee-related
+metric is ready.

@@ -1,5 +1,59 @@
 # What We Did
 
+## 2026-05-11 - Task 052 Orientation Tutorial Self-Contained Fix
+
+- Verified PR #37 post-merge state:
+  - PR #37 was squash-merged at `cf6d2bc`.
+  - Main CI passed for `cf6d2bc`:
+    `https://github.com/e6qu/looker-bi-gym/actions/runs/25648126551`.
+  - GitHub Pages workflow passed for `cf6d2bc`:
+    `https://github.com/e6qu/looker-bi-gym/actions/runs/25648126549`.
+  - Live Pages URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200
+    with `last-modified: Mon, 11 May 2026 03:08:05 GMT`.
+  - `bun run verify:deployed-surface` passed against the live Pages URL.
+- Confirmed no open PRs before starting Task 052.
+- Created branch `orientation-tutorial-self-contained-fix` from verified
+  `main`.
+- Added `_development/tasks/052-orientation-tutorial-self-contained-fix.md` and
+  updated the implementation task index.
+- Rewrote `tutorials/00-orientation-and-stack.md` so the tutorial is
+  self-contained and produces an orientation decision log instead of requiring
+  the orientation quiz.
+- Moved the orientation quiz into a `Separate Verification` section with a
+  clickable Markdown link to `#/challenges/orientation-quiz`.
+- Rewrote `challenges/manifests/orientation-quiz.yaml` questions as
+  scenario-verification prompts so they do not duplicate the tutorial wording.
+- Added a rendered UI regression test that checks the tutorial has a clickable
+  orientation quiz link, does not render the route inside `code`, and does not
+  use quiz completion as the tutorial deliverable.
+- Updated `PLAN.md`, `AGENTS.md`, and
+  `docs/17-curriculum-completeness-matrix.md` for tutorial/verification
+  separation.
+- Verification passed:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run format:check`;
+  - `bun run test:content-qa`;
+  - `bun run validate:static-links`;
+  - `bun run validate:manifests`;
+  - `bun run test:quiz`;
+  - `bun run test:fixtures`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - stale scans for raw route code, quiz-as-step wording, old direct quiz
+    prompts, and visible raw source IDs in tutorial 00;
+  - `git diff --check`;
+  - `bun run test:e2e` after approved local Vite preview binding, with all 66
+    Playwright tests passing;
+  - `bun run check` after approved local Vite preview binding, with all 66
+    Playwright tests passing.
+- Failed/blocked attempts recorded:
+  - first sandboxed `bun run test:e2e` failed because Vite preview could not
+    bind `127.0.0.1:4173` (`EPERM`); rerunning with approved local binding
+    passed.
+  - one parallel `bun run content:check` raced `typecheck`/`lint`, which
+    regenerate ignored catalogs; rerunning serially passed.
+
 ## 2026-05-11 - Task 051 Tutorial Spine Repair Batch 8
 
 - Verified PR #36 post-merge state:
