@@ -37,10 +37,7 @@ model-risk advice.
 
 ## Source Facts
 
-- `FACT-BI-RECONCILIATION-WINDOWS`
-- `FACT-BI-REFERENCE-DATE-SEPARATION`
-- `FACT-BIGQUERY-LAST-DAY-MONTH-END`
-- `FACT-GDPR-ACCURACY`
+This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
 
 ## Prerequisites
 

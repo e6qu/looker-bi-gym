@@ -48,13 +48,7 @@ Produces:
 
 ## Source Facts
 
-- `FACT-BIGQUERY-LOGICAL-VIEW`
-- `FACT-BIGQUERY-VIEW-SCOPE`
-- `FACT-LOOKER-STUDIO-DATA-SOURCE`
-- `FACT-GDPR-PERSONAL-DATA`
-- `FACT-GDPR-DATA-MINIMISATION`
-- `FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK`
-- `FACT-DGSD-100K-EU`
+This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
 
 ## Goal
 

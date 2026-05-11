@@ -57,7 +57,7 @@ lesson_steps:
       - FACT-BIGQUERY-VIEW-SCOPE
   - id: identify_looker_data_source
     title: Identify the Looker Studio data-source layer
-    instruction: Read the Looker Studio data-source facts and identify what layer provides report charts with fields and connection behavior.
+    instruction: Review the Looker Studio data-source concept and identify what layer provides report charts with fields and connection behavior.
     expected_result: You can state that a data source is the conduit and schema layer between external data and charts.
     why_it_matters: Banking dashboards should inspect field definitions, aggregation defaults, and credentials before chart building.
     failure_mode: Building directly from fields without checking the data-source layer can hide wrong aggregation or access behavior.
@@ -75,7 +75,7 @@ lesson_steps:
       - FACT-GDPR-DATA-MINIMISATION
   - id: identify_deposit_ceiling
     title: Identify the deposit guarantee ceiling
-    instruction: Use the FGDB/EU source facts to answer the standard deposit guarantee amount before later depositor-bank grain exercises.
+    instruction: Use the FGDB/EU guarantee context to answer the standard deposit guarantee amount before later depositor-bank grain exercises.
     expected_result: The standard ceiling is EUR 100,000.
     why_it_matters: Deposit-guarantee exercises need depositor-bank grain and precise amount/currency wording.
     failure_mode: Confusing account balance totals with depositor-bank compensation coverage creates wrong BI semantics.

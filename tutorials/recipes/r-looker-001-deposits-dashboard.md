@@ -30,7 +30,7 @@ After this recipe, you will be able to:
 
 - Configure date, dimension, and metric field roles for a deposits dashboard.
 - Build a scorecard, bar chart, and detail table from the same governed metric.
-- Record report credential mode and latest-day control value outside this app.
+- Record report credential mode and latest-day control value in local notes.
 
 Training boundary: use synthetic training data only. This recipe is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
@@ -38,11 +38,7 @@ model-risk advice.
 
 ## Source Facts
 
-- `FACT-LOOKER-STUDIO-DATA-SOURCE`
-- `FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE`
-- `FACT-LOOKER-STUDIO-FIELD-TYPES`
-- `FACT-LOOKER-STUDIO-CREDENTIALS`
-- `FACT-BIGQUERY-LOGICAL-VIEW`
+This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
 
 ## Steps
 
@@ -56,15 +52,15 @@ model-risk advice.
 4. Add a bar chart with `currency_code` as dimension and `ledger_total` as
    metric.
 5. Add a small table with `business_date`, `currency_code`, and `ledger_total`.
-6. Add a note outside the app recording whether the report uses owner
-   credentials or viewer credentials.
+6. Add a local note recording whether the report uses owner credentials or
+   viewer credentials.
 
 ## Checkpoints
 
 - The report uses only synthetic data.
 - The reusable metric logic is owned by the data source or upstream view, not a
   one-off chart field.
-- No credentials, tokens, or private exports are pasted into this app.
+- No credentials, tokens, or private exports are pasted into notes.
 
 ## Common Failure Modes
 

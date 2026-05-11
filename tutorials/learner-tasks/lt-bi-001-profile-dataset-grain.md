@@ -38,10 +38,7 @@ model-risk advice.
 
 ## Source Facts
 
-- `FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION`
-- `FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT`
-- `FACT-GDPR-DATA-MINIMISATION`
-- `FACT-GDPR-PERSONAL-DATA`
+This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
 
 ## Prerequisites
 

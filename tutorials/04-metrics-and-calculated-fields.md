@@ -48,10 +48,7 @@ Produces:
 
 ## Source Facts
 
-- `FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE`
-- `FACT-BIGQUERY-LOGICAL-VIEW`
-- `FACT-BIGQUERY-VIEW-SCOPE`
-- `FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK`
+This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
 
 ## Goal
 

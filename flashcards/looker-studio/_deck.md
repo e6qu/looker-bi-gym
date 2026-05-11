@@ -15,7 +15,7 @@
         "url": "https://ankiweb.net/shared/decks?search=Looker%20Studio",
         "reviewedAt": "2026-05-10",
         "coverageNote": "No directly reusable Looker Studio Anki shared deck was found during the indexed web search sweep.",
-        "incorporationNote": "Used as a licensing boundary: no Anki deck content was copied; cards stay authored from official source facts.",
+        "incorporationNote": "Used as a licensing boundary: no Anki deck content was copied; cards stay authored from official source notes.",
       },
       {
         "sourceKind": "quizlet",
@@ -23,7 +23,7 @@
         "url": "https://quizlet.com/936877770/looker-studio-1-flash-cards/",
         "reviewedAt": "2026-05-10",
         "coverageNote": "Coverage signal for data sources, fields, credentials, controls, and chart behavior in Looker Studio study material.",
-        "incorporationNote": "No third-party card text was copied; the deck coverage was mapped to official Looker Studio source facts.",
+        "incorporationNote": "No third-party card text was copied; the deck coverage was mapped to official Looker Studio source notes.",
       },
       {
         "sourceKind": "quizlet",
@@ -31,7 +31,7 @@
         "url": "https://quizlet.com/936889614/looker-studio-3-flash-cards/",
         "reviewedAt": "2026-05-10",
         "coverageNote": "Coverage signal for blends, aggregation behavior, null handling, and BigQuery export topics.",
-        "incorporationNote": "No third-party card text was copied; new cards use course source facts for reusable data sources, dimensions, and aggregation context.",
+        "incorporationNote": "No third-party card text was copied; new cards use course source notes for reusable data sources, dimensions, and aggregation context.",
       },
     ],
 }

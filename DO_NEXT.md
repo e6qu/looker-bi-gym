@@ -12,11 +12,10 @@
    ```
 
 3. Continue Task 041 on branch `curriculum-completeness-audit`; no PR is open
-   yet.
-4. Next useful implementation step: expand
-   `docs/17-curriculum-completeness-matrix.md` into actionable rewrite tickets
-   for the top-level tutorial spine, starting with tutorials 01 and 03.
-5. If updating this branch before PR creation, rerun:
+   yet unless this branch has since been pushed and opened.
+4. Next useful implementation step: push the current Task 041 branch, open a PR,
+   watch CI, and squash-merge if CI passes.
+5. If updating this branch before PR creation or after rebasing, rerun:
 
    ```sh
    bun run content:generate
@@ -70,11 +69,12 @@ The required command shape remains:
 claude --print --permission-mode plan --output-format text "<phase-specific review prompt>"
 ```
 
-The latest Task 040 formal Claude CLI review also hung with no output and was
-killed. Codex CLI non-TUI mode works via `codex exec`; Claude CLI formal review
-does not currently complete. Do not mark Phase 2, Phase 3, Phase 4, Phase 5,
-Phase 6, or Phase 7 complete until a completed formal review is available and
-recorded.
+The latest Task 041 formal Claude CLI review ran in non-TUI mode but returned
+`Not logged in · Please run /login`. The previous Task 040 review hung with no
+output and was killed. Codex CLI non-TUI mode works via `codex exec`; Claude CLI
+formal review does not currently complete. Do not mark Phase 2, Phase 3, Phase
+4, Phase 5, Phase 6, Phase 7, or Phase 9 complete until a completed formal
+review is available and recorded.
 
 ## PR Discipline
 

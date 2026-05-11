@@ -40,10 +40,9 @@ inspectable.
 After this tutorial, you will be able to:
 
 - Organize a multi-page BI product around governed serving sources.
-- Link metric contracts, source facts, sensitive-field controls, and operations
+- Link metric contracts, source notes, sensitive-field controls, and operations
   evidence.
-- Export browser-local completion evidence without raw answers, credentials, or
-  private data.
+- Prepare completion evidence without raw answers, credentials, or private data.
 
 Produces:
 
@@ -55,13 +54,7 @@ Produces:
 
 ## Source Facts
 
-- `FACT-GDPR-DATA-MINIMISATION`
-- `FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK`
-- `FACT-BIGQUERY-VIEW-SCOPE`
-- `FACT-LOOKER-STUDIO-DATA-SOURCE`
-- `FACT-LOOKER-STUDIO-CREDENTIALS`
-- `FACT-DORA-ICT-RISK-FRAMEWORK`
-- `FACT-DORA-ICT-IDENTIFICATION`
+This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
 
 ## Goal
 
@@ -74,13 +67,12 @@ data-source boundaries, governance controls, and operational readiness.
 2. Create a deposits page that preserves account-date balance grain and records
    depositor-bank grain caveats for guarantee-style analysis.
 3. Create a governance page listing sensitive fields, masking/exclusion choices,
-   and source fact IDs.
+   and the source notes behind each control.
 4. Create an operations page with freshness, reconciliation, dependencies, owner
    teams, and incident-evidence placeholders.
 5. Review every report data source and credential mode.
-6. Export browser-local completion evidence from Settings and confirm it contains
-   challenge IDs, versions, timestamps, and local flags without raw answers or
-   credentials.
+6. Prepare completion evidence that records scenario names, versions,
+   timestamps, and pass/fail outcomes without raw answers or credentials.
 
 ## Checkpoints
 
@@ -89,17 +81,17 @@ data-source boundaries, governance controls, and operational readiness.
 - Sensitive fields are excluded or masked.
 - Operations evidence names dependencies, owners, freshness, and reconciliation
   controls.
-- The exported completion evidence stays local and credential-free.
+- The completion evidence summary stays credential-free.
 
 ## Common Failure Modes
 
 - Creating a visually polished dashboard with no metric contracts.
 - Mixing chart-only calculations with governed metrics.
 - Leaving credential, ownership, or freshness behavior undocumented.
-- Treating source fact IDs as decoration instead of linking them to actual
-  controls.
+- Treating source notes as decoration instead of linking them to actual controls.
 
 ## Deliverable
 
 Create a capstone README with dashboard pages, serving views, metric contracts,
-regulation-context links, operations evidence, and the local progress export.
+regulation-context links, operations evidence, and the completion evidence
+summary.

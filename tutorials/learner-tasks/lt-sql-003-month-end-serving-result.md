@@ -40,10 +40,7 @@ model-risk advice.
 
 ## Source Facts
 
-- `FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT`
-- `FACT-BI-REFERENCE-DATE-SEPARATION`
-- `FACT-BIGQUERY-LAST-DAY-MONTH-END`
-- `FACT-GDPR-DATA-MINIMISATION`
+This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
 
 ## Prerequisites
 

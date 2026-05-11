@@ -69,6 +69,15 @@ Current state:
 - Task 041 confirms the curriculum is not complete: current inventory is 10
   top-level tutorials, 6 self-contained learner tasks, 6 released challenges,
   59 flashcards, 14 quiz questions, 4 exam cards, and 185 unique fact IDs.
+- Added rewrite tickets for the tutorial spine and rewrote
+  `tutorials/01-connect-public-data.md` as the first self-contained repair with
+  browser SQL, expected outputs, optional BigQuery setup SQL, optional Looker
+  Studio checks, recovery checks, and an end challenge.
+- Removed visible raw `FACT-*` source IDs and repo/app implementation phrasing
+  from scanned tutorial, learner-task, recipe, orientation-challenge, and
+  flashcard deck wording while keeping source links in typed metadata.
+- Local Task 041 checks now pass, including `bun run check` after approved
+  local Vite preview binding.
 
 Task 040 summary:
 
@@ -83,11 +92,12 @@ Task 040 summary:
 
 ## Open Blockers
 
-- Claude CLI formal review remains blocked. The Task 040 formal review attempt
-  used non-TUI `claude --print --permission-mode plan --output-format text ...`,
-  produced no output for about one minute, and was killed. Tasks 034-039 also
-  had formal Claude review attempts hang with no output. Do not mark any phase
-  complete until a completed formal review is recorded.
+- Claude CLI formal review remains blocked. The Task 041 formal review attempt
+  used non-TUI `claude --print --permission-mode plan --output-format text ...`
+  and returned `Not logged in · Please run /login`. Task 040 hung with no
+  output for about one minute and was killed; Tasks 034-039 also had formal
+  Claude review attempts hang with no output. Do not mark any phase complete
+  until a completed formal review is recorded.
 - Codex CLI non-TUI mode works: `codex -a never exec --ephemeral --sandbox
 read-only --json "Reply exactly: codex-cli-ok"` returned `codex-cli-ok`.
 - Safari second-browser verification remains open until Safari remote
@@ -177,6 +187,25 @@ Task 041 local verification so far:
 
 - Inventory commands for tutorials, challenges, flashcards, quizzes, exams,
   facts, and source cards.
+- `bun run content:generate`
+- `bun run content:check`
+- `bun run format:check`
+- `bun run test:content-qa`
+- `bun run test:quiz-facts-db`
+- `bun run test:flashcards`
+- `bun run validate:static-links`
+- `bun run typecheck`
+- `bun run lint`
+- stale scan for learner-facing repo/app/source-fact implementation wording in
+  tutorials, quizzes, flashcards, exams, and challenge manifests
+- `git diff --check`
+- `bun run check` after approved local Vite preview binding, with all 12
+  Playwright tests passing
+
+Task 041 blocked review:
+
+- Claude CLI formal review in non-TUI `--print` mode returned
+  `Not logged in · Please run /login`; Task 041 is not Claude-reviewed.
 
 Task 036 local verification passed on 2026-05-10:
 

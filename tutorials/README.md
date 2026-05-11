@@ -43,7 +43,7 @@ The path above is the main learner sequence for GitHub Pages. It runs in the
 browser, stores progress locally, and uses synthetic datasets. The numbered
 00-09 tutorials below are reference and applied-track material; some later
 items describe optional Google Cloud Console, BigQuery UI, and Looker Studio UI
-work that happens outside this app.
+work that happens in those browser tools.
 
 ## Shared Contracts
 

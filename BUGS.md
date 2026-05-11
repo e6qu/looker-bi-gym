@@ -29,11 +29,10 @@ Last updated: 2026-05-11
   - Area: deployed mobile tutorial rendering.
   - Severity: medium.
   - Description: The current live Pages build has horizontal overflow on the
-    `LT-DQ-006` mobile route. This branch adds the CSS fix and local preview
-    verification, but the deployed verifier must be rerun after merge.
-  - Fix plan: Merge Task 040, verify Pages deployment, then run
-    `bun run verify:deployed-surface` against the live URL.
-  - Status: pending deploy.
+    `LT-DQ-006` mobile route before PR #26.
+  - Fix plan: Completed in PR #26; main CI, Pages deployment, live HTTP 200,
+    and `bun run verify:deployed-surface` passed after merge.
+  - Status: closed.
 
 - ID: PATH-REALIGNMENT-2026-05-10.
   - Area: repository layout and app routes.
@@ -60,8 +59,9 @@ Last updated: 2026-05-11
   - Severity: high.
   - Description: Claude CLI formal review is required before any phase can be
     marked complete. Task 034 through Task 040 formal reviews using non-TUI
-    `claude --print` hung with no output and were stopped. Codex CLI non-TUI
-    mode works via `codex exec`.
+    `claude --print` hung with no output and were stopped. The Task 041 attempt
+    returned `Not logged in · Please run /login`. Codex CLI non-TUI mode works
+    via `codex exec`.
   - Fix plan: Retry only with a known-good non-hanging formal review path, or
     use an explicitly accepted alternate formal review process and record the
     result in continuity docs.

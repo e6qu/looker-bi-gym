@@ -24,14 +24,14 @@ Area: Looker Studio mechanics. Timebox: 15-20 minutes. Dataset:
 `deposits-seed/v0.1.0`.
 
 Objective: turn a browser-verified SQL result into a narrow, report-ready data
-source design for Looker Studio without collecting credentials in this app.
+source design for Looker Studio without collecting credentials.
 
 After this task, you will be able to:
 
 - Describe the report-ready data-source layer between SQL and Looker Studio
   charts.
 - Record synthetic evidence without pasting credentials or private exports into
-  the app.
+  notes.
 - Distinguish a format-verified local evidence pattern from a manually verified
   Looker Studio report.
 
@@ -41,11 +41,7 @@ model-risk advice.
 
 ## Source Facts
 
-- `FACT-BIGQUERY-LOGICAL-VIEW`
-- `FACT-BIGQUERY-VIEW-SCOPE`
-- `FACT-LOOKER-STUDIO-DATA-SOURCE`
-- `FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE`
-- `FACT-LOOKER-STUDIO-CREDENTIALS`
+This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
 
 ## Prerequisites
 
@@ -92,9 +88,10 @@ WHERE business_date = '2026-03-31';
 
 5. Record a Looker Studio report URL shape in your notes without creating or
    pasting credentials: `https://lookerstudio.google.com/reporting/example`.
-6. Add this credential-boundary statement to the design note: "The app stores no
-   BigQuery, Looker Studio, Google Cloud, or banking credentials; any live
-   Looker Studio review is performed by the learner outside this static app."
+6. Add this credential-boundary statement to the design note: "The BI training
+   evidence stores no BigQuery, Looker Studio, Google Cloud, or banking
+   credentials; any live Looker Studio review is performed only in the browser
+   UI."
 7. Answer this tutorial check question in your notes: which layer should own
    reusable `ledger_total` logic before charts consume it?
 
@@ -113,7 +110,7 @@ Expected control output:
 - Evidence is limited to SQL text, a tiny synthetic control output, a report URL
   shape, and local checkboxes.
 - No cloud credentials, service account keys, OAuth tokens, exports from real
-  banking systems, or private learner data are pasted into the app.
+  banking systems, or private data are pasted into notes.
 
 ## Visualization Or Reporting Action
 

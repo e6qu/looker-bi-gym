@@ -38,10 +38,7 @@ model-risk advice.
 
 ## Source Facts
 
-- `FACT-BIGQUERY-SAFE-DIVIDE-RATIO-GUARD`
-- `FACT-BIGQUERY-SAFE-CAST-DQ-NULL`
-- `FACT-BI-RATIO-SUM-COMPONENTS-FIRST`
-- `FACT-BI-RECONCILIATION-WINDOWS`
+This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
 
 ## Prerequisites
 

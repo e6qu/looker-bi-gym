@@ -56,3 +56,20 @@ before scaling content volume or making completeness claims.
   flashcards, 14 quiz questions, 4 exam cards, and 185 unique fact IDs.
 - The most important near-term finding is that the tutorial spine must be
   rewritten and verified before scaling content counts.
+- Added rewrite tickets to the curriculum matrix so the shallow tutorial spine
+  has explicit acceptance notes before future content scaling.
+- Rewrote `tutorials/01-connect-public-data.md` as the first concrete repair:
+  it now has a self-contained browser SQL path, exact expected outputs, inline
+  optional BigQuery SQL, Looker Studio setup checks, recovery checks, and an end
+  challenge.
+- Updated content QA so released tutorials cite source fact IDs from typed
+  metadata instead of showing raw `FACT-*` identifiers in learner-facing prose.
+- Extended the cleanup across tutorial, learner-task, recipe, orientation
+  challenge, and flashcard deck wording so visible course prose no longer uses
+  source-fact IDs or repo/app implementation phrasing for those scanned
+  surfaces.
+- Local verification passed, including `bun run check` after approved local
+  Vite preview binding.
+- Claude CLI review is blocked: non-TUI
+  `claude --print --permission-mode plan --output-format text ...` returned
+  `Not logged in · Please run /login`.

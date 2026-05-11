@@ -23,7 +23,7 @@ Area: D - Governance, Security, And Operations
 
 Synthetic-data boundary: operational evidence is synthetic or sandbox-only. Do
 not copy production incident records, job logs, reconciliation breaks, or user
-data into this repo.
+data into training notes.
 
 Builds on:
 
@@ -50,10 +50,7 @@ Produces:
 
 ## Source Facts
 
-- `FACT-DORA-ICT-RISK-FRAMEWORK`
-- `FACT-DORA-ICT-IDENTIFICATION`
-- `FACT-EBA-DPM-VALIDATION-RULES`
-- `FACT-BIGQUERY-LOGICAL-VIEW`
+This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
 
 ## Goal
 
