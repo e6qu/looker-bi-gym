@@ -9,6 +9,8 @@
     non-TUI mode but returned `Not logged in · Please run /login`.
 - Added `_development/tasks/054-curriculum-self-reference-remediation.md` and
   updated the task index.
+- Opened PR #39:
+  `https://github.com/e6qu/looker-bi-gym/pull/39`.
 - Reworked the tutorial index and practice-lab index into one browser-first
   path, including the ratio-null lab.
 - Replaced visible tutorial `Source Facts` headings with `Evidence Basis` and

@@ -11,12 +11,10 @@
    gh pr list --state open --limit 10
    ```
 
-3. Continue from locally verified Task 054 on branch
-   `tutorial-verification-separation-sweep`; no PR is open, and the user asked
-   not to open a new PR.
-4. Next useful implementation step: if the user wants these local changes
-   published, push the existing branch and open a PR only after explicit
-   direction. Do not open a PR otherwise.
+3. Continue PR #39 on branch `tutorial-verification-separation-sweep`:
+   `https://github.com/e6qu/looker-bi-gym/pull/39`.
+4. Next useful implementation step: wait for PR #39 CI, fix any failures on the
+   same branch, and merge only after CI passes.
 5. If updating this branch before PR creation or after rebasing, rerun:
 
    ```sh
@@ -82,7 +80,7 @@ deployed-surface verified, but not Claude-reviewed. Task 052 orientation
 tutorial self-contained fix is merged, main-verified, Pages-verified, and live
 deployed-surface verified. Task 053 tutorial verification separation sweep is
 locally verified and local. Task 054 curriculum self-reference remediation is
-locally verified and local; do not open a PR unless the user asks.
+locally verified and open in PR #39.
 
 `PLAN.md` Phase 9 now defines the required gate for any claim that tutorials,
 questions, exams, or flashcards are complete, comprehensive, reality-verified,
