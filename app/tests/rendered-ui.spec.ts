@@ -345,7 +345,7 @@ test.describe("rendered UI", () => {
       }),
     ).toBeVisible();
     await expect(
-      page.getByText("Before writing", { exact: false }),
+      page.getByText("A branch dashboard scorecard", { exact: false }),
     ).toBeVisible();
     await page.getByLabel("One row per account and business date.").check();
     await page.getByRole("button", { name: "Check Quiz" }).click();

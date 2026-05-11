@@ -202,7 +202,7 @@ async function assertQuizAndExamAssessmentBoundary(
   const diagnostics = collectDiagnostics(page);
 
   await page.goto(fullUrl("/#/quiz"), { waitUntil: "networkidle" });
-  await assertVisibleText(page, "Before writing", "quiz surface");
+  await assertVisibleText(page, "A branch dashboard scorecard", "quiz surface");
   await assertNoVisibleText(
     page,
     "FACT-BIGQUERY-SAFE-DIVIDE-RATIO-GUARD",

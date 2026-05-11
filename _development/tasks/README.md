@@ -66,6 +66,7 @@ Task order:
 - [055 - Looker And BigQuery Corpus Expansion](055-looker-bigquery-corpus-expansion.md)
 - [056 - Remove Tutorial Evidence Basis Headings](056-remove-tutorial-evidence-basis.md)
 - [057 - Quiz Question Quality Expansion](057-quiz-question-quality-expansion.md)
+- [058 - Quiz Standalone Question Polish](058-quiz-standalone-question-polish.md)
 
 Completion rule:
 
