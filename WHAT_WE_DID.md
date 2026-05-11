@@ -1,5 +1,58 @@
 # What We Did
 
+## 2026-05-11 - Task 047 Tutorial Spine Repair Batch 5
+
+- Verified PR #32 post-merge state:
+  - PR #32 was squash-merged at `5cf22e3`.
+  - Main CI passed for `5cf22e3`.
+  - GitHub Pages workflow passed for `5cf22e3`.
+  - Live Pages URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200
+    with `last-modified: Mon, 11 May 2026 01:45:53 GMT`.
+  - `bun run verify:deployed-surface` passed against the live Pages URL.
+- Confirmed no open PRs before starting Task 047.
+- Created branch `tutorial-spine-repair-batch-5` from verified `main`.
+- Added `_development/tasks/047-tutorial-spine-repair-batch-5.md` and updated
+  the implementation task index.
+- Rewrote `tutorials/06-performance-and-cost-lab.md` as a self-contained
+  browser-first cost/performance lab:
+  - source-table profiling;
+  - safe serving-source profiling;
+  - deterministic broad-versus-serving job-evidence simulation;
+  - daily operations control design;
+  - optional BigQuery and Looker Studio UI evidence checks;
+  - recovery checks and an end challenge.
+- After PR #33 CI failed in the broad rendered route sweep at the 180s timeout,
+  split the sweep into one Playwright test per viewport so route coverage can
+  run in parallel on CI instead of serially in one long test.
+- Updated `docs/17-curriculum-completeness-matrix.md` so T041-TUT-06 is marked
+  first-pass implemented.
+- Verification passed:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run format:check`;
+  - `bun run test:content-qa`;
+  - `bun run validate:static-links`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:facts-db`;
+  - `bun run test:quiz-facts-db`;
+  - `bun run test:flashcards`;
+  - `bun run test:platform-boundary`;
+  - stale scan for tutorial 06 learner-facing repo/app/source-ID
+    implementation wording;
+  - `git diff --check`;
+  - `bun run test:e2e` after approved local Vite preview binding, with all 14
+    Playwright tests passing;
+  - `bun run check` after approved local Vite preview binding, with all 14
+    Playwright tests passing.
+- Failed/blocked attempts recorded:
+  - one parallel `bun run content:check` raced `bun run content:generate` and
+    reported a stale generated catalog; rerunning after generation passed.
+  - formal Claude CLI review in non-TUI `--print` mode produced no output for
+    about 40 seconds and was killed.
+  - first PR #33 CI run failed because the broad rendered route sweep timed out
+    while all other rendered UI tests passed.
+
 ## 2026-05-11 - Task 046 Tutorial Spine Repair Batch 4
 
 - Verified PR #31 post-merge state:
