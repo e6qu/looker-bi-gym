@@ -6,7 +6,7 @@ Last updated: 2026-05-11
 
 - ID: CONTENT-QUALITY-2026-05-10.
   - Area: tutorials, quizzes, exams, flashcards, and facts.
-  - Severity: high.
+  - Severity: medium.
   - Description: Prior claims that curriculum content is complete, real,
     comprehensive, or fact-backed are not trusted until deeper automation,
     human review, local judge review, and Claude CLI review pass.
@@ -66,8 +66,9 @@ Last updated: 2026-05-11
     runner.
   - Fix plan: Task 045 gives the route sweep its own 180s timeout and uses
     `domcontentloaded` route navigation readiness while preserving route and
-    viewport coverage.
-  - Status: active fix.
+    viewport coverage. PR #31 passed main CI, Pages deployment, live HTTP 200,
+    and deployed-surface verification.
+  - Status: closed.
 
 - ID: CLAUDE-REVIEW-2026-05-10.
   - Area: phase review gates.
@@ -77,9 +78,9 @@ Last updated: 2026-05-11
     `claude --print` hung with no output and were stopped. The Task 041 attempt
     returned `Not logged in · Please run /login`; Task 042 returned the same
     auth blocker, as did Task 043. Task 044 hung with no output for about 40
-    seconds and was killed. Codex CLI non-TUI mode works outside the sandbox via
-    `codex exec`; a sandboxed attempt failed to initialize the in-process
-    app-server client.
+    seconds and was killed, as did Task 046. Codex CLI non-TUI mode works
+    outside the sandbox via `codex exec`; a sandboxed attempt failed to
+    initialize the in-process app-server client.
   - Fix plan: Retry only with a known-good non-hanging formal review path, or
     use an explicitly accepted alternate formal review process and record the
     result in continuity docs.

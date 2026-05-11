@@ -1,5 +1,51 @@
 # What We Did
 
+## 2026-05-11 - Task 046 Tutorial Spine Repair Batch 4
+
+- Verified PR #31 post-merge state:
+  - PR #31 was squash-merged at `da35572`.
+  - Main CI passed for `da35572`.
+  - GitHub Pages workflow passed for `da35572`.
+  - Live Pages URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200
+    with `last-modified: Mon, 11 May 2026 01:28:10 GMT`.
+  - `bun run verify:deployed-surface` passed against the live Pages URL.
+- Confirmed no open PRs before starting Task 046.
+- Created branch `tutorial-spine-repair-batch-4` from verified `main`.
+- Added `_development/tasks/046-tutorial-spine-repair-batch-4.md` and updated
+  the implementation task index.
+- Rewrote `tutorials/05-blending-vs-upstream-joins.md` as a self-contained
+  browser-first blend/fanout lab:
+  - exact correct account-grain total;
+  - exact unsafe owner-join total, delta, and overstatement percentage;
+  - safe branch/currency serving output;
+  - normalized owner allocation output;
+  - optional Looker Studio blend guardrails;
+  - recovery checks and an end challenge.
+- Updated `docs/17-curriculum-completeness-matrix.md` so T041-TUT-05 is marked
+  first-pass implemented.
+- Verification passed:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run format:check`;
+  - `bun run test:content-qa`;
+  - `bun run validate:static-links`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:facts-db`;
+  - `bun run test:quiz-facts-db`;
+  - `bun run test:flashcards`;
+  - `bun run test:platform-boundary`;
+  - stale scan for tutorial 05 learner-facing repo/app/source-ID
+    implementation wording;
+  - `git diff --check`;
+  - `bun run check` after approved local Vite preview binding, with all 12
+    Playwright tests passing.
+- Failed/blocked attempts recorded:
+  - initial `bun run content:check` reported a stale generated catalog after
+    formatting changed tutorial content; rerunning after generation passed;
+  - formal Claude CLI review in non-TUI `--print` mode produced no output for
+    about 40 seconds and was killed.
+
 ## 2026-05-11 - Task 045 Rendered Route Sweep Stabilization
 
 - PR #30 was squash-merged at `8f52a85`.
@@ -20,8 +66,12 @@
   - `git diff --check`;
   - `bun run check` after approved local Vite preview binding, with all 12
     Playwright tests passing.
-- Live URL and deployed-surface verification for PR #30 are blocked until this
-  stabilization lands and Pages deploys.
+- PR #31 post-merge verification passed:
+  - main CI passed for `da35572`;
+  - GitHub Pages deployment passed for `da35572`;
+  - live URL returned HTTP 200 with
+    `last-modified: Mon, 11 May 2026 01:28:10 GMT`;
+  - `bun run verify:deployed-surface` passed.
 
 ## 2026-05-11 - Task 044 Tutorial Spine Repair Batch 3
 
