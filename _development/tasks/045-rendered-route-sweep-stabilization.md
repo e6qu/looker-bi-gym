@@ -46,3 +46,6 @@ before continuing curriculum implementation.
   - `bun run format:check`;
   - `git diff --check`;
   - `bun run check` after approved local Vite preview binding.
+- PR #31 was squash-merged at `da35572`.
+- Main CI, GitHub Pages deployment, live HTTP 200, and deployed-surface
+  verification passed after merge.
