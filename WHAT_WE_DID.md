@@ -1,5 +1,28 @@
 # What We Did
 
+## 2026-05-11 - Task 045 Rendered Route Sweep Stabilization
+
+- PR #30 was squash-merged at `8f52a85`.
+- Main CI passed for `8f52a85`.
+- GitHub Pages deployment failed in the local gate on the repeated broad
+  responsive route-sweep timeout. The failure occurred after 11 rendered UI
+  tests passed; the route-sweep test exhausted the 60s test timeout while
+  waiting for the next route shell.
+- Created branch `rendered-route-sweep-stabilization` from main.
+- Added `_development/tasks/045-rendered-route-sweep-stabilization.md` and
+  updated the task index.
+- Updated `app/tests/rendered-ui.spec.ts` so the broad primary-route sweep has
+  a 180s timeout and waits for `domcontentloaded` on each route navigation.
+- Verification passed:
+  - `bun run test:e2e` after approved local Vite preview binding, with all 12
+    Playwright tests passing;
+  - `bun run format:check`;
+  - `git diff --check`;
+  - `bun run check` after approved local Vite preview binding, with all 12
+    Playwright tests passing.
+- Live URL and deployed-surface verification for PR #30 are blocked until this
+  stabilization lands and Pages deploys.
+
 ## 2026-05-11 - Task 044 Tutorial Spine Repair Batch 3
 
 - Verified PR #29 post-merge state:

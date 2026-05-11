@@ -198,11 +198,13 @@ test.describe("rendered UI", () => {
   test("primary routes are rendered, responsive, and free of control overflow", async ({
     page,
   }) => {
+    test.setTimeout(180_000);
+
     for (const viewport of viewports) {
       await page.setViewportSize(viewport);
 
       for (const route of responsiveRoutes) {
-        await page.goto(route);
+        await page.goto(route, { waitUntil: "domcontentloaded" });
         await expect(page.getByRole("main")).toBeVisible();
         await expect(
           page.getByRole("navigation", { name: "Primary navigation" }),
