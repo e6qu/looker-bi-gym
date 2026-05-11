@@ -118,6 +118,11 @@ Do not rely on chat history as the source of truth. Keep these files current so 
   `localStorage`, build scripts, or app internals.
 - Keep learner-facing wording anchored to BI theory and practice, Looker
   Studio, BigQuery, synthetic banking datasets, and thin regulatory context.
+- Do not ask self-referential questions about the course, the platform, the
+  training workflow, or what learners should do about learners. Ask practical
+  BI questions about grain, metrics, SQL, dashboard behavior, data quality,
+  privacy boundaries, BigQuery, Looker Studio, and the limited regulatory
+  context needed for the BI scenario.
 - Source fact IDs, learner-task IDs, file paths, and generated catalog details
   belong in metadata, QA scripts, implementation docs, or authoring notes, not
   in the question/prompt/explanation text shown as course material.

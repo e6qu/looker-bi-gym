@@ -1,5 +1,61 @@
 # What We Did
 
+## 2026-05-11 - Task 044 Tutorial Spine Repair Batch 3
+
+- Verified PR #29 post-merge state:
+  - PR #29 was squash-merged at `1b00a6b`.
+  - Main CI passed for `1b00a6b`.
+  - GitHub Pages workflow initially failed once in the local gate on a
+    Playwright timeout waiting for primary navigation in the responsive route
+    sweep; rerunning the failed workflow passed.
+  - Live Pages URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200
+    with `last-modified: Mon, 11 May 2026 01:01:47 GMT`.
+  - `bun run verify:deployed-surface` passed against the live Pages URL.
+- Confirmed no open PRs before starting Task 044.
+- Created branch `tutorial-spine-repair-batch-3` from verified `main`.
+- Added `_development/tasks/044-tutorial-spine-repair-batch-3.md` and updated
+  the implementation task index.
+- Rewrote `tutorials/04-metrics-and-calculated-fields.md` as a self-contained
+  browser-first metric-contract lab:
+  - exact latest branch/currency metric-source SQL and expected output;
+  - contract-level weighted metric checks;
+  - currency share and balance-band expected values;
+  - reusable Looker Studio calculated-field formulas;
+  - aggregation settings, chart expected values, recovery checks, and an end
+    challenge.
+- Updated `AGENTS.md` to explicitly ban learner-facing course/platform/meta
+  questions and keep course text focused on BI, BigQuery, Looker Studio,
+  synthetic banking data, and thin regulatory context.
+- Updated `docs/17-curriculum-completeness-matrix.md` so T041-TUT-04 is marked
+  first-pass implemented.
+- Verification passed:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run format:check`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:content-qa`;
+  - `bun run test:facts-db`;
+  - `bun run test:quiz-facts-db`;
+  - `bun run test:flashcards`;
+  - `bun run test:platform-boundary`;
+  - `bun run validate:static-links`;
+  - stale scan for tutorial 04 learner-facing repo/app/source-ID
+    implementation wording;
+  - `git diff --check`;
+  - `bun run test:e2e` after approved local Vite preview binding, with all 12
+    Playwright tests passing;
+  - `bun run check` after approved local Vite preview binding, with all 12
+    Playwright tests passing.
+- Failed/blocked attempts recorded:
+  - initial parallel `bun run content:check` raced with `content:generate` and
+    reported a stale generated catalog; rerunning after generation passed;
+  - formal Claude CLI review in non-TUI `--print` mode produced no output for
+    about 40 seconds and was killed;
+  - sandboxed Codex CLI smoke test failed to initialize the in-process
+    app-server client, but the approved non-sandboxed non-TUI run returned
+    `codex-cli-ok`.
+
 ## 2026-05-11 - Task 043 Tutorial Spine Repair Batch 2
 
 - Verified PR #28 post-merge state:

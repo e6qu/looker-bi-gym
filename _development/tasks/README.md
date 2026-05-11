@@ -52,6 +52,7 @@ Task order:
 - [041 - Curriculum Completeness Audit](041-curriculum-completeness-audit.md)
 - [042 - Tutorial Spine Repair Batch 1](042-tutorial-spine-repair-batch-1.md)
 - [043 - Tutorial Spine Repair Batch 2](043-tutorial-spine-repair-batch-2.md)
+- [044 - Tutorial Spine Repair Batch 3](044-tutorial-spine-repair-batch-3.md)
 
 Completion rule:
 
