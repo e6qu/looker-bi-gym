@@ -11,9 +11,9 @@
    gh pr list --state open --limit 10
    ```
 
-3. Continue Task 050 on branch `tutorial-spine-repair-batch-7`; no PR
+3. Continue Task 051 on branch `tutorial-spine-repair-batch-8`; no PR
    is open yet.
-4. Next useful implementation step: verify Task 050, commit it, push, open a
+4. Next useful implementation step: verify Task 051, commit it, push, open a
    PR, watch CI, and squash-merge if CI passes.
 5. If updating this branch before PR creation or after rebasing, rerun:
 
@@ -73,7 +73,9 @@ Task 048 rendered route-sweep hash stabilization is merged, main-verified,
 Pages-verified, and live deployed-surface verified. Task 049 tutorial spine
 repair batch 6 is merged, main-verified, Pages-verified, and live
 deployed-surface verified, but not Claude-reviewed. Task 050 tutorial spine
-repair batch 7 is active.
+repair batch 7 is merged, main-verified, Pages-verified, and live
+deployed-surface verified, but not Claude-reviewed. Task 051 tutorial spine
+repair batch 8 is active.
 
 `PLAN.md` Phase 9 now defines the required gate for any claim that tutorials,
 questions, exams, or flashcards are complete, comprehensive, reality-verified,
