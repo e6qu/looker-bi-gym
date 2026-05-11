@@ -12,146 +12,37 @@
 
 # Quiz Bank
 
-Use this quiz after completing the core practice path when you want a
-20-minute self-check. Questions are grouped by difficulty and use new scenario
-wording so the quiz verifies the skills without repeating the tutorial steps.
+Use the interactive quiz when you want a broad self-check across banking BI,
+BigQuery SQL, and Looker Studio reporting decisions. Each question stands on its
+own as a scenario, so the bank can be used for review without looking back at a
+worked example.
 
 Objective: check whether you can recall and apply core BI mechanics without
 using worked examples as prompts.
 
 After this quiz, you will be able to:
 
-- Answer easy, medium, and hard self-check questions in about 20 minutes.
-- Explain why each answer is correct in BI terms.
-- Identify whether grain, joins, serving views, or dashboard controls need more
-  practice before attempting exam cards.
+- Start the mixed quiz from the app navigation.
+- Recognize the competency areas covered by the easy, medium, and hard groups.
+- Decide which BI topic needs more practice before attempting exam cards.
 
 Training boundary: use synthetic training data only. This quiz is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
 
-Use the interactive quiz surface for answer entry and immediate feedback.
+## Coverage
 
-## Easy
+The current mixed bank contains 60 standalone scenario questions:
 
-### Grain Before Aggregation
+| Difficulty | Count | Main coverage                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ---------- | ----: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Easy       |    20 | BI grain, distinct counts, NULL totals, date grouping, partition filters, Looker Studio dimensions and data sources, reusable fields, logical views, controls, query parameters, pseudonymised identifiers, purpose limitation, and deposit-guarantee basics                                                                                                                                                                                                                   |
+| Medium     |    20 | fanout deltas, reduce-before-join patterns, QUALIFY, window partitions, month-end SQL checks, failed casts, chart aggregation context, blends, credentials, dry runs, parameter predicates, exact versus approximate counts, view regions, view SQL changes, freshness memory, and deposit eligibility                                                                                                                                                                         |
+| Hard       |    20 | semi-additive exposure, shared metric ownership, blend freshness, refresh cost evidence, control publication checks, authorized views, materialized-view decisions, job-evidence privacy, depositor-bank grain, operations dependencies, temporary high balances, incident evidence, validation versioning, region-aware serving layers, cost triage, stale blended reports, NULL reconciliation, exact coverage evidence, special-category data, and upstream modelling fixes |
 
-Question: before summing `ledger_balance`, what must you declare for the
-balance rows?
+## How To Use It
 
-<details>
-<summary>Answer and rationale</summary>
-
-Answer: one row per account and business date.
-
-Why it matters: BI aggregates are only trustworthy after the row grain is known.
-
-</details>
-
-### Sensitive Fields
-
-Question: which fields should stay out of a currency-level dashboard output
-unless a specific purpose requires them?
-
-<details>
-<summary>Answer and rationale</summary>
-
-Answer: `account_id`, `customer_id`, and `synthetic_iban`.
-
-Why it matters: serving outputs should stay narrow and avoid unnecessary
-identifier exposure.
-
-</details>
-
-### Looker Studio Data Source Role
-
-Question: what role does a Looker Studio data source play between source data
-and charts?
-
-<details>
-<summary>Answer and rationale</summary>
-
-Answer: it connects data and provides the report field schema.
-
-Why it matters: field types, aggregation, and credentials are inspected at the
-data-source layer before charts are trusted.
-
-</details>
-
-## Medium
-
-### Fanout Delta
-
-Question: in the synthetic deposits fanout exercise, what is the overstatement
-delta between the naive owner-joined total and the correct latest account-grain
-total?
-
-<details>
-<summary>Answer and rationale</summary>
-
-Answer: `69100`.
-
-Why it matters: the wrong join can produce a convincing but overstated KPI.
-
-</details>
-
-### BigQuery View Purpose
-
-Question: why is a BigQuery logical view a useful serving-layer shape for
-reusable dashboard SQL?
-
-<details>
-<summary>Answer and rationale</summary>
-
-Answer: it is a SQL-defined virtual table queried like a table.
-
-Why it matters: shared dashboard logic should be inspectable before it reaches
-Looker Studio charts.
-
-</details>
-
-### Month-End Control
-
-Question: how many synthetic lending snapshot rows are not on an accepted
-month-end date?
-
-<details>
-<summary>Answer and rationale</summary>
-
-Answer: `1`.
-
-Why it matters: a control can be visible in a serving result without becoming a
-business KPI.
-
-</details>
-
-## Hard
-
-### Semi-Additive Exposure
-
-Question: which result should be used as the dashboard KPI for March exposure?
-
-<details>
-<summary>Answer and rationale</summary>
-
-Answer: latest-period principal by currency, with time sums kept as controls.
-
-Why it matters: balances and exposures are safe across entities at one date, not
-across multiple dates.
-
-</details>
-
-### Metric Ownership
-
-Question: where should the fanout-safe `ledger_total` metric be repaired for a
-shared executive dashboard?
-
-<details>
-<summary>Answer and rationale</summary>
-
-Answer: upstream serving SQL or a reusable data-source field.
-
-Why it matters: a hidden chart-only repair lets later charts reintroduce the
-same grain error.
-
-</details>
+Open the Quiz surface from the navigation and answer a focused subset or the
+full bank. For each miss, write down whether the gap was about row grain, join
+behavior, Looker Studio mechanics, BigQuery SQL behavior, control evidence, or
+banking context.

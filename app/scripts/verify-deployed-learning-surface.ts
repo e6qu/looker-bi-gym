@@ -202,11 +202,7 @@ async function assertQuizAndExamAssessmentBoundary(
   const diagnostics = collectDiagnostics(page);
 
   await page.goto(fullUrl("/#/quiz"), { waitUntil: "networkidle" });
-  await assertVisibleText(
-    page,
-    "Why should a ratio metric contract say how zero denominators are handled?",
-    "quiz surface",
-  );
+  await assertVisibleText(page, "Before writing", "quiz surface");
   await assertNoVisibleText(
     page,
     "FACT-BIGQUERY-SAFE-DIVIDE-RATIO-GUARD",

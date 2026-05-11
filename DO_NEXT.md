@@ -11,39 +11,42 @@
    gh pr list --state open --limit 10
    ```
 
-3. Continue PR #41 on branch `remove-tutorial-evidence-basis`:
-   `https://github.com/e6qu/looker-bi-gym/pull/41`.
-4. Wait for PR #41 CI. If it fails, fix failures on the same branch and rerun
-   relevant local checks.
-5. Before merging, fetch
-   `origin/main`, rebase the branch on top of it, and merge only after CI passes
-   on the rebased branch.
-6. After merge, verify main CI, GitHub Pages deployment, live HTTP 200, and
+3. Continue Task 057 on branch `quiz-question-quality-expansion`.
+4. Commit the local Task 057 changes, push the branch, and open one PR.
+5. Wait for Task 057 PR CI. If it fails, fix failures on the same branch and
+   rerun relevant local checks.
+6. Before merging, fetch `origin/main`, rebase the branch on top of it, and
+   merge only after CI passes on the rebased branch.
+7. After merge, verify main CI, GitHub Pages deployment, live HTTP 200, and
    `bun run verify:deployed-surface` before starting another implementation PR.
 
 ## Verification To Preserve
 
-Task 056 focused verification has passed:
+Task 057 focused verification has passed:
 
 ```sh
 bun run content:generate
 bun run content:check
 bun run format:check
 bun run test:content-qa
+bun run test:quiz-facts-db
 bun run validate:static-links
 bun run typecheck
 bun run lint
+bun run test:e2e
 bun run check
-git diff --check
 ```
 
-Stale scan:
+Stale scans:
 
 ```sh
-rg -n "Evidence Basis" tutorials app/scripts/test-content-qa.ts
+rg -n "this repo|this repository|repo structure|source file in the repository|generated catalog|implementation task|training workflow|course source register|Evidence Basis|Source evidence|Recommended learner tasks" quizzes/bi-foundations/bi-foundations-mixed.md tutorials/quiz-bank.md
+rg -n "this repo|this repository|repo structure|source file in the repository|generated catalog|implementation task|training workflow|course source register|Evidence Basis|Source evidence|Recommended learner tasks|FACT-[A-Z0-9-]+|LT-[A-Z]+-[0-9]{3}" tutorials/quiz-bank.md app/tests/rendered-ui.spec.ts app/scripts/verify-deployed-learning-surface.ts
 ```
 
-The scan returned no matches.
+The quiz/guide surface scan returned no matches. The test/verifier scan only
+returned deliberate assertions that hidden metadata stays hidden or fact routes
+render fact IDs on fact pages.
 
 ## Review Requirement
 

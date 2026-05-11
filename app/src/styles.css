@@ -1325,11 +1325,13 @@ h3 {
   display: grid;
   gap: 14px;
   min-width: 0;
+  min-inline-size: 0;
   margin: 0;
   padding: 20px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
+  overflow-wrap: anywhere;
 }
 
 .quizQuestion legend {
@@ -1361,6 +1363,8 @@ h3 {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #ffffff;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .answerOptions input {

@@ -739,8 +739,8 @@ function assertQuizBanks(
     assertNonEmptyString(quizBank.id, `${quizBank.id}:id`);
     assertNonEmptyString(quizBank.title, `${quizBank.id}:title`);
     assert.ok(
-      quizBank.estimated_minutes <= 20,
-      `${quizBank.id} should stay answerable in about 20 minutes.`,
+      quizBank.estimated_minutes <= 60,
+      `${quizBank.id} should stay answerable within an hour.`,
     );
 
     for (const difficulty of ["easy", "medium", "hard"] as const) {
@@ -748,8 +748,8 @@ function assertQuizBanks(
       totalQuestionCount += questions.length;
 
       assert.ok(
-        questions.length >= 2,
-        `${quizBank.id}:${difficulty} must include at least two questions.`,
+        questions.length >= 20,
+        `${quizBank.id}:${difficulty} must include at least twenty questions.`,
       );
 
       for (const question of questions) {
@@ -782,8 +782,8 @@ function assertQuizBanks(
   }
 
   assert.ok(
-    totalQuestionCount >= 14,
-    "Assessment catalog must include at least 14 quiz questions.",
+    totalQuestionCount >= 60,
+    "Assessment catalog must include at least 60 quiz questions.",
   );
 }
 

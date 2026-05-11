@@ -1,5 +1,64 @@
 # What We Did
 
+## 2026-05-11 - Task 057 Quiz Question Quality Expansion
+
+- Verified PR #41 post-merge state:
+  - PR #41 was squash-merged at
+    `ff2071a12fa6124d713c31abcc993c4c54abe6c7`.
+  - Main CI passed for `ff2071a`:
+    `https://github.com/e6qu/looker-bi-gym/actions/runs/25665798004`.
+  - GitHub Pages workflow passed for `ff2071a`:
+    `https://github.com/e6qu/looker-bi-gym/actions/runs/25665797989`.
+  - Live Pages URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200
+    with `last-modified: Mon, 11 May 2026 10:56:00 GMT`.
+  - `bun run verify:deployed-surface` passed against the live site.
+  - `gh pr list --state open --limit 10` returned no open PRs.
+- Created branch `quiz-question-quality-expansion` from verified `main`.
+- Added `_development/tasks/057-quiz-question-quality-expansion.md` and
+  updated the implementation task index.
+- Reworked the main quiz bank into 60 standalone scenario questions: 20 easy,
+  20 medium, and 20 hard.
+- Expanded coverage across BI grain, fanout, semi-additive balances, NULL and
+  ratio contracts, BigQuery windows, partition filters, views, parameters,
+  dry-run cost estimates, Looker Studio sources, controls, blends, credentials,
+  freshness, GDPR minimisation, DORA/EBA operational context, and Romanian/EU
+  deposit-guarantee modelling.
+- Kept factuality in hidden `source_facts` metadata and kept learner-facing quiz
+  prompts free of raw fact IDs, task IDs, and implementation references.
+- Updated the quiz guide to describe the 60-question coverage without exposing
+  hidden metadata or copying question text.
+- Raised content QA guardrails to require at least 60 quiz questions and 20 per
+  difficulty.
+- Updated rendered/deployed verifier expectations for the new first question.
+- Fixed quiz mobile overflow from longer assessment text by allowing quiz
+  question and answer text to wrap safely.
+- Verification passed:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run format:check`;
+  - `bun run test:content-qa`;
+  - `bun run test:quiz-facts-db`;
+  - `bun run validate:static-links`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - stale scans for learner-facing implementation/source metadata wording in
+    quiz and quiz-guide surfaces;
+  - `bun run test:e2e` after approved local Vite preview binding, with all 93
+    Playwright tests passing;
+  - `bun run check` after approved local Vite preview binding, with all 93
+    Playwright tests passing.
+- Failed/blocked attempts recorded:
+  - first sandboxed `bun run test:e2e` failed because Vite preview could not
+    bind `127.0.0.1:4173` (`EPERM`); rerunning with approved local binding
+    exposed branch regressions, then passed after fixes.
+  - the first expanded quiz pass failed content QA because `tutorials/quiz-bank.md`
+    said `quiz guide` instead of the accepted `quiz` objective pattern.
+  - the first quiz fact database pass rejected a numeric answer of `100000`
+    because the cited fact text uses `100,000`; the item is now multiple choice
+    with `EUR 100,000` visible in the option text.
+  - initial mobile e2e failed due to quiz route horizontal overflow from longer
+    standalone prompt/option text; CSS wrapping fixed it.
+
 ## 2026-05-11 - Task 056 Remove Tutorial Evidence Basis Headings
 
 - Confirmed no open PRs before starting Task 056.
