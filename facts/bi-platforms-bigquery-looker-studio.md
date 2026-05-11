@@ -321,3 +321,81 @@ not legal, regulatory, accounting, privacy, compliance, or model-risk advice.
   each source's freshness setting, not only the BigQuery serving view.
 - Related facts: [`FACT-LOOKER-STUDIO-BLEND-JOIN-CONFIG`](#fact-looker-studio-blend-join-config),
   [`FACT-LOOKER-STUDIO-DATA-FRESHNESS-TRADEOFF`](#fact-looker-studio-data-freshness-tradeoff).
+
+### FACT-BIGQUERY-PARAMETERIZED-QUERY-USER-INPUT
+
+- Statement: BigQuery GoogleSQL parameters protect queries constructed from
+  user input and pass values separately from the SQL text.
+- Source: [`SRC-BIGQUERY-PARAMETERIZED-QUERIES`](../sources/platforms/bigquery.md#src-bigquery-parameterized-queries).
+- Source quote: "protect queries made from user input".
+- Derived implication: Applied dashboard recipes should use named query
+  parameters for viewer-supplied values instead of string-concatenated SQL.
+- Related facts: [`FACT-LOOKER-STUDIO-CONTROL-PARAMETER-INPUT`](#fact-looker-studio-control-parameter-input),
+  [`FACT-GDPR-SECURITY-PROCESSING`](privacy-gdpr.md#fact-gdpr-security-processing).
+
+### FACT-BIGQUERY-PARAMETER-NOT-IDENTIFIER
+
+- Statement: BigQuery query parameters can substitute arbitrary expressions, but
+  not identifiers such as table names, column names, or other SQL structure.
+- Source: [`SRC-BIGQUERY-PARAMETERIZED-QUERIES`](../sources/platforms/bigquery.md#src-bigquery-parameterized-queries).
+- Source quote: "not be used as substitutes for identifiers".
+- Derived implication: A report control can safely supply a branch, date, or
+  currency value, but object selection still needs governed SQL design.
+- Related facts: [`FACT-BIGQUERY-VIEW-SQL-VERSIONING`](#fact-bigquery-view-sql-versioning),
+  [`FACT-LOOKER-STUDIO-CONTROL-PARAMETER-INPUT`](#fact-looker-studio-control-parameter-input).
+
+### FACT-BIGQUERY-QUERY-VALIDATOR-BYTES
+
+- Statement: The BigQuery console query validator estimates bytes read for a
+  valid query before execution.
+- Source: [`SRC-BIGQUERY-COST-ESTIMATION`](../sources/platforms/bigquery.md#src-bigquery-cost-estimation).
+- Source quote: "estimate of the number of bytes read".
+- Derived implication: Performance reviews should capture pre-run byte
+  estimates before publishing expensive dashboard queries.
+- Related facts: [`FACT-BIGQUERY-JOBS-BYTES`](#fact-bigquery-jobs-bytes),
+  [`FACT-LOOKER-STUDIO-BIGQUERY-REFRESH-COST`](#fact-looker-studio-bigquery-refresh-cost).
+
+### FACT-BIGQUERY-DRY-RUN-BYTES
+
+- Statement: BigQuery dry runs validate a query and estimate the bytes it will
+  process without executing the query.
+- Source: [`SRC-BIGQUERY-COST-ESTIMATION`](../sources/platforms/bigquery.md#src-bigquery-cost-estimation).
+- Source quote: "running this query will process".
+- Derived implication: Cloud-applied cost checks should use dry-run or query
+  validator evidence before relying on a Looker Studio page refresh.
+- Related facts: [`FACT-BIGQUERY-QUERY-VALIDATOR-BYTES`](#fact-bigquery-query-validator-bytes),
+  [`FACT-BIGQUERY-JOBS-BYTES`](#fact-bigquery-jobs-bytes).
+
+### FACT-LOOKER-STUDIO-CONTROLS-FILTER-DATA
+
+- Statement: Looker Studio controls make reports interactive by letting viewers
+  filter data, provide input, set the timeframe, or change the dataset used.
+- Source: [`SRC-LOOKER-STUDIO-CONTROLS`](../sources/platforms/looker-studio.md#src-looker-studio-controls).
+- Source quote: "filter data or provide input".
+- Derived implication: Dashboard tutorials should require explicit control
+  fields and expected filter behavior before charts are trusted.
+- Related facts: [`FACT-LOOKER-STUDIO-DATA-SOURCE`](#fact-looker-studio-data-source),
+  [`FACT-LOOKER-STUDIO-DIMENSION-CONTEXT`](bi-modeling-banking.md#fact-looker-studio-dimension-context).
+
+### FACT-LOOKER-STUDIO-CONTROL-FIELD-ID
+
+- Statement: Looker Studio filter controls apply at the data-source level and
+  use field IDs rather than display names.
+- Source: [`SRC-LOOKER-STUDIO-CONTROLS`](../sources/platforms/looker-studio.md#src-looker-studio-controls).
+- Source quote: "based on field ID".
+- Derived implication: Renaming a displayed label is not enough to guarantee
+  cross-chart filtering; serving sources should expose stable filter fields.
+- Related facts: [`FACT-LOOKER-STUDIO-FIELD-TYPES`](#fact-looker-studio-field-types),
+  [`FACT-LOOKER-STUDIO-CONTROLS-FILTER-DATA`](#fact-looker-studio-controls-filter-data).
+
+### FACT-LOOKER-STUDIO-CONTROL-PARAMETER-INPUT
+
+- Statement: A Looker Studio parameter-based control supplies input to a
+  parameter, and parameters can be passed back to the underlying SQL query used
+  for a BigQuery data source.
+- Source: [`SRC-LOOKER-STUDIO-CONTROLS`](../sources/platforms/looker-studio.md#src-looker-studio-controls).
+- Source quote: "pass parameters back".
+- Derived implication: Applied Looker Studio and BigQuery recipes should name
+  allowed parameter values and keep SQL object selection governed upstream.
+- Related facts: [`FACT-BIGQUERY-PARAMETERIZED-QUERY-USER-INPUT`](#fact-bigquery-parameterized-query-user-input),
+  [`FACT-BIGQUERY-PARAMETER-NOT-IDENTIFIER`](#fact-bigquery-parameter-not-identifier).

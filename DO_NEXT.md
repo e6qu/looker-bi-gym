@@ -11,98 +11,61 @@
    gh pr list --state open --limit 10
    ```
 
-3. Continue PR #39 on branch `tutorial-verification-separation-sweep`:
-   `https://github.com/e6qu/looker-bi-gym/pull/39`.
-4. Next useful implementation step: wait for PR #39 CI, fix any failures on the
-   same branch, and merge only after CI passes.
-5. If updating this branch before PR creation or after rebasing, rerun:
+3. Continue PR #40 on branch `looker-bigquery-corpus-expansion`:
+   `https://github.com/e6qu/looker-bi-gym/pull/40`.
+4. Wait for PR #40 CI. If it fails, fix failures on the same branch and rerun
+   the relevant local checks.
+5. Before merging, fetch `origin/main`, rebase the branch on top of it, and
+   merge only after CI passes on the rebased branch.
+6. After merge, verify main CI, GitHub Pages deployment, live HTTP 200, and
+   `bun run verify:deployed-surface` before starting another implementation PR.
 
-   ```sh
-   bun run content:generate
-   bun run content:check
-   bun run format:check
-   bun run typecheck
-   bun run lint
-   bun run test:facts-db
-   bun run facts:build-db
-   bun run test:content-qa
-   bun run test:flashcards
-   bun run test:quiz-facts-db
-   bun run test:platform-boundary
-   bun run validate:static-links
-   bun run check
-   git diff --check
-   ```
+## Verification To Preserve
 
-6. Before opening the next PR, confirm there is still no open PR. Before
-   merging it, fetch `origin/main`, rebase the branch on `origin/main`, verify
-   CI is passing, and then squash-merge.
-7. After merge, verify main CI, GitHub Pages deployment, and the live Pages URL
-   before moving on.
+Task 055 local verification has passed:
+
+```sh
+bun run content:generate
+bun run content:check
+bun run format:check
+bun run test:content-qa
+bun run validate:static-links
+bun run typecheck
+bun run lint
+bun run test:facts-db
+bun run test:flashcards
+bun run test:quiz-facts-db
+bun run test:platform-boundary
+bun run test:e2e
+bun run verify:deployed-surface
+bun run check
+git diff --check
+```
+
+Also preserve stale scans proving the new and repaired learner-facing content
+does not expose implementation scaffolding:
+
+```sh
+rg -n "BI training evidence|CTF|training workflow|this website|this page|this repo|this repository|generated catalog|implementation task|Source Facts|Recommended learner tasks" tutorials quizzes exams flashcards
+rg -n "#/challenges|Capture the local flag" tutorials/learner-tasks quizzes exams flashcards
+```
+
+Both scans returned no matches for the checked surfaces.
 
 ## Review Requirement
 
-Phase 4 root-path migration and Task 037 fact expansion batch 1 are merged,
-deployed, and main-verified, but not Claude-reviewed. The Task 037 formal
-review attempt also hung with no output and was terminated.
+Do not mark Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, Phase 7, or Phase 9
+complete until a completed formal review is available and recorded.
 
-Task 038 assessment expansion batch 1 is merged, deployed, and main-verified,
-but not Claude-reviewed. It adds 10 flashcards, 6 quiz questions, 2 exam cards,
-and guardrails for at least 59 flashcards, 14 quiz questions, and 4 exam cards.
-
-Task 039 tutorial/challenge expansion batch 1 is merged, deployed, and
-main-verified, but not Claude-reviewed. It adds `LT-DQ-006 - Define A Ratio
-Null Contract`.
-
-Task 040 learning surface verification is merged, main-verified,
-Pages-verified, and live deployed-surface verified, but not Claude-reviewed.
-Task 041 curriculum completeness audit is merged, main-verified,
-Pages-verified, and live deployed-surface verified, but not Claude-reviewed.
-Task 042 tutorial spine repair batch 1 is merged, main-verified,
-Pages-verified after one workflow rerun, and live deployed-surface verified,
-but not Claude-reviewed. Task 043 tutorial spine repair batch 2 is merged,
-main-verified, Pages-verified after one workflow rerun, and live
-deployed-surface verified, but not Claude-reviewed. Task 044 tutorial spine
-repair batch 3 is merged and main CI passed, but PR #30 Pages deployment failed
-in the local gate. Task 045 route-sweep stabilization is merged, main-verified,
-Pages-verified, and live deployed-surface verified. Task 046 tutorial spine
-repair batch 4 is merged, main-verified, Pages-verified, and live
-deployed-surface verified, but not Claude-reviewed. Task 047 tutorial spine
-repair batch 5 is merged; its post-merge main CI failure was fixed by Task 048.
-Task 048 rendered route-sweep hash stabilization is merged, main-verified,
-Pages-verified, and live deployed-surface verified. Task 049 tutorial spine
-repair batch 6 is merged, main-verified, Pages-verified, and live
-deployed-surface verified, but not Claude-reviewed. Task 050 tutorial spine
-repair batch 7 is merged, main-verified, Pages-verified, and live
-deployed-surface verified, but not Claude-reviewed. Task 051 tutorial spine
-repair batch 8 is merged, main-verified, Pages-verified, and live
-deployed-surface verified, but not Claude-reviewed. Task 052 orientation
-tutorial self-contained fix is merged, main-verified, Pages-verified, and live
-deployed-surface verified. Task 053 tutorial verification separation sweep is
-locally verified and local. Task 054 curriculum self-reference remediation is
-locally verified and open in PR #39.
-
-`PLAN.md` Phase 9 now defines the required gate for any claim that tutorials,
-questions, exams, or flashcards are complete, comprehensive, reality-verified,
-or externally verified.
-
-The required command shape remains:
+The required Claude CLI command shape remains:
 
 ```sh
 claude --print --permission-mode plan --output-format text "<phase-specific review prompt>"
 ```
 
-The latest Task 041 formal Claude CLI review ran in non-TUI mode but returned
-`Not logged in · Please run /login`; Task 042 returned the same auth blocker.
-Task 043 returned the same auth blocker. Task 044 hung with no output for about
-40 seconds and was killed, as did Tasks 046 and 047. The previous Task 040
-review hung with no output and was killed. Task 054 tried the user-requested
-`claude -s ...` shape, but this installed Claude CLI returned `unknown option
-'-s'`; the documented `claude --print ...` non-TUI retry returned
-`Not logged in · Please run /login`. Codex CLI non-TUI mode works outside the
-sandbox via `codex exec`; Claude CLI formal review does not currently complete.
-Do not mark Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, Phase 7, or Phase 9
-complete until a completed formal review is available and recorded.
+The latest Task 054 attempts showed that `claude -s` is unsupported by this
+installed CLI and `claude --print ...` returned `Not logged in · Please run
+/login`. Codex CLI non-TUI mode works outside the sandbox via `codex exec`.
 
 ## PR Discipline
 

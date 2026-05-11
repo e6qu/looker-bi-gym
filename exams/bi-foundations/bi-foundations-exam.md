@@ -97,6 +97,33 @@
             "self_assessment": "Connect report freshness settings to BigQuery job evidence instead of treating dashboard refresh as invisible platform behavior.\n",
           },
       },
+      {
+        "id": "exam-card-control-parameter-handoff",
+        "title": "Control Parameter Handoff Review",
+        "recommended_learner_tasks": ["LT-LOOKER-007"],
+        "source_facts":
+          [
+            "FACT-LOOKER-STUDIO-CONTROLS-FILTER-DATA",
+            "FACT-LOOKER-STUDIO-CONTROL-FIELD-ID",
+            "FACT-LOOKER-STUDIO-CONTROL-PARAMETER-INPUT",
+            "FACT-BIGQUERY-PARAMETERIZED-QUERY-USER-INPUT",
+            "FACT-BIGQUERY-PARAMETER-NOT-IDENTIFIER",
+            "FACT-BIGQUERY-DRY-RUN-BYTES",
+          ],
+        "objective": "Design a dashboard control contract for currency and business date filters, then map those selected values to a BigQuery parameterized serving-query pattern.\n",
+        "verification":
+          {
+            "expected_outputs":
+              [
+                "control fields, allowed values, defaults, and affected charts are named",
+                "RON selected total for 2026-03-31 equals 79300",
+                "BigQuery pattern uses named value parameters for date and currency",
+                "SQL object names remain governed by the serving query",
+                "pre-run byte estimate or dry-run evidence is listed before publication",
+              ],
+            "self_assessment": "Explain why report controls can safely supply values while table and column selection stays in governed SQL.\n",
+          },
+      },
     ],
   "content_type": "exam_pack",
   "status": "published",

@@ -35,7 +35,7 @@ const routeChecks: readonly RouteCheck[] = [
     route: "/#/tutorials/learner-tasks/lt-dq-006-ratio-null-contract.md",
     expectedText: "LT-DQ-006 - Define A Ratio Null Contract",
   },
-  { route: "/#/flashcards", expectedText: "59 cards" },
+  { route: "/#/flashcards", expectedText: "Flashcards" },
   { route: "/#/quiz", expectedText: "BI Foundations Mixed Quiz" },
   { route: "/#/exam", expectedText: "Ratio Null Contract Review" },
   {
@@ -111,6 +111,23 @@ async function assertVisibleText(
   assert.ok(await locator.isVisible(), `${context} should show ${text}.`);
 }
 
+async function assertNoVisibleText(
+  page: Page,
+  text: string,
+  context: string,
+): Promise<void> {
+  const locator = page.getByText(text, { exact: false });
+  const count = await locator.count();
+
+  for (let index = 0; index < count; index += 1) {
+    assert.equal(
+      await locator.nth(index).isVisible(),
+      false,
+      `${context} should not visibly show ${text}.`,
+    );
+  }
+}
+
 async function assertRouteSurface(
   context: BrowserContext,
   viewport: ViewportSpec,
@@ -178,7 +195,7 @@ async function assertFlashcardSearch(
   return diagnostics;
 }
 
-async function assertQuizAndExamSourceLinks(
+async function assertQuizAndExamAssessmentBoundary(
   context: BrowserContext,
 ): Promise<readonly BrowserDiagnostic[]> {
   const page = await context.newPage();
@@ -190,10 +207,15 @@ async function assertQuizAndExamSourceLinks(
     "Why should a ratio metric contract say how zero denominators are handled?",
     "quiz surface",
   );
-  await assertVisibleText(
+  await assertNoVisibleText(
     page,
     "FACT-BIGQUERY-SAFE-DIVIDE-RATIO-GUARD",
-    "quiz source facts",
+    "quiz source fact metadata",
+  );
+  await assertNoVisibleText(
+    page,
+    "Recommended learner tasks",
+    "quiz recommended task metadata",
   );
 
   await page.goto(fullUrl("/#/exam"), { waitUntil: "networkidle" });
@@ -202,6 +224,16 @@ async function assertQuizAndExamSourceLinks(
     page,
     "zero-denominator behavior is documented",
     "exam expected outputs",
+  );
+  await assertNoVisibleText(
+    page,
+    "FACT-BIGQUERY-SAFE-DIVIDE-RATIO-GUARD",
+    "exam source fact metadata",
+  );
+  await assertNoVisibleText(
+    page,
+    "Recommended learner tasks",
+    "exam recommended task metadata",
   );
   await page.close();
 
@@ -255,7 +287,9 @@ try {
       if (viewport.label === "desktop") {
         diagnostics.push(...(await assertWorkbenchRun(context)));
         diagnostics.push(...(await assertFlashcardSearch(context)));
-        diagnostics.push(...(await assertQuizAndExamSourceLinks(context)));
+        diagnostics.push(
+          ...(await assertQuizAndExamAssessmentBoundary(context)),
+        );
       }
     } finally {
       await context.close();

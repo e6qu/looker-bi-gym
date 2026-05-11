@@ -123,7 +123,7 @@ SQL.
 
 ## End Challenge
 
-Write a one-sentence CTF answer in this form:
+Write a one-sentence final summary in this form:
 
 `grain=<grain>; rows=<row_count>; latest=<latest_balance_date>; safe_output=<yes/no>`
 

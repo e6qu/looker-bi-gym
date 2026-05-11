@@ -4,6 +4,29 @@ Last updated: 2026-05-11
 
 ## Open Issues
 
+- ID: DEPLOYED-SURFACE-METADATA-EXPECTATION-2026-05-11.
+  - Area: deployed learning-surface verifier.
+  - Severity: medium.
+  - Description: After PR #39 hid source/task metadata from quiz and exam
+    prompts, `bun run verify:deployed-surface` still expected a raw source fact
+    ID to be visible on the quiz page.
+  - Fix plan: Task 055 updates the verifier to assert visible independent quiz
+    and exam prompts while confirming source/task metadata stays hidden.
+  - Status: fixed and locally verified on branch
+    `looker-bigquery-corpus-expansion`; live deployed-surface verification
+    passed against the current Pages site.
+
+- ID: LEARNER-TASK-CTF-WORDING-2026-05-11.
+  - Area: learner-task tutorials.
+  - Severity: medium.
+  - Description: Several browser-first practice labs still used visible `CTF`
+    wording for final summaries, which makes the course feel like scaffolded
+    game content instead of BI practice.
+  - Fix plan: Task 055 rewords those final prompts as final summaries and adds
+    stale scans for the affected learner-facing content.
+  - Status: fixed and locally verified on branch
+    `looker-bigquery-corpus-expansion`.
+
 - ID: ORIENTATION-TUTORIAL-QUIZ-LINK-2026-05-11.
   - Area: tutorial 00 and orientation quiz.
   - Severity: medium.

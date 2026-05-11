@@ -38,7 +38,9 @@ After this index, you will be able to:
 - BigQuery and SQL mechanics:
   [LT-SQL-003 - Build A Month-End Serving Result](lt-sql-003-month-end-serving-result.md).
 - Looker Studio mechanics:
-  [LT-LOOKER-004 - Prepare A Report-Ready Data Source](lt-looker-004-report-ready-data-source.md).
+  [LT-LOOKER-004 - Prepare A Report-Ready Data Source](lt-looker-004-report-ready-data-source.md)
+  and
+  [LT-LOOKER-007 - Design A Control Parameter Handoff](lt-looker-007-control-parameter-handoff.md).
 - Data quality and controls:
   [LT-DQ-005 - Reconcile Dashboard Controls](lt-dq-005-reconcile-dashboard-controls.md).
 - Ratio contracts:
@@ -54,6 +56,7 @@ Complete the practice labs in order:
 4. Prepare a narrow data source for a Looker Studio dashboard.
 5. Add reconciliation controls and failure-mode notes.
 6. Define how a ratio behaves when the denominator is zero or unavailable.
+7. Design a dashboard control handoff to a BigQuery parameter pattern.
 
 Each lab is designed for a focused 15-20 minute session and is self-contained:
 the instructions give the objective, SQL, expected outputs, checks, reporting

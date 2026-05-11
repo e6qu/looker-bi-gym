@@ -166,3 +166,21 @@ advice.
   - "minimum refresh time"
 - Notes: Use this source for freshness, cost, and report-performance evidence in
   Looker Studio tutorials.
+
+## SRC-LOOKER-STUDIO-CONTROLS
+
+- Type: official product documentation.
+- Publisher: Google Cloud.
+- URL: https://cloud.google.com/looker/docs/studio/about-controls
+- Accessed: 2026-05-11.
+- Used by facts:
+  - `FACT-LOOKER-STUDIO-CONTROLS-FILTER-DATA`
+  - `FACT-LOOKER-STUDIO-CONTROL-FIELD-ID`
+  - `FACT-LOOKER-STUDIO-CONTROL-PARAMETER-INPUT`
+- Relevant quotes:
+  - "filter data or provide input"
+  - "Filter data by dimension values"
+  - "based on field ID"
+  - "pass parameters back"
+- Notes: Use this source for dashboard interaction, filter-field, and parameter
+  handoff lessons.
