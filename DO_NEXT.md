@@ -11,10 +11,10 @@
    gh pr list --state open --limit 10
    ```
 
-3. Continue Task 052 on branch `orientation-tutorial-self-contained-fix`; no PR
-   is open yet.
-4. Next useful implementation step: commit the verified Task 052 changes, push,
-   open a PR, watch CI, and squash-merge if CI passes.
+3. Continue PR #39 on branch `tutorial-verification-separation-sweep`:
+   `https://github.com/e6qu/looker-bi-gym/pull/39`.
+4. Next useful implementation step: wait for PR #39 CI, fix any failures on the
+   same branch, and merge only after CI passes.
 5. If updating this branch before PR creation or after rebasing, rerun:
 
    ```sh
@@ -77,7 +77,10 @@ repair batch 7 is merged, main-verified, Pages-verified, and live
 deployed-surface verified, but not Claude-reviewed. Task 051 tutorial spine
 repair batch 8 is merged, main-verified, Pages-verified, and live
 deployed-surface verified, but not Claude-reviewed. Task 052 orientation
-tutorial self-contained fix is locally verified and ready for PR.
+tutorial self-contained fix is merged, main-verified, Pages-verified, and live
+deployed-surface verified. Task 053 tutorial verification separation sweep is
+locally verified and local. Task 054 curriculum self-reference remediation is
+locally verified and open in PR #39.
 
 `PLAN.md` Phase 9 now defines the required gate for any claim that tutorials,
 questions, exams, or flashcards are complete, comprehensive, reality-verified,
@@ -93,10 +96,13 @@ The latest Task 041 formal Claude CLI review ran in non-TUI mode but returned
 `Not logged in · Please run /login`; Task 042 returned the same auth blocker.
 Task 043 returned the same auth blocker. Task 044 hung with no output for about
 40 seconds and was killed, as did Tasks 046 and 047. The previous Task 040
-review hung with no output and was killed. Codex CLI non-TUI mode works outside
-the sandbox via `codex exec`; Claude CLI formal review does not currently
-complete. Do not mark Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, Phase 7, or
-Phase 9 complete until a completed formal review is available and recorded.
+review hung with no output and was killed. Task 054 tried the user-requested
+`claude -s ...` shape, but this installed Claude CLI returned `unknown option
+'-s'`; the documented `claude --print ...` non-TUI retry returned
+`Not logged in · Please run /login`. Codex CLI non-TUI mode works outside the
+sandbox via `codex exec`; Claude CLI formal review does not currently complete.
+Do not mark Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, Phase 7, or Phase 9
+complete until a completed formal review is available and recorded.
 
 ## PR Discipline
 

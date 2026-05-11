@@ -1,5 +1,96 @@
 # What We Did
 
+## 2026-05-11 - Task 054 Curriculum Self-Reference Remediation
+
+- Tried the requested Claude CLI second opinion:
+  - `claude -s --print --permission-mode plan --output-format text ...` failed
+    immediately with `unknown option '-s'`.
+  - `claude --print --permission-mode plan --output-format text ...` ran in
+    non-TUI mode but returned `Not logged in · Please run /login`.
+- Added `_development/tasks/054-curriculum-self-reference-remediation.md` and
+  updated the task index.
+- Opened PR #39:
+  `https://github.com/e6qu/looker-bi-gym/pull/39`.
+- Reworked the tutorial index and practice-lab index into one browser-first
+  path, including the ratio-null lab.
+- Replaced visible tutorial `Source Facts` headings with `Evidence Basis` and
+  removed remaining `this website/page/task page`, `CTF-style`, and
+  challenge-framed learner wording from tutorial surfaces.
+- Reworked the quiz-bank tutorial page so it is a scenario self-check with
+  answers hidden in expandable sections and no visible recommended-task links.
+- Reworked exam-mode prose so exam cards stand on their own with inputs and
+  expected outputs instead of recommended-task links.
+- Updated the rendered quiz and exam UI so source/task grounding metadata stays
+  available for validation but is not shown as prompt scaffolding.
+- Reworded the remaining fanout flashcard challenge phrasing and deck source
+  review note.
+- Updated content QA and Playwright coverage for the new boundary.
+- Verification passed:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run format:check`;
+  - `bun run test:content-qa`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:flashcards`;
+  - `bun run test:quiz-facts-db`;
+  - `bun run test:platform-boundary`;
+  - `bun run validate:static-links`;
+  - stale scan for self-referential learner-facing wording;
+  - `git diff --check`;
+  - `bun run test:e2e` after approved local Vite preview binding, with all 89
+    Playwright tests passing;
+  - `bun run check` after approved local Vite preview binding, with all 89
+    Playwright tests passing.
+- Failed/blocked attempts recorded:
+  - first sandboxed `bun run test:e2e` failed because Vite preview could not
+    bind `127.0.0.1:4173` (`EPERM`); rerunning with approved local binding
+    passed.
+
+## 2026-05-11 - Task 053 Tutorial Verification Separation Sweep
+
+- Verified PR #38 post-merge state:
+  - PR #38 was squash-merged at `ff283d7`.
+  - Main CI passed for `ff283d7`:
+    `https://github.com/e6qu/looker-bi-gym/actions/runs/25658994647`.
+  - GitHub Pages workflow passed for `ff283d7`:
+    `https://github.com/e6qu/looker-bi-gym/actions/runs/25658994653`.
+  - Live Pages URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200
+    with `last-modified: Mon, 11 May 2026 08:29:59 GMT`.
+  - `bun run verify:deployed-surface` passed against the live Pages URL.
+  - Targeted live Playwright check confirmed tutorial 00 links to
+    `#/challenges/orientation-quiz`, does not render that route in `code`, and
+    no longer shows the old open-route step.
+- Confirmed no open PRs before starting Task 053.
+- Created branch `tutorial-verification-separation-sweep` from verified `main`.
+- User clarified that tutorial content must not depend on quiz content and that
+  quizzes are separate verification.
+- User also asked not to open a new PR; Task 053 remains local.
+- Converted workbench hash routes in tutorial pages to clickable Markdown links.
+- Removed learner-facing challenge manifest, solution fixture, repository path,
+  and challenge-internal references from learner-task pages.
+- Removed meta wording about missing quizzes or hidden reference files.
+- Added rendered UI regression coverage across tutorial routes for inline
+  hash-route code and learner-facing implementation wording.
+- Verification passed:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run format:check`;
+  - `bun run test:content-qa`;
+  - `bun run validate:static-links`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - stale scan for inline hash-route code and learner-facing challenge/fixture
+    implementation wording;
+  - `git diff --check`;
+  - `bun run test:e2e` after approved local Vite preview binding, with all 89
+    Playwright tests passing;
+  - `bun run check` after approved local Vite preview binding, with all 89
+    Playwright tests passing.
+- Failed/blocked attempts recorded:
+  - one parallel `bun run content:check` raced another command that regenerated
+    ignored catalogs; rerunning serially passed.
+
 ## 2026-05-11 - Task 052 Orientation Tutorial Self-Contained Fix
 
 - Verified PR #37 post-merge state:

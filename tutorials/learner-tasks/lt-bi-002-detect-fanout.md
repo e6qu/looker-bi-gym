@@ -36,15 +36,15 @@ Training boundary: use synthetic training data only. This task is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
 
-## Source Facts
+## Evidence Basis
 
 This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
 
 ## Prerequisites
 
 - Complete [LT-BI-001](lt-bi-001-profile-dataset-grain.md).
-- Open `#/workbench/deposits-seed/v0.1.0`.
-- Use this task page as the complete instruction source; the workbench is only
+- Open the [deposits seed workbench](#/workbench/deposits-seed/v0.1.0).
+- Use the instructions below as the complete practice sequence; the workbench is only
   where you run the SQL.
 
 ## Steps
@@ -180,7 +180,6 @@ The expected answer is:
 
 ## Answer Reference
 
-The reviewer reference is
-[`challenges/solution-fixtures/account-owner-fanout/known-good.sql`](../../challenges/solution-fixtures/account-owner-fanout/known-good.sql).
-The intentionally unsafe reference is
-[`challenges/solution-fixtures/account-owner-fanout/known-bad-naive-owner-fanout.sql`](../../challenges/solution-fixtures/account-owner-fanout/known-bad-naive-owner-fanout.sql).
+Use the unsafe SQL, repaired SQL, expected output table, and expected
+end-challenge answer below as the complete reference for checking your
+work.

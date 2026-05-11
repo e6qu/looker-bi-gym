@@ -1,7 +1,7 @@
 ---
 {
   "id": "tutorial-tutorials-learner-tasks-readme",
-  "title": "Learner Tasks",
+  "title": "Practice Labs",
   "content_type": "tutorial_index",
   "status": "published",
   "version": "0.1.0",
@@ -10,23 +10,25 @@
 }
 ---
 
-# Learner Tasks
+# Practice Labs
 
-Learner tasks are curriculum exercise units for the website. They focus on BI
-practice rather than how the course is built.
+These short practice labs build BI habits with synthetic banking datasets:
+declare grain, control joins, shape serving outputs, reconcile dashboard
+numbers, and document metric behavior before publishing a report.
 
 Training boundary: use synthetic training data only. These tasks are technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
 
-Objective: give learners a browser-first sequence of short BI tasks that build
-from grain profiling to reporting controls.
+Objective: complete a browser-first sequence of BI tasks that builds from grain
+profiling to reporting controls.
 
-After this page, you will be able to:
+After this index, you will be able to:
 
-- Choose the next task in the browser-first learning path.
-- See which BI area each task belongs to.
-- Separate BI practice tasks from course-building work.
+- Choose the next practice lab in the browser-first path.
+- See which BI area each lab belongs to.
+- Keep SQL results, reporting checks, and self-assessment notes in a useful
+  order.
 
 ## Area Groups
 
@@ -44,15 +46,16 @@ After this page, you will be able to:
 
 ## Learning Path
 
-Complete the learner tasks in order for the browser-first path:
+Complete the practice labs in order:
 
 1. Define the reporting grain before aggregating.
 2. Prove a fanout error and repair it upstream.
 3. Shape a month-end serving result with explicit reference dates.
 4. Prepare a narrow data source for a Looker Studio dashboard.
 5. Add reconciliation controls and failure-mode notes.
+6. Define how a ratio behaves when the denominator is zero or unavailable.
 
-Each task is designed for a focused 15-20 minute session and is self-contained:
-the lesson page gives the objective, SQL, expected outputs, checks, reporting
-action, failure modes, and CTF-style end check. Use the browser workbench routes
-only to run the SQL against committed synthetic datasets.
+Each lab is designed for a focused 15-20 minute session and is self-contained:
+the instructions give the objective, SQL, expected outputs, checks, reporting
+action, failure modes, and end challenge. Use the browser workbench routes to
+run the SQL against the synthetic datasets.

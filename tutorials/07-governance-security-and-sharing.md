@@ -47,7 +47,7 @@ Builds on:
 
 Required tools:
 
-- Browser-first path: this website and the browser SQL workbench.
+- Browser-first path: browser SQL workbench for the synthetic datasets.
 - Optional applied path: browser UI access to BigQuery and Looker Studio.
 - Do not use Google Cloud CLI, BigQuery CLI, service account keys, Python, or
   Docker.
@@ -73,7 +73,7 @@ Produces:
 - Optional BigQuery authorized-view and Looker Studio credential-mode notes.
 - `notes/07-governance-sharing.md`, if you keep external notes.
 
-## Source Facts
+## Evidence Basis
 
 This material is backed by source notes for BigQuery views and authorized
 views, narrow select lists, Looker Studio data sources and credential modes,
@@ -98,7 +98,7 @@ authorized access, and Looker Studio data-source credentials.
 
 ### Browser-First Path
 
-1. Open `#/workbench/deposits-seed/v0.1.0`.
+1. Open the [deposits seed workbench](#/workbench/deposits-seed/v0.1.0).
 2. Classify the fields that could appear in an executive deposit dashboard:
 
 ```sql

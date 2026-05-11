@@ -127,6 +127,10 @@ Do not rely on chat history as the source of truth. Keep these files current so 
   self-contained instructional work; quizzes, challenges, and exams verify the
   competencies with distinct scenario prompts and must not be the tutorial's
   worksheet or deliverable.
+- Do not add learner-facing meta assurances such as "no separate quiz is
+  required" or "no hidden reference file is required." If a tutorial is
+  self-contained, make that true through the actual steps, expected outputs,
+  and self-check material.
 - Source fact IDs, learner-task IDs, file paths, and generated catalog details
   belong in metadata, QA scripts, implementation docs, or authoring notes, not
   in the question/prompt/explanation text shown as course material.

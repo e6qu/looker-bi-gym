@@ -36,17 +36,16 @@ Training boundary: use synthetic training data only. This task is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
 
-## Source Facts
+## Evidence Basis
 
 This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
 
 ## Prerequisites
 
-- Open the website and go to
-  `#/workbench/deposits-seed/v0.1.0`.
+- Open the [deposits seed workbench](#/workbench/deposits-seed/v0.1.0).
 - Keep the workbench in browser mode. No backend, CLI, Python, Docker, or real
   banking data is required.
-- Use this task page as the complete instruction source; the workbench is only
+- Use the instructions below as the complete practice sequence; the workbench is only
   where you run the SQL.
 
 ## Steps
@@ -134,7 +133,5 @@ The expected answer is:
 
 ## Answer Reference
 
-The reviewer reference for this learner task is
-[`challenges/solution-fixtures/first-banking-dataset/known-good.sql`](../../challenges/solution-fixtures/first-banking-dataset/known-good.sql).
-The released challenge manifest is
-[`challenges/manifests/first-banking-dataset.yaml`](../../challenges/manifests/first-banking-dataset.yaml).
+Use the SQL, expected output tables, and expected end-challenge answer on this
+page as the complete reference for checking your work.

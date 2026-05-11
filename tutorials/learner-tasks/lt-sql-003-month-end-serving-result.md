@@ -38,15 +38,15 @@ Training boundary: use synthetic training data only. This task is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
 
-## Source Facts
+## Evidence Basis
 
 This material is backed by source notes for the BI, platform, dataset, and regulatory facts it uses.
 
 ## Prerequisites
 
 - Complete [LT-BI-001](lt-bi-001-profile-dataset-grain.md).
-- Open `#/workbench/lending-month-end/v0.1.0`.
-- Use this task page as the complete instruction source; the workbench is only
+- Open the [lending month-end workbench](#/workbench/lending-month-end/v0.1.0).
+- Use the instructions below as the complete practice sequence; the workbench is only
   where you run the SQL.
 
 ## Steps
@@ -175,5 +175,5 @@ The expected answer is:
 
 ## Answer Reference
 
-The reviewer reference is
-[`challenges/solution-fixtures/lending-month-end-snapshots/known-good.sql`](../../challenges/solution-fixtures/lending-month-end-snapshots/known-good.sql).
+Use the SQL, expected output table, and expected end-challenge answer on this
+page as the complete reference for checking your work.

@@ -24,6 +24,32 @@ const responsiveRoutes = [
   "/#/settings",
 ] as const;
 
+const tutorialContentRoutes = [
+  "/#/tutorials/00-orientation-and-stack.md",
+  "/#/tutorials/01-connect-public-data.md",
+  "/#/tutorials/02-build-a-bi-friendly-model.md",
+  "/#/tutorials/03-first-executive-dashboard.md",
+  "/#/tutorials/04-metrics-and-calculated-fields.md",
+  "/#/tutorials/05-blending-vs-upstream-joins.md",
+  "/#/tutorials/06-performance-and-cost-lab.md",
+  "/#/tutorials/07-governance-security-and-sharing.md",
+  "/#/tutorials/08-observability-and-operations.md",
+  "/#/tutorials/09-technical-bi-capstone.md",
+  "/#/tutorials/README.md",
+  "/#/tutorials/curriculum.md",
+  "/#/tutorials/data-sources.md",
+  "/#/tutorials/exam-mode.md",
+  "/#/tutorials/learner-tasks/README.md",
+  "/#/tutorials/learner-tasks/lt-bi-001-profile-dataset-grain.md",
+  "/#/tutorials/learner-tasks/lt-bi-002-detect-fanout.md",
+  "/#/tutorials/learner-tasks/lt-dq-005-reconcile-dashboard-controls.md",
+  "/#/tutorials/learner-tasks/lt-dq-006-ratio-null-contract.md",
+  "/#/tutorials/learner-tasks/lt-looker-004-report-ready-data-source.md",
+  "/#/tutorials/learner-tasks/lt-sql-003-month-end-serving-result.md",
+  "/#/tutorials/quiz-bank.md",
+  "/#/tutorials/recipes/r-looker-001-deposits-dashboard.md",
+] as const;
+
 const viewports = [
   { width: 390, height: 844, label: "mobile" },
   { width: 768, height: 1024, label: "tablet" },
@@ -276,7 +302,33 @@ test.describe("rendered UI", () => {
     ).toHaveCount(0);
   });
 
-  test("quiz, exam, and fact graph surfaces render source-backed learning content", async ({
+  for (const route of tutorialContentRoutes) {
+    test(`tutorial route ${route} keeps verification and route links learner-safe`, async ({
+      page,
+    }) => {
+      await page.goto(route, { waitUntil: "domcontentloaded" });
+      await expect(page.getByRole("main")).toBeVisible();
+      await expect(
+        page.locator("main code").filter({ hasText: "#/" }),
+      ).toHaveCount(0);
+      await expect(page.getByRole("main")).not.toContainText(
+        "No separate quiz",
+      );
+      await expect(page.getByRole("main")).not.toContainText(
+        "hidden reference",
+      );
+      await expect(page.getByRole("main")).not.toContainText("fixture file");
+      await expect(page.getByRole("main")).not.toContainText("repository path");
+      await expect(page.getByRole("main")).not.toContainText(
+        "challenge manifest",
+      );
+      await expect(page.getByRole("main")).not.toContainText(
+        "Complete the browser quiz",
+      );
+    });
+  }
+
+  test("quiz, exam, and fact graph surfaces keep assessment prompts independent", async ({
     page,
   }) => {
     await page.goto("/#/quiz");
@@ -295,11 +347,8 @@ test.describe("rendered UI", () => {
     ).toBeVisible();
     await page.getByLabel("One row per account and business date.").check();
     await page.getByRole("button", { name: "Check Quiz" }).click();
-    await expect(
-      page
-        .locator('a[title="FACT-DEPOSITS-ACCOUNT-DAILY-BALANCES-GRAIN"]')
-        .first(),
-    ).toBeVisible();
+    await expect(page.getByText("Recommended learner tasks")).not.toBeVisible();
+    await expect(page.getByText("Source evidence")).not.toBeVisible();
 
     await page.goto("/#/exam");
 
@@ -310,6 +359,8 @@ test.describe("rendered UI", () => {
       page.getByRole("heading", { level: 3, name: "Grain And Fanout Review" }),
     ).toBeVisible();
     await expect(page.getByText("fanout_delta = 69100")).toBeVisible();
+    await expect(page.getByText("Recommended learner tasks")).not.toBeVisible();
+    await expect(page.getByText("Source evidence")).not.toBeVisible();
 
     await page.goto("/#/facts/fact-deposits-fanout-control-totals");
 

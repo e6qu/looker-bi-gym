@@ -34,7 +34,7 @@ Builds on:
 
 Required tools:
 
-- Browser-first path: this website and the browser SQL workbench.
+- Browser-first path: browser SQL workbench for the synthetic datasets.
 - Optional applied path: browser UI access to BigQuery and Looker Studio.
 - Do not use Google Cloud CLI, BigQuery CLI, service account keys, Python, or
   Docker.
@@ -61,7 +61,7 @@ Produces:
 - Chart settings and expected values for a metric QA page.
 - `notes/04-metric-contracts-and-fields.md`, if you keep external notes.
 
-## Source Facts
+## Evidence Basis
 
 This material is backed by source notes for BI grain, semi-additive balance
 snapshots, BigQuery logical views, Looker Studio calculated-field scope, and
@@ -84,7 +84,7 @@ Create this metric contract:
 
 ### Browser-First Path
 
-1. Open `#/workbench/deposits-seed/v0.1.0`.
+1. Open the [deposits seed workbench](#/workbench/deposits-seed/v0.1.0).
 2. Run this reusable metric-source query:
 
 ```sql

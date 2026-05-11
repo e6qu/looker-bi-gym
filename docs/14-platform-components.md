@@ -41,12 +41,12 @@ Current rendered sections:
 
 Learner-facing content shapes:
 
-- Learner tasks: area-grouped 15-20 minute curriculum exercise units with an
-  objective, steps, checkpoints, visualization/reporting action,
-  self-assessment, and a tutorial-internal CTF-style end check.
+- Practice labs: area-grouped 15-20 minute BI exercise units with an objective,
+  steps, checkpoints, visualization/reporting action, self-assessment, and an
+  end challenge.
 - Recipes: optional Looker Studio follow-ons after browser-first tutorials.
-- Quiz bank: mixed 20-minute quizzes organized by difficulty and linked to
-  recommended learner tasks.
+- Quiz bank: mixed 20-minute quizzes organized by difficulty with scenario
+  prompts, explanations, and hidden grounding metadata for validation.
 - Exam cards: untimed independent longer challenges, up to roughly 2 hours,
   self-assessed at first.
 - Flashcards: topic-separated recall decks with browser-local Anki-style
@@ -105,8 +105,9 @@ Quizzes:
 - Role: reusable question banks separate from challenge manifests, rendered as
   first-class browser quiz surfaces.
 - First bank: one mixed 20-minute quiz with `easy`, `medium`, and `hard`
-  questions, recommended learner-task IDs, source facts, answers,
-  explanations, estimated seconds, and self-assessment notes.
+  scenario questions, answers, explanations, estimated seconds, and
+  self-assessment notes. Grounding metadata remains available for validation
+  but is not rendered as part of the quiz prompt.
 - Verification: `bun run test:quiz-facts-db` loads generated quiz catalog
   content into SQLite temp tables and verifies question facts against the local
   facts graph.

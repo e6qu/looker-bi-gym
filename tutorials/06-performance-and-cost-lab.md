@@ -44,7 +44,7 @@ Builds on:
 
 Required tools:
 
-- Browser-first path: this website and the browser SQL workbench.
+- Browser-first path: browser SQL workbench for the synthetic datasets.
 - Optional applied path: browser UI access to BigQuery and Looker Studio.
 - Do not use Google Cloud CLI, BigQuery CLI, service account keys, Python, or
   Docker.
@@ -70,7 +70,7 @@ Produces:
 - Optional BigQuery job metadata query notes.
 - `notes/06-performance-cost-findings.md`, if you keep external notes.
 
-## Source Facts
+## Evidence Basis
 
 This material is backed by source notes for BigQuery job metadata, logical
 views, partition filters, narrow select lists, Looker Studio data freshness,
@@ -93,7 +93,7 @@ fields come from.
 
 ### Browser-First Path
 
-1. Open `#/workbench/deposits-seed/v0.1.0`.
+1. Open the [deposits seed workbench](#/workbench/deposits-seed/v0.1.0).
 2. Profile the synthetic source tables:
 
 ```sql

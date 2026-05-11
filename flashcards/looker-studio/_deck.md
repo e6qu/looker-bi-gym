@@ -31,7 +31,7 @@
         "url": "https://quizlet.com/936889614/looker-studio-3-flash-cards/",
         "reviewedAt": "2026-05-10",
         "coverageNote": "Coverage signal for blends, aggregation behavior, null handling, and BigQuery export topics.",
-        "incorporationNote": "No third-party card text was copied; new cards use course source notes for reusable data sources, dimensions, and aggregation context.",
+        "incorporationNote": "No third-party card text was copied; new cards use source-backed notes for reusable data sources, dimensions, and aggregation context.",
       },
     ],
 }
