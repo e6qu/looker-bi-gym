@@ -1,7 +1,6 @@
 # 052 - Orientation Tutorial Self-Contained Fix
 
-Status: locally verified on branch `orientation-tutorial-self-contained-fix`;
-ready for PR.
+Status: merged in PR #38 at `ff283d7`; deployed and main-verified.
 
 ## Goal
 
@@ -80,3 +79,14 @@ orientation quiz as the tutorial worksheet or deliverable.
   - `git diff --check`;
   - `bun run test:e2e` after approved local Vite preview binding;
   - `bun run check` after approved local Vite preview binding.
+- PR #38 was squash-merged at `ff283d7`.
+- Main CI passed for `ff283d7`:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25658994647`.
+- GitHub Pages workflow passed for `ff283d7`:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25658994653`.
+- Live Pages URL returned HTTP 200 with
+  `last-modified: Mon, 11 May 2026 08:29:59 GMT`.
+- `bun run verify:deployed-surface` passed against the live Pages URL.
+- A targeted live Playwright check confirmed tutorial 00 links to
+  `#/challenges/orientation-quiz`, does not render that route in `code`, and no
+  longer shows the old open-route step.

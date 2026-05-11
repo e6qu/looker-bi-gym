@@ -80,7 +80,7 @@ Create this first executive dashboard contract:
 
 ### Browser-First Path
 
-1. Open `#/workbench/deposits-seed/v0.1.0`.
+1. Open the [deposits seed workbench](#/workbench/deposits-seed/v0.1.0).
 2. Paste and run this dashboard-source query:
 
 ```sql

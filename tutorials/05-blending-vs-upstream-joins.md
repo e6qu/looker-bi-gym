@@ -85,7 +85,7 @@ Create this decision table:
 
 ### Browser-First Path
 
-1. Open `#/workbench/deposits-seed/v0.1.0`.
+1. Open the [deposits seed workbench](#/workbench/deposits-seed/v0.1.0).
 2. Run the latest account-grain control query:
 
 ```sql

@@ -13,8 +13,19 @@ Last updated: 2026-05-11
   - Fix plan: Task 052 rewrites tutorial 00 as a self-contained orientation
     decision log, keeps the quiz as separate verification, rewrites the quiz
     prompts as scenario checks, and adds rendered UI regression coverage.
-  - Status: fixed locally on branch `orientation-tutorial-self-contained-fix`;
-    pending PR, CI, merge, Pages, and live verification.
+  - Status: closed in PR #38; main CI, Pages, live HTTP, deployed-surface, and
+    targeted live link verification passed.
+
+- ID: TUTORIAL-VERIFICATION-SEPARATION-2026-05-11.
+  - Area: tutorial and learner-task pages.
+  - Severity: medium.
+  - Description: Tutorial pages should not depend on quiz content or expose
+    challenge manifests, solution fixtures, repository paths, inline hash
+    routes, or other implementation details as learner-facing references.
+  - Fix plan: Task 053 converts workbench routes to links, removes
+    implementation references, and adds rendered regression coverage.
+  - Status: fixed and verified locally on branch
+    `tutorial-verification-separation-sweep`; no PR opened by user request.
 
 - ID: CONTENT-QUALITY-2026-05-10.
   - Area: tutorials, quizzes, exams, flashcards, and facts.

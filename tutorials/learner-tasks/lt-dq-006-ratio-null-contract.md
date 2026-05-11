@@ -43,7 +43,7 @@ This material is backed by source notes for the BI, platform, dataset, and regul
 ## Prerequisites
 
 - Complete [LT-DQ-005](lt-dq-005-reconcile-dashboard-controls.md).
-- Open `#/workbench/deposits-seed/v0.1.0`.
+- Open the [deposits seed workbench](#/workbench/deposits-seed/v0.1.0).
 - Use this task page as the complete instruction source; the workbench is only
   where you run the SQL.
 

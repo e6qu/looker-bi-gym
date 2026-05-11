@@ -97,7 +97,7 @@ sandbox cloud environment exists.
 
 ### Browser-First Path
 
-1. Open `#/workbench/deposits-seed/v0.1.0`.
+1. Open the [deposits seed workbench](#/workbench/deposits-seed/v0.1.0).
 2. Draft the dependency register:
 
 ```sql

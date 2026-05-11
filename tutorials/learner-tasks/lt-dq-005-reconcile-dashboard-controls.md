@@ -42,7 +42,7 @@ This material is backed by source notes for the BI, platform, dataset, and regul
 ## Prerequisites
 
 - Complete [LT-SQL-003](lt-sql-003-month-end-serving-result.md).
-- Open `#/workbench/lending-month-end/v0.1.0`.
+- Open the [lending month-end workbench](#/workbench/lending-month-end/v0.1.0).
 - Use this task page as the complete instruction source; the workbench is only
   where you run the SQL.
 
@@ -128,6 +128,6 @@ The expected answer is:
 
 ## Answer Reference
 
-The task uses the same released fixture as
-[LT-SQL-003](lt-sql-003-month-end-serving-result.md), plus the focused control
-query above.
+Use the focused control query, expected output table, and expected
+end-challenge answer on this page as the complete reference for checking your
+work.

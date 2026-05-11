@@ -52,9 +52,9 @@ work that happens in those browser tools.
 - [Learner Tasks](learner-tasks/README.md): focused 15-20 minute browser-first
   exercise units with checkpoints and CTF-style endings.
 - Browser SQL workbench:
-  `#/workbench/deposits-seed/v0.1.0` and
-  `#/workbench/lending-month-end/v0.1.0` run tutorial SQL against committed
-  synthetic datasets without opening a graded challenge.
+  [deposits seed](#/workbench/deposits-seed/v0.1.0) and
+  [lending month-end](#/workbench/lending-month-end/v0.1.0) run tutorial SQL
+  against committed synthetic datasets without opening a graded challenge.
 - [Looker Studio Recipes](recipes/r-looker-001-deposits-dashboard.md):
   optional browser-driven report-building follow-ons after the core tutorials.
 - [Quiz Bank](quiz-bank.md): self-check questions grouped by difficulty.

@@ -77,7 +77,7 @@ Create this model contract:
 
 ### Browser-First Path
 
-1. Open `#/workbench/deposits-seed/v0.1.0`.
+1. Open the [deposits seed workbench](#/workbench/deposits-seed/v0.1.0).
 2. Run this source-grain profile:
 
 ```sql

@@ -43,7 +43,7 @@ This material is backed by source notes for the BI, platform, dataset, and regul
 ## Prerequisites
 
 - Complete [LT-BI-001](lt-bi-001-profile-dataset-grain.md).
-- Open `#/workbench/deposits-seed/v0.1.0`.
+- Open the [deposits seed workbench](#/workbench/deposits-seed/v0.1.0).
 - Use this task page as the complete instruction source; the workbench is only
   where you run the SQL.
 
@@ -180,7 +180,6 @@ The expected answer is:
 
 ## Answer Reference
 
-The reviewer reference is
-[`challenges/solution-fixtures/account-owner-fanout/known-good.sql`](../../challenges/solution-fixtures/account-owner-fanout/known-good.sql).
-The intentionally unsafe reference is
-[`challenges/solution-fixtures/account-owner-fanout/known-bad-naive-owner-fanout.sql`](../../challenges/solution-fixtures/account-owner-fanout/known-bad-naive-owner-fanout.sql).
+Use the unsafe SQL, repaired SQL, expected output table, and expected
+end-challenge answer on this page as the complete reference for checking your
+work.

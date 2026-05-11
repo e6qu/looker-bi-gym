@@ -61,6 +61,7 @@ Task order:
 - [050 - Tutorial Spine Repair Batch 7](050-tutorial-spine-repair-batch-7.md)
 - [051 - Tutorial Spine Repair Batch 8](051-tutorial-spine-repair-batch-8.md)
 - [052 - Orientation Tutorial Self-Contained Fix](052-orientation-tutorial-self-contained-fix.md)
+- [053 - Tutorial Verification Separation Sweep](053-tutorial-verification-separation-sweep.md)
 
 Completion rule:
 

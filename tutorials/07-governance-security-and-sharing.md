@@ -98,7 +98,7 @@ authorized access, and Looker Studio data-source credentials.
 
 ### Browser-First Path
 
-1. Open `#/workbench/deposits-seed/v0.1.0`.
+1. Open the [deposits seed workbench](#/workbench/deposits-seed/v0.1.0).
 2. Classify the fields that could appear in an executive deposit dashboard:
 
 ```sql

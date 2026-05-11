@@ -47,7 +47,7 @@ This material is backed by source notes for the BI, platform, dataset, and regul
 
 - Complete [LT-BI-001](lt-bi-001-profile-dataset-grain.md) and
   [LT-BI-002](lt-bi-002-detect-fanout.md).
-- Open `#/workbench/deposits-seed/v0.1.0`.
+- Open the [deposits seed workbench](#/workbench/deposits-seed/v0.1.0).
 - Treat this as a local evidence-pattern design exercise unless you also
   complete the optional Looker Studio recipe.
 - Use this task page as the complete instruction source; the workbench is only
@@ -114,7 +114,7 @@ Expected control output:
 
 ## Visualization Or Reporting Action
 
-After the browser challenge, follow
+After this task, follow
 [R-LOOKER-001 - Deposits Dashboard Recipe](../recipes/r-looker-001-deposits-dashboard.md)
 if you want to manually reproduce the dashboard shape in Looker Studio. The
 recipe is optional and browser-driven.
@@ -125,7 +125,7 @@ recipe is optional and browser-driven.
   source or upstream view should own reusable metric logic.
 - Using owner credentials casually without documenting who can run the report
   query.
-- Pasting credentials or private data into local challenge evidence.
+- Pasting credentials or private data into local evidence notes.
 
 ## Self-Assessment
 
@@ -144,5 +144,6 @@ The expected answer is:
 
 ## Answer Reference
 
-The released challenge manifest is
-[`challenges/manifests/looker-studio-evidence.yaml`](../../challenges/manifests/looker-studio-evidence.yaml).
+Use the serving-view SQL, expected control output, latest-day total, and
+expected end-challenge answer on this page as the complete reference for
+checking your work.
