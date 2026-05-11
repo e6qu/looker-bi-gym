@@ -51,6 +51,7 @@ Task order:
 - [040 - Learning Surface Verification](040-learning-surface-verification.md)
 - [041 - Curriculum Completeness Audit](041-curriculum-completeness-audit.md)
 - [042 - Tutorial Spine Repair Batch 1](042-tutorial-spine-repair-batch-1.md)
+- [043 - Tutorial Spine Repair Batch 2](043-tutorial-spine-repair-batch-2.md)
 
 Completion rule:
 

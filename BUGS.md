@@ -54,6 +54,17 @@ Last updated: 2026-05-11
     `docs/10-app-quality-browser-qa.md`.
   - Status: open.
 
+- ID: PAGES-E2E-FLAKE-2026-05-11.
+  - Area: GitHub Pages local gate.
+  - Severity: medium.
+  - Description: After PR #28 merged, the first Pages workflow failed once in
+    the local gate because the responsive route sweep timed out waiting for the
+    primary navigation. Main CI had passed the same suite, and a rerun of the
+    failed Pages workflow passed.
+  - Fix plan: If this recurs, harden the rendered UI route sweep around initial
+    navigation readiness or reduce route-sweep flake in the Pages workflow.
+  - Status: monitoring.
+
 - ID: CLAUDE-REVIEW-2026-05-10.
   - Area: phase review gates.
   - Severity: high.
@@ -61,7 +72,8 @@ Last updated: 2026-05-11
     marked complete. Task 034 through Task 040 formal reviews using non-TUI
     `claude --print` hung with no output and were stopped. The Task 041 attempt
     returned `Not logged in · Please run /login`; Task 042 returned the same
-    auth blocker. Codex CLI non-TUI mode works via `codex exec`.
+    auth blocker, as did Task 043. Codex CLI non-TUI mode works via
+    `codex exec`.
   - Fix plan: Retry only with a known-good non-hanging formal review path, or
     use an explicitly accepted alternate formal review process and record the
     result in continuity docs.

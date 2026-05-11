@@ -1,5 +1,49 @@
 # What We Did
 
+## 2026-05-11 - Task 043 Tutorial Spine Repair Batch 2
+
+- Verified PR #28 post-merge state:
+  - PR #28 was squash-merged at `599d64c`.
+  - Main CI passed for `599d64c`.
+  - GitHub Pages workflow initially failed once in the local gate on a
+    Playwright timeout waiting for primary navigation in the responsive route
+    sweep; rerunning the failed workflow passed.
+  - Live Pages URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200
+    with `last-modified: Mon, 11 May 2026 00:46:25 GMT`.
+  - `bun run verify:deployed-surface` passed against the live Pages URL.
+- Created branch `tutorial-spine-repair-batch-2` from verified `main`.
+- Added `_development/tasks/043-tutorial-spine-repair-batch-2.md` and updated
+  the implementation task index.
+- Rewrote `tutorials/02-build-a-bi-friendly-model.md` as a self-contained
+  browser-first model-building lab:
+  - exact source-grain SQL and expected output;
+  - model-join health check for missing branch mapping and raw IBAN fields;
+  - safe latest-day branch/currency serving output with `UNMAPPED_BRANCH`;
+  - latest control total check;
+  - sensitive-field exclusions;
+  - ownership fanout warning;
+  - recovery checks and an end challenge.
+- Updated `docs/17-curriculum-completeness-matrix.md` so T041-TUT-02 is marked
+  first-pass implemented.
+- Verification passed:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run format:check`;
+  - `bun run test:content-qa`;
+  - `bun run validate:static-links`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - stale scan for learner-facing repo/app/source-ID implementation wording in
+    tutorial 02;
+  - `git diff --check`;
+  - `bun run check` after approved local Vite preview binding, with all 12
+    Playwright tests passing.
+- Failed/blocked attempts recorded:
+  - first sandboxed `bun run check` reached Playwright but Vite preview could
+    not bind `127.0.0.1:4173`;
+  - formal Claude CLI review in non-TUI `--print` mode returned
+    `Not logged in · Please run /login`.
+
 ## 2026-05-11 - Task 042 Tutorial Spine Repair Batch 1
 
 - Verified PR #27 post-merge state:
