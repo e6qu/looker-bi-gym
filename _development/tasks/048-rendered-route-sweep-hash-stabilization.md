@@ -1,6 +1,7 @@
 # 048 - Rendered Route Sweep Hash Stabilization
 
-Status: active on branch `rendered-route-sweep-hash-stabilization`.
+Status: merged in PR #34 at `2314c79`; main CI, Pages deployment, live URL,
+and deployed-surface verification passed.
 
 ## Goal
 
@@ -42,3 +43,10 @@ Restore green main CI after PR #33 by stabilizing the rendered route sweep.
   - `git diff --check`;
   - `bun run test:e2e` after approved local Vite preview binding;
   - `bun run check` after approved local Vite preview binding.
+- PR #34 was squash-merged at `2314c79`.
+- Post-merge verification passed:
+  - main CI run `25646930511`;
+  - GitHub Pages workflow run `25646930519`;
+  - live URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
+    `last-modified: Mon, 11 May 2026 02:22:53 GMT`;
+  - `bun run verify:deployed-surface`.

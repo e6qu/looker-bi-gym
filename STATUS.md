@@ -4,15 +4,22 @@ Last updated: 2026-05-11
 
 ## Current Branch And PR
 
-- Current branch: `rendered-route-sweep-hash-stabilization`, based on `main`
-  after PR #33.
+- Current branch: `tutorial-spine-repair-batch-6`, based on verified `main`
+  after PR #34.
 - Current PR: not opened yet.
+- PR #34, `https://github.com/e6qu/looker-bi-gym/pull/34`, is squash-merged
+  at `2314c79`.
+- Main CI for `2314c79` passed:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25646930511`.
+- GitHub Pages workflow for `2314c79` passed:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25646930519`.
+- Live Pages URL verified HTTP 200 on 2026-05-11:
+  `https://e6qu.github.io/looker-bi-gym/`, with
+  `last-modified: Mon, 11 May 2026 02:22:53 GMT`.
+- Deployed learning-surface verifier passed on 2026-05-11:
+  `bun run verify:deployed-surface`.
 - PR #33, `https://github.com/e6qu/looker-bi-gym/pull/33`, is squash-merged
-  at `5636297`, but post-merge main CI failed in rendered UI route-sweep
-  verification:
-  `https://github.com/e6qu/looker-bi-gym/actions/runs/25646609440`.
-- Task 048 hotfix is active to repair main CI before continuing curriculum
-  implementation.
+  at `5636297`; its post-merge main CI route-sweep failure was fixed by PR #34.
 - PR #32, `https://github.com/e6qu/looker-bi-gym/pull/32`, is squash-merged
   at `5cf22e3`.
 - Main CI for `5cf22e3` passed:
@@ -118,7 +125,7 @@ Last updated: 2026-05-11
 
 ## Active Task
 
-Task 048 - Rendered Route Sweep Hash Stabilization.
+Task 049 - Tutorial Spine Repair Batch 6.
 
 Current state:
 
@@ -145,7 +152,40 @@ Current state:
 - PR #33 added Task 047 tutorial 06 repair and was squash-merged, but
   post-merge main CI failed in rendered UI because the mobile route sweep still
   timed out after the viewport split.
-- Started Task 048 on branch `rendered-route-sweep-hash-stabilization`.
+- PR #34 added Task 048 rendered route-sweep hash stabilization and was
+  verified on main, Pages, live URL, and deployed surface.
+- Started Task 049 on branch `tutorial-spine-repair-batch-6`.
+- Added `_development/tasks/049-tutorial-spine-repair-batch-6.md`.
+- Rewrote `tutorials/07-governance-security-and-sharing.md` as a
+  browser-first governance, field minimisation, credential-mode, and
+  sharing-register lab with exact SQL, expected outputs, recovery checks, and an
+  end challenge.
+- Updated `docs/17-curriculum-completeness-matrix.md` to mark T041-TUT-07 as
+  first-pass implemented.
+- Local verification passed:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run format:check`;
+  - `bun run test:content-qa`;
+  - `bun run validate:static-links`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:facts-db`;
+  - `bun run test:quiz-facts-db`;
+  - `bun run test:flashcards`;
+  - `bun run test:platform-boundary`;
+  - stale scan for learner-facing repo/app/source-ID implementation wording in
+    tutorial 07;
+  - `git diff --check`;
+  - `bun run test:e2e` after approved local Vite preview binding, with all 65
+    Playwright tests passing;
+  - `bun run check` after approved local Vite preview binding, with all 65
+    Playwright tests passing.
+- Claude CLI review is blocked: non-TUI
+  `claude --print --permission-mode plan --output-format text ...` produced no
+  output for about 30 seconds and was killed.
+- Task 048 summary:
+  - Started Task 048 on branch `rendered-route-sweep-hash-stabilization`.
 - Added `_development/tasks/048-rendered-route-sweep-hash-stabilization.md`.
 - Split the broad rendered route sweep into one Playwright test per route and
   viewport so each test starts from a fresh page instead of serially navigating
@@ -157,6 +197,8 @@ Current state:
     Playwright tests passing;
   - `bun run check` after approved local Vite preview binding, with all 65
     Playwright tests passing.
+  - PR #34 was squash-merged at `2314c79`, then main CI, Pages, live URL, and
+    `bun run verify:deployed-surface` passed.
 - Task 047 summary:
   - Started Task 047 on branch `tutorial-spine-repair-batch-5`.
   - Added `_development/tasks/047-tutorial-spine-repair-batch-5.md`.

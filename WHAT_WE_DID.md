@@ -1,5 +1,54 @@
 # What We Did
 
+## 2026-05-11 - Task 049 Tutorial Spine Repair Batch 6
+
+- Verified PR #34 post-merge state:
+  - PR #34 was squash-merged at `2314c79`.
+  - Main CI passed for `2314c79`:
+    `https://github.com/e6qu/looker-bi-gym/actions/runs/25646930511`.
+  - GitHub Pages workflow passed for `2314c79`:
+    `https://github.com/e6qu/looker-bi-gym/actions/runs/25646930519`.
+  - Live Pages URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200
+    with `last-modified: Mon, 11 May 2026 02:22:53 GMT`.
+  - `bun run verify:deployed-surface` passed against the live Pages URL.
+- Confirmed no open PRs before starting Task 049.
+- Created branch `tutorial-spine-repair-batch-6` from verified `main`.
+- Added `_development/tasks/049-tutorial-spine-repair-batch-6.md` and updated
+  the implementation task index.
+- Rewrote `tutorials/07-governance-security-and-sharing.md` as a
+  browser-first governance, field minimisation, credential-mode, and
+  sharing-register lab:
+  - exact field classification and minimisation checks;
+  - governed branch/currency source output with control total;
+  - credential-mode comparison for Looker Studio sharing;
+  - report sharing register rows;
+  - optional BigQuery authorized-view and Looker Studio UI checks;
+  - recovery checks and an end challenge.
+- Updated `docs/17-curriculum-completeness-matrix.md` so T041-TUT-07 is marked
+  first-pass implemented.
+- Verification passed:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run format:check`;
+  - `bun run test:content-qa`;
+  - `bun run validate:static-links`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:facts-db`;
+  - `bun run test:quiz-facts-db`;
+  - `bun run test:flashcards`;
+  - `bun run test:platform-boundary`;
+  - stale scan for learner-facing repo/app/source-ID implementation wording in
+    tutorial 07;
+  - `git diff --check`;
+  - `bun run test:e2e` after approved local Vite preview binding, with all 65
+    Playwright tests passing;
+  - `bun run check` after approved local Vite preview binding, with all 65
+    Playwright tests passing.
+- Failed/blocked attempts recorded:
+  - formal Claude CLI review in non-TUI `--print` mode produced no output for
+    about 30 seconds and was killed.
+
 ## 2026-05-11 - Task 048 Rendered Route Sweep Hash Stabilization
 
 - PR #33 was squash-merged at `5636297`, but post-merge main CI failed:
@@ -21,6 +70,12 @@
     Playwright tests passing;
   - `bun run check` after approved local Vite preview binding, with all 65
     Playwright tests passing.
+- PR #34 post-merge verification passed:
+  - main CI run `25646930511`;
+  - GitHub Pages workflow run `25646930519`;
+  - live URL returned HTTP 200 with
+    `last-modified: Mon, 11 May 2026 02:22:53 GMT`;
+  - `bun run verify:deployed-surface`.
 
 ## 2026-05-11 - Task 047 Tutorial Spine Repair Batch 5
 
