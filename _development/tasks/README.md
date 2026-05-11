@@ -63,6 +63,7 @@ Task order:
 - [052 - Orientation Tutorial Self-Contained Fix](052-orientation-tutorial-self-contained-fix.md)
 - [053 - Tutorial Verification Separation Sweep](053-tutorial-verification-separation-sweep.md)
 - [054 - Curriculum Self-Reference Remediation](054-curriculum-self-reference-remediation.md)
+- [055 - Looker And BigQuery Corpus Expansion](055-looker-bigquery-corpus-expansion.md)
 
 Completion rule:
 

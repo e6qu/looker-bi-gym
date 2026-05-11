@@ -165,7 +165,7 @@ as a control but unacceptable as a dashboard KPI.
 
 ## End Challenge
 
-Write a one-sentence CTF answer in this form:
+Write a one-sentence final summary in this form:
 
 `latest_as_of=<date>; ron_delta=<time_sum_delta>; non_month_end=<count>; stale_valuations=<count>`
 

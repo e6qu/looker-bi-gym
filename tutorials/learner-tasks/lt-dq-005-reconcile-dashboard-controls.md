@@ -118,7 +118,7 @@ and what a report consumer should do when it is non-zero.
 
 ## End Challenge
 
-Write a one-sentence CTF answer in this form:
+Write a one-sentence final summary in this form:
 
 `snapshot_rows=<count>; latest_rows=<count>; non_month_end=<count>; action=<consumer_action>`
 

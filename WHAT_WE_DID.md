@@ -1,5 +1,60 @@
 # What We Did
 
+## 2026-05-11 - Task 055 Looker And BigQuery Corpus Expansion
+
+- Verified PR #39 post-merge state:
+  - PR #39 was squash-merged at
+    `241e4499dbe1aed43d30d4ec81fc65d7940a894e`.
+  - Main CI passed for `241e449`:
+    `https://github.com/e6qu/looker-bi-gym/actions/runs/25661265061`.
+  - GitHub Pages workflow passed for `241e449`:
+    `https://github.com/e6qu/looker-bi-gym/actions/runs/25661265090`.
+  - Live Pages URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200
+    with `last-modified: Mon, 11 May 2026 09:17:22 GMT`.
+  - `gh pr list --state open --limit 10` returned no open PRs.
+- Created branch `looker-bigquery-corpus-expansion` from verified `main`.
+- Added `_development/tasks/055-looker-bigquery-corpus-expansion.md` and
+  updated the task index.
+- Opened PR #40:
+  `https://github.com/e6qu/looker-bi-gym/pull/40`.
+- Added official source cards and facts for:
+  - BigQuery parameterized queries;
+  - BigQuery query validator and dry-run byte estimates;
+  - Looker Studio controls, field IDs, and parameter input.
+- Added `LT-LOOKER-007 - Design A Control Parameter Handoff`, which validates a
+  `2026-03-31` RON control result of `79300` in the browser workbench and
+  records the applied BigQuery named-parameter pattern.
+- Added five flashcards, three quiz questions, and one exam card for dashboard
+  controls, BigQuery parameters, and pre-run cost checks.
+- Updated tutorial indexes and rendered UI route coverage for the new lab.
+- Updated `bun run verify:deployed-surface` to assert that quiz and exam
+  source/task metadata stays hidden after PR #39.
+- Removed older visible `CTF` phrasing from learner-task summaries.
+- Verification passed:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run format:check`;
+  - `bun run test:content-qa`;
+  - `bun run validate:static-links`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:facts-db`;
+  - `bun run test:flashcards`;
+  - `bun run test:quiz-facts-db`;
+  - `bun run test:platform-boundary`;
+  - stale scans for learner-facing implementation wording, raw metadata
+    headings, challenge-route dependencies in learner tasks, and `CTF` wording;
+  - `git diff --check`;
+  - `bun run verify:deployed-surface`;
+  - `bun run test:e2e` after approved local Vite preview binding, with all 93
+    Playwright tests passing;
+  - `bun run check` after approved local Vite preview binding, with all 93
+    Playwright tests passing.
+- Failed/blocked attempts recorded:
+  - The first post-merge `bun run verify:deployed-surface` attempt failed
+    before Task 055 because the script still expected a raw source fact ID on
+    the quiz page. The script is now updated and passed against the live site.
+
 ## 2026-05-11 - Task 054 Curriculum Self-Reference Remediation
 
 - Tried the requested Claude CLI second opinion:

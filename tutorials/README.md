@@ -35,10 +35,11 @@ After this index, you will be able to:
 3. [Detect Fanout Before Reporting](learner-tasks/lt-bi-002-detect-fanout.md)
 4. [Build A Month-End Serving Result](learner-tasks/lt-sql-003-month-end-serving-result.md)
 5. [Prepare A Report-Ready Data Source](learner-tasks/lt-looker-004-report-ready-data-source.md)
-6. [Reconcile Dashboard Controls](learner-tasks/lt-dq-005-reconcile-dashboard-controls.md)
-7. [Define A Ratio Null Contract](learner-tasks/lt-dq-006-ratio-null-contract.md)
-8. [Quiz Bank](quiz-bank.md)
-9. [Exam Mode](exam-mode.md)
+6. [Design A Control Parameter Handoff](learner-tasks/lt-looker-007-control-parameter-handoff.md)
+7. [Reconcile Dashboard Controls](learner-tasks/lt-dq-005-reconcile-dashboard-controls.md)
+8. [Define A Ratio Null Contract](learner-tasks/lt-dq-006-ratio-null-contract.md)
+9. [Quiz Bank](quiz-bank.md)
+10. [Exam Mode](exam-mode.md)
 
 The path above is the core sequence. It runs in the browser, stores progress
 locally, and uses synthetic datasets. The numbered 01-09 tutorials below are

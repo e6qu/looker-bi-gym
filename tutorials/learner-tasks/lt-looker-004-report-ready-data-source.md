@@ -134,7 +134,7 @@ adds between the source query and chart fields.
 
 ## End Challenge
 
-Write a one-sentence CTF answer in this form:
+Write a one-sentence final summary in this form:
 
 `view=<view_name>; total=<latest_visible_total>; credential_boundary=<yes/no>; reusable_logic_layer=<layer>`
 

@@ -129,7 +129,7 @@ FROM fanout_proof;
 
 ## Visualization Or Reporting Action
 
-Run this chart query after the CTF query:
+Run this chart query after the fanout-control query:
 
 ```sql
 WITH latest_balances AS (
@@ -170,7 +170,7 @@ the balance measure and name the CTE where the duplication is isolated.
 
 ## End Challenge
 
-Write a one-sentence CTF answer in this form:
+Write a one-sentence final summary in this form:
 
 `correct=<correct_ledger_total>; naive=<naive_joined_total>; delta=<fanout_delta>; pct=<overstatement_pct>`
 

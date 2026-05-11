@@ -152,6 +152,36 @@
             "explanation": "Dashboard handoffs should state the freshness need and its performance, cost, and quota tradeoffs. Report refresh timing must stay separate from source business reference dates.\n",
             "self_assessment": "Review report-ready data source setup if freshness, source update timing, and business reference date are being treated as one field.\n",
           },
+          {
+            "id": "q-easy-control-field",
+            "type": "multiple_choice",
+            "estimated_seconds": 75,
+            "recommended_learner_tasks": ["LT-LOOKER-007"],
+            "source_facts":
+              [
+                "FACT-LOOKER-STUDIO-CONTROLS-FILTER-DATA",
+                "FACT-LOOKER-STUDIO-CONTROL-FIELD-ID",
+              ],
+            "prompt": "A dashboard has a Currency list control. What should the control contract name?\n",
+            "options":
+              [
+                {
+                  "id": "stable_field",
+                  "label": "The stable data-source field, allowed values, default value, and affected charts.",
+                },
+                {
+                  "id": "display_color",
+                  "label": "Only the control's display color and screen position.",
+                },
+                {
+                  "id": "raw_identifier",
+                  "label": "A private account identifier to make filtering more precise.",
+                },
+              ],
+            "answer": "stable_field",
+            "explanation": "A useful control contract names the filter field, allowed values, default value, and report elements affected by the filter. The field should be part of the report-ready data source.\n",
+            "self_assessment": "Review control handoff design if a dashboard filter cannot be tied to a governed field.\n",
+          },
         ],
       "medium":
         [
@@ -269,6 +299,37 @@
             "answer": "qualify_window_rank",
             "explanation": "QUALIFY can filter window-function results after ranking rows. Ranking within partitions before filtering preserves the intended latest-row selection logic.\n",
             "self_assessment": "Review month-end serving SQL if latest snapshot logic depends on chart sorting rather than query output.\n",
+          },
+          {
+            "id": "q-medium-bigquery-parameter",
+            "type": "multiple_choice",
+            "estimated_seconds": 90,
+            "recommended_learner_tasks": ["LT-LOOKER-007"],
+            "source_facts":
+              [
+                "FACT-BIGQUERY-PARAMETERIZED-QUERY-USER-INPUT",
+                "FACT-BIGQUERY-PARAMETER-NOT-IDENTIFIER",
+                "FACT-LOOKER-STUDIO-CONTROL-PARAMETER-INPUT",
+              ],
+            "prompt": "A report control passes a selected currency into a BigQuery-backed source. Which SQL pattern is appropriate?\n",
+            "options":
+              [
+                {
+                  "id": "named_value_parameter",
+                  "label": "Use a named value parameter such as `currency_code = @selected_currency`.",
+                },
+                {
+                  "id": "concat_table_name",
+                  "label": "Concatenate the selected currency into a table name.",
+                },
+                {
+                  "id": "paste_sql_fragment",
+                  "label": "Let the control provide a SQL fragment for the WHERE clause.",
+                },
+              ],
+            "answer": "named_value_parameter",
+            "explanation": "A selected currency is a value and fits a named parameter predicate. SQL identifiers and query structure should stay in governed serving logic.\n",
+            "self_assessment": "Review control handoff design if a filter value and a SQL object name feel interchangeable.\n",
           },
         ],
       "hard":
@@ -400,6 +461,42 @@
             "answer": ["refresh_cost_note", "job_bytes", "job_creation_time"],
             "explanation": "Looker Studio refreshes can trigger usual BigQuery query costs. Job bytes processed and job creation time provide observable evidence for cost and timing review.\n",
             "self_assessment": "Review dashboard-control reconciliation if your operations note cannot connect refresh settings to observable BigQuery job evidence.\n",
+          },
+          {
+            "id": "q-hard-control-cost-review",
+            "type": "select_all",
+            "estimated_seconds": 120,
+            "recommended_learner_tasks": ["LT-LOOKER-007", "LT-DQ-005"],
+            "source_facts":
+              [
+                "FACT-BIGQUERY-DRY-RUN-BYTES",
+                "FACT-BIGQUERY-QUERY-VALIDATOR-BYTES",
+                "FACT-LOOKER-STUDIO-BIGQUERY-REFRESH-COST",
+                "FACT-LOOKER-STUDIO-CONTROLS-FILTER-DATA",
+              ],
+            "prompt": "Before publishing a BigQuery-backed dashboard page with currency and date controls, which checks belong in the review?\n",
+            "options":
+              [
+                {
+                  "id": "byte_estimate",
+                  "label": "Pre-run byte estimate or dry-run evidence for the serving query.",
+                },
+                {
+                  "id": "control_scope",
+                  "label": "The control fields, allowed values, default values, and affected charts.",
+                },
+                {
+                  "id": "refresh_cost",
+                  "label": "A note that report refreshes can create BigQuery query cost.",
+                },
+                {
+                  "id": "raw_private_rows",
+                  "label": "A pasted sample of raw private customer rows.",
+                },
+              ],
+            "answer": ["byte_estimate", "control_scope", "refresh_cost"],
+            "explanation": "The review should connect control behavior to governed fields and cost evidence. Raw private rows are unnecessary for validating the dashboard contract.\n",
+            "self_assessment": "Review control handoff design if a dashboard can be published without a field contract and a pre-run cost check.\n",
           },
         ],
     },
