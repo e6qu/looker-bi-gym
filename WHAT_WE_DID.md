@@ -1,5 +1,55 @@
 # What We Did
 
+## 2026-05-11 - Task 050 Tutorial Spine Repair Batch 7
+
+- Verified PR #35 post-merge state:
+  - PR #35 was squash-merged at `bfbc615`.
+  - Main CI passed for `bfbc615`:
+    `https://github.com/e6qu/looker-bi-gym/actions/runs/25647384499`.
+  - GitHub Pages workflow passed for `bfbc615`:
+    `https://github.com/e6qu/looker-bi-gym/actions/runs/25647384526`.
+  - Live Pages URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200
+    with `last-modified: Mon, 11 May 2026 02:39:45 GMT`.
+  - `bun run verify:deployed-surface` passed against the live Pages URL.
+- Confirmed no open PRs before starting Task 050.
+- Created branch `tutorial-spine-repair-batch-7` from verified `main`.
+- Added `_development/tasks/050-tutorial-spine-repair-batch-7.md` and updated
+  the implementation task index.
+- Rewrote `tutorials/08-observability-and-operations.md` as a
+  browser-first operations lab:
+  - dependency register with owners and controls;
+  - freshness SLA check;
+  - simulated job-byte evidence;
+  - reconciliation control;
+  - operational event triage;
+  - reference-date validation evidence;
+  - optional BigQuery job metadata and Looker Studio freshness checks;
+  - recovery checks and an end challenge.
+- Updated `docs/17-curriculum-completeness-matrix.md` so T041-TUT-08 is marked
+  first-pass implemented.
+- Verification passed:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run format:check`;
+  - `bun run test:content-qa`;
+  - `bun run validate:static-links`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - `bun run test:facts-db`;
+  - `bun run test:quiz-facts-db`;
+  - `bun run test:flashcards`;
+  - `bun run test:platform-boundary`;
+  - stale scan for learner-facing repo/app/source-ID implementation wording in
+    tutorial 08;
+  - `git diff --check`;
+  - `bun run test:e2e` after approved local Vite preview binding, with all 65
+    Playwright tests passing;
+  - `bun run check` after approved local Vite preview binding, with all 65
+    Playwright tests passing.
+- Failed/blocked attempts recorded:
+  - formal Claude CLI review in non-TUI `--print` mode produced no output for
+    about 30 seconds and was killed.
+
 ## 2026-05-11 - Task 049 Tutorial Spine Repair Batch 6
 
 - Verified PR #34 post-merge state:
