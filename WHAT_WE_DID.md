@@ -1,5 +1,48 @@
 # What We Did
 
+## 2026-05-11 - Task 042 Tutorial Spine Repair Batch 1
+
+- Verified PR #27 post-merge state:
+  - PR #27 was squash-merged at `040969c`.
+  - Main CI passed for `040969c`.
+  - GitHub Pages workflow passed for `040969c`.
+  - Live Pages URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200
+    with `last-modified: Mon, 11 May 2026 00:29:32 GMT`.
+  - `bun run verify:deployed-surface` passed against the live Pages URL.
+- Confirmed no open PRs before starting Task 042.
+- Created branch `tutorial-spine-repair-batch-1` from verified `main`.
+- Added `_development/tasks/042-tutorial-spine-repair-batch-1.md` and updated
+  the implementation task index.
+- Rewrote `tutorials/03-first-executive-dashboard.md` as a self-contained
+  browser-first dashboard-spec tutorial:
+  - exact dashboard source SQL;
+  - expected six-row source output;
+  - KPI, trend, and latest currency-breakdown checks;
+  - freshness label;
+  - exposed/excluded field lists;
+  - optional BigQuery and Looker Studio browser-UI paths;
+  - recovery checks and an end challenge.
+- Updated `docs/17-curriculum-completeness-matrix.md` so T041-TUT-03 is marked
+  first-pass implemented, with optional UI verification still open.
+- Verification passed so far:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run format:check`;
+  - `bun run test:content-qa`;
+  - `bun run validate:static-links`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - stale scan for learner-facing repo/app/source-ID implementation wording in
+    tutorial 03;
+  - `git diff --check`;
+  - `bun run check` after approved local Vite preview binding, with all 12
+    Playwright tests passing.
+- Failed/blocked attempts recorded:
+  - first sandboxed `bun run check` reached Playwright but Vite preview could
+    not bind `127.0.0.1:4173`;
+  - formal Claude CLI review in non-TUI `--print` mode returned
+    `Not logged in · Please run /login`.
+
 ## 2026-05-11 - Task 041 Curriculum Completeness Audit Start
 
 - Verified PR #26 post-merge state:
