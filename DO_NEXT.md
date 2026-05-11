@@ -11,9 +11,9 @@
    gh pr list --state open --limit 10
    ```
 
-3. Continue Task 042 on branch `tutorial-spine-repair-batch-1`; no PR is open
+3. Continue Task 043 on branch `tutorial-spine-repair-batch-2`; no PR is open
    yet.
-4. Next useful implementation step: commit Task 042, push, open a PR, watch CI,
+4. Next useful implementation step: commit Task 043, push, open a PR, watch CI,
    and squash-merge if CI passes.
 5. If updating this branch before PR creation or after rebasing, rerun:
 
@@ -58,7 +58,9 @@ Task 040 learning surface verification is merged, main-verified,
 Pages-verified, and live deployed-surface verified, but not Claude-reviewed.
 Task 041 curriculum completeness audit is merged, main-verified,
 Pages-verified, and live deployed-surface verified, but not Claude-reviewed.
-Task 042 tutorial spine repair batch 1 is active.
+Task 042 tutorial spine repair batch 1 is merged, main-verified,
+Pages-verified after one workflow rerun, and live deployed-surface verified,
+but not Claude-reviewed. Task 043 tutorial spine repair batch 2 is active.
 
 `PLAN.md` Phase 9 now defines the required gate for any claim that tutorials,
 questions, exams, or flashcards are complete, comprehensive, reality-verified,
@@ -72,11 +74,11 @@ claude --print --permission-mode plan --output-format text "<phase-specific revi
 
 The latest Task 041 formal Claude CLI review ran in non-TUI mode but returned
 `Not logged in · Please run /login`; Task 042 returned the same auth blocker.
-The previous Task 040 review hung with no output and was killed. Codex CLI
-non-TUI mode works via `codex exec`; Claude CLI formal review does not
-currently complete. Do not mark Phase 2, Phase 3, Phase 4, Phase 5, Phase 6,
-Phase 7, or Phase 9 complete until a completed formal review is available and
-recorded.
+Task 043 returned the same auth blocker. The previous Task 040 review hung with
+no output and was killed. Codex CLI non-TUI mode works via `codex exec`; Claude
+CLI formal review does not currently complete. Do not mark Phase 2, Phase 3,
+Phase 4, Phase 5, Phase 6, Phase 7, or Phase 9 complete until a completed
+formal review is available and recorded.
 
 ## PR Discipline
 

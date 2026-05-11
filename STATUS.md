@@ -4,8 +4,18 @@ Last updated: 2026-05-11
 
 ## Current Branch And PR
 
-- Current branch: `tutorial-spine-repair-batch-1`, based on verified `main`.
+- Current branch: `tutorial-spine-repair-batch-2`, based on verified `main`.
 - Current PR: not opened yet.
+- PR #28, `https://github.com/e6qu/looker-bi-gym/pull/28`, is squash-merged
+  at `599d64c`.
+- Main CI for `599d64c` passed:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25644340651`.
+- GitHub Pages workflow for `599d64c` passed on rerun:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25644340650`.
+- Live Pages URL verified HTTP 200 on 2026-05-11:
+  `https://e6qu.github.io/looker-bi-gym/`.
+- Deployed learning-surface verifier passed on 2026-05-11:
+  `bun run verify:deployed-surface`.
 - PR #27, `https://github.com/e6qu/looker-bi-gym/pull/27`, is squash-merged
   at `040969c`.
 - Main CI for `040969c` passed:
@@ -61,7 +71,7 @@ Last updated: 2026-05-11
 
 ## Active Task
 
-Task 042 - Tutorial Spine Repair Batch 1.
+Task 043 - Tutorial Spine Repair Batch 2.
 
 Current state:
 
@@ -74,16 +84,16 @@ Current state:
   Pages, live URL, and deployed surface.
 - PR #27 added Task 041 curriculum completeness audit work and was verified on
   main, Pages, live URL, and deployed surface.
-- Started Task 042 on branch `tutorial-spine-repair-batch-1`.
-- Added `_development/tasks/042-tutorial-spine-repair-batch-1.md`.
-- Rewrote `tutorials/03-first-executive-dashboard.md` so it no longer depends
-  on an assumed existing Looker Studio report. The browser-first path now has
-  exact SQL, expected KPI values, trend values, latest currency breakdown,
-  freshness label, chart specification, sensitive-field exclusions, recovery
-  checks, and an end challenge.
-- Updated `docs/17-curriculum-completeness-matrix.md` to mark T041-TUT-03 as
-  first-pass implemented, with optional BigQuery/Looker Studio UI verification
-  still open.
+- PR #28 added Task 042 tutorial 03 repair and was verified on main, Pages, live
+  URL, and deployed surface after a Pages workflow rerun.
+- Started Task 043 on branch `tutorial-spine-repair-batch-2`.
+- Added `_development/tasks/043-tutorial-spine-repair-batch-2.md`.
+- Rewrote `tutorials/02-build-a-bi-friendly-model.md` as a browser-first
+  model-building lab with exact source-grain SQL, model-join health check, safe
+  latest-day serving output, control total, sensitive-field exclusions,
+  recovery checks, and an end challenge.
+- Updated `docs/17-curriculum-completeness-matrix.md` to mark T041-TUT-02 as
+  first-pass implemented.
 
 Task 040 summary:
 
@@ -101,10 +111,10 @@ Task 040 summary:
 - Claude CLI formal review remains blocked. The Task 041 formal review attempt
   used non-TUI `claude --print --permission-mode plan --output-format text ...`
   and returned `Not logged in · Please run /login`; the Task 042 attempt
-  returned the same auth blocker. Task 040 hung with no output for about one
-  minute and was killed; Tasks 034-039 also had formal Claude review attempts
-  hang with no output. Do not mark any phase complete until a completed formal
-  review is recorded.
+  returned the same auth blocker, as did Task 043. Task 040 hung with no output
+  for about one minute and was killed; Tasks 034-039 also had formal Claude
+  review attempts hang with no output. Do not mark any phase complete until a
+  completed formal review is recorded.
 - Codex CLI non-TUI mode works: `codex -a never exec --ephemeral --sandbox
 read-only --json "Reply exactly: codex-cli-ok"` returned `codex-cli-ok`.
 - Safari second-browser verification remains open until Safari remote
@@ -183,6 +193,17 @@ PR #27 post-merge verification passed on 2026-05-11:
   `last-modified: Mon, 11 May 2026 00:29:32 GMT`.
 - `bun run verify:deployed-surface` passed against the live Pages URL.
 
+PR #28 post-merge verification passed on 2026-05-11:
+
+- PR #28 was squash-merged at `599d64c`.
+- `gh run watch 25644340651` showed main CI success for `599d64c`.
+- The first Pages run `25644340650` failed once in the local gate on a
+  Playwright timeout waiting for primary navigation in the responsive route
+  sweep; `gh run rerun 25644340650 --failed` passed.
+- `curl -L -I https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
+  `last-modified: Mon, 11 May 2026 00:46:25 GMT`.
+- `bun run verify:deployed-surface` passed against the live Pages URL.
+
 Task 040 local verification passed on 2026-05-11:
 
 - `bun run content:check`
@@ -244,6 +265,26 @@ Task 042 blocked review:
 
 - Claude CLI formal review in non-TUI `--print` mode returned
   `Not logged in · Please run /login`; Task 042 is not Claude-reviewed.
+
+Task 043 local verification passed on 2026-05-11:
+
+- `bun run content:generate`
+- `bun run content:check`
+- `bun run format:check`
+- `bun run test:content-qa`
+- `bun run validate:static-links`
+- `bun run typecheck`
+- `bun run lint`
+- stale scan for learner-facing repo/app/source-ID implementation wording in
+  tutorial 02
+- `git diff --check`
+- `bun run check` after approved local Vite preview binding, with all 12
+  Playwright tests passing
+
+Task 043 blocked review:
+
+- Claude CLI formal review in non-TUI `--print` mode returned
+  `Not logged in · Please run /login`; Task 043 is not Claude-reviewed.
 
 Task 036 local verification passed on 2026-05-10:
 
