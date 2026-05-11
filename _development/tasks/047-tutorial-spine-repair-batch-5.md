@@ -1,6 +1,7 @@
 # 047 - Tutorial Spine Repair Batch 5
 
-Status: active on branch `tutorial-spine-repair-batch-5`.
+Status: merged in PR #33 at `5636297`; post-merge main CI failed and Task 048
+is active to repair it. Implemented but not Claude-reviewed.
 
 ## Goal
 
@@ -75,6 +76,9 @@ making completeness claims.
   - `bun run check` after approved local Vite preview binding.
 - PR #33 first CI run failed on the broad rendered route sweep timeout before
   the viewport split; local verification passed after the split.
+- PR #33 was squash-merged at `5636297`, but post-merge main CI run
+  `25646609440` failed in rendered UI after the mobile route sweep timed out.
+  Task 048 is the follow-up hotfix.
 - Claude CLI review is blocked: non-TUI
   `claude --print --permission-mode plan --output-format text ...` produced no
   output for about 40 seconds and was killed.

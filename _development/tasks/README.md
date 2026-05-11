@@ -56,6 +56,7 @@ Task order:
 - [045 - Rendered Route Sweep Stabilization](045-rendered-route-sweep-stabilization.md)
 - [046 - Tutorial Spine Repair Batch 4](046-tutorial-spine-repair-batch-4.md)
 - [047 - Tutorial Spine Repair Batch 5](047-tutorial-spine-repair-batch-5.md)
+- [048 - Rendered Route Sweep Hash Stabilization](048-rendered-route-sweep-hash-stabilization.md)
 
 Completion rule:
 
