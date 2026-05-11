@@ -246,6 +246,36 @@ test.describe("rendered UI", () => {
     ).toBeVisible();
   });
 
+  test("orientation tutorial keeps the verification quiz separate and linked", async ({
+    page,
+  }) => {
+    await page.goto("/#/tutorials/00-orientation-and-stack.md", {
+      waitUntil: "domcontentloaded",
+    });
+
+    await expect(
+      page.getByRole("heading", { level: 2, name: "Separate Verification" }),
+    ).toBeVisible();
+    await expect(page.getByRole("main")).not.toContainText(
+      "Open #/challenges/orientation-quiz",
+    );
+    await expect(page.getByRole("main")).not.toContainText(
+      "Complete the browser quiz",
+    );
+
+    const quizLink = page.getByRole("link", {
+      name: "Start the separate orientation quiz",
+    });
+
+    await expect(quizLink).toHaveAttribute(
+      "href",
+      /#\/challenges\/orientation-quiz$/u,
+    );
+    await expect(
+      page.locator("code").filter({ hasText: "#/challenges/orientation-quiz" }),
+    ).toHaveCount(0);
+  });
+
   test("quiz, exam, and fact graph surfaces render source-backed learning content", async ({
     page,
   }) => {

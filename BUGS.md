@@ -4,6 +4,18 @@ Last updated: 2026-05-11
 
 ## Open Issues
 
+- ID: ORIENTATION-TUTORIAL-QUIZ-LINK-2026-05-11.
+  - Area: tutorial 00 and orientation quiz.
+  - Severity: medium.
+  - Description: The first tutorial used the orientation quiz as the tutorial
+    step and deliverable, and rendered `#/challenges/orientation-quiz` as inline
+    code instead of a clickable verification link.
+  - Fix plan: Task 052 rewrites tutorial 00 as a self-contained orientation
+    decision log, keeps the quiz as separate verification, rewrites the quiz
+    prompts as scenario checks, and adds rendered UI regression coverage.
+  - Status: fixed locally on branch `orientation-tutorial-self-contained-fix`;
+    pending PR, CI, merge, Pages, and live verification.
+
 - ID: CONTENT-QUALITY-2026-05-10.
   - Area: tutorials, quizzes, exams, flashcards, and facts.
   - Severity: medium.

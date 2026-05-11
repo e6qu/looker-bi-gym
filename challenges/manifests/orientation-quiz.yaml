@@ -6,7 +6,7 @@ mode: quiz
 difficulty: intro
 estimated_minutes: 10
 prerequisites: []
-business_scenario: Confirm the training boundary before working with synthetic Romanian banking BI examples.
+business_scenario: Verify the starting BI boundaries before working with synthetic Romanian banking examples.
 regulatory_context:
   - BNR
   - FGDB
@@ -15,7 +15,7 @@ required_tools: none
 inputs:
   - id: platform_notes
     type: markdown
-    description: Existing docs, regulations, and tutorials rendered in the static app.
+    description: Orientation material, regulation notes, and synthetic-data guidance available on this site.
     path: docs/README.md
 outputs:
   - id: quiz_answers
@@ -47,36 +47,36 @@ checks:
     expected: 100000
 lesson_steps:
   - id: identify_bigquery_view_contract
-    title: Identify the serving-view contract
-    instruction: Read the BigQuery view facts and identify the object that stores reusable SQL as a virtual table for dashboard serving.
-    expected_result: You can state that a BigQuery logical view is SQL-defined and queried like a table.
-    why_it_matters: Banking BI tutorials need governed serving models before dashboard charts.
-    failure_mode: Treating an ad hoc chart calculation as the governed source leaves metric logic duplicated across reports.
+    title: Verify the serving-view contract
+    instruction: Choose the BigQuery object that would keep tested SQL reusable for a dashboard source.
+    expected_result: You choose the SQL-defined virtual table, not a spreadsheet or mutable dashboard staging table.
+    why_it_matters: Banking BI dashboards need governed serving models before charts reuse the metrics.
+    failure_mode: Treating a chart calculation as the governed source duplicates metric logic across reports.
     source_facts:
       - FACT-BIGQUERY-LOGICAL-VIEW
       - FACT-BIGQUERY-VIEW-SCOPE
   - id: identify_looker_data_source
-    title: Identify the Looker Studio data-source layer
-    instruction: Review the Looker Studio data-source concept and identify what layer provides report charts with fields and connection behavior.
-    expected_result: You can state that a data source is the conduit and schema layer between external data and charts.
+    title: Verify the Looker Studio source layer
+    instruction: Choose the layer a reviewer should inspect before trusting chart fields and aggregation behavior.
+    expected_result: You choose the data source as the conduit and schema layer between external data and charts.
     why_it_matters: Banking dashboards should inspect field definitions, aggregation defaults, and credentials before chart building.
-    failure_mode: Building directly from fields without checking the data-source layer can hide wrong aggregation or access behavior.
+    failure_mode: Building directly from fields without checking the data source can hide wrong aggregation or access behavior.
     source_facts:
       - FACT-LOOKER-STUDIO-DATA-SOURCE
       - FACT-LOOKER-STUDIO-DIMENSIONS-METRICS
   - id: apply_data_minimisation
-    title: Apply data minimisation to outputs
-    instruction: Review the seed dataset sensitive fields and choose which raw identifiers do not belong in BI serving outputs.
-    expected_result: The selected fields are account_id, customer_id, and synthetic_iban.
+    title: Verify data minimisation in an output field list
+    instruction: Select the fields that should not appear in a routine branch-level dashboard source.
+    expected_result: You select account_id, customer_id, and synthetic_iban.
     why_it_matters: GDPR data minimisation is the fact-backed reason to reject unnecessary identifiers in dashboard-ready results.
     failure_mode: Exposing raw identifiers because the data is synthetic trains the wrong production habit.
     source_facts:
       - FACT-GDPR-PERSONAL-DATA
       - FACT-GDPR-DATA-MINIMISATION
   - id: identify_deposit_ceiling
-    title: Identify the deposit guarantee ceiling
-    instruction: Use the FGDB/EU guarantee context to answer the standard deposit guarantee amount before later depositor-bank grain exercises.
-    expected_result: The standard ceiling is EUR 100,000.
+    title: Verify the guarantee reference amount
+    instruction: Enter the standard EUR amount a dashboard note should use before later depositor-bank grain exercises.
+    expected_result: You enter 100000.
     why_it_matters: Deposit-guarantee exercises need depositor-bank grain and precise amount/currency wording.
     failure_mode: Confusing account balance totals with depositor-bank compensation coverage creates wrong BI semantics.
     source_facts:
@@ -85,7 +85,7 @@ lesson_steps:
 questions:
   - id: q_bigquery_logical_view
     type: multiple-choice
-    prompt: What is a BigQuery logical view?
+    prompt: A BI team needs one governed BigQuery object that stores tested SQL and can be queried by dashboards like a table. Which object fits that need?
     options:
       - id: sql_defined_virtual_table
         label: A virtual table defined by a SQL query.
@@ -99,7 +99,7 @@ questions:
       - FACT-BIGQUERY-LOGICAL-VIEW
   - id: q_looker_data_source
     type: multiple-choice
-    prompt: What role does a Looker Studio data source play?
+    prompt: Before trusting a Looker Studio report, which layer should a BI reviewer inspect for fields, aggregation behavior, and connection settings?
     options:
       - id: conduit_schema
         label: It connects external data to charts and provides the report field schema.
@@ -113,7 +113,7 @@ questions:
       - FACT-LOOKER-STUDIO-DATA-SOURCE
   - id: q_data_minimisation
     type: select-all
-    prompt: Which seed fields should be excluded from a dashboard serving output unless there is a specific purpose?
+    prompt: A branch-level balance dashboard source is being prepared for routine review. Which fields should be removed unless there is a specific approved purpose?
     options:
       - id: account_id
         label: account_id
@@ -133,7 +133,7 @@ questions:
       - FACT-GDPR-DATA-MINIMISATION
   - id: q_deposit_guarantee_amount
     type: numeric
-    prompt: What is the standard deposit-guarantee ceiling amount in EUR for this EU/Romanian context?
+    prompt: A dashboard annotation references the standard deposit-guarantee ceiling before any legal review. What EUR amount should the annotation use in this course context?
     answer: 100000
     tolerance: 0
     explanation: The standard ceiling used in the later grain exercises is EUR 100,000.

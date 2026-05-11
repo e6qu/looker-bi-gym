@@ -116,6 +116,10 @@ Review gates before this phase can be called complete:
   outcomes.
 - Challenges must have deterministic outputs, known-good fixtures, and
   known-bad trap coverage where relevant.
+- Quizzes and challenges are separate verification surfaces. Tutorial steps
+  must not depend on completing a quiz, and quiz questions should verify the
+  same competencies with distinct scenario prompts rather than duplicating the
+  tutorial worksheet.
 - Keep the first pass mechanics-first for a data analyst moving into BI and
   banking.
 - Learner-facing questions, flashcards, challenge prompts, and exam cards must

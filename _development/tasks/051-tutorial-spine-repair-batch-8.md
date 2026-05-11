@@ -1,7 +1,7 @@
 # 051 - Tutorial Spine Repair Batch 8
 
-Status: locally verified on branch `tutorial-spine-repair-batch-8`;
-implemented but not Claude-reviewed.
+Status: merged in PR #37 at `cf6d2bc`; deployed and main-verified; implemented
+but not Claude-reviewed.
 
 ## Goal
 
@@ -81,3 +81,11 @@ assessments or making completeness claims.
 - Claude CLI review is blocked: non-TUI
   `claude --print --permission-mode plan --output-format text ...` produced no
   output for about 30 seconds and was killed.
+- PR #37 was squash-merged at `cf6d2bc`.
+- Main CI passed for `cf6d2bc`:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25648126551`.
+- GitHub Pages workflow passed for `cf6d2bc`:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25648126549`.
+- Live Pages URL returned HTTP 200 with
+  `last-modified: Mon, 11 May 2026 03:08:05 GMT`.
+- `bun run verify:deployed-surface` passed against the live Pages URL.
