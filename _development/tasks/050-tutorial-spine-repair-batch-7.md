@@ -1,7 +1,7 @@
-# 049 - Tutorial Spine Repair Batch 6
+# 050 - Tutorial Spine Repair Batch 7
 
-Status: merged in PR #35 at `bfbc615`; main CI, Pages deployment, live URL, and
-deployed-surface verification passed. Implemented but not Claude-reviewed.
+Status: locally verified on branch `tutorial-spine-repair-batch-7`;
+implemented but not Claude-reviewed.
 
 ## Goal
 
@@ -10,23 +10,24 @@ making completeness claims.
 
 ## Scope
 
-- Rewrite `tutorials/07-governance-security-and-sharing.md`, because Task 041
-  identified it as needing practical sharing and credential-mode scenarios with
-  BI-only privacy framing and no credential collection.
+- Rewrite `tutorials/08-observability-and-operations.md`, because Task 041
+  identified it as needing a runnable freshness, bytes, owner, incident, and
+  reconciliation walkthrough.
 - Make the required path browser-first and self-contained, with exact SQL,
-  expected outputs, field minimisation checks, governed source controls,
-  credential-mode decisions, sharing-register rows, and recovery paths.
+  expected outputs, dependency register, freshness check, simulated job-byte
+  evidence, reconciliation control, incident triage, validation evidence, and
+  recovery paths.
 - Keep optional cloud work out of the required path.
 - Update the Task 041 matrix and continuity docs.
-- Record PR #34 post-merge verification while opening this follow-on PR.
+- Record PR #35 post-merge verification while opening this follow-on PR.
 
 ## Deliverables
 
-- Self-contained tutorial 07 first-pass rewrite.
+- Self-contained tutorial 08 first-pass rewrite.
 - Updated tutorial-spine rewrite ticket status.
 - Explicit remaining gap for optional BigQuery and Looker Studio UI
   verification.
-- Continuity notes recording PR #34 main, Pages, live URL, and deployed-surface
+- Continuity notes recording PR #35 main, Pages, live URL, and deployed-surface
   verification.
 
 ## Verification
@@ -55,11 +56,11 @@ making completeness claims.
 
 ## Progress Notes
 
-- Added the Task 049 file and task index entry.
-- Rewrote `tutorials/07-governance-security-and-sharing.md` as a
-  browser-first governance, field minimisation, credential-mode, and
-  sharing-register lab with deterministic SQL and expected outputs.
-- Updated the Task 041 matrix to mark T041-TUT-07 as first-pass implemented.
+- Added the Task 050 file and task index entry.
+- Rewrote `tutorials/08-observability-and-operations.md` as a browser-first
+  operations lab with dependency, freshness, job-byte, reconciliation,
+  incident, validation, and daily handoff evidence.
+- Updated the Task 041 matrix to mark T041-TUT-08 as first-pass implemented.
 - Local verification passed:
   - `bun run content:generate`;
   - `bun run content:check`;
@@ -73,17 +74,10 @@ making completeness claims.
   - `bun run test:flashcards`;
   - `bun run test:platform-boundary`;
   - stale scan for learner-facing repo/app/source-ID implementation wording in
-    tutorial 07;
+    tutorial 08;
   - `git diff --check`;
   - `bun run test:e2e` after approved local Vite preview binding;
   - `bun run check` after approved local Vite preview binding.
 - Claude CLI review is blocked: non-TUI
   `claude --print --permission-mode plan --output-format text ...` produced no
   output for about 30 seconds and was killed.
-- PR #35 was squash-merged at `bfbc615`.
-- Post-merge verification passed:
-  - main CI run `25647384499`;
-  - GitHub Pages workflow run `25647384526`;
-  - live URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
-    `last-modified: Mon, 11 May 2026 02:39:45 GMT`;
-  - `bun run verify:deployed-surface`.
