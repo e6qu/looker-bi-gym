@@ -63,12 +63,15 @@ Last updated: 2026-05-11
     merged. After PR #30 merged, Pages failed again in the same broad rendered
     UI route sweep, this time while waiting for the main landmark. The route
     sweep exhausts the global 60s Playwright test timeout on the slower Pages
-    runner.
+    runner. PR #33 CI later showed the same broad route sweep could exhaust the
+    180s test timeout when all viewport/route combinations ran serially in one
+    test.
   - Fix plan: Task 045 gives the route sweep its own 180s timeout and uses
     `domcontentloaded` route navigation readiness while preserving route and
     viewport coverage. PR #31 passed main CI, Pages deployment, live HTTP 200,
-    and deployed-surface verification.
-  - Status: closed.
+    and deployed-surface verification. Task 047 splits the broad route sweep
+    into one test per viewport so CI can parallelize the coverage.
+  - Status: fixed locally; pending PR #33 CI rerun.
 
 - ID: CLAUDE-REVIEW-2026-05-10.
   - Area: phase review gates.
@@ -78,7 +81,7 @@ Last updated: 2026-05-11
     `claude --print` hung with no output and were stopped. The Task 041 attempt
     returned `Not logged in · Please run /login`; Task 042 returned the same
     auth blocker, as did Task 043. Task 044 hung with no output for about 40
-    seconds and was killed, as did Task 046. Codex CLI non-TUI mode works
+    seconds and was killed, as did Tasks 046 and 047. Codex CLI non-TUI mode works
     outside the sandbox via `codex exec`; a sandboxed attempt failed to
     initialize the in-process app-server client.
   - Fix plan: Retry only with a known-good non-hanging formal review path, or

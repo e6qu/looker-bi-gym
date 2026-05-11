@@ -195,12 +195,11 @@ test.describe("rendered UI", () => {
     }
   });
 
-  test("primary routes are rendered, responsive, and free of control overflow", async ({
-    page,
-  }) => {
-    test.setTimeout(180_000);
-
-    for (const viewport of viewports) {
+  for (const viewport of viewports) {
+    test(`primary routes are rendered and free of control overflow on ${viewport.label}`, async ({
+      page,
+    }) => {
+      test.setTimeout(120_000);
       await page.setViewportSize(viewport);
 
       for (const route of responsiveRoutes) {
@@ -212,8 +211,8 @@ test.describe("rendered UI", () => {
         await expectNoHorizontalOverflow(page);
         await expectTextFitsControls(page);
       }
-    }
-  });
+    });
+  }
 
   test("challenge catalog and detail pages expose real learner metadata", async ({
     page,

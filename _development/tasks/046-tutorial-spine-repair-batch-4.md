@@ -1,6 +1,6 @@
 # 046 - Tutorial Spine Repair Batch 4
 
-Status: active on branch `tutorial-spine-repair-batch-4`.
+Status: merged in PR #32 at `5cf22e3`; implemented but not Claude-reviewed.
 
 ## Goal
 
@@ -56,3 +56,6 @@ making completeness claims.
 - Claude CLI review is blocked: non-TUI
   `claude --print --permission-mode plan --output-format text ...` produced no
   output for about 40 seconds and was killed.
+- PR #32 was squash-merged at `5cf22e3`.
+- Main CI, GitHub Pages deployment, live HTTP 200, and deployed-surface
+  verification passed after merge.

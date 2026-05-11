@@ -4,8 +4,20 @@ Last updated: 2026-05-11
 
 ## Current Branch And PR
 
-- Current branch: `tutorial-spine-repair-batch-4`, based on verified `main`.
+- Current branch: `tutorial-spine-repair-batch-5`, based on verified `main`
+  after PR #32.
 - Current PR: not opened yet.
+- PR #32, `https://github.com/e6qu/looker-bi-gym/pull/32`, is squash-merged
+  at `5cf22e3`.
+- Main CI for `5cf22e3` passed:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25645971101`.
+- GitHub Pages workflow for `5cf22e3` passed:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25645971112`.
+- Live Pages URL verified HTTP 200 on 2026-05-11:
+  `https://e6qu.github.io/looker-bi-gym/`, with
+  `last-modified: Mon, 11 May 2026 01:45:53 GMT`.
+- Deployed learning-surface verifier passed on 2026-05-11:
+  `bun run verify:deployed-surface`.
 - PR #31, `https://github.com/e6qu/looker-bi-gym/pull/31`, is squash-merged
   at `da35572`.
 - Main CI for `da35572` passed:
@@ -100,7 +112,7 @@ Last updated: 2026-05-11
 
 ## Active Task
 
-Task 046 - Tutorial Spine Repair Batch 4.
+Task 047 - Tutorial Spine Repair Batch 5.
 
 Current state:
 
@@ -122,13 +134,18 @@ Current state:
   route-sweep timeout.
 - PR #31 added Task 045 route-sweep stabilization and was verified on main,
   Pages, live URL, and deployed surface.
-- Started Task 046 on branch `tutorial-spine-repair-batch-4`.
-- Added `_development/tasks/046-tutorial-spine-repair-batch-4.md`.
-- Rewrote `tutorials/05-blending-vs-upstream-joins.md` as a browser-first
-  blend/fanout lab with exact wrong totals, safe upstream serving output,
-  normalized owner allocation, optional Looker Studio blend guardrails, recovery
-  checks, and an end challenge.
-- Updated `docs/17-curriculum-completeness-matrix.md` to mark T041-TUT-05 as
+- PR #32 added Task 046 tutorial 05 repair and was verified on main, Pages,
+  live URL, and deployed surface.
+- Started Task 047 on branch `tutorial-spine-repair-batch-5`.
+- Added `_development/tasks/047-tutorial-spine-repair-batch-5.md`.
+- Rewrote `tutorials/06-performance-and-cost-lab.md` as a browser-first
+  cost/performance lab with source profiling, safe serving output,
+  deterministic job-evidence simulation, daily operations control, optional
+  BigQuery/Looker Studio UI checks, recovery paths, and an end challenge.
+- Split the broad rendered route sweep into one Playwright test per viewport
+  after PR #33 CI timed out at 180s while running all route/viewport checks
+  serially in one test.
+- Updated `docs/17-curriculum-completeness-matrix.md` to mark T041-TUT-06 as
   first-pass implemented.
 - Local verification passed:
   - `bun run content:generate`;
@@ -143,9 +160,37 @@ Current state:
   - `bun run test:flashcards`;
   - `bun run test:platform-boundary`;
   - stale scan for learner-facing repo/app/source-ID implementation wording in
-    tutorial 05;
+    tutorial 06;
   - `git diff --check`;
-  - `bun run check` after approved local Vite preview binding.
+  - `bun run test:e2e` after approved local Vite preview binding, with all 14
+    Playwright tests passing;
+  - `bun run check` after approved local Vite preview binding, with all 14
+    Playwright tests passing.
+- Task 046 summary:
+  - Started Task 046 on branch `tutorial-spine-repair-batch-4`.
+  - Added `_development/tasks/046-tutorial-spine-repair-batch-4.md`.
+  - Rewrote `tutorials/05-blending-vs-upstream-joins.md` as a browser-first
+    blend/fanout lab with exact wrong totals, safe upstream serving output,
+    normalized owner allocation, optional Looker Studio blend guardrails,
+    recovery checks, and an end challenge.
+  - Updated `docs/17-curriculum-completeness-matrix.md` to mark T041-TUT-05 as
+    first-pass implemented.
+  - Local verification passed:
+    - `bun run content:generate`;
+    - `bun run content:check`;
+    - `bun run format:check`;
+    - `bun run test:content-qa`;
+    - `bun run validate:static-links`;
+    - `bun run typecheck`;
+    - `bun run lint`;
+    - `bun run test:facts-db`;
+    - `bun run test:quiz-facts-db`;
+    - `bun run test:flashcards`;
+    - `bun run test:platform-boundary`;
+    - stale scan for learner-facing repo/app/source-ID implementation wording
+      in tutorial 05;
+    - `git diff --check`;
+    - `bun run check` after approved local Vite preview binding.
 - Task 045 summary:
   - Started Task 045 on branch `rendered-route-sweep-stabilization`.
   - Added `_development/tasks/045-rendered-route-sweep-stabilization.md`.
@@ -183,10 +228,10 @@ Task 040 summary:
   used non-TUI `claude --print --permission-mode plan --output-format text ...`
   and returned `Not logged in · Please run /login`; the Task 042 attempt
   returned the same auth blocker, as did Task 043. Task 044 produced no output
-  for about 40 seconds and was killed, as did Task 046. Task 040 hung with no
-  output for about one minute and was killed; Tasks 034-039 also had formal
-  Claude review attempts hang with no output. Do not mark any phase complete
-  until a completed formal review is recorded.
+  for about 40 seconds and was killed, as did Tasks 046 and 047. Task 040 hung
+  with no output for about one minute and was killed; Tasks 034-039 also had
+  formal Claude review attempts hang with no output. Do not mark any phase
+  complete until a completed formal review is recorded.
 - Codex CLI non-TUI mode works outside the sandbox: `codex -a never exec
 --ephemeral --sandbox read-only --json "Reply exactly: codex-cli-ok"`
   returned `codex-cli-ok`. A sandboxed attempt failed to initialize the
@@ -308,6 +353,16 @@ PR #31 post-merge verification passed on 2026-05-11:
   `last-modified: Mon, 11 May 2026 01:28:10 GMT`.
 - `bun run verify:deployed-surface` passed against the live Pages URL.
 
+PR #32 post-merge verification passed on 2026-05-11:
+
+- PR #32 was squash-merged at `5cf22e3`.
+- `gh run watch 25645971101` showed main CI success for `5cf22e3`.
+- `gh run watch 25645971112` showed GitHub Pages deployment success for
+  `5cf22e3`.
+- `curl -L -I https://e6qu.github.io/looker-bi-gym/` returned HTTP 200 with
+  `last-modified: Mon, 11 May 2026 01:45:53 GMT`.
+- `bun run verify:deployed-surface` passed against the live Pages URL.
+
 Task 040 local verification passed on 2026-05-11:
 
 - `bun run content:check`
@@ -406,9 +461,9 @@ Task 044 local verification passed on 2026-05-11:
 - stale scan for learner-facing repo/app/source-ID implementation wording in
   tutorial 04
 - `git diff --check`
-- `bun run test:e2e` after approved local Vite preview binding, with all 12
+- `bun run test:e2e` after approved local Vite preview binding, with all 14
   Playwright tests passing
-- `bun run check` after approved local Vite preview binding, with all 12
+- `bun run check` after approved local Vite preview binding, with all 14
   Playwright tests passing
 
 Task 044 blocked review:
@@ -439,6 +494,32 @@ Task 046 blocked review:
 
 - Claude CLI formal review in non-TUI `--print` mode produced no output for
   about 40 seconds and was killed; Task 046 is not Claude-reviewed.
+
+Task 047 local verification passed on 2026-05-11:
+
+- `bun run content:generate`
+- `bun run content:check`
+- `bun run format:check`
+- `bun run test:content-qa`
+- `bun run validate:static-links`
+- `bun run typecheck`
+- `bun run lint`
+- `bun run test:facts-db`
+- `bun run test:quiz-facts-db`
+- `bun run test:flashcards`
+- `bun run test:platform-boundary`
+- stale scan for learner-facing repo/app/source-ID implementation wording in
+  tutorial 06
+- `git diff --check`
+- `bun run test:e2e` after approved local Vite preview binding, with all 12
+  Playwright tests passing
+- `bun run check` after approved local Vite preview binding, with all 12
+  Playwright tests passing
+
+Task 047 blocked review:
+
+- Claude CLI formal review in non-TUI `--print` mode produced no output for
+  about 40 seconds and was killed; Task 047 is not Claude-reviewed.
 
 Task 036 local verification passed on 2026-05-10:
 
