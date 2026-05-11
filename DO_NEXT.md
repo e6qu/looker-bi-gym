@@ -11,13 +11,13 @@
    gh pr list --state open --limit 10
    ```
 
-3. Continue Task 057 on branch `quiz-question-quality-expansion`.
-4. Commit the local Task 057 changes, push the branch, and open one PR.
-5. Wait for Task 057 PR CI. If it fails, fix failures on the same branch and
+3. Continue PR #42 on branch `quiz-question-quality-expansion`:
+   `https://github.com/e6qu/looker-bi-gym/pull/42`.
+4. Wait for PR #42 CI. If it fails, fix failures on the same branch and
    rerun relevant local checks.
-6. Before merging, fetch `origin/main`, rebase the branch on top of it, and
+5. Before merging, fetch `origin/main`, rebase the branch on top of it, and
    merge only after CI passes on the rebased branch.
-7. After merge, verify main CI, GitHub Pages deployment, live HTTP 200, and
+6. After merge, verify main CI, GitHub Pages deployment, live HTTP 200, and
    `bun run verify:deployed-surface` before starting another implementation PR.
 
 ## Verification To Preserve

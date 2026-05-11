@@ -16,6 +16,8 @@
 - Created branch `quiz-question-quality-expansion` from verified `main`.
 - Added `_development/tasks/057-quiz-question-quality-expansion.md` and
   updated the implementation task index.
+- Opened PR #42:
+  `https://github.com/e6qu/looker-bi-gym/pull/42`.
 - Reworked the main quiz bank into 60 standalone scenario questions: 20 easy,
   20 medium, and 20 hard.
 - Expanded coverage across BI grain, fanout, semi-additive balances, NULL and

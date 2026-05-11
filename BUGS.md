@@ -14,7 +14,7 @@ Last updated: 2026-05-11
     keeps fact/task grounding hidden in metadata, raises content QA count
     guardrails, and fixes mobile overflow caused by longer assessment text.
   - Status: fixed and locally verified on branch
-    `quiz-question-quality-expansion`; PR not opened yet.
+    `quiz-question-quality-expansion`; open in PR #42.
 
 - ID: TUTORIAL-EVIDENCE-BASIS-FILLER-2026-05-11.
   - Area: learner-facing tutorials and content QA.

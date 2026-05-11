@@ -6,7 +6,8 @@ Last updated: 2026-05-11
 
 - Current branch: `quiz-question-quality-expansion`, based on verified `main`
   at `ff2071a`.
-- Current PR: not opened yet.
+- Current PR: #42,
+  `https://github.com/e6qu/looker-bi-gym/pull/42`.
 - PR #41, `https://github.com/e6qu/looker-bi-gym/pull/41`, is squash-merged at
   `ff2071a12fa6124d713c31abcc993c4c54abe6c7`.
 - Main CI for `ff2071a` passed:
@@ -58,7 +59,8 @@ Current state:
 
 ## Blockers And Gaps
 
-- Task 057 is locally verified but not yet committed or opened as a PR.
+- Task 057 is locally verified and open in PR #42. CI is pending unless checked
+  later.
 - Claude CLI formal review remains blocked by authentication or prior hangs;
   Task 057 does not mark any phase complete.
 - Curriculum completeness, external verification, and full assessment coverage

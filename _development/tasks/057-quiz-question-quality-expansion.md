@@ -1,7 +1,7 @@
 # 057 - Quiz Question Quality Expansion
 
-Status: locally verified on branch `quiz-question-quality-expansion`; PR not
-opened yet.
+Status: locally verified on branch `quiz-question-quality-expansion`; open in
+PR #42.
 
 ## Goal
 
