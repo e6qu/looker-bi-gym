@@ -4,6 +4,18 @@ Last updated: 2026-05-11
 
 ## Open Issues
 
+- ID: QUIZ-QUESTION-QUALITY-2026-05-11.
+  - Area: quiz bank and rendered quiz UI.
+  - Severity: high.
+  - Description: The main quiz bank had too few questions, and several prompts
+    felt shallow or dependent on course scaffolding rather than standing alone
+    as BI, BigQuery, Looker Studio, and banking BI assessment scenarios.
+  - Fix plan: Task 057 expands the bank to 60 standalone scenario questions,
+    keeps fact/task grounding hidden in metadata, raises content QA count
+    guardrails, and fixes mobile overflow caused by longer assessment text.
+  - Status: fixed and locally verified on branch
+    `quiz-question-quality-expansion`; open in PR #42.
+
 - ID: TUTORIAL-EVIDENCE-BASIS-FILLER-2026-05-11.
   - Area: learner-facing tutorials and content QA.
   - Severity: low.
