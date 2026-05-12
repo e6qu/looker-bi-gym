@@ -8,6 +8,8 @@ type ContentType =
   | "tutorial_index"
   | "tutorial_recipe"
   | "learner_task"
+  | "terminology"
+  | "terminology_index"
   | "fact_index"
   | "fact_register"
   | "flashcard_deck"
@@ -48,7 +50,7 @@ type MarkdownSource = {
 };
 
 type GeneratedContentDocument = {
-  readonly section: "docs" | "regulations" | "tutorials";
+  readonly section: "docs" | "regulations" | "terminology" | "tutorials";
   readonly fileName: string;
   readonly filePath: string;
   readonly title: string;
@@ -168,6 +170,8 @@ const contentTypes: ReadonlySet<string> = new Set([
   "tutorial_index",
   "tutorial_recipe",
   "learner_task",
+  "terminology",
+  "terminology_index",
   "fact_index",
   "fact_register",
   "flashcard_deck",
@@ -814,6 +818,7 @@ function toContentDocument(source: MarkdownSource): GeneratedContentDocument {
   if (
     section !== "docs" &&
     section !== "regulations" &&
+    section !== "terminology" &&
     section !== "tutorials"
   ) {
     throw new Error(`${source.repoPath} is not a content section path.`);
@@ -983,6 +988,11 @@ async function buildCatalog(): Promise<Catalog> {
       (path) => readMarkdown(path),
     ),
   );
+  const terminologySources = await Promise.all(
+    (await listFiles(join(repoRoot, "terminology"), new Set([".md"]))).map(
+      (path) => readMarkdown(path),
+    ),
+  );
   const tutorialSources = await Promise.all(
     (await listFiles(join(repoRoot, "tutorials"), new Set([".md"]))).map(
       (path) => readMarkdown(path),
@@ -1015,6 +1025,15 @@ async function buildCatalog(): Promise<Catalog> {
     ) {
       assertKnownSourceFacts(metadata.source_facts, factIds, source.repoPath);
     }
+  }
+
+  for (const source of terminologySources) {
+    const metadata = requireFrontmatter(
+      source,
+      new Set(["terminology", "terminology_index"]),
+    );
+
+    assertUniqueId(metadata.id, contentIds, source.repoPath);
   }
 
   for (const source of factSources) {
@@ -1073,7 +1092,12 @@ async function buildCatalog(): Promise<Catalog> {
   );
 
   return {
-    contentDocuments: [...docSources, ...regulationSources, ...tutorialSources]
+    contentDocuments: [
+      ...docSources,
+      ...regulationSources,
+      ...terminologySources,
+      ...tutorialSources,
+    ]
       .map((source) => toContentDocument(source))
       .sort((left, right) => left.filePath.localeCompare(right.filePath)),
     factCatalog: factCatalog.sort((left, right) =>

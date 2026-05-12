@@ -6,6 +6,8 @@ import type { Locator, Page } from "@playwright/test";
 const responsiveRoutes = [
   "/#/home",
   "/#/docs/README.md",
+  "/#/terminology/README.md",
+  "/#/terminology/bi.md",
   "/#/tutorials/learner-tasks/lt-bi-001-profile-dataset-grain.md",
   "/#/tutorials/learner-tasks/lt-looker-007-control-parameter-handoff.md",
   "/#/tutorials/learner-tasks/lt-dq-006-ratio-null-contract.md",
@@ -271,6 +273,24 @@ test.describe("rendered UI", () => {
     await expect(page.getByRole("link", { name: "BNR" })).toBeVisible();
     await expect(
       page.getByText("Flag appears after required checks pass"),
+    ).toBeVisible();
+  });
+
+  test("terminology pages render searchable linked domain markers", async ({
+    page,
+  }) => {
+    await page.goto("/#/terminology/README.md", {
+      waitUntil: "domcontentloaded",
+    });
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Vocabulary Reference" }),
+    ).toBeVisible();
+    await expect(page.locator("a.termRef").first()).toContainText("BI");
+
+    await page.getByLabel("Search terminology").fill("DuckDB-WASM");
+    await expect(
+      page.getByRole("link", { name: /DuckDB And Browser Runtime/u }),
     ).toBeVisible();
   });
 

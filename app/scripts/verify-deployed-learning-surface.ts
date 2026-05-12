@@ -31,6 +31,7 @@ const viewports: readonly ViewportSpec[] = [
 
 const routeChecks: readonly RouteCheck[] = [
   { route: "/#/home", expectedText: "Looker BI Gym" },
+  { route: "/#/terminology/README.md", expectedText: "Vocabulary Reference" },
   {
     route: "/#/tutorials/learner-tasks/lt-dq-006-ratio-null-contract.md",
     expectedText: "LT-DQ-006 - Define A Ratio Null Contract",

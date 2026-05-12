@@ -1,6 +1,10 @@
 import { generatedContentDocuments } from "./generated/contentCatalog";
 
-export type ContentSectionId = "docs" | "regulations" | "tutorials";
+export type ContentSectionId =
+  | "docs"
+  | "regulations"
+  | "terminology"
+  | "tutorials";
 
 export type ContentDocument = {
   readonly section: ContentSectionId;
@@ -59,6 +63,13 @@ export const contentSections: readonly ContentSection[] = [
     description:
       "EU and Romanian regulatory context labels for synthetic banking BI scenarios.",
     documents: toDocuments("regulations"),
+  },
+  {
+    id: "terminology",
+    label: "Terminology",
+    description:
+      "BI, SQL, BigQuery, Looker Studio, banking, regulatory, and DuckDB/browser-runtime vocabulary.",
+    documents: toDocuments("terminology"),
   },
   {
     id: "tutorials",

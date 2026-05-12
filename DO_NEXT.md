@@ -11,13 +11,13 @@
    gh pr list --state open --limit 10
    ```
 
-3. Continue PR #43 on branch `quiz-standalone-question-polish`:
-   `https://github.com/e6qu/looker-bi-gym/pull/43`.
-4. Wait for PR #43 CI. If it fails, fix failures on the same branch and
-   rerun relevant local checks.
-5. Before merging, fetch `origin/main`, rebase the branch on top of it, and
+3. Continue Task 059 on branch `terminology-grounding-glossary`.
+4. Open the terminology grounding PR if no open PR exists.
+5. Wait for PR CI. If it fails, fix failures on the same branch and rerun
+   relevant local checks.
+6. Before merging, fetch `origin/main`, rebase the branch on top of it, and
    merge only after CI passes on the rebased branch.
-6. After merge, verify main CI, GitHub Pages deployment, live HTTP 200, and
+7. After merge, verify main CI, GitHub Pages deployment, live HTTP 200, and
    `bun run verify:deployed-surface` before starting another implementation PR.
 
 ## Verification To Preserve
@@ -46,6 +46,37 @@ rg -n "you are asked to|before writing|which source grain must be stated|complet
 ```
 
 The Task 058 course-scaffolded quiz wording scan returned no matches.
+
+PR #43 post-merge verification passed:
+
+- Main CI for `81d4c3d`:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25680564739`.
+- GitHub Pages workflow for `81d4c3d`:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25680562973`.
+- Live Pages URL returned HTTP 200 with
+  `last-modified: Mon, 11 May 2026 15:45:25 GMT`.
+- `bun run verify:deployed-surface` passed against the deployed site.
+
+Task 059 focused verification has passed:
+
+```sh
+bun run content:generate
+bun run content:check
+bun run format:check
+bun run test:content-qa
+bun run validate:static-links
+bun run typecheck
+bun run lint
+bun run test:e2e
+bun run check
+```
+
+Task 059 notes:
+
+- The terminology pages are domain/platform references, not a schema-only
+  glossary.
+- They do not include app-specific training table or column entries.
+- Term entries use examples and cross-links with compact domain hints.
 
 ## Review Requirement
 

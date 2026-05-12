@@ -45,12 +45,34 @@ function isExternalUrl(href: string): boolean {
   return /^https?:\/\//i.test(href);
 }
 
+function slugifyHeading(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/`/gu, "")
+    .replace(/[^a-z0-9]+/gu, "-")
+    .replace(/^-+|-+$/gu, "");
+}
+
 export function renderMarkdown(document: ContentDocument): string {
   const unsafeHtml = marked.parse(document.markdown, {
     async: false,
     gfm: true,
   });
   const parsed = new DOMParser().parseFromString(unsafeHtml, "text/html");
+
+  parsed
+    .querySelectorAll<HTMLHeadingElement>("h1, h2, h3, h4, h5, h6")
+    .forEach((heading) => {
+      if (heading.id.length > 0) {
+        return;
+      }
+
+      const id = slugifyHeading(heading.textContent);
+      if (id.length > 0) {
+        heading.id = id;
+      }
+    });
 
   parsed.querySelectorAll<HTMLAnchorElement>("a[href]").forEach((link) => {
     const href = link.getAttribute("href");
