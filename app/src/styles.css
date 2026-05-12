@@ -432,6 +432,31 @@ h3 {
   gap: 6px;
 }
 
+.documentSearch {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.documentSearch input {
+  width: 100%;
+  min-height: 38px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+}
+
+.documentSearch input:focus {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(30, 132, 127, 0.14);
+}
+
 .documentNav a {
   display: grid;
   gap: 3px;
@@ -451,6 +476,12 @@ h3 {
 .documentNav small {
   color: var(--muted);
   font-size: 0.76rem;
+}
+
+.emptyState {
+  padding: 10px;
+  color: var(--muted);
+  font-size: 0.86rem;
 }
 
 .markdownArticle {
@@ -510,6 +541,46 @@ h3 {
 .markdownBody a {
   color: var(--accent-strong);
   font-weight: 700;
+}
+
+.markdownBody a.termRef {
+  display: inline;
+  color: #11645f;
+  font-weight: 800;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.markdownBody a.termRef sup {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.15em;
+  margin-left: 2px;
+  padding: 0 3px;
+  border: 1px solid rgba(17, 100, 95, 0.36);
+  border-radius: 4px;
+  background: #e8f5f2;
+  color: #11645f;
+  font-size: 0.62em;
+  font-weight: 900;
+  line-height: 1;
+  text-decoration: none;
+  vertical-align: super;
+}
+
+.markdownBody .termBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.7em;
+  margin: 0 0 6px;
+  padding: 2px 7px;
+  border: 1px solid rgba(23, 107, 93, 0.28);
+  border-radius: 6px;
+  background: #e8f5f2;
+  color: #11645f;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0;
 }
 
 .markdownBody a[data-external="true"]::after {

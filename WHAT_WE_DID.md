@@ -1,5 +1,41 @@
 # What We Did
 
+## 2026-05-12 - Task 059 Terminology Grounding Glossary
+
+- Created branch `terminology-grounding-glossary` from verified `main` at
+  `81d4c3d`.
+- Added `_development/tasks/059-terminology-grounding-glossary.md` and updated
+  the implementation task index.
+- Opened PR #44:
+  `https://github.com/e6qu/looker-bi-gym/pull/44`.
+- Added rendered `terminology/` Markdown pages for BI, SQL, BigQuery, Looker
+  Studio, banking, regulations, and DuckDB/browser-runtime vocabulary.
+- Removed schema-only terminology and app-specific training table or column
+  entries after review.
+- Reworked term entries to use compact domain badges, examples, and related
+  cross-links instead of verbose labels such as "BigQuery platform term."
+- Added terminology catalog support, the app route, sidebar search, heading
+  anchors, `.termRef` links, and `.termBadge` styling.
+- Added rendered UI and deployed-surface expectations for the terminology route.
+- Verification passed:
+  - `bun run content:generate`;
+  - `bun run content:check`;
+  - `bun run format:check`;
+  - `bun run test:content-qa`;
+  - `bun run validate:static-links`;
+  - `bun run typecheck`;
+  - `bun run lint`;
+  - stale scan for schema-only, self-referential, and app-specific terminology
+    wording;
+  - `bun run test:e2e` after approved local Vite preview binding, with all 100
+    Playwright tests passing;
+  - `bun run check` after approved local Vite preview binding, with all 100
+    Playwright tests passing.
+- Failed/blocked attempts recorded:
+  - sandboxed `bun run test:e2e` and `bun run check` failed because Vite preview
+    could not bind `127.0.0.1:4173` (`EPERM`); reruns with approved local
+    binding passed.
+
 ## 2026-05-11 - Task 058 Quiz Standalone Question Polish
 
 - Verified PR #42 post-merge state:
@@ -39,6 +75,15 @@ stated`.
     Playwright tests passing;
   - `bun run check` after approved local Vite preview binding, with all 93
     Playwright tests passing.
+- PR #43 was squash-merged at `81d4c3d`.
+- Post-merge verification passed:
+  - Main CI passed for `81d4c3d`:
+    `https://github.com/e6qu/looker-bi-gym/actions/runs/25680564739`.
+  - GitHub Pages workflow passed for `81d4c3d`:
+    `https://github.com/e6qu/looker-bi-gym/actions/runs/25680562973`.
+  - Live Pages URL `https://e6qu.github.io/looker-bi-gym/` returned HTTP 200
+    with `last-modified: Mon, 11 May 2026 15:45:25 GMT`.
+  - `bun run verify:deployed-surface` passed against the live site.
 
 ## 2026-05-11 - Task 057 Quiz Question Quality Expansion
 

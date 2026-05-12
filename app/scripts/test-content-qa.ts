@@ -94,6 +94,7 @@ const markdownRoots = [
   "flashcards",
   "quizzes",
   "regulations",
+  "terminology",
   "tutorials",
 ].map((path) => join(repoRoot, path));
 const disclaimerPattern =

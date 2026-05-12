@@ -13,8 +13,8 @@ Last updated: 2026-05-11
   - Fix plan: Task 058 rewrites the prompt as a concrete branch-dashboard
     balance-grain question and adds content QA guardrails against similar
     course-scaffolded quiz wording.
-  - Status: fixed and locally verified on branch
-    `quiz-standalone-question-polish`; open in PR #43.
+  - Status: closed in PR #43; main CI, Pages deployment, live HTTP 200, and
+    deployed learning-surface verification passed after merge.
 
 - ID: QUIZ-QUESTION-QUALITY-2026-05-11.
   - Area: quiz bank and rendered quiz UI.
@@ -25,8 +25,8 @@ Last updated: 2026-05-11
   - Fix plan: Task 057 expands the bank to 60 standalone scenario questions,
     keeps fact/task grounding hidden in metadata, raises content QA count
     guardrails, and fixes mobile overflow caused by longer assessment text.
-  - Status: fixed and locally verified on branch
-    `quiz-question-quality-expansion`; open in PR #42.
+  - Status: closed in PR #42; main CI, Pages deployment, live HTTP 200, and
+    deployed learning-surface verification passed after merge.
 
 - ID: TUTORIAL-EVIDENCE-BASIS-FILLER-2026-05-11.
   - Area: learner-facing tutorials and content QA.
@@ -36,8 +36,8 @@ Last updated: 2026-05-11
     metadata and validation rather than filler tutorial prose.
   - Fix plan: Task 056 removes the visible sections and updates content QA while
     preserving `source_facts` validation.
-  - Status: fixed and locally verified on branch
-    `remove-tutorial-evidence-basis`.
+  - Status: closed in PR #41; main CI, Pages deployment, live HTTP 200, and
+    deployed learning-surface verification passed after merge.
 
 - ID: DEPLOYED-SURFACE-METADATA-EXPECTATION-2026-05-11.
   - Area: deployed learning-surface verifier.

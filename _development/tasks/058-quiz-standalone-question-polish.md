@@ -1,7 +1,6 @@
 # 058 - Quiz Standalone Question Polish
 
-Status: locally verified on branch `quiz-standalone-question-polish`; open in
-PR #43.
+Status: merged and deployed in PR #43 at `81d4c3d`.
 
 ## Goal
 
@@ -40,6 +39,9 @@ standalone BI assessment questions.
   scenario.
 - Added a content QA guardrail for course-scaffolded assessment wording.
 - Updated rendered and deployed-surface checks for the new standalone prompt.
+- Squash-merged PR #43 after PR CI passed on the rebased branch.
+- Verified main CI, GitHub Pages deployment, live HTTP 200, and deployed
+  learning-surface checks after merge.
 
 ## Verification Notes
 
@@ -56,6 +58,14 @@ standalone BI assessment questions.
   93 Playwright tests passing.
 - Passed `bun run check` after approved local Vite preview binding, with all 93
   Playwright tests passing.
+- PR #43 passed branch CI before merge.
+- Main CI passed after merge:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25680564739`.
+- GitHub Pages workflow passed after merge:
+  `https://github.com/e6qu/looker-bi-gym/actions/runs/25680562973`.
+- Live Pages URL returned HTTP 200 with
+  `last-modified: Mon, 11 May 2026 15:45:25 GMT`.
+- Passed `bun run verify:deployed-surface` against the live site after merge.
 
 Blocked review:
 

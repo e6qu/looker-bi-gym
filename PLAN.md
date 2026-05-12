@@ -116,6 +116,10 @@ Review gates before this phase can be called complete:
   outcomes.
 - Challenges must have deterministic outputs, known-good fixtures, and
   known-bad trap coverage where relevant.
+- Curriculum vocabulary must be grounded in rendered terminology pages. Specific
+  words should be visibly distinguishable as BI concepts, SQL syntax, BigQuery
+  terms, Looker Studio terms, banking terms, regulatory terms, or
+  DuckDB/browser-runtime terms when precision matters.
 - Quizzes and challenges are separate verification surfaces. Tutorial steps
   must not depend on completing a quiz, and quiz questions should verify the
   same competencies with distinct scenario prompts rather than duplicating the
@@ -212,6 +216,11 @@ Required question, exam, and flashcard standard:
   circular or meta questions about the course, repository, generated catalogs,
   storage implementation, source IDs, task IDs, or "what learners should do
   about learners."
+- Where a field or term could be ambiguous, assessment text must distinguish
+  business terms, BI concepts, SQL syntax, BigQuery terms, Looker Studio terms,
+  DuckDB/browser-runtime fields, and regulatory terms. Inline terminology links
+  may use short superscript hints such as `BI`, `SQL`, `BQ`, `LS`, `BNK`, `REG`,
+  or `DB`.
 - Counts are minimum scale checks, not quality proof: at least 500 flashcards,
   200 quiz questions, and 30 exam cards must be reviewed against the competency
   matrix before any completeness claim.

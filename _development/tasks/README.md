@@ -67,6 +67,7 @@ Task order:
 - [056 - Remove Tutorial Evidence Basis Headings](056-remove-tutorial-evidence-basis.md)
 - [057 - Quiz Question Quality Expansion](057-quiz-question-quality-expansion.md)
 - [058 - Quiz Standalone Question Polish](058-quiz-standalone-question-polish.md)
+- [059 - Terminology Grounding Glossary](059-terminology-grounding-glossary.md)
 
 Completion rule:
 

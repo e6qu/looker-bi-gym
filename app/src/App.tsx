@@ -122,6 +122,7 @@ const routes: readonly Route[] = [
   { id: "home", label: "Home" },
   { id: "docs", label: "Docs" },
   { id: "regulations", label: "Regulations" },
+  { id: "terminology", label: "Terminology" },
   { id: "tutorials", label: "Tutorials" },
   { id: "workbench", label: "Workbench" },
   { id: "quiz", label: "Quiz" },
@@ -135,6 +136,7 @@ const routes: readonly Route[] = [
 const contentRouteIds: ReadonlySet<RouteId> = new Set<RouteId>([
   "docs",
   "regulations",
+  "terminology",
   "tutorials",
 ]);
 
@@ -2782,6 +2784,20 @@ function ContentPage({
 }): JSX.Element {
   const section = getSection(sectionId);
   const document = getDocument(sectionId, fileName);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+  const visibleDocuments =
+    section?.documents.filter((candidate) => {
+      if (normalizedSearchTerm.length === 0) {
+        return true;
+      }
+
+      return (
+        candidate.title.toLowerCase().includes(normalizedSearchTerm) ||
+        candidate.fileName.toLowerCase().includes(normalizedSearchTerm) ||
+        candidate.markdown.toLowerCase().includes(normalizedSearchTerm)
+      );
+    }) ?? [];
 
   if (section === undefined || document === undefined) {
     return (
@@ -2803,8 +2819,19 @@ function ContentPage({
           <h2 id={`${sectionId}-title`}>{section.label}</h2>
           <p>{section.description}</p>
         </div>
+        <label className="documentSearch">
+          <span>Search {section.label.toLowerCase()}</span>
+          <input
+            onChange={(event) => {
+              setSearchTerm(event.target.value);
+            }}
+            placeholder="Search terms and pages"
+            type="search"
+            value={searchTerm}
+          />
+        </label>
         <nav>
-          {section.documents.map((candidate) => (
+          {visibleDocuments.map((candidate) => (
             <a
               aria-current={
                 candidate.fileName === document.fileName ? "page" : undefined
@@ -2816,6 +2843,9 @@ function ContentPage({
               <small>{candidate.fileName}</small>
             </a>
           ))}
+          {visibleDocuments.length === 0 ? (
+            <p className="emptyState">No matching pages.</p>
+          ) : null}
         </nav>
       </aside>
       <MarkdownArticle document={document} />
