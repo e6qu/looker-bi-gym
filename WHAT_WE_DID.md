@@ -6,6 +6,8 @@
   `81d4c3d`.
 - Added `_development/tasks/059-terminology-grounding-glossary.md` and updated
   the implementation task index.
+- Opened PR #44:
+  `https://github.com/e6qu/looker-bi-gym/pull/44`.
 - Added rendered `terminology/` Markdown pages for BI, SQL, BigQuery, Looker
   Studio, banking, regulations, and DuckDB/browser-runtime vocabulary.
 - Removed schema-only terminology and app-specific training table or column

@@ -6,7 +6,8 @@ Last updated: 2026-05-12
 
 - Current branch: `terminology-grounding-glossary`, based on verified `main` at
   `81d4c3d`.
-- Current PR: not opened yet.
+- Current PR: #44,
+  `https://github.com/e6qu/looker-bi-gym/pull/44`.
 - PR #43, `https://github.com/e6qu/looker-bi-gym/pull/43`, is squash-merged at
   `81d4c3d`.
 - Main CI for `81d4c3d` passed:
@@ -52,7 +53,8 @@ Current state:
 
 ## Blockers And Gaps
 
-- Task 059 is locally verified but not yet in a PR, CI, or deployment.
+- Task 059 is locally verified and open in PR #44. CI is pending unless checked
+  later.
 - Claude CLI formal review remains blocked by authentication or prior hangs;
   Task 059 does not mark any phase complete.
 - Curriculum completeness, external verification, and full assessment coverage

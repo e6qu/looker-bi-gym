@@ -1,7 +1,7 @@
 # 059 - Terminology Grounding Glossary
 
-Status: locally verified on branch `terminology-grounding-glossary`; PR not
-opened yet.
+Status: locally verified on branch `terminology-grounding-glossary`; open in
+PR #44.
 
 ## Goal
 
