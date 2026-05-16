@@ -124,6 +124,108 @@
             "self_assessment": "Explain why report controls can safely supply values while table and column selection stays in governed SQL.\n",
           },
       },
+      {
+        "id": "exam-card-weighted-ratio-contract",
+        "title": "Weighted Ratio Metric Contract",
+        "recommended_learner_tasks": ["LT-DQ-006", "LT-LOOKER-004"],
+        "source_facts":
+          [
+            "FACT-BI-RATIO-SUM-COMPONENTS-FIRST",
+            "FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION",
+            "FACT-LOOKER-STUDIO-DEFAULT-AGGREGATION",
+            "FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE",
+          ],
+        "objective": "Define a reusable Average Account Balance metric and prove it is weighted by account count, not averaged over per-row averages.\n",
+        "verification":
+          {
+            "expected_outputs":
+              [
+                "latest_ledger_total = 95700",
+                "latest_account_count = 6",
+                "weighted_average_account_balance = 15950.00",
+                "average_of_averages_anti_pattern = 14012.50",
+                "currency_share_ron = 82.86%",
+              ],
+            "self_assessment": "Explain why SUM(ledger_total) / SUM(account_count) stays correct under any chart filter while AVG(row_average) does not, and name the data-source aggregation settings that make the reusable calculated field safe.\n",
+          },
+      },
+      {
+        "id": "exam-card-governance-release-decision",
+        "title": "Governance Release Decision",
+        "recommended_learner_tasks": ["LT-LOOKER-004"],
+        "source_facts":
+          [
+            "FACT-GDPR-DATA-MINIMISATION",
+            "FACT-BIGQUERY-AUTHORIZED-VIEW-ACCESS-CONTROL",
+            "FACT-LOOKER-STUDIO-VIEWER-CREDENTIALS",
+            "FACT-LOOKER-STUDIO-OWNER-CREDENTIALS-RISK",
+          ],
+        "objective": "Write a release decision for the executive deposit dashboard that keeps personal-data identifiers out of the report data source while preserving the aggregate KPI.\n",
+        "verification":
+          {
+            "expected_outputs":
+              [
+                "kept_fields = 6",
+                "excluded_sensitive_fields = 4 (account_id, customer_id, synthetic_iban, masked_account_number)",
+                "sensitive_fields_kept = 0",
+                "restriction_flag_in_public_chart = 0",
+                "control_total = 95700",
+                "credential_mode = viewer_credentials_or_authorized_view",
+              ],
+            "self_assessment": "Name when authorized views, row-level security, and column-level security each apply, and why owner credentials are not the default for an internal report.\n",
+          },
+      },
+      {
+        "id": "exam-card-bigquery-cost-triage",
+        "title": "BigQuery Cost Triage",
+        "recommended_learner_tasks": ["LT-LOOKER-007", "LT-DQ-005"],
+        "source_facts":
+          [
+            "FACT-BIGQUERY-JOBS-BYTES",
+            "FACT-BIGQUERY-PARTITION-FILTERS",
+            "FACT-BIGQUERY-SELECT-LIST-NARROWING",
+            "FACT-BIGQUERY-VIEW-QUERY-RUNS-EACH-TIME",
+            "FACT-BIGQUERY-MATERIALIZED-VIEW-CACHE",
+          ],
+        "objective": "Explain why a narrow serving view costs less than a broad raw scan and name three real BigQuery cost mechanics that the simulated proxy in tutorial 06 does not model.\n",
+        "verification":
+          {
+            "expected_outputs":
+              [
+                "simulated_raw_estimated_bytes = 11232",
+                "simulated_serving_estimated_bytes = 1248",
+                "simulated_reduction_pct = 88.89",
+                "named real cost mechanic examples include partition filter, query results cache, materialized view cache",
+              ],
+            "self_assessment": "Describe what total_bytes_processed, total_bytes_billed, and cache_hit in INFORMATION_SCHEMA.JOBS mean; explain when a partition filter saves cost; explain why a logical view does not avoid a re-scan but a materialized view sometimes does.\n",
+          },
+      },
+      {
+        "id": "exam-card-dora-operations-evidence",
+        "title": "DORA Operations Evidence",
+        "recommended_learner_tasks": ["LT-DQ-005", "LT-LOOKER-004"],
+        "source_facts":
+          [
+            "FACT-DORA-ICT-RISK-FRAMEWORK",
+            "FACT-DORA-INCIDENTS",
+            "FACT-DORA-THIRD-PARTY-REGISTER",
+            "FACT-BI-RECONCILIATION-WINDOWS",
+          ],
+        "objective": "Produce one daily operations evidence row plus a DORA-shaped ICT third-party register entry for the deposits executive dashboard, then identify what would force a hold on a non-zero reconciliation delta day.\n",
+        "verification":
+          {
+            "expected_outputs":
+              [
+                "reconciliation_delta_in_service_day = 0",
+                "reconciliation_delta_break_day = 40",
+                "operations_status_in_service_day = in_service",
+                "operations_status_break_day = hold_publish_investigate",
+                "dora_critical_service = BigQuery",
+                "dora_important_service = Looker Studio",
+              ],
+            "self_assessment": "Explain the difference between freshness lag and reconciliation delta; explain why a non-zero delta or failed validation rule must hold the publish; write one row of an ICT third-party register covering service, provider, criticality, function supported, data location, and exit-plan summary.\n",
+          },
+      },
     ],
   "content_type": "exam_pack",
   "status": "published",

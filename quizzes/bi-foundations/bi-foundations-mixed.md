@@ -76,10 +76,10 @@ questions:
       options:
         - id: data_source
           label: The data source that connects data and exposes the field schema.
-        - id: chart_title
-          label: The chart title, because it defines field types.
-        - id: viewer_activity
-          label: Viewer activity, because clicks become report fields.
+        - id: chart_layer
+          label: The chart layer, because chart-level calculated fields can rename underlying fields.
+        - id: report_theme
+          label: The report theme, because theme settings configure default field types.
       answer: data_source
       explanation: >
         Looker Studio charts and controls use fields exposed by the data source.
@@ -101,10 +101,10 @@ questions:
       options:
         - id: reusable_layer
           label: In upstream serving SQL or a reusable data-source field.
-        - id: one_chart
-          label: In the first scorecard only.
-        - id: report_title
-          label: In the report title.
+        - id: each_chart
+          label: As a chart-level calculated field on each chart that needs it, copied separately.
+        - id: report_filter
+          label: As a report-level filter expression so every chart inherits the formula.
       answer: reusable_layer
       explanation: >
         Chart-specific fields exist only in that chart. Reused metric logic
@@ -123,11 +123,11 @@ questions:
         storing a new table. Which description fits a logical view?
       options:
         - id: sql_virtual_table
-          label: A virtual table defined by SQL whose query runs when queried.
-        - id: editable_dashboard_table
-          label: A table edited directly by report viewers.
-        - id: spreadsheet_copy
-          label: A spreadsheet copy of the dashboard result.
+          label: A virtual table defined by SQL whose query runs each time the view is queried.
+        - id: materialized_cache
+          label: A cached precomputed result that does not re-run its SQL on read.
+        - id: external_table
+          label: A reference to a file in Cloud Storage whose schema is inferred at read time.
       answer: sql_virtual_table
       explanation: >
         A logical view is a SQL-defined virtual table. It gives a reusable query
@@ -173,9 +173,9 @@ questions:
         - id: refresh_vs_business_date
           label: Report refresh time and source business reference date.
         - id: same_control
-          label: Nothing; refresh time and business date are always the same.
-        - id: chart_position
-          label: Only the chart position.
+          label: Nothing, because Looker Studio always overwrites business_date with the report's refresh time.
+        - id: chart_axis_label
+          label: Only the chart axis label, since the source business_date is decorative.
       answer: refresh_vs_business_date
       explanation: >
         Freshness tells when a report may query or cache data. It does not
@@ -195,10 +195,10 @@ questions:
       options:
         - id: field_values_default_charts
           label: The bound field, allowed values, default value, and affected charts.
-        - id: color_position_only
-          label: Only the control color and screen position.
-        - id: private_identifier
-          label: A private customer identifier for precise filtering.
+        - id: bound_to_chart_title
+          label: The chart title text, so the control rewrites the title when the value changes.
+        - id: bound_to_calculated_field
+          label: A chart-level calculated field expression, with the control rewriting the expression at runtime.
       answer: field_values_default_charts
       explanation: >
         Controls should be tied to stable data-source fields and to explicit
@@ -340,11 +340,11 @@ questions:
         Which BigQuery-style transformation belongs in the serving query?
       options:
         - id: truncate_month
-          label: Truncate the transaction date to month granularity.
-        - id: free_text_month
-          label: Type the month name manually into the chart title.
-        - id: refresh_month
-          label: Use the dashboard refresh month as the transaction month.
+          label: "`DATE_TRUNC(transaction_date, MONTH)` to align rows to the first day of each month."
+        - id: format_string_label
+          label: "`FORMAT_DATE('%B', transaction_date)` to use the month name as the grouping key."
+        - id: extract_month_number
+          label: "`EXTRACT(MONTH FROM transaction_date)` alone, so all transactions in March across years group together."
       answer: truncate_month
       explanation: >
         Period grouping should be derived from the source date at the intended
@@ -461,10 +461,10 @@ questions:
       options:
         - id: dimension_metric
           label: "`branch_region` is a dimension; `ledger_balance` is a metric."
-        - id: metric_dimension
-          label: "`branch_region` is a metric; `ledger_balance` is a dimension."
-        - id: both_controls
-          label: Both fields are only report controls and cannot appear in charts.
+        - id: both_metrics
+          label: Both fields are metrics, because both appear in the chart's metrics shelf.
+        - id: parameter_dimension
+          label: "`branch_region` is a parameter-driven control; `ledger_balance` is a dimension."
       answer: dimension_metric
       explanation: >
         Dimensions group or describe data, while metrics are aggregated. The
@@ -526,11 +526,11 @@ questions:
         best reduces fanout and unnecessary join work?
       options:
         - id: aggregate_first
-          label: Aggregate balances to the required account/date or report grain before joining.
-        - id: join_everything
-          label: Join all raw rows first, then hope the chart aggregation fixes totals.
-        - id: add_columns
-          label: Add more owner columns so the join is easier to inspect visually.
+          label: Aggregate balances to the required account/date grain in a CTE before joining owners.
+        - id: distinct_at_end
+          label: Keep the raw owner join and add `SELECT DISTINCT` at the end to remove duplicates.
+        - id: group_by_owner_account
+          label: Keep the raw owner join and `GROUP BY account_id, customer_id` to collapse it.
       answer: aggregate_first
       explanation: >
         Reducing data before a join limits both cost and grain risk. Joining raw
@@ -550,11 +550,11 @@ questions:
         latest row per account. Which pattern fits?
       options:
         - id: qualify_rank
-          label: "Use `ROW_NUMBER() OVER (...)` and filter the rank with QUALIFY."
-        - id: sum_history
-          label: Sum every historical snapshot and let the chart pick the latest.
-        - id: manual_pick
-          label: Display all rows and choose the latest by sight.
+          label: "`ROW_NUMBER() OVER (PARTITION BY account_id ORDER BY snapshot_date DESC)` with `QUALIFY rn = 1`."
+        - id: max_in_select
+          label: "`SELECT account_id, MAX(snapshot_date), balance ...` so the row with the latest date wins per account."
+        - id: order_limit
+          label: "`SELECT * FROM snapshots ORDER BY snapshot_date DESC LIMIT 1`, scoped by account through the chart filter."
       answer: qualify_rank
       explanation: >
         QUALIFY filters window-function results after ranking, which is a clear
@@ -575,11 +575,11 @@ questions:
         values. Which check belongs in SQL?
       options:
         - id: last_day_check
-          label: Compare `as_of_date` to the last day of its month.
-        - id: string_month
-          label: Keep rows where the date string contains the month name.
-        - id: refresh_time
-          label: Use the report refresh timestamp as the month-end date.
+          label: "`WHERE as_of_date = LAST_DAY(as_of_date)` to keep only true month-end snapshots."
+        - id: day_28_or_later
+          label: "`WHERE EXTRACT(DAY FROM as_of_date) >= 28` to keep rows on or after the 28th of any month."
+        - id: month_diff
+          label: "`WHERE DATE_TRUNC(as_of_date, MONTH) = as_of_date` to keep rows whose date is the first day of the month."
       answer: last_day_check
       explanation: >
         Month-end logic should use date functions and source reference dates,
@@ -626,10 +626,10 @@ questions:
       options:
         - id: dimension_context
           label: The chart dimensions and default aggregation used by the measure.
-        - id: font_size
-          label: Only the table font size.
-        - id: viewer_history
-          label: Each viewer's click history.
+        - id: chart_filter_only
+          label: Only the chart-level filter, since adding a dimension cannot change a SUM total.
+        - id: data_freshness
+          label: Only the data freshness setting, since the underlying source rows are the same.
       answer: dimension_context
       explanation: >
         Looker Studio aggregates metrics in the context of chart dimensions.
@@ -677,11 +677,11 @@ questions:
         credentials. What is the practical access-control question?
       options:
         - id: whose_access
-          label: Whether data is seen through the owner's access or each viewer's access.
-        - id: chart_color
-          label: Which chart color is used for restricted data.
-        - id: file_name
-          label: Whether the report title contains the data-source name.
+          label: Whether the BigQuery query runs as the owner's identity or as each viewer's identity.
+        - id: refresh_interval_only
+          label: Whether the data freshness interval is shorter or longer than 1 hour.
+        - id: data_source_type
+          label: Whether the data source is embedded in the report or reusable across reports.
       answer: whose_access
       explanation: >
         Credential mode affects whose access is used when the report reads data.
@@ -703,10 +703,10 @@ questions:
       options:
         - id: byte_estimate
           label: A query validator or dry-run byte estimate for the serving query.
-        - id: screenshot_only
-          label: Only a screenshot showing that the chart rendered once.
-        - id: title_length
-          label: The number of characters in the report title.
+        - id: cache_hit_only
+          label: Only that the first run returned `cache_hit = TRUE`, so future refreshes will not bill.
+        - id: row_count_proxy
+          label: Only the chart's displayed row count, since bytes processed and rows displayed are equivalent.
       answer: byte_estimate
       explanation: >
         Looker Studio refreshes can trigger BigQuery query costs. Pre-run byte
@@ -775,11 +775,11 @@ questions:
         "latest"?
       options:
         - id: order_and_frame
-          label: The ordering column and window frame.
-        - id: chart_color
-          label: The color used for the balance line.
-        - id: report_title
-          label: The dashboard title.
+          label: "The `ORDER BY` column and the explicit window frame (`ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING`)."
+        - id: partition_only
+          label: "Only the `PARTITION BY` clause; default frame and ordering are enough for `LAST_VALUE`."
+        - id: outer_order_by
+          label: "Only the query's outer `ORDER BY`, since window order is inherited from it."
       answer: order_and_frame
       explanation: >
         LAST_VALUE depends on the current window frame. Latest-balance logic
@@ -851,11 +851,11 @@ questions:
         location. Which deployment issue should be checked first?
       options:
         - id: same_location
-          label: Whether the view and referenced resources are in the same location.
-        - id: chart_font
-          label: Whether the report font matches the source table name.
-        - id: viewer_language
-          label: Whether the report viewer's browser language is English.
+          label: Whether the view and referenced resources are in the same location (EU multi-region vs us multi-region).
+        - id: dataset_naming_only
+          label: Whether the dataset names start with the same prefix so the view can resolve them.
+        - id: same_project
+          label: Whether both the view and the referenced tables sit in the same Google Cloud project.
       answer: same_location
       explanation: >
         BigQuery logical views must reference resources in the same location as
@@ -924,11 +924,11 @@ questions:
         table. In the documented default pattern, why does source order matter?
       options:
         - id: retained_records
-          label: The leftmost source determines the retained records.
-        - id: color_palette
-          label: The leftmost source determines the chart colors.
-        - id: credential_mode
-          label: The leftmost source always changes owner credentials to viewer credentials.
+          label: The leftmost source determines the retained records in a left-outer blend by default.
+        - id: inherit_aggregation
+          label: The leftmost source determines the default aggregation for every metric on the right.
+        - id: refresh_anchor
+          label: The leftmost source sets the data freshness for every right-side source.
       answer: retained_records
       explanation: >
         Blend join configuration includes source order and join keys. In the
@@ -1087,8 +1087,8 @@ questions:
           label: Bytes processed for the dashboard query window.
         - id: job_time_window
           label: Job creation-time evidence for the review window.
-        - id: chart_palette
-          label: The color palette chosen by the report editor.
+        - id: cache_hit_skip
+          label: A claim that all refreshes hit the query results cache so bytes do not matter.
       answer: [refresh_cost_note, job_bytes, job_time_window]
       explanation: >
         Refresh settings can create BigQuery cost. Job bytes and creation-time
@@ -1115,8 +1115,8 @@ questions:
           label: Control fields, allowed values, defaults, and affected charts.
         - id: refresh_cost
           label: Expected cost behavior when the report refreshes.
-        - id: raw_private_rows
-          label: A pasted sample of raw private customer rows.
+        - id: ignore_partition_filter
+          label: A note that the partition filter can be omitted because the date control narrows the result.
       answer: [byte_estimate, control_scope, refresh_cost]
       explanation: >
         The release review should connect controls, query cost evidence, and
@@ -1253,8 +1253,8 @@ questions:
           label: External or platform dependencies that affect the report.
         - id: job_evidence
           label: Warehouse job evidence used to monitor query cost or activity.
-        - id: decorative_theme
-          label: Only the decorative report theme.
+        - id: viewer_count_only
+          label: Only the count of report viewers in the last 24 hours.
       answer: [source_and_owner, external_dependency, job_evidence]
       explanation: >
         Operational BI needs an inventory of important ICT assets and
@@ -1282,8 +1282,8 @@ questions:
           label: Event date, protected-until date, and unavailability date.
         - id: currency_conversion_context
           label: Currency and exchange-rate-date context for compensation reporting.
-        - id: chart_background
-          label: The dashboard background color.
+        - id: depositor_geo_only
+          label: Only the depositor's residence country, since high-balance protection is residence-based.
       answer:
         [event_type, event_and_protected_dates, currency_conversion_context]
       explanation: >
@@ -1311,8 +1311,8 @@ questions:
           label: Backup or restore dependency notes for the data pipeline.
         - id: integrity_confidentiality
           label: Data integrity and confidentiality controls relevant to the report.
-        - id: decorative_layout
-          label: The decorative layout chosen for the incident page.
+        - id: viewer_email_list
+          label: The list of viewer emails who opened the report during the incident window.
       answer:
         [incident_window, backup_restore_dependency, integrity_confidentiality]
       explanation: >
@@ -1340,8 +1340,8 @@ questions:
           label: The reporting framework version and reference date.
         - id: changed_rule_effect
           label: Whether changed rules explain differences in validation results.
-        - id: chart_spacing
-          label: Whether chart spacing is identical in both periods.
+        - id: only_failing_rows
+          label: Only the count of failing rows, without naming the rule version that produced the count.
       answer: [rule_version, framework_version, changed_rule_effect]
       explanation: >
         Validation outcomes can change when framework or rule versions change.
@@ -1397,8 +1397,8 @@ questions:
           label: Remove unused columns from the serving SELECT list.
         - id: refresh_behavior
           label: Review how report refreshes trigger the query.
-        - id: bigger_title
-          label: Increase the report title size.
+        - id: switch_to_legacy_sql
+          label: Switch the serving query to legacy SQL because GoogleSQL scans more data.
       answer: [partition_predicate, narrow_columns, refresh_behavior]
       explanation: >
         Partition filters, narrowed input, and refresh behavior all affect
@@ -1424,8 +1424,8 @@ questions:
           label: Compare freshness settings across all blended sources.
         - id: memory_serving
           label: Check whether report data may still be served from memory.
-        - id: chart_border
-          label: Change the chart border style.
+        - id: lower_freshness_for_all
+          label: Lower freshness on every source to 1 minute so the blend cannot be stale.
       answer: [source_business_dates, source_freshness, memory_serving]
       explanation: >
         Staleness can come from source reference dates, blend freshness
