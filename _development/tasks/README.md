@@ -69,6 +69,7 @@ Task order:
 - [058 - Quiz Standalone Question Polish](058-quiz-standalone-question-polish.md)
 - [059 - Terminology Grounding Glossary](059-terminology-grounding-glossary.md)
 - [060 - Terminology Integrity Checks](060-terminology-integrity-checks.md)
+- [061 - Tutorial Audit Remediation](061-tutorial-audit-remediation.md)
 
 Completion rule:
 

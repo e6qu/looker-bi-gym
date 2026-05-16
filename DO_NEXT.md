@@ -22,9 +22,9 @@
    `bun run verify:deployed-surface` before starting another implementation
    PR.
 
-## Phase 10 Follow-On Sequencing
+## Phase 10 + Phase 11 Follow-On Sequencing
 
-After PR #45 merges, take the remaining Phase 10 work one PR at a time:
+After PR #45 merges, take the remaining work one PR at a time:
 
 1. Renderer support for inline `class="termRef"` markers in YAML-bound
    surfaces (quiz prompts/explanations, flashcard front/back, exam card
@@ -32,10 +32,14 @@ After PR #45 merges, take the remaining Phase 10 work one PR at a time:
 2. Continued inline grounding for tutorials and regulations flagged in
    `_development/terminology-coverage.md` under "Mentioned In Prose But
    Not Inline-Grounded".
-3. Decision pass on the 53 uncovered entries (ground inline, retire, or
-   accept as future-coverage).
+3. Decision pass on the 53 uncovered terminology entries (ground inline,
+   retire, or accept as future-coverage).
 4. Deepen Phase 10.2 citations: replace vendor or regulator landing pages
    with specific deep links where a stable URL is known.
+5. Phase 11 follow-on: expand the failure scenarios in tutorials 06-09
+   with more realistic break days; backfill the remaining Phase 11.3
+   cert-track callouts that the audit flagged as `medium` but did not
+   land in this PR.
 
 ## Verification To Preserve
 

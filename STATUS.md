@@ -15,10 +15,33 @@ Last updated: 2026-05-16
 
 ## Active Task
 
-Task 060 - Terminology Grounding Follow-Through. Carries the full Phase 10
-work in a single PR by user direction.
+Tasks 060 (Terminology Grounding Follow-Through) and 061 (Tutorial Audit
+Remediation), both carried in PR #45 by user direction.
 
 Current state:
+
+- Phase 11 (Tutorial Audit Remediation) - All six sub-phases delivered.
+  See `_development/tasks/061-tutorial-audit-remediation.md` and
+  `_development/tutorial-audit.md` for details. Highlights:
+  - 11.1: rewrote `tutorials/curriculum.md` to match what the tutorials
+    actually build; wrapped every End Challenge expected-answer block in
+    `<details>` in tutorials 00-09; replaced DuckDB-only `VARCHAR` with
+    `STRING` in BigQuery-shaped SQL; fixed tutorial 03 freshness label
+    semicolon collision.
+  - 11.2: added failure scenarios to tutorials 06-09 so the checks no
+    longer pass by construction. Capstone (09) now requires cross-
+    tutorial values from the learner's own notes.
+  - 11.3: added Aggregation Notes (data-source vs chart-level, COUNT
+    DISTINCT non-additivity), BigQuery Cost Mechanics, BigQuery Access
+    Mechanics, and Looker Studio Credential Modes sections.
+  - 11.4: numeric depositor-bank worked example in tutorial 00;
+    ownership-share normalization assumption note in tutorial 05.
+  - 11.5: README separates practice and tutorial paths; exam mode
+    expanded from 2 to 6 cards; missing interactive exam link added.
+  - 11.6: per-task polish for LT-BI-001, LT-SQL-003, LT-LOOKER-004,
+    LT-LOOKER-007 and the deposits dashboard recipe.
+
+Earlier in the PR:
 
 - Phase 10.1 - Integrity checks. `app/scripts/validate-terminology.ts` fails
   on duplicate heading slugs, broken `class="termRef"` anchors, unknown

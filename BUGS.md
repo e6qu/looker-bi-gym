@@ -22,6 +22,26 @@ Last updated: 2026-05-16
     uncovered entries.
   - Status: open; Phase 10.1 through 10.5 implemented in PR #45.
 
+- ID: TUTORIAL-AUDIT-DEFECTS-2026-05-16.
+  - Area: numbered tutorials, learner tasks, recipe, cross-cutting
+    tutorial index pages.
+  - Severity: high.
+  - Description: tutorial audit recorded in
+    `_development/tutorial-audit.md` found 1 block / 9 high / 27 medium
+    / 17 low defects against the certification-track reading lens. Top
+    items were the aspirational `curriculum.md`, leaked End Challenge
+    answers, tautological VALUES checks in tutorials 06-09 (especially
+    the capstone scoring), Looker Studio reusable calculated-field
+    accuracy, and DuckDB-only `CAST(... AS VARCHAR)` in BigQuery-shaped
+    SQL.
+  - Fix plan: Phase 11 of `PLAN.md`. PR #45 carries all six sub-phases
+    (11.1 through 11.6) by user direction. Renderer changes that would
+    let YAML-bound surfaces render inline HTML, deeper deep-link
+    citations, and exhaustive inline grounding across every prose
+    occurrence remain follow-on work.
+  - Status: open; PR #45 implements all six sub-phases pending CI and
+    merge.
+
 - ID: QUIZ-WORKSHEET-SCAFFOLDING-2026-05-11.
   - Area: quiz bank and content QA.
   - Severity: high.
