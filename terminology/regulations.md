@@ -12,8 +12,6 @@ tags: [terminology, regulations]
 
 ## accountability
 
-<span class="termBadge">REG</span>
-
 The principle that an organization must be able to demonstrate responsible
 handling of regulated obligations and controls.
 
@@ -25,8 +23,6 @@ Related:
 
 ## data controller
 
-<span class="termBadge">REG</span>
-
 The party that determines the purposes and means of personal-data processing.
 
 Example: a bank can be a controller for customer reporting data.
@@ -36,8 +32,6 @@ Related:
 <a class="termRef" href="#/terminology/regulations.md#data-processor">data processor<sup>REG</sup></a>.
 
 ## data processor
-
-<span class="termBadge">REG</span>
 
 The party that processes personal data on behalf of a controller.
 
@@ -49,8 +43,6 @@ Related:
 <a class="termRef" href="#/terminology/regulations.md#personal-data">personal data<sup>REG</sup></a>.
 
 ## DGSD guarantee ceiling
-
-<span class="termBadge">REG</span>
 
 The EU deposit-guarantee framework concept for the standard EUR 100,000 ceiling
 per depositor per bank.
@@ -64,8 +56,6 @@ Related:
 
 ## DORA ICT dependency register
 
-<span class="termBadge">REG</span>
-
 An operational-resilience inventory context for important ICT assets,
 dependencies, and evidence used by control reporting.
 
@@ -78,8 +68,6 @@ Related:
 
 ## DORA incident reporting
 
-<span class="termBadge">REG</span>
-
 Operational-resilience reporting context for significant ICT-related incidents.
 
 Example: a dashboard outage used in an incident review needs a clear incident
@@ -91,8 +79,6 @@ Related:
 
 ## EBA validation rule
 
-<span class="termBadge">REG</span>
-
 A rule used to validate regulatory reporting data or templates.
 
 Example: a changed validation rule can explain why a submission passes in one
@@ -103,8 +89,6 @@ Related:
 <a class="termRef" href="#/terminology/bi.md#reconciliation">reconciliation<sup>BI</sup></a>.
 
 ## FGDB compensation context
-
-<span class="termBadge">REG</span>
 
 Romanian deposit-guarantee context, including RON compensation and
 exchange-rate-date considerations.
@@ -118,8 +102,6 @@ Related:
 
 ## GDPR data minimisation
 
-<span class="termBadge">REG</span>
-
 The principle that personal-data processing should be limited to data necessary
 for the stated purpose.
 
@@ -131,8 +113,6 @@ Related:
 <a class="termRef" href="#/terminology/bi.md#metric-contract">metric contract<sup>BI</sup></a>.
 
 ## GDPR purpose limitation
-
-<span class="termBadge">REG</span>
 
 The principle that data should be used for specified, explicit, and legitimate
 purposes rather than unrelated future possibilities.
@@ -146,8 +126,6 @@ Related:
 
 ## ICT risk
 
-<span class="termBadge">REG</span>
-
 Risk related to information and communication technology systems, services,
 dependencies, and operations.
 
@@ -160,8 +138,6 @@ Related:
 
 ## personal data
 
-<span class="termBadge">REG</span>
-
 Information relating to an identified or identifiable natural person.
 
 Example: a customer identifier can be personal data when it can be linked to a
@@ -172,8 +148,6 @@ Related:
 <a class="termRef" href="#/terminology/regulations.md#gdpr-data-minimisation">GDPR data minimisation<sup>REG</sup></a>.
 
 ## pseudonymised data
-
-<span class="termBadge">REG</span>
 
 Data transformed so it cannot be attributed to a person without additional
 information. It can still be personal data when re-identification remains
@@ -187,8 +161,6 @@ Related:
 
 ## reporting framework version
 
-<span class="termBadge">REG</span>
-
 The version of a regulatory reporting framework used for a period, template, or
 validation rule set.
 
@@ -201,8 +173,6 @@ Related:
 
 ## special category personal data
 
-<span class="termBadge">REG</span>
-
 Personal data requiring heightened protection because of its sensitive nature.
 
 Example: a dashboard source should exclude unnecessary fields that could reveal
@@ -213,8 +183,6 @@ Related:
 <a class="termRef" href="#/terminology/regulations.md#gdpr-data-minimisation">GDPR data minimisation<sup>REG</sup></a>.
 
 ## temporary high balance
-
-<span class="termBadge">REG</span>
 
 A deposit-guarantee treatment for qualifying balances above the standard
 coverage ceiling for a limited period.

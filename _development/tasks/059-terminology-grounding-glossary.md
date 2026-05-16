@@ -1,7 +1,10 @@
 # 059 - Terminology Grounding Glossary
 
-Status: locally verified on branch `terminology-grounding-glossary`; open in
-PR #44.
+Status: merged. PR #44 squash-merged to `main` as `d88acc7` on 2026-05-12.
+The task scope shipped only the rendered terminology pages and their app
+route; the inline grounding, build-time integrity, sourcing, fact linkage,
+deeper search, and reverse coverage gaps are tracked under Phase 10 in
+`PLAN.md` and start with [task 060](060-terminology-integrity-checks.md).
 
 ## Goal
 

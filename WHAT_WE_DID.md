@@ -1,7 +1,39 @@
 # What We Did
 
+## 2026-05-16 - Task 060 Terminology Integrity Checks
+
+- Audited the merged PR #44 terminology work for incomplete, shallow, or
+  wrong parts and added Phase 10 to `PLAN.md` to stage the follow-through
+  across sub-phases (integrity, sourcing/fact linkage, search depth,
+  curriculum grounding rollout, reverse coverage, continuity).
+- Synced local `main` with `origin/main` at `d88acc7`, deleted the stale
+  local `terminology-grounding-glossary` branch, and started Phase 10.1 on
+  a fresh `terminology-integrity-checks` branch.
+- Added `app/scripts/validate-terminology.ts`. The validator fails on
+  duplicate heading slugs inside a terminology file, broken
+  `class="termRef"` anchors, unknown target files, missing `#anchor`, and
+  missing or mismatched `<sup>HINT</sup>` domain hints. Wired it into
+  `bun run check` and exposed it as `bun run validate:terminology` at the
+  root workspace.
+- Sanity-checked the validator: a deliberately corrupted anchor failed with
+  file/line context, and the file restored cleanly to a passing run.
+- Removed 148 decorative leading `<span class="termBadge">` blocks from the
+  seven terminology domain files; the `.termBadge` CSS stays available for
+  future inline reference use.
+- Rewrote `terminology/README.md` marker key so authors are pointed at the
+  HTML anchor form only (plain Markdown links cannot embed `<sup>` through
+  the renderer) and at the new validator.
+- Marked task 059 merged in `_development/tasks/059-…`, added
+  `_development/tasks/060-terminology-integrity-checks.md`, and updated the
+  task index.
+
 ## 2026-05-12 - Task 059 Terminology Grounding Glossary
 
+- PR #44 squash-merged to `main` as `d88acc7` on 2026-05-12 18:10 UTC, with
+  CI passing on the PR before merge
+  (`https://github.com/e6qu/looker-bi-gym/actions/runs/25744753981/job/75604946709`).
+  Phase 10 of `PLAN.md` tracks the inline grounding, integrity, sourcing,
+  search, and coverage follow-through that this task did not deliver.
 - Created branch `terminology-grounding-glossary` from verified `main` at
   `81d4c3d`.
 - Added `_development/tasks/059-terminology-grounding-glossary.md` and updated

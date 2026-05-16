@@ -1,8 +1,25 @@
 # Bugs And Known Gaps
 
-Last updated: 2026-05-11
+Last updated: 2026-05-16
 
 ## Open Issues
+
+- ID: TERMINOLOGY-FIRST-PASS-FOLLOWTHROUGH-2026-05-16.
+  - Area: terminology pages, curriculum grounding, content QA, search.
+  - Severity: high.
+  - Description: PR #44 (`d88acc7`) shipped rendered terminology pages and a
+    route but did not deliver the Phase 6 grounding requirement. No
+    learner-facing surface uses `class="termRef"`. There was no build-time
+    validation of the ~300 in-terminology cross-links, no external sources
+    for vendor or regulatory entries, no `FACT-*` linkage, and the sidebar
+    search filters pages instead of term headings.
+  - Fix plan: Phase 10 of `PLAN.md` stages the follow-through. Task 060
+    closes Phase 10.1 (integrity validator + decorative-badge cleanup +
+    README correction). Phases 10.2 (sourcing), 10.3 (term-level search),
+    10.4 (inline grounding rollout per surface), 10.5 (reverse coverage
+    matrix), and 10.6 (continuity reconciliation per PR) remain open.
+  - Status: open; Phase 10.1 in progress on branch
+    `terminology-integrity-checks`.
 
 - ID: QUIZ-WORKSHEET-SCAFFOLDING-2026-05-11.
   - Area: quiz bank and content QA.

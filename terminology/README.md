@@ -26,8 +26,10 @@ Area labels:
 
 ## Marker Key
 
-Precise terms can use a normal Markdown or HTML link with a short superscript
-domain hint. The visible hint should be one to three letters:
+Precise terms use an HTML anchor with the `termRef` class and a short
+superscript domain hint. Plain Markdown links cannot embed the `<sup>` hint
+through the rendered Markdown pipeline, so the HTML form is the canonical
+convention. The visible hint is one to three letters:
 
 | Hint  | Area                          |
 | ----- | ----------------------------- |
@@ -39,7 +41,11 @@ domain hint. The visible hint should be one to three letters:
 | `REG` | regulations                   |
 | `DB`  | DuckDB or browser SQL runtime |
 
-Example:
+The hint must match the target file's domain. `bun run validate:terminology`
+checks that every `termRef` anchor resolves to a real heading and that the
+hint matches the linked terminology page.
+
+Authoring shape:
 
 ```html
 <a class="termRef" href="#/terminology/bi.md#grain">grain<sup>BI</sup></a>
@@ -50,7 +56,12 @@ Rendered example:
 Confirm the
 <a class="termRef" href="#/terminology/bi.md#grain">grain<sup>BI</sup></a>
 before applying
-<a class="termRef" href="#/terminology/sql.md#sum">`SUM`<sup>SQL</sup></a>.
+<a class="termRef" href="#/terminology/sql.md#sum">SUM<sup>SQL</sup></a>.
+
+The `termBadge` class is reserved for inline scope hints when an unambiguous
+short label is needed without linking to a definition; the per-entry leading
+badge that the first pass added under every heading was decorative and has
+been removed.
 
 ## Area Pages
 

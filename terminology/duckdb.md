@@ -12,8 +12,6 @@ tags: [terminology, duckdb, browser-runtime]
 
 ## browser-loaded column
 
-<span class="termBadge">DB</span>
-
 A named field in a table loaded into a browser SQL runtime.
 
 Example: a browser-loaded CSV table can expose text, numeric, and date columns
@@ -24,8 +22,6 @@ Related:
 <a class="termRef" href="#/terminology/sql.md#select-list">SELECT list<sup>SQL</sup></a>.
 
 ## browser-loaded table
-
-<span class="termBadge">DB</span>
 
 A table available inside a browser SQL runtime, usually created from an
 in-memory data source, local file, or fetched static asset.
@@ -39,8 +35,6 @@ Related:
 
 ## browser SQL workbench
 
-<span class="termBadge">DB</span>
-
 An in-browser SQL surface for running queries without a separate database
 server.
 
@@ -53,8 +47,6 @@ Related:
 
 ## CSV-backed table
 
-<span class="termBadge">DB</span>
-
 A queryable table created from CSV data.
 
 Example: a comma-separated file with a header row can become a table for local
@@ -65,8 +57,6 @@ Related:
 <a class="termRef" href="#/terminology/bi.md#grain">grain<sup>BI</sup></a>.
 
 ## DuckDB
-
-<span class="termBadge">DB</span>
 
 An analytical SQL database engine that can run embedded in applications and
 process columnar analytical workloads.
@@ -80,8 +70,6 @@ Related:
 
 ## DuckDB-WASM
 
-<span class="termBadge">DB</span>
-
 A WebAssembly build of DuckDB that runs SQL in the browser.
 
 Example: DuckDB-WASM can execute analytical SQL over browser-loaded data.
@@ -91,8 +79,6 @@ Related:
 <a class="termRef" href="#/terminology/duckdb.md#browser-sql-workbench">browser SQL workbench<sup>DB</sup></a>.
 
 ## in-memory table
-
-<span class="termBadge">DB</span>
 
 A table held in runtime memory rather than persisted in a remote warehouse.
 
@@ -104,8 +90,6 @@ Related:
 
 ## local query result
 
-<span class="termBadge">DB</span>
-
 A query result computed in the browser or local embedded runtime, not by a
 remote cloud warehouse.
 
@@ -116,8 +100,6 @@ Related:
 <a class="termRef" href="#/terminology/bigquery.md#bigquery-job">BigQuery job<sup>BQ</sup></a>.
 
 ## WASM
-
-<span class="termBadge">DB</span>
 
 WebAssembly, a portable binary format that can run compiled code in the
 browser.

@@ -11,41 +11,47 @@
    gh pr list --state open --limit 10
    ```
 
-3. Continue PR #44 on branch `terminology-grounding-glossary`:
-   `https://github.com/e6qu/looker-bi-gym/pull/44`.
-4. Wait for PR CI. If it fails, fix failures on the same branch and rerun
+3. Continue Task 060 on branch `terminology-integrity-checks`.
+4. Open a PR for Task 060 once local checks are clean.
+5. Wait for PR CI. If it fails, fix failures on the same branch and rerun
    relevant local checks.
-5. Before merging, fetch `origin/main`, rebase the branch on top of it, and
+6. Before merging, fetch `origin/main`, rebase the branch on top of it, and
    merge only after CI passes on the rebased branch.
-6. After merge, verify main CI, GitHub Pages deployment, live HTTP 200, and
-   `bun run verify:deployed-surface` before starting another implementation PR.
+7. After merge, verify main CI, GitHub Pages deployment, live HTTP 200, and
+   `bun run verify:deployed-surface` before starting another implementation
+   PR.
+
+## Phase 10 Sequencing
+
+After Task 060 merges, take Phase 10 sub-phases one PR at a time, in this
+order:
+
+1. Phase 10.2 - Terminology sourcing and `FACT-*` linkage.
+2. Phase 10.3 - Term-level search depth.
+3. Phase 10.4 - Inline grounding rollout, one learner surface per PR:
+   tutorials, then quizzes, flashcards, exams, facts, regulations,
+   challenges.
+4. Phase 10.5 - Reverse coverage matrix.
+
+Each PR carries its own continuity reconciliation (Phase 10.6 pattern).
 
 ## Verification To Preserve
 
-Task 058 focused verification has passed:
+Task 060 focused verification:
 
 ```sh
+bun run validate:terminology
 bun run content:generate
 bun run content:check
 bun run format:check
 bun run test:content-qa
-bun run test:quiz-facts-db
 bun run validate:static-links
 bun run typecheck
 bun run lint
-bun run test:e2e
-bun run check
 ```
 
-Stale scans:
-
-```sh
-rg -n "this repo|this repository|repo structure|source file in the repository|generated catalog|implementation task|training workflow|course source register|Evidence Basis|Source evidence|Recommended learner tasks" quizzes/bi-foundations/bi-foundations-mixed.md tutorials/quiz-bank.md
-rg -n "this repo|this repository|repo structure|source file in the repository|generated catalog|implementation task|training workflow|course source register|Evidence Basis|Source evidence|Recommended learner tasks|FACT-[A-Z0-9-]+|LT-[A-Z]+-[0-9]{3}" tutorials/quiz-bank.md app/tests/rendered-ui.spec.ts app/scripts/verify-deployed-learning-surface.ts
-rg -n "you are asked to|before writing|which source grain must be stated|complete the quiz|answer the quiz|quiz question|course material|curriculum page" quizzes/bi-foundations app/tests/rendered-ui.spec.ts app/scripts/verify-deployed-learning-surface.ts tutorials/quiz-bank.md
-```
-
-The Task 058 course-scaffolded quiz wording scan returned no matches.
+The full local gate is `bun run check`, which now includes
+`validate:terminology` and runs Playwright via `bun run test:e2e`.
 
 PR #43 post-merge verification passed:
 
@@ -57,31 +63,15 @@ PR #43 post-merge verification passed:
   `last-modified: Mon, 11 May 2026 15:45:25 GMT`.
 - `bun run verify:deployed-surface` passed against the deployed site.
 
-Task 059 focused verification has passed:
-
-```sh
-bun run content:generate
-bun run content:check
-bun run format:check
-bun run test:content-qa
-bun run validate:static-links
-bun run typecheck
-bun run lint
-bun run test:e2e
-bun run check
-```
-
-Task 059 notes:
-
-- The terminology pages are domain/platform references, not a schema-only
-  glossary.
-- They do not include app-specific training table or column entries.
-- Term entries use examples and cross-links with compact domain hints.
+PR #44 was squash-merged at `d88acc7` on 2026-05-12. Pages and
+`verify:deployed-surface` against `d88acc7` are not yet re-verified this
+session; do that before opening the next Phase 10 PR.
 
 ## Review Requirement
 
-Do not mark Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, Phase 7, or Phase 9
-complete until a completed formal review is available and recorded.
+Do not mark Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, Phase 7, Phase 9,
+or Phase 10 complete until a completed formal review is available and
+recorded.
 
 The required Claude CLI command shape remains:
 

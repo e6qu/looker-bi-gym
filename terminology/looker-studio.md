@@ -12,8 +12,6 @@ tags: [terminology, looker-studio]
 
 ## aggregation
 
-<span class="termBadge">LS</span>
-
 The operation used to summarize metric values in a chart.
 
 Example: a table can aggregate balance with sum and transaction count with
@@ -24,8 +22,6 @@ Related:
 <a class="termRef" href="#/terminology/sql.md#aggregate-function">aggregate function<sup>SQL</sup></a>.
 
 ## blend join configuration
-
-<span class="termBadge">LS</span>
 
 The join keys, join operator, source order, and selected fields used by a
 blend.
@@ -39,8 +35,6 @@ Related:
 
 ## chart
 
-<span class="termBadge">LS</span>
-
 A visual component such as a table, scorecard, bar chart, line chart, time
 series, or geo chart.
 
@@ -51,8 +45,6 @@ Related:
 <a class="termRef" href="#/terminology/bi.md#visualization">visualization<sup>BI</sup></a>.
 
 ## chart-level calculated field
-
-<span class="termBadge">LS</span>
 
 A calculated field that exists only inside one chart.
 
@@ -65,8 +57,6 @@ Related:
 
 ## connector
 
-<span class="termBadge">LS</span>
-
 A component that connects a data source to an underlying system such as
 BigQuery, Google Sheets, or another supported source.
 
@@ -78,8 +68,6 @@ Related:
 
 ## control
 
-<span class="termBadge">LS</span>
-
 A report component that lets viewers filter or change report data.
 
 Example: a date range control can change which rows contribute to charts on a
@@ -90,8 +78,6 @@ Related:
 <a class="termRef" href="#/terminology/looker-studio.md#parameter">parameter<sup>LS</sup></a>.
 
 ## data credentials
-
-<span class="termBadge">LS</span>
 
 The credential setting that determines whose access is used when the report
 reads data.
@@ -105,8 +91,6 @@ Related:
 
 ## data freshness
 
-<span class="termBadge">LS</span>
-
 The setting and behavior that determine how long cached report data may be
 reused before querying again.
 
@@ -118,8 +102,6 @@ Related:
 <a class="termRef" href="#/terminology/bigquery.md#bigquery-job">BigQuery job<sup>BQ</sup></a>.
 
 ## data source field
-
-<span class="termBadge">LS</span>
 
 A field exposed by a Looker Studio data source, including its name, type,
 aggregation, and calculated-field definition when applicable.
@@ -133,8 +115,6 @@ Related:
 
 ## dimension
 
-<span class="termBadge">LS</span>
-
 A field that groups, filters, or describes chart data.
 
 Example: branch, product, date, and currency can be dimensions in a report.
@@ -144,8 +124,6 @@ Related:
 <a class="termRef" href="#/terminology/looker-studio.md#metric">metric<sup>LS</sup></a>.
 
 ## embedded data source
-
-<span class="termBadge">LS</span>
 
 A data source stored inside one report rather than managed as a reusable data
 source.
@@ -159,8 +137,6 @@ Related:
 
 ## field ID
 
-<span class="termBadge">LS</span>
-
 A stable internal identifier used for a field inside a data source.
 
 Example: changing a visible field name does not necessarily mean the field ID
@@ -171,8 +147,6 @@ Related:
 <a class="termRef" href="#/terminology/looker-studio.md#looker-studio-data-source">Looker Studio data source<sup>LS</sup></a>.
 
 ## Looker Studio blend
-
-<span class="termBadge">LS</span>
 
 A combined data source created from multiple sources using join keys and
 selected fields.
@@ -186,8 +160,6 @@ Related:
 
 ## Looker Studio calculated field
 
-<span class="termBadge">LS</span>
-
 A formula field defined in a chart or data source.
 
 Example: a calculated field can derive a ratio from two numeric fields.
@@ -197,8 +169,6 @@ Related:
 <a class="termRef" href="#/terminology/looker-studio.md#report-level-calculated-field">report-level calculated field<sup>LS</sup></a>.
 
 ## Looker Studio data source
-
-<span class="termBadge">LS</span>
 
 The connection, field list, field types, and settings that charts, controls,
 and report components use.
@@ -211,8 +181,6 @@ Related:
 
 ## metric
 
-<span class="termBadge">LS</span>
-
 A field that is aggregated or calculated in a chart context.
 
 Example: total balance and transaction count can be chart metrics.
@@ -222,8 +190,6 @@ Related:
 <a class="termRef" href="#/terminology/looker-studio.md#aggregation">aggregation<sup>LS</sup></a>.
 
 ## owner credentials
-
-<span class="termBadge">LS</span>
 
 A credential mode where viewers see data through the report owner's access
 path.
@@ -237,8 +203,6 @@ Related:
 
 ## parameter
 
-<span class="termBadge">LS</span>
-
 A user-provided or report-provided value that can be used by compatible data
 sources, calculated fields, or controls.
 
@@ -250,8 +214,6 @@ Related:
 <a class="termRef" href="#/terminology/looker-studio.md#control">control<sup>LS</sup></a>.
 
 ## report
-
-<span class="termBadge">LS</span>
 
 A Looker Studio document containing pages, charts, controls, data sources,
 layout, and sharing settings.
@@ -265,8 +227,6 @@ Related:
 
 ## report-level calculated field
 
-<span class="termBadge">LS</span>
-
 A calculated field available at the data-source level for reuse across charts
 that use that data source.
 
@@ -279,8 +239,6 @@ Related:
 
 ## reusable data source
 
-<span class="termBadge">LS</span>
-
 A data source that can be shared and reused across reports.
 
 Example: governed field definitions can be reused by several reports through a
@@ -292,8 +250,6 @@ Related:
 
 ## scorecard
 
-<span class="termBadge">LS</span>
-
 A chart type that displays one or a small number of metric values.
 
 Example: a scorecard can show total balance for a selected date.
@@ -303,8 +259,6 @@ Related:
 <a class="termRef" href="#/terminology/looker-studio.md#metric">metric<sup>LS</sup></a>.
 
 ## viewer credentials
-
-<span class="termBadge">LS</span>
 
 A credential mode where each viewer's own access determines what the report can
 read.

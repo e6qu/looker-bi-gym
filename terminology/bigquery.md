@@ -12,8 +12,6 @@ tags: [terminology, bigquery]
 
 ## authorized view
 
-<span class="termBadge">BQ</span>
-
 A view configured to expose selected data without granting direct access to the
 underlying table.
 
@@ -26,8 +24,6 @@ Related:
 
 ## BigQuery column
 
-<span class="termBadge">BQ</span>
-
 A named field in a BigQuery table or view.
 
 Example: a `currency_code` column can be used as a dashboard dimension.
@@ -37,8 +33,6 @@ Related:
 <a class="termRef" href="#/terminology/looker-studio.md#data-source-field">data source field<sup>LS</sup></a>.
 
 ## BigQuery dataset
-
-<span class="termBadge">BQ</span>
 
 A container for BigQuery tables, views, routines, and access controls in a
 location.
@@ -52,8 +46,6 @@ Related:
 
 ## BigQuery job
 
-<span class="termBadge">BQ</span>
-
 A unit of work submitted to BigQuery, such as a query job, load job, extract
 job, or copy job.
 
@@ -64,8 +56,6 @@ Related:
 <a class="termRef" href="#/terminology/looker-studio.md#data-freshness">data freshness<sup>LS</sup></a>.
 
 ## BigQuery logical view
-
-<span class="termBadge">BQ</span>
 
 A virtual table defined by SQL. The defining query runs when the view is
 queried.
@@ -79,8 +69,6 @@ Related:
 
 ## BigQuery materialized view
 
-<span class="termBadge">BQ</span>
-
 A view-like object that can store precomputed results for compatible query
 patterns and refresh rules.
 
@@ -93,8 +81,6 @@ Related:
 
 ## BigQuery reservation
 
-<span class="termBadge">BQ</span>
-
 A capacity-management resource used to allocate slots for workloads.
 
 Example: production BI queries and ad hoc analyst queries can be assigned to
@@ -106,8 +92,6 @@ Related:
 
 ## BigQuery table
 
-<span class="termBadge">BQ</span>
-
 A physical table stored in a BigQuery dataset.
 
 Example: a warehouse table can store daily balances, transaction events, or
@@ -118,8 +102,6 @@ Related:
 <a class="termRef" href="#/terminology/bigquery.md#partitioned-table">partitioned table<sup>BQ</sup></a>.
 
 ## clustering
-
-<span class="termBadge">BQ</span>
 
 Table organization by one or more columns to improve filtering and reduce data
 scanned for suitable queries.
@@ -133,8 +115,6 @@ Related:
 
 ## data location
 
-<span class="termBadge">BQ</span>
-
 The geographic location where BigQuery data is stored and processed.
 
 Example: a view and the tables it references need compatible locations.
@@ -144,8 +124,6 @@ Related:
 <a class="termRef" href="#/terminology/bigquery.md#bigquery-logical-view">BigQuery logical view<sup>BQ</sup></a>.
 
 ## dry run
-
-<span class="termBadge">BQ</span>
 
 A query validation mode that estimates bytes processed without running the
 query.
@@ -159,8 +137,6 @@ Related:
 
 ## external table
 
-<span class="termBadge">BQ</span>
-
 A table definition that lets BigQuery query data stored outside native BigQuery
 storage.
 
@@ -173,8 +149,6 @@ Related:
 
 ## INFORMATION_SCHEMA
 
-<span class="termBadge">BQ</span>
-
 Metadata views that expose information about datasets, tables, jobs,
 reservations, and other BigQuery resources.
 
@@ -185,8 +159,6 @@ Related:
 <a class="termRef" href="#/terminology/bi.md#reconciliation">reconciliation<sup>BI</sup></a>.
 
 ## job metadata
-
-<span class="termBadge">BQ</span>
 
 Metadata about executed jobs, such as creation time, bytes processed, and user
 identity fields.
@@ -199,8 +171,6 @@ Related:
 
 ## legacy SQL
 
-<span class="termBadge">BQ</span>
-
 BigQuery's older SQL dialect.
 
 Example: modern BI queries should normally use BigQuery standard SQL rather
@@ -211,8 +181,6 @@ Related:
 <a class="termRef" href="#/terminology/sql.md#join">JOIN<sup>SQL</sup></a>.
 
 ## materialized result cache
-
-<span class="termBadge">BQ</span>
 
 Cached query results that can reduce repeated query work when cache rules are
 satisfied.
@@ -226,8 +194,6 @@ Related:
 
 ## nested field
 
-<span class="termBadge">BQ</span>
-
 A field inside a STRUCT or repeated structure.
 
 Example: an address STRUCT may contain city, region, and country fields.
@@ -237,8 +203,6 @@ Related:
 <a class="termRef" href="#/terminology/bigquery.md#bigquery-column">BigQuery column<sup>BQ</sup></a>.
 
 ## parameterized query
-
-<span class="termBadge">BQ</span>
 
 A query that accepts typed parameter values while keeping SQL structure fixed.
 
@@ -250,8 +214,6 @@ Related:
 <a class="termRef" href="#/terminology/looker-studio.md#parameter">parameter<sup>LS</sup></a>.
 
 ## partitioned table
-
-<span class="termBadge">BQ</span>
 
 A table divided into partitions, commonly by date or timestamp, so filters can
 reduce scanned data.
@@ -265,8 +227,6 @@ Related:
 
 ## query parameter
 
-<span class="termBadge">BQ</span>
-
 A named or positional value supplied to a query. Parameters are for values, not
 table names, column names, or raw SQL fragments.
 
@@ -277,8 +237,6 @@ Related:
 <a class="termRef" href="#/terminology/sql.md#filter-predicate">filter predicate<sup>SQL</sup></a>.
 
 ## query validator
-
-<span class="termBadge">BQ</span>
 
 BigQuery validation behavior that checks SQL and can estimate bytes before
 execution.
@@ -291,8 +249,6 @@ Related:
 
 ## repeated field
 
-<span class="termBadge">BQ</span>
-
 A field that can contain an array of values within a row.
 
 Example: an account row could contain a repeated list of flags or attributes.
@@ -302,8 +258,6 @@ Related:
 <a class="termRef" href="#/terminology/sql.md#join">JOIN<sup>SQL</sup></a>.
 
 ## scheduled query
-
-<span class="termBadge">BQ</span>
 
 A query configured to run on a schedule and write or refresh results.
 
@@ -316,8 +270,6 @@ Related:
 
 ## slot
 
-<span class="termBadge">BQ</span>
-
 A unit of computational capacity used to execute BigQuery queries.
 
 Example: more slots can increase parallel query execution capacity.
@@ -327,8 +279,6 @@ Related:
 <a class="termRef" href="#/terminology/bigquery.md#bigquery-job">BigQuery job<sup>BQ</sup></a>.
 
 ## standard SQL
-
-<span class="termBadge">BQ</span>
 
 BigQuery's GoogleSQL dialect used for modern query work.
 
@@ -341,8 +291,6 @@ Related:
 
 ## table snapshot
 
-<span class="termBadge">BQ</span>
-
 A read-only copy of a table at a point in time.
 
 Example: a snapshot can preserve a table state for audit or recovery workflows.
@@ -352,8 +300,6 @@ Related:
 <a class="termRef" href="#/terminology/bi.md#snapshot-fact">snapshot fact<sup>BI</sup></a>.
 
 ## wildcard table
-
-<span class="termBadge">BQ</span>
 
 A query pattern that uses a wildcard to match multiple similarly named tables.
 
