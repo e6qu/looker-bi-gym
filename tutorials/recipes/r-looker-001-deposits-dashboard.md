@@ -23,6 +23,11 @@
 Recipe area: Looker Studio mechanics. Optional follow-on after
 [LT-LOOKER-004](../learner-tasks/lt-looker-004-report-ready-data-source.md).
 
+Account requirement: this recipe requires a Looker Studio account, a
+BigQuery (or compatible) connector, and a synthetic data source. If you do
+not have an LS account, skip the UI steps and instead complete the
+"Describe Without An Account" path below.
+
 Objective: manually reproduce the deposits dashboard shape in Looker Studio
 using a synthetic report-ready data source and documented credential mode.
 
@@ -64,7 +69,26 @@ model-risk advice.
 - Creating separate chart-only versions of the same metric.
 - Sharing a report without documenting credential scope.
 
+## Describe Without An Account
+
+If you cannot open Looker Studio, write a one-page description in your
+notes that names:
+
+- the data source schema (`business_date`, `currency_code`, `ledger_total`)
+  and the cert-track default aggregation for each field;
+- the three charts you would create (scorecard, bar chart, detail table)
+  and the field bindings for each;
+- the latest-day expected control values (`95700` total, `EUR = 16400`,
+  `RON = 79300`);
+- the credential mode you would choose for an internal report (viewer or
+  authorized-view-backed) and why owner credentials are not the default.
+
+This description is the cert-track equivalent of the UI recipe. A reviewer
+should be able to recognise the same dashboard shape from the description
+as from a screenshot.
+
 ## Self-Assessment
 
 Mark the recipe complete if a reviewer can identify the data source, metric,
-dimension, credential mode, and latest-day control value from your report notes.
+dimension, credential mode, and latest-day control value from your report
+notes (or from the description if you completed the no-account path).

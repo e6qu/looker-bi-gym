@@ -47,7 +47,18 @@ model-risk advice.
 ## Steps
 
 1. Inspect the table browser and list the row grain for `account_daily_balances`,
-   `accounts`, `account_owners`, `branches`, and `products`.
+   `accounts`, `account_owners`, `branches`, and `products`. The expected
+   row grain for each table is:
+   - `account_daily_balances`: one row per `account_id` and `business_date`
+     (balance snapshot).
+   - `accounts`: one row per `account_id` (account dimension).
+   - `account_owners`: one row per `account_id` and `customer_id`
+     (many-to-many ownership; an account can have multiple owners).
+   - `branches`: one row per `branch_id`.
+   - `products`: one row per `product_id`.
+
+   Confirm your grain inventory matches before continuing.
+
 2. Run this browser SQL profile:
 
 ```sql
