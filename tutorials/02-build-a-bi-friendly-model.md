@@ -43,8 +43,13 @@ contract without changing metric grain or exposing unnecessary identifiers.
 
 After this tutorial, you will be able to:
 
-- Declare source-table grain before aggregation.
-- Separate fact, dimension, and serving-output responsibilities.
+- Declare source-table
+  <a class="termRef" href="#/terminology/bi.md#grain">grain<sup>BI</sup></a>
+  before aggregation.
+- Separate
+  <a class="termRef" href="#/terminology/bi.md#fact-table">fact<sup>BI</sup></a>,
+  <a class="termRef" href="#/terminology/bi.md#dimension">dimension<sup>BI</sup></a>,
+  and serving-output responsibilities.
 - Build a safe serving output that preserves branch-mapping exceptions.
 - Explain why ownership rows must not be joined before account-date balance
   grain is controlled.

@@ -11,29 +11,31 @@
    gh pr list --state open --limit 10
    ```
 
-3. Continue Task 060 on branch `terminology-integrity-checks`.
-4. Open a PR for Task 060 once local checks are clean.
-5. Wait for PR CI. If it fails, fix failures on the same branch and rerun
+3. Continue PR #45 on branch `terminology-integrity-checks`:
+   `https://github.com/e6qu/looker-bi-gym/pull/45`. The PR covers Phase 10.1
+   through 10.6 by user direction.
+4. Wait for PR CI. If it fails, fix failures on the same branch and rerun
    relevant local checks.
-6. Before merging, fetch `origin/main`, rebase the branch on top of it, and
+5. Before merging, fetch `origin/main`, rebase the branch on top of it, and
    merge only after CI passes on the rebased branch.
-7. After merge, verify main CI, GitHub Pages deployment, live HTTP 200, and
+6. After merge, verify main CI, GitHub Pages deployment, live HTTP 200, and
    `bun run verify:deployed-surface` before starting another implementation
    PR.
 
-## Phase 10 Sequencing
+## Phase 10 Follow-On Sequencing
 
-After Task 060 merges, take Phase 10 sub-phases one PR at a time, in this
-order:
+After PR #45 merges, take the remaining Phase 10 work one PR at a time:
 
-1. Phase 10.2 - Terminology sourcing and `FACT-*` linkage.
-2. Phase 10.3 - Term-level search depth.
-3. Phase 10.4 - Inline grounding rollout, one learner surface per PR:
-   tutorials, then quizzes, flashcards, exams, facts, regulations,
-   challenges.
-4. Phase 10.5 - Reverse coverage matrix.
-
-Each PR carries its own continuity reconciliation (Phase 10.6 pattern).
+1. Renderer support for inline `class="termRef"` markers in YAML-bound
+   surfaces (quiz prompts/explanations, flashcard front/back, exam card
+   statements, fact statements, challenge instructions).
+2. Continued inline grounding for tutorials and regulations flagged in
+   `_development/terminology-coverage.md` under "Mentioned In Prose But
+   Not Inline-Grounded".
+3. Decision pass on the 53 uncovered entries (ground inline, retire, or
+   accept as future-coverage).
+4. Deepen Phase 10.2 citations: replace vendor or regulator landing pages
+   with specific deep links where a stable URL is known.
 
 ## Verification To Preserve
 
@@ -41,6 +43,7 @@ Task 060 focused verification:
 
 ```sh
 bun run validate:terminology
+bun run coverage:terminology
 bun run content:generate
 bun run content:check
 bun run format:check
@@ -48,6 +51,7 @@ bun run test:content-qa
 bun run validate:static-links
 bun run typecheck
 bun run lint
+bun run test:e2e
 ```
 
 The full local gate is `bun run check`, which now includes
@@ -64,8 +68,8 @@ PR #43 post-merge verification passed:
 - `bun run verify:deployed-surface` passed against the deployed site.
 
 PR #44 was squash-merged at `d88acc7` on 2026-05-12. Pages and
-`verify:deployed-surface` against `d88acc7` are not yet re-verified this
-session; do that before opening the next Phase 10 PR.
+`verify:deployed-surface` against `d88acc7` are not re-verified this session;
+do that before opening the next PR after PR #45 merges.
 
 ## Review Requirement
 

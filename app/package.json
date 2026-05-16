@@ -42,6 +42,7 @@
     "validate:manifests": "bun run scripts/validate-challenge-manifests.ts",
     "validate:static-links": "bun run scripts/validate-static-links.ts",
     "validate:terminology": "bun run scripts/validate-terminology.ts",
+    "coverage:terminology": "bun run scripts/generate-terminology-coverage.ts",
     "typecheck": "bun run content:generate && bun run validate:manifests && tsc -p tsconfig.json --noEmit --pretty false && tsc -p tsconfig.node.json --noEmit --pretty false",
     "preview": "vite preview --config configs/vite.config.ts --host 127.0.0.1"
   },

@@ -53,12 +53,15 @@ After this tutorial, you will be able to:
   charts.
 - Build a separate depositor allocation result when owner-level analysis is
   genuinely needed.
-- Specify Looker Studio blend guardrails without treating a chart blend as a
-  governed metric layer.
+- Specify
+  <a class="termRef" href="#/terminology/looker-studio.md#looker-studio-blend">Looker Studio blend<sup>LS</sup></a>
+  guardrails without treating a chart blend as a governed metric layer.
 
 Produces:
 
-- Browser-first fanout proof.
+- Browser-first
+  <a class="termRef" href="#/terminology/bi.md#fanout">fanout<sup>BI</sup></a>
+  proof.
 - Safe upstream serving outputs for current-balance and owner-allocation use
   cases.
 - Optional Looker Studio blend comparison notes.

@@ -1,17 +1,21 @@
-# 060 - Terminology Integrity Checks
+# 060 - Terminology Grounding Follow-Through
 
-Status: in progress on branch `terminology-integrity-checks`.
+Status: in progress on branch `terminology-integrity-checks` in PR #45. This
+task carries the full Phase 10 work from `PLAN.md` (10.1 through 10.6) in a
+single PR by user direction; the per-sub-phase split that the plan describes
+was deferred to keep iteration tight.
 
 ## Goal
 
-Close the Phase 10.1 gap from `PLAN.md`. The first-pass terminology pages
-shipped without build-time validation, so renaming a heading would silently
-break ~300 cross-links. This task adds an enforced validator, removes the
-decorative leading badges that the first pass added under every entry, and
-corrects the README marker convention so authors do not reach for a
-Markdown form that the renderer cannot honour.
+Close the gaps the first-pass terminology PR (#44) left open: build-time
+integrity for the 300 in-terminology cross-links, external sourcing on the
+vendor and regulatory entries, `FACT-*` linkage, term-level search,
+representative inline grounding of curriculum prose to terminology anchors,
+and a reverse coverage matrix.
 
 ## Scope
+
+### Phase 10.1 - Integrity checks
 
 - Add `app/scripts/validate-terminology.ts` that fails when:
   - a heading slug repeats inside a terminology file;
@@ -26,45 +30,80 @@ Markdown form that the renderer cannot honour.
 - Remove the per-entry leading `<span class="termBadge">` block under every
   `## term` heading; the badge stays available for inline reference use.
 - Rewrite `terminology/README.md` so the marker key documents the
-  HTML-anchor form only (plain Markdown links cannot embed `<sup>` through
-  the rendered pipeline) and refers authors to the new validator.
+  HTML-anchor form only and refers authors to the new validator.
 
-Out of scope (separate phases in `PLAN.md`):
+### Phase 10.2 - Sourcing and FACT linkage
 
-- External sources and fact linkage (Phase 10.2).
-- Term-level search depth (Phase 10.3).
-- Inline grounding across tutorials, quizzes, flashcards, exams, facts,
-  regulations, challenges (Phase 10.4).
-- Reverse coverage matrix (Phase 10.5).
+- Extend the validator to parse `Sources:` blocks under each entry, require
+  at least one `https?://` citation on every entry in `bigquery.md`,
+  `looker-studio.md`, `duckdb.md`, and `regulations.md`, and confirm any
+  referenced `FACT-*` ID resolves to a fact in `facts/`.
+- Backfill 75 vendor/regulatory entries with `Sources:` blocks pointing to
+  official vendor documentation, regulator pages, or EUR-Lex CELEX
+  references, linking 30 entries to existing `FACT-*` claims.
+
+### Phase 10.3 - Term-level search depth
+
+- Surface matching `## term` headings (not only pages) in the terminology
+  sidebar search.
+- Fix routing so `#/terminology/<file>#<anchor>` resolves to the page and
+  scrolls to the heading; add a `fragmentFromHash` helper and a
+  `MarkdownArticle` effect that scrolls on mount and on `hashchange`.
+- Add CSS for the term-anchor result list and rendered UI coverage for both
+  the term result list and deep-linked anchors.
+
+### Phase 10.4 - Inline grounding rollout
+
+- Extend `validate-terminology` to also scan `tutorials/`, `quizzes/`,
+  `flashcards/`, `exams/`, `facts/`, `regulations/`, and `challenges/` so
+  any inline `class="termRef"` link added to curriculum prose is held to
+  the same anchor-resolution rules.
+- Add inline `class="termRef"` markers to a representative slice of
+  tutorials and regulations:
+  - `tutorials/00-orientation-and-stack.md` (orientation), `01-`, `02-`,
+    `04-`, `05-`, `06-`, `07-`;
+  - `regulations/01-eu-gdpr.md`, `03-eu-dora.md`,
+    `05-eba-supervisory-reporting-corep-finrep-pillar3.md`.
+- Surfaces that render through structured React components rather than
+  Markdown (quiz prompts, flashcard front/back, exam card statements,
+  generated fact statements, challenge YAML manifests) are not grounded in
+  this PR; they require a renderer change to honour inline HTML in those
+  fields. Tracked as the remaining Phase 10.4 follow-on.
+
+### Phase 10.5 - Reverse coverage matrix
+
+- Add `app/scripts/generate-terminology-coverage.ts` exposed as
+  `bun run coverage:terminology`. Output is written to
+  `_development/terminology-coverage.md` (not a learner-facing surface).
+- The matrix lists every terminology entry's prose occurrences and inline
+  `class="termRef"` references across `tutorials/`, `quizzes/`,
+  `flashcards/`, `exams/`, `facts/`, `regulations/`, and `challenges/`. It
+  flags entries with zero coverage (53 today) and entries mentioned in
+  prose but not inline-grounded (Phase 10.4 follow-on backlog).
+
+### Phase 10.6 - Continuity reconciliation
+
+- Mark task 059 merged with `d88acc7`. Update `STATUS.md`, `DO_NEXT.md`,
+  `BUGS.md`, `WHAT_WE_DID.md`, and the task index to reflect Phase 10 as
+  the active scope. Delete the stale local
+  `terminology-grounding-glossary` branch.
 
 ## Verification
 
-- `bun run validate:terminology`
-- `bun run content:generate`
-- `bun run content:check`
-- `bun run format:check`
-- `bun run test:content-qa`
-- `bun run validate:static-links`
-- `bun run typecheck`
-- `bun run lint`
-- Existing rendered UI coverage for the terminology route remains green.
+- `bun run validate:terminology` (now also scans curriculum for inline refs).
+- `bun run coverage:terminology` regenerates the coverage matrix.
+- `bun run content:generate` / `bun run content:check`.
+- `bun run format:check`, `bun run typecheck`, `bun run lint`.
+- `bun run test:content-qa`, `bun run validate:static-links`.
+- `bun run test:e2e` (user approved Vite preview binding).
 
-## Progress Notes
+## Out Of Scope For This PR
 
-- Added `app/scripts/validate-terminology.ts` and wired it into
-  `bun run check`.
-- Confirmed sanity behaviour: a deliberately corrupted anchor fails the
-  validator with file/line context; restoring the file makes it pass.
-- Stripped 148 decorative `<span class="termBadge">…</span>` blocks across
-  the seven domain files; the `.termBadge` CSS stays for future inline use.
-- Rewrote `terminology/README.md` marker key to drop the Markdown link
-  example, point authors at the validator, and note that the leading
-  per-entry badge was removed.
-
-## Out Of Scope Confirmation
-
-- No content under `tutorials/`, `quizzes/`, `flashcards/`, `exams/`,
-  `facts/`, `regulations/`, or `challenges/` was modified. Inline grounding
-  remains Phase 10.4 work.
-- No external citations or `FACT-*` linkage were added; those are Phase
-  10.2.
+- Renderer changes needed to let quiz/flashcard/exam/fact/challenge
+  surfaces render inline HTML termRef markers — tracked as the remaining
+  Phase 10.4 work.
+- Deeper inline grounding across every tutorial and regulation — staged as
+  follow-on per-surface PRs.
+- Validator escalation to fail when prose mentions a terminology term
+  without an inline marker — the coverage matrix flags these as candidates
+  but does not gate.

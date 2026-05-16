@@ -18,6 +18,11 @@ underlying table.
 Example: a report can read a curated view while raw account-level tables remain
 restricted.
 
+Sources:
+
+- [BigQuery authorized views](https://cloud.google.com/bigquery/docs/authorized-views).
+- `FACT-BIGQUERY-AUTHORIZED-VIEW-ACCESS-CONTROL`.
+
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#bigquery-logical-view">BigQuery logical view<sup>BQ</sup></a>,
 <a class="termRef" href="#/terminology/regulations.md#gdpr-data-minimisation">GDPR data minimisation<sup>REG</sup></a>.
@@ -27,6 +32,10 @@ Related:
 A named field in a BigQuery table or view.
 
 Example: a `currency_code` column can be used as a dashboard dimension.
+
+Sources:
+
+- [Introduction to tables](https://cloud.google.com/bigquery/docs/tables-intro).
 
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#bigquery-table">BigQuery table<sup>BQ</sup></a>,
@@ -40,6 +49,10 @@ location.
 Example: EU-region reporting tables are commonly grouped into a dataset located
 in the EU.
 
+Sources:
+
+- [Introduction to datasets](https://cloud.google.com/bigquery/docs/datasets-intro).
+
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#data-location">data location<sup>BQ</sup></a>,
 <a class="termRef" href="#/terminology/bigquery.md#bigquery-table">BigQuery table<sup>BQ</sup></a>.
@@ -50,6 +63,12 @@ A unit of work submitted to BigQuery, such as a query job, load job, extract
 job, or copy job.
 
 Example: each executed dashboard query can create a query job.
+
+Sources:
+
+- [BigQuery jobs](https://cloud.google.com/bigquery/docs/jobs-overview).
+- `FACT-BIGQUERY-JOBS-BYTES`.
+- `FACT-BIGQUERY-JOBS-CREATION-TIME`.
 
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#job-metadata">job metadata<sup>BQ</sup></a>,
@@ -63,6 +82,12 @@ queried.
 Example: a view can expose governed dashboard fields without creating another
 physical table.
 
+Sources:
+
+- [Introduction to logical views](https://cloud.google.com/bigquery/docs/views-intro).
+- `FACT-BIGQUERY-LOGICAL-VIEW`.
+- `FACT-BIGQUERY-VIEW-SCOPE`.
+
 Related:
 <a class="termRef" href="#/terminology/sql.md#select-list">SELECT list<sup>SQL</sup></a>,
 <a class="termRef" href="#/terminology/bigquery.md#bigquery-materialized-view">BigQuery materialized view<sup>BQ</sup></a>.
@@ -75,6 +100,13 @@ patterns and refresh rules.
 Example: a repeatedly used aggregate may be a candidate for a materialized view
 if its SQL fits the restrictions.
 
+Sources:
+
+- [Introduction to materialized views](https://cloud.google.com/bigquery/docs/materialized-views-intro).
+- `FACT-BIGQUERY-MATERIALIZED-VIEW-PRECOMPUTED`.
+- `FACT-BIGQUERY-MATERIALIZED-VIEW-CACHE`.
+- `FACT-BIGQUERY-MATERIALIZED-VIEW-LIMITATIONS`.
+
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#bigquery-logical-view">BigQuery logical view<sup>BQ</sup></a>,
 <a class="termRef" href="#/terminology/bigquery.md#materialized-result-cache">materialized result cache<sup>BQ</sup></a>.
@@ -86,6 +118,10 @@ A capacity-management resource used to allocate slots for workloads.
 Example: production BI queries and ad hoc analyst queries can be assigned to
 different capacity arrangements.
 
+Sources:
+
+- [Slot reservations](https://cloud.google.com/bigquery/docs/reservations-intro).
+
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#slot">slot<sup>BQ</sup></a>,
 <a class="termRef" href="#/terminology/bigquery.md#bigquery-job">BigQuery job<sup>BQ</sup></a>.
@@ -96,6 +132,10 @@ A physical table stored in a BigQuery dataset.
 
 Example: a warehouse table can store daily balances, transaction events, or
 customer reference data.
+
+Sources:
+
+- [Introduction to tables](https://cloud.google.com/bigquery/docs/tables-intro).
 
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#bigquery-dataset">BigQuery dataset<sup>BQ</sup></a>,
@@ -109,6 +149,10 @@ scanned for suitable queries.
 Example: clustering by customer or account fields can help queries that filter
 on those fields.
 
+Sources:
+
+- [Clustered tables](https://cloud.google.com/bigquery/docs/clustered-tables).
+
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#partitioned-table">partitioned table<sup>BQ</sup></a>,
 <a class="termRef" href="#/terminology/bigquery.md#dry-run">dry run<sup>BQ</sup></a>.
@@ -118,6 +162,10 @@ Related:
 The geographic location where BigQuery data is stored and processed.
 
 Example: a view and the tables it references need compatible locations.
+
+Sources:
+
+- [Dataset locations](https://cloud.google.com/bigquery/docs/locations).
 
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#bigquery-dataset">BigQuery dataset<sup>BQ</sup></a>,
@@ -131,6 +179,11 @@ query.
 Example: a dry run can show whether a dashboard query will scan too much data
 before it is published.
 
+Sources:
+
+- [Estimate query costs (dry run)](https://cloud.google.com/bigquery/docs/estimate-costs).
+- `FACT-BIGQUERY-DRY-RUN-BYTES`.
+
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#query-validator">query validator<sup>BQ</sup></a>,
 <a class="termRef" href="#/terminology/sql.md#partition-predicate">partition predicate<sup>SQL</sup></a>.
@@ -143,6 +196,10 @@ storage.
 Example: an external table can query files in cloud storage without loading
 them into native storage first.
 
+Sources:
+
+- [External tables](https://cloud.google.com/bigquery/docs/external-tables).
+
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#bigquery-table">BigQuery table<sup>BQ</sup></a>,
 <a class="termRef" href="#/terminology/bigquery.md#data-location">data location<sup>BQ</sup></a>.
@@ -153,6 +210,12 @@ Metadata views that expose information about datasets, tables, jobs,
 reservations, and other BigQuery resources.
 
 Example: job metadata views can support cost and activity review.
+
+Sources:
+
+- [INFORMATION_SCHEMA](https://cloud.google.com/bigquery/docs/information-schema-intro).
+- `FACT-BIGQUERY-JOBS-BYTES`.
+- `FACT-BIGQUERY-JOBS-USER-EMAIL`.
 
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#job-metadata">job metadata<sup>BQ</sup></a>,
@@ -165,6 +228,12 @@ identity fields.
 
 Example: bytes processed and creation time can support a dashboard cost review.
 
+Sources:
+
+- [JOBS view](https://cloud.google.com/bigquery/docs/information-schema-jobs).
+- `FACT-BIGQUERY-JOBS-BYTES`.
+- `FACT-BIGQUERY-JOBS-CREATION-TIME`.
+
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#bigquery-job">BigQuery job<sup>BQ</sup></a>,
 <a class="termRef" href="#/terminology/regulations.md#personal-data">personal data<sup>REG</sup></a>.
@@ -175,6 +244,10 @@ BigQuery's older SQL dialect.
 
 Example: modern BI queries should normally use BigQuery standard SQL rather
 than legacy SQL.
+
+Sources:
+
+- [Legacy SQL functions and operators](https://cloud.google.com/bigquery/docs/reference/legacy-sql).
 
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#standard-sql">standard SQL<sup>BQ</sup></a>,
@@ -188,6 +261,10 @@ satisfied.
 Example: repeated identical queries may reuse cached results depending on
 BigQuery cache eligibility.
 
+Sources:
+
+- [Query results cache](https://cloud.google.com/bigquery/docs/cached-results).
+
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#bigquery-materialized-view">BigQuery materialized view<sup>BQ</sup></a>,
 <a class="termRef" href="#/terminology/looker-studio.md#data-freshness">data freshness<sup>LS</sup></a>.
@@ -197,6 +274,10 @@ Related:
 A field inside a STRUCT or repeated structure.
 
 Example: an address STRUCT may contain city, region, and country fields.
+
+Sources:
+
+- [Nested and repeated fields](https://cloud.google.com/bigquery/docs/nested-repeated).
 
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#repeated-field">repeated field<sup>BQ</sup></a>,
@@ -208,6 +289,12 @@ A query that accepts typed parameter values while keeping SQL structure fixed.
 
 Example: a report can pass a selected currency value into a parameterized
 predicate.
+
+Sources:
+
+- [Parameterized queries](https://cloud.google.com/bigquery/docs/parameterized-queries).
+- `FACT-BIGQUERY-PARAMETERIZED-QUERY-USER-INPUT`.
+- `FACT-BIGQUERY-PARAMETER-NOT-IDENTIFIER`.
 
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#query-parameter">query parameter<sup>BQ</sup></a>,
@@ -221,6 +308,10 @@ reduce scanned data.
 Example: a date-partitioned fact table should receive a date predicate from a
 dashboard date range.
 
+Sources:
+
+- [Introduction to partitioned tables](https://cloud.google.com/bigquery/docs/partitioned-tables).
+
 Related:
 <a class="termRef" href="#/terminology/sql.md#partition-predicate">partition predicate<sup>SQL</sup></a>,
 <a class="termRef" href="#/terminology/bigquery.md#clustering">clustering<sup>BQ</sup></a>.
@@ -231,6 +322,11 @@ A named or positional value supplied to a query. Parameters are for values, not
 table names, column names, or raw SQL fragments.
 
 Example: `@selected_currency` can hold `EUR`; it should not hold a table name.
+
+Sources:
+
+- [Parameterized queries](https://cloud.google.com/bigquery/docs/parameterized-queries).
+- `FACT-BIGQUERY-PARAMETER-NOT-IDENTIFIER`.
 
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#parameterized-query">parameterized query<sup>BQ</sup></a>,
@@ -243,6 +339,11 @@ execution.
 
 Example: validation can catch invalid SQL before the query is run.
 
+Sources:
+
+- [Query validator (estimate query costs)](https://cloud.google.com/bigquery/docs/estimate-costs).
+- `FACT-BIGQUERY-QUERY-VALIDATOR-BYTES`.
+
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#dry-run">dry run<sup>BQ</sup></a>,
 <a class="termRef" href="#/terminology/bigquery.md#job-metadata">job metadata<sup>BQ</sup></a>.
@@ -252,6 +353,10 @@ Related:
 A field that can contain an array of values within a row.
 
 Example: an account row could contain a repeated list of flags or attributes.
+
+Sources:
+
+- [Nested and repeated fields](https://cloud.google.com/bigquery/docs/nested-repeated).
 
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#nested-field">nested field<sup>BQ</sup></a>,
@@ -264,6 +369,10 @@ A query configured to run on a schedule and write or refresh results.
 Example: a daily scheduled query can prepare a serving table before business
 users open dashboards.
 
+Sources:
+
+- [Scheduled queries](https://cloud.google.com/bigquery/docs/scheduling-queries).
+
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#bigquery-job">BigQuery job<sup>BQ</sup></a>,
 <a class="termRef" href="#/terminology/bi.md#report-refresh-time">report refresh time<sup>BI</sup></a>.
@@ -273,6 +382,10 @@ Related:
 A unit of computational capacity used to execute BigQuery queries.
 
 Example: more slots can increase parallel query execution capacity.
+
+Sources:
+
+- [BigQuery slots](https://cloud.google.com/bigquery/docs/slots).
 
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#bigquery-reservation">BigQuery reservation<sup>BQ</sup></a>,
@@ -285,6 +398,10 @@ BigQuery's GoogleSQL dialect used for modern query work.
 Example: standard SQL supports familiar constructs such as CTEs, window
 functions, and typed query parameters.
 
+Sources:
+
+- [GoogleSQL reference](https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax).
+
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#legacy-sql">legacy SQL<sup>BQ</sup></a>,
 <a class="termRef" href="#/terminology/sql.md#window-function">window function<sup>SQL</sup></a>.
@@ -294,6 +411,10 @@ Related:
 A read-only copy of a table at a point in time.
 
 Example: a snapshot can preserve a table state for audit or recovery workflows.
+
+Sources:
+
+- [Table snapshots](https://cloud.google.com/bigquery/docs/table-snapshots-intro).
 
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#bigquery-table">BigQuery table<sup>BQ</sup></a>,
@@ -305,6 +426,10 @@ A query pattern that uses a wildcard to match multiple similarly named tables.
 
 Example: a wildcard query can read several sharded daily tables, though
 partitioned tables are usually easier to govern.
+
+Sources:
+
+- [Wildcard tables](https://cloud.google.com/bigquery/docs/querying-wildcard-tables).
 
 Related:
 <a class="termRef" href="#/terminology/bigquery.md#partitioned-table">partitioned table<sup>BQ</sup></a>,

@@ -1,31 +1,52 @@
 # What We Did
 
-## 2026-05-16 - Task 060 Terminology Integrity Checks
+## 2026-05-16 - Task 060 Terminology Grounding Follow-Through
 
 - Audited the merged PR #44 terminology work for incomplete, shallow, or
   wrong parts and added Phase 10 to `PLAN.md` to stage the follow-through
   across sub-phases (integrity, sourcing/fact linkage, search depth,
   curriculum grounding rollout, reverse coverage, continuity).
 - Synced local `main` with `origin/main` at `d88acc7`, deleted the stale
-  local `terminology-grounding-glossary` branch, and started Phase 10.1 on
+  local `terminology-grounding-glossary` branch, and started Phase 10 on
   a fresh `terminology-integrity-checks` branch.
-- Added `app/scripts/validate-terminology.ts`. The validator fails on
-  duplicate heading slugs inside a terminology file, broken
+- Opened PR #45 with Phase 10.1, then continued Phase 10.2 through 10.6 on
+  the same branch by user direction.
+- Phase 10.1 - Added `app/scripts/validate-terminology.ts`. The validator
+  fails on duplicate heading slugs inside a terminology file, broken
   `class="termRef"` anchors, unknown target files, missing `#anchor`, and
-  missing or mismatched `<sup>HINT</sup>` domain hints. Wired it into
-  `bun run check` and exposed it as `bun run validate:terminology` at the
-  root workspace.
-- Sanity-checked the validator: a deliberately corrupted anchor failed with
-  file/line context, and the file restored cleanly to a passing run.
-- Removed 148 decorative leading `<span class="termBadge">` blocks from the
-  seven terminology domain files; the `.termBadge` CSS stays available for
-  future inline reference use.
-- Rewrote `terminology/README.md` marker key so authors are pointed at the
-  HTML anchor form only (plain Markdown links cannot embed `<sup>` through
-  the renderer) and at the new validator.
-- Marked task 059 merged in `_development/tasks/059-…`, added
-  `_development/tasks/060-terminology-integrity-checks.md`, and updated the
-  task index.
+  missing or mismatched `<sup>HINT</sup>` domain hints. Wired into
+  `bun run check` and exposed as `bun run validate:terminology` at the
+  root workspace. Removed 148 decorative leading `<span class="termBadge">`
+  blocks from the seven terminology domain files; the `.termBadge` CSS
+  stays available for future inline reference use. Rewrote
+  `terminology/README.md` marker key so authors use the HTML anchor form
+  only.
+- Phase 10.2 - Extended the validator to parse `Sources:` blocks under each
+  entry, require an `https?://` citation on every entry in `bigquery.md`,
+  `looker-studio.md`, `duckdb.md`, and `regulations.md`, and confirm
+  referenced `FACT-*` IDs resolve against `facts/`. Backfilled 75 entries
+  with citations to official vendor documentation, regulator pages, or
+  EUR-Lex CELEX references, linking 30 entries to existing `FACT-*` IDs.
+- Phase 10.3 - Term-level search. Terminology sidebar now surfaces matching
+  `## term` headings (not only pages). Fixed hash routing so
+  `#/terminology/<file>#<anchor>` keeps the inner fragment available, and
+  added scroll-on-mount and `hashchange` behaviour in `MarkdownArticle` so
+  deep links land on the target heading. Added rendered UI coverage for
+  the term result list, deep-linked anchors, and vendor citations.
+- Phase 10.4 - Inline grounding rollout. Extended the validator to scan
+  `tutorials/`, `quizzes/`, `flashcards/`, `exams/`, `facts/`,
+  `regulations/`, and `challenges/` so any inline `class="termRef"` link
+  added to curriculum prose is held to the same anchor-resolution rules.
+  Added 27 inline references to a representative slice of tutorials and
+  regulations. Documented as out of scope: renderer changes needed to let
+  quiz/flashcard/exam/fact/challenge surfaces honour inline HTML.
+- Phase 10.5 - Added `app/scripts/generate-terminology-coverage.ts`
+  exposed as `bun run coverage:terminology`. Output is
+  `_development/terminology-coverage.md`. Initial snapshot: 148 entries,
+  93 prose-mentioned, 21 inline-grounded, 53 entirely uncovered.
+- Phase 10.6 - Marked task 059 merged in `_development/tasks/059-…`,
+  added `_development/tasks/060-terminology-integrity-checks.md`, updated
+  the task index, `STATUS.md`, `DO_NEXT.md`, and `BUGS.md`.
 
 ## 2026-05-12 - Task 059 Terminology Grounding Glossary
 

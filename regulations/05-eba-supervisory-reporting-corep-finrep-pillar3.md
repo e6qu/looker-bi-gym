@@ -24,7 +24,8 @@ Regulatory reporting is one of the most BI-like activities in a bank, but with s
 
 ## Coordinates A BI Model Should Store
 
-- Reporting framework release.
+- <a class="termRef" href="#/terminology/regulations.md#reporting-framework-version">Reporting framework version<sup>REG</sup></a>
+  release.
 - Taxonomy version.
 - Reporting reference date.
 - Submission due date.

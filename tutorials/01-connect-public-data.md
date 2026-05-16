@@ -46,9 +46,14 @@ After this tutorial, you will be able to:
 
 - Build a report-ready deposits serving result from account-date balance rows.
 - Check expected row counts, totals, dates, and exposed fields before charting.
-- Use an optional BigQuery logical view as the source shape for Looker Studio.
-- Record Looker Studio credential mode without storing credentials, tokens, or
-  private links.
+- Use an optional
+  <a class="termRef" href="#/terminology/bigquery.md#bigquery-logical-view">BigQuery logical view<sup>BQ</sup></a>
+  as the source shape for Looker Studio.
+- Record Looker Studio
+  <a class="termRef" href="#/terminology/looker-studio.md#owner-credentials">owner-credentials<sup>LS</sup></a>
+  or
+  <a class="termRef" href="#/terminology/looker-studio.md#viewer-credentials">viewer-credentials<sup>LS</sup></a>
+  mode without storing credentials, tokens, or private links.
 
 Produces:
 

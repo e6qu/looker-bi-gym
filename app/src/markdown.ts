@@ -45,7 +45,7 @@ function isExternalUrl(href: string): boolean {
   return /^https?:\/\//i.test(href);
 }
 
-function slugifyHeading(value: string): string {
+export function slugifyHeading(value: string): string {
   return value
     .trim()
     .toLowerCase()

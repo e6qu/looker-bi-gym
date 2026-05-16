@@ -17,6 +17,10 @@ A named field in a table loaded into a browser SQL runtime.
 Example: a browser-loaded CSV table can expose text, numeric, and date columns
 for SQL practice.
 
+Sources:
+
+- [DuckDB documentation](https://duckdb.org/docs/).
+
 Related:
 <a class="termRef" href="#/terminology/duckdb.md#browser-loaded-table">browser-loaded table<sup>DB</sup></a>,
 <a class="termRef" href="#/terminology/sql.md#select-list">SELECT list<sup>SQL</sup></a>.
@@ -28,6 +32,10 @@ in-memory data source, local file, or fetched static asset.
 
 Example: a CSV file can be loaded into a DuckDB-WASM connection as a queryable
 table.
+
+Sources:
+
+- [DuckDB documentation](https://duckdb.org/docs/).
 
 Related:
 <a class="termRef" href="#/terminology/duckdb.md#csv-backed-table">CSV-backed table<sup>DB</sup></a>,
@@ -41,6 +49,10 @@ server.
 Example: a browser SQL workbench can run `SELECT` queries against
 browser-loaded tables.
 
+Sources:
+
+- [DuckDB documentation](https://duckdb.org/docs/).
+
 Related:
 <a class="termRef" href="#/terminology/duckdb.md#duckdb-wasm">DuckDB-WASM<sup>DB</sup></a>,
 <a class="termRef" href="#/terminology/duckdb.md#local-query-result">local query result<sup>DB</sup></a>.
@@ -51,6 +63,10 @@ A queryable table created from CSV data.
 
 Example: a comma-separated file with a header row can become a table for local
 SQL analysis.
+
+Sources:
+
+- [CSV import](https://duckdb.org/docs/data/csv/overview.html).
 
 Related:
 <a class="termRef" href="#/terminology/duckdb.md#browser-loaded-table">browser-loaded table<sup>DB</sup></a>,
@@ -64,6 +80,10 @@ process columnar analytical workloads.
 Example: DuckDB can query local files and in-memory data without a separate
 database server.
 
+Sources:
+
+- [DuckDB overview](https://duckdb.org/docs/).
+
 Related:
 <a class="termRef" href="#/terminology/duckdb.md#duckdb-wasm">DuckDB-WASM<sup>DB</sup></a>,
 <a class="termRef" href="#/terminology/sql.md#aggregate-function">aggregate function<sup>SQL</sup></a>.
@@ -74,6 +94,10 @@ A WebAssembly build of DuckDB that runs SQL in the browser.
 
 Example: DuckDB-WASM can execute analytical SQL over browser-loaded data.
 
+Sources:
+
+- [DuckDB-Wasm](https://duckdb.org/docs/api/wasm/overview.html).
+
 Related:
 <a class="termRef" href="#/terminology/duckdb.md#duckdb">DuckDB<sup>DB</sup></a>,
 <a class="termRef" href="#/terminology/duckdb.md#browser-sql-workbench">browser SQL workbench<sup>DB</sup></a>.
@@ -83,6 +107,10 @@ Related:
 A table held in runtime memory rather than persisted in a remote warehouse.
 
 Example: a temporary analysis table can disappear when the browser session ends.
+
+Sources:
+
+- [DuckDB documentation](https://duckdb.org/docs/).
 
 Related:
 <a class="termRef" href="#/terminology/duckdb.md#browser-loaded-table">browser-loaded table<sup>DB</sup></a>,
@@ -95,6 +123,10 @@ remote cloud warehouse.
 
 Example: a result grid returned by DuckDB-WASM is local to the browser runtime.
 
+Sources:
+
+- [DuckDB documentation](https://duckdb.org/docs/).
+
 Related:
 <a class="termRef" href="#/terminology/duckdb.md#browser-sql-workbench">browser SQL workbench<sup>DB</sup></a>,
 <a class="termRef" href="#/terminology/bigquery.md#bigquery-job">BigQuery job<sup>BQ</sup></a>.
@@ -106,6 +138,10 @@ browser.
 
 Example: DuckDB-WASM uses WebAssembly to run DuckDB query execution in browser
 contexts.
+
+Sources:
+
+- [WebAssembly specification](https://webassembly.org/).
 
 Related:
 <a class="termRef" href="#/terminology/duckdb.md#duckdb-wasm">DuckDB-WASM<sup>DB</sup></a>,

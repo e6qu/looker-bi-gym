@@ -70,7 +70,11 @@ Produces:
 - Browser-first field-classification and governed-source outputs.
 - A draft `serve.safe_governed_deposit_summary` design.
 - A draft `serve.bi_report_sharing_register` design.
-- Optional BigQuery authorized-view and Looker Studio credential-mode notes.
+- Optional BigQuery
+  <a class="termRef" href="#/terminology/bigquery.md#authorized-view">authorized view<sup>BQ</sup></a>
+  and Looker Studio
+  <a class="termRef" href="#/terminology/looker-studio.md#viewer-credentials">credential-mode<sup>LS</sup></a>
+  notes.
 - `notes/07-governance-sharing.md`, if you keep external notes.
 
 ## Goal

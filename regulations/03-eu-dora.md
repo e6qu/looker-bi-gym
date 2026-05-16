@@ -17,7 +17,11 @@ Training boundary: this brief is technical orientation for synthetic BI training
 
 ## Why A BI Developer Cares
 
-DORA makes ICT operational resilience a financial-sector control domain. BI systems may be used to evidence ICT risk management, incidents, third-party ICT dependency, resilience testing, and recovery readiness.
+DORA makes ICT operational resilience a financial-sector control domain. BI systems may be used to evidence
+<a class="termRef" href="#/terminology/regulations.md#ict-risk">ICT risk<sup>REG</sup></a>
+management, incidents,
+<a class="termRef" href="#/terminology/regulations.md#dora-ict-dependency-register">third-party ICT dependency<sup>REG</sup></a>,
+resilience testing, and recovery readiness.
 
 BI platforms themselves may also become part of the operational reporting chain and must be governed as technology assets.
 

@@ -57,18 +57,24 @@ regulatory-context boundaries before you touch any banking BI examples.
    `Serving layer`, `Reporting layer`, `Sensitive fields`, and
    `Banking grain`.
 2. Under `Serving layer`, write that reusable dashboard logic belongs upstream
-   in governed SQL. In BigQuery, a logical view is a virtual table defined by a
-   SQL query and queried like a table.
+   in governed SQL. In BigQuery, a
+   <a class="termRef" href="#/terminology/bigquery.md#bigquery-logical-view">logical view<sup>BQ</sup></a>
+   is a virtual table defined by a SQL query and queried like a table.
 3. Under `Reporting layer`, write that Looker Studio charts read fields through
-   a data source. Before charting, inspect the data-source fields, aggregation
+   a
+   <a class="termRef" href="#/terminology/looker-studio.md#looker-studio-data-source">data source<sup>LS</sup></a>.
+   Before charting, inspect the data-source fields,
+   <a class="termRef" href="#/terminology/looker-studio.md#aggregation">aggregation<sup>LS</sup></a>
    defaults, and credential mode.
 4. Under `Sensitive fields`, write that raw account, customer, and synthetic
    IBAN identifiers should stay out of dashboard-ready serving outputs unless a
    specific approved purpose requires them.
 5. Under `Banking grain`, write that account balances are account-level facts
    for a business date, while deposit-guarantee checks require depositor-bank
-   grain. The standard ceiling used in this course context is EUR 100,000 per
-   depositor per bank.
+   <a class="termRef" href="#/terminology/bi.md#grain">grain<sup>BI</sup></a>.
+   The standard ceiling used in this course context is EUR 100,000 per
+   depositor per bank
+   (<a class="termRef" href="#/terminology/regulations.md#dgsd-guarantee-ceiling">DGSD guarantee ceiling<sup>REG</sup></a>).
 6. Add one ready/not-ready rule: a dashboard source is not ready if it exposes
    raw identifiers, hides metric logic inside chart-only calculations, or
    compares account-balance totals to guarantee wording without changing grain.

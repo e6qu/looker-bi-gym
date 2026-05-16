@@ -9,6 +9,15 @@ type HeadingSlug = {
   readonly line: number;
 };
 
+type TermEntry = {
+  readonly file: string;
+  readonly slug: string;
+  readonly text: string;
+  readonly line: number;
+  readonly body: string;
+  readonly bodyStartLine: number;
+};
+
 type TermRef = {
   readonly sourceFile: string;
   readonly line: number;
@@ -16,6 +25,14 @@ type TermRef = {
   readonly targetFile: string | undefined;
   readonly anchor: string;
   readonly hint: string | undefined;
+};
+
+type SourceCitation = {
+  readonly file: string;
+  readonly slug: string;
+  readonly line: number;
+  readonly externalUrls: readonly string[];
+  readonly factIds: readonly string[];
 };
 
 type Failure = {
@@ -28,6 +45,7 @@ const scriptDir = dirname(fileURLToPath(import.meta.url));
 const appRoot = join(scriptDir, "..");
 const repoRoot = join(appRoot, "..");
 const terminologyRoot = join(repoRoot, "terminology");
+const factsRoot = join(repoRoot, "facts");
 
 const expectedHintByFile: ReadonlyMap<string, string> = new Map([
   ["bi.md", "BI"],
@@ -39,10 +57,19 @@ const expectedHintByFile: ReadonlyMap<string, string> = new Map([
   ["duckdb.md", "DB"],
 ]);
 
+const sourcingRequiredFiles: ReadonlySet<string> = new Set([
+  "bigquery.md",
+  "looker-studio.md",
+  "duckdb.md",
+  "regulations.md",
+]);
+
 const headingPattern = /^(#{1,6})\s+(.+?)\s*$/u;
 const termRefPattern =
   /<a\s+class="termRef"\s+href="([^"]+)"\s*>([\s\S]*?)<\/a>/gu;
 const supPattern = /<sup>([^<]+)<\/sup>/u;
+const factIdPattern = /\bFACT-[A-Z0-9]+(?:-[A-Z0-9]+)*\b/gu;
+const externalUrlPattern = /\bhttps?:\/\/[^\s)<>"']+/gu;
 
 function slugifyHeading(value: string): string {
   return value
@@ -111,6 +138,66 @@ function extractHeadings(file: string, source: string): HeadingSlug[] {
   return out;
 }
 
+function extractTermEntries(file: string, source: string): TermEntry[] {
+  const { body, lineOffset } = stripFrontmatter(source);
+  const lines = body.split("\n");
+  const entries: TermEntry[] = [];
+  let inCodeFence = false;
+
+  type Boundary = {
+    readonly lineIndex: number;
+    readonly slug: string;
+    readonly text: string;
+  };
+  const boundaries: Boundary[] = [];
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const rawLine = lines[index] ?? "";
+    if (rawLine.startsWith("```")) {
+      inCodeFence = !inCodeFence;
+      continue;
+    }
+    if (inCodeFence) {
+      continue;
+    }
+
+    const match = /^##\s+(.+?)\s*$/u.exec(rawLine);
+    if (match === null) {
+      continue;
+    }
+
+    const text = match[1] ?? "";
+    const slug = slugifyHeading(text);
+    if (slug.length === 0) {
+      continue;
+    }
+
+    boundaries.push({ lineIndex: index, slug, text });
+  }
+
+  for (let i = 0; i < boundaries.length; i += 1) {
+    const boundary = boundaries[i];
+    if (boundary === undefined) {
+      continue;
+    }
+    const next = boundaries[i + 1];
+    const startLine = boundary.lineIndex + 1;
+    const endLine = next?.lineIndex ?? lines.length;
+    const body = lines.slice(startLine, endLine).join("\n");
+
+    entries.push({
+      file,
+      slug: boundary.slug,
+      text: boundary.text,
+      line: lineOffset + boundary.lineIndex + 1,
+      body,
+      bodyStartLine: lineOffset + startLine + 1,
+    });
+  }
+
+  return entries;
+}
+
 function parseHref(href: string): {
   readonly targetFile: string | undefined;
   readonly anchor: string;
@@ -156,6 +243,59 @@ function extractTermRefs(sourceFile: string, source: string): TermRef[] {
   return refs;
 }
 
+function extractSources(entry: TermEntry): SourceCitation | undefined {
+  const lines = entry.body.split("\n");
+  const headerIndex = lines.findIndex((line) =>
+    /^Sources?\s*:\s*$/u.test(line),
+  );
+  if (headerIndex === -1) {
+    return undefined;
+  }
+
+  const externalUrls: string[] = [];
+  const factIds: string[] = [];
+
+  for (let i = headerIndex + 1; i < lines.length; i += 1) {
+    const rawLine = lines[i] ?? "";
+    if (/^##\s/u.test(rawLine)) {
+      break;
+    }
+    if (/^Related\s*:\s*$/u.test(rawLine)) {
+      break;
+    }
+    if (rawLine.trim().length === 0) {
+      // allow a blank line directly after "Sources:" but stop on the first
+      // blank line after we've started collecting bullet items
+      if (externalUrls.length > 0 || factIds.length > 0) {
+        break;
+      }
+      continue;
+    }
+    if (!rawLine.startsWith("- ")) {
+      // tolerate continuation lines for wrapped bullets
+      if (/^\s+/u.test(rawLine)) {
+        continue;
+      }
+      break;
+    }
+
+    for (const urlMatch of rawLine.matchAll(externalUrlPattern)) {
+      externalUrls.push(urlMatch[0]);
+    }
+    for (const factMatch of rawLine.matchAll(factIdPattern)) {
+      factIds.push(factMatch[0]);
+    }
+  }
+
+  return {
+    file: entry.file,
+    slug: entry.slug,
+    line: entry.bodyStartLine + headerIndex,
+    externalUrls,
+    factIds,
+  };
+}
+
 async function readTerminologyFiles(): Promise<
   ReadonlyMap<string, { readonly source: string }>
 > {
@@ -171,6 +311,29 @@ async function readTerminologyFiles(): Promise<
   );
 
   return out;
+}
+
+async function loadFactIds(): Promise<ReadonlySet<string>> {
+  const entries = await readdir(factsRoot);
+  const markdown = entries.filter((entry) => entry.endsWith(".md"));
+  const ids = new Set<string>();
+
+  await Promise.all(
+    markdown.map(async (fileName) => {
+      const source = await readFile(join(factsRoot, fileName), "utf8");
+      const matches = source.matchAll(
+        /^###\s+(FACT-[A-Z0-9]+(?:-[A-Z0-9]+)*)\s*$/gmu,
+      );
+      for (const match of matches) {
+        const id = match[1];
+        if (id !== undefined) {
+          ids.add(id);
+        }
+      }
+    }),
+  );
+
+  return ids;
 }
 
 function checkDuplicateHeadings(
@@ -262,8 +425,98 @@ function checkTermRef(
   }
 }
 
+function checkEntrySources(
+  entry: TermEntry,
+  factIds: ReadonlySet<string>,
+  failures: Failure[],
+): void {
+  const required = sourcingRequiredFiles.has(entry.file);
+  const citation = extractSources(entry);
+
+  if (citation === undefined) {
+    if (required) {
+      failures.push({
+        file: entry.file,
+        line: entry.line,
+        message: `entry "${entry.slug}" must include a Sources: block (vendor/regulatory files require external citations)`,
+      });
+    }
+    return;
+  }
+
+  if (required && citation.externalUrls.length === 0) {
+    failures.push({
+      file: entry.file,
+      line: citation.line,
+      message: `entry "${entry.slug}" Sources: block must include at least one https?:// link to official documentation`,
+    });
+  }
+
+  for (const factId of citation.factIds) {
+    if (!factIds.has(factId)) {
+      failures.push({
+        file: entry.file,
+        line: citation.line,
+        message: `entry "${entry.slug}" references unknown ${factId} (not found in facts/)`,
+      });
+    }
+  }
+}
+
+const curriculumScanRoots: readonly string[] = [
+  "tutorials",
+  "quizzes",
+  "flashcards",
+  "exams",
+  "facts",
+  "regulations",
+  "challenges",
+];
+
+async function* walkMarkdown(
+  root: string,
+): AsyncGenerator<{ readonly relativePath: string; readonly source: string }> {
+  const entries = await readdir(root, { withFileTypes: true });
+  for (const entry of entries) {
+    const fullPath = join(root, entry.name);
+    if (entry.isDirectory()) {
+      yield* walkMarkdown(fullPath);
+      continue;
+    }
+    if (!entry.name.endsWith(".md")) {
+      continue;
+    }
+    const source = await readFile(fullPath, "utf8");
+    yield { relativePath: fullPath.slice(repoRoot.length + 1), source };
+  }
+}
+
+async function scanCurriculumTermRefs(
+  headingsByFile: ReadonlyMap<string, readonly HeadingSlug[]>,
+  failures: Failure[],
+): Promise<number> {
+  let curriculumRefCount = 0;
+  for (const dirName of curriculumScanRoots) {
+    const root = join(repoRoot, dirName);
+    try {
+      await readdir(root);
+    } catch {
+      continue;
+    }
+    for await (const { relativePath, source } of walkMarkdown(root)) {
+      const refs = extractTermRefs(relativePath, source);
+      curriculumRefCount += refs.length;
+      for (const ref of refs) {
+        checkTermRef(ref, headingsByFile, failures);
+      }
+    }
+  }
+  return curriculumRefCount;
+}
+
 async function main(): Promise<void> {
   const files = await readTerminologyFiles();
+  const factIds = await loadFactIds();
   const failures: Failure[] = [];
   const headingsByFile = new Map<string, readonly HeadingSlug[]>();
 
@@ -274,13 +527,35 @@ async function main(): Promise<void> {
   }
 
   let referenceCount = 0;
+  let sourceCitationCount = 0;
+  let factLinkCount = 0;
+
   for (const [fileName, file] of files.entries()) {
     const refs = extractTermRefs(fileName, file.source);
     referenceCount += refs.length;
     for (const ref of refs) {
       checkTermRef(ref, headingsByFile, failures);
     }
+
+    if (fileName === "README.md") {
+      continue;
+    }
+
+    const entries = extractTermEntries(fileName, file.source);
+    for (const entry of entries) {
+      checkEntrySources(entry, factIds, failures);
+      const citation = extractSources(entry);
+      if (citation !== undefined) {
+        sourceCitationCount += 1;
+        factLinkCount += citation.factIds.length;
+      }
+    }
   }
+
+  const curriculumRefCount = await scanCurriculumTermRefs(
+    headingsByFile,
+    failures,
+  );
 
   if (failures.length > 0) {
     process.stderr.write(
@@ -302,7 +577,7 @@ async function main(): Promise<void> {
   }
 
   process.stdout.write(
-    `Terminology validation passed: ${files.size} files, ${headingCount} headings, ${referenceCount} termRef references.\n`,
+    `Terminology validation passed: ${files.size} files, ${headingCount} headings, ${referenceCount} termRef references, ${sourceCitationCount} sourced entries, ${factLinkCount} FACT-* links, ${curriculumRefCount} inline curriculum termRefs.\n`,
   );
 }
 

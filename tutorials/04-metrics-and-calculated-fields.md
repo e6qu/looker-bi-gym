@@ -39,14 +39,21 @@ Required tools:
 - Do not use Google Cloud CLI, BigQuery CLI, service account keys, Python, or
   Docker.
 
-Objective: decide which metric logic belongs upstream, which reusable
-calculated fields belong in a Looker Studio data source, and which calculations
-are only chart formatting.
+Objective: decide which
+<a class="termRef" href="#/terminology/bi.md#metric">metric<sup>BI</sup></a>
+logic belongs upstream, which reusable
+<a class="termRef" href="#/terminology/looker-studio.md#looker-studio-calculated-field">calculated fields<sup>LS</sup></a>
+belong in a
+<a class="termRef" href="#/terminology/looker-studio.md#looker-studio-data-source">Looker Studio data source<sup>LS</sup></a>,
+and which calculations are only chart formatting.
 
 After this tutorial, you will be able to:
 
-- Write a metric contract with owner, grain, formula, allowed dimensions, and
-  expected values.
+- Write a
+  <a class="termRef" href="#/terminology/bi.md#metric-contract">metric contract<sup>BI</sup></a>
+  with owner,
+  <a class="termRef" href="#/terminology/bi.md#grain">grain<sup>BI</sup></a>,
+  formula, allowed dimensions, and expected values.
 - Use weighted formulas for ratio metrics instead of averaging displayed
   averages.
 - Configure reusable Looker Studio calculated fields with explicit aggregation

@@ -56,7 +56,10 @@ private operational metadata.
 After this tutorial, you will be able to:
 
 - Compare a broad raw source with a narrow serving source.
-- Explain why logical views still run their SQL when queried.
+- Explain why
+  <a class="termRef" href="#/terminology/bigquery.md#bigquery-logical-view">logical views<sup>BQ</sup></a>
+  still run their SQL when queried, and when to prefer a
+  <a class="termRef" href="#/terminology/bigquery.md#bigquery-materialized-view">materialized view<sup>BQ</sup></a>.
 - Read BigQuery job fields that matter for BI cost review.
 - Draft a daily report operations control that records source, owner, query
   count, bytes, freshness, and control totals.
