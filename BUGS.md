@@ -4,6 +4,25 @@ Last updated: 2026-05-16
 
 ## Open Issues
 
+- ID: ASSESSMENT-AUDIT-DEFECTS-2026-05-16.
+  - Area: quizzes, flashcards, exams, terminology depth.
+  - Severity: high.
+  - Description: assessment audit recorded in
+    `_development/assessment-audit.md` found 5 high / 8 medium / 1 low
+    defects against a certification-track learner lens. Top items were
+    pervasive weak quiz distractors, missing cert-track topics
+    (CLS, RLS, clustering, MV refresh, COUNT(\*) vs COUNT(column), SCD,
+    conformed dim, surrogate key, weighted vs avg-of-avgs, CRR / IFRS9
+    / BCBS 239), lopsided flashcard deck distribution (four decks at
+    only 4 cards), and divergent exam surfaces (5 YAML cards + 6 MD
+    cards with only 2 overlapping).
+  - Fix plan: Task 062 carries the quality fixes plus first expansion
+    wave (74 quiz questions, 82 flashcards, 9 unified exam cards, 14
+    new FACT entries + 11 new SRC cards). Phase 12 of `PLAN.md` stages
+    the remaining work toward Phase 9 minima (500 / 200 / 30).
+  - Status: open; Task 062 fixes quality items + first expansion wave.
+    Remaining gap toward Phase 9 minima tracked in Phase 12.
+
 - ID: TERMINOLOGY-FIRST-PASS-FOLLOWTHROUGH-2026-05-16.
   - Area: terminology pages, curriculum grounding, content QA, search.
   - Severity: high.

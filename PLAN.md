@@ -496,6 +496,95 @@ single source of truth and individual PRs stay reviewable.
 Phase 11 does not graduate Phase 9 or Phase 10. Any "ready" or "complete"
 claim still requires the recorded formal review.
 
+## Phase 12 - Assessment Quality And Expansion Follow-Through
+
+An assessment audit performed on 2026-05-16 (recorded in
+`_development/assessment-audit.md`) found that the quizzes, flashcards,
+exams, and terminology depth needed both quality fixes (weak distractors,
+divergent exam surfaces) and expansion (Phase 9 minima of 500 flashcards /
+200 quiz questions / 30 exam cards). Task 062 fixed the highest-severity
+quality items and added a first expansion wave; this phase stages the
+remaining work.
+
+### Phase 12.1 - Continued quiz expansion
+
+Phase 9 minimum is 200 quiz questions. Task 062 brought the bank to 74
+(was 60, added 14 on CLS / RLS / clustering / MV refresh / results cache /
+blend join types / freshness intervals / SCD / conformed dim / surrogate
+key / CRR / IFRS9 / BCBS 239 / COUNT(\*)-vs-COUNT(column)).
+
+Remaining quiz topic gaps from the audit (Q-2, Q-3, Q-4) not yet covered:
+
+- More PSD2 / AML / KYC / COREP / FINREP scenario questions.
+- More application questions: "what does this SQL return", "find the bug",
+  "fill in the missing predicate".
+- More easy + medium difficulty questions on the new cert-track topics so
+  each difficulty bracket scales evenly toward the 200 target.
+
+### Phase 12.2 - Continued flashcard expansion
+
+Phase 9 minimum is 500 flashcards. Task 062 brought the count to 82
+(was 64, added 18 across privacy-security, banking-context,
+bi-fundamentals, controls-governance).
+
+Remaining flashcard gaps from the audit (F-1, F-3) not yet covered:
+
+- Bring `dataset-controls`, `real-estate-collateral`,
+  `performance-operations`, `metric-contracts`, `bigquery-sql`, and
+  `looker-studio` to a balanced count once cert-track topics in those
+  areas are identified.
+- Add cards on Looker Studio data-source vs report-level vs chart-level
+  calculated field semantics, LS blend left-outer vs inner semantics,
+  partition expiration, COREP / FINREP report structure, AML / CFT data
+  sensitivity, BNR supervisory expectations.
+
+### Phase 12.3 - Continued exam expansion
+
+Phase 9 minimum is 30 exam cards. Task 062 reconciled two divergent
+exam surfaces and unified them at 9 cards in
+`exams/bi-foundations/bi-foundations-exam.md`.
+
+Remaining exam expansion: add cards on RLS / CLS design walkthrough,
+materialized view refresh interval review, SCD-2 historical reporting,
+COREP submission preparation, IFRS 9 stage-transition reporting, BCBS
+239 lineage walkthrough, AML alert dashboard governance.
+
+### Phase 12.4 - Terminology depth follow-on
+
+Audit findings T-1, T-2, T-3, T-4 remain partially open:
+
+- Replace remaining Looker Studio landing-page citations with deep-link
+  help-center articles where stable URLs exist.
+- Replace remaining DuckDB and regulator (BNR, EBA) landing-page
+  citations with specific publications where they exist.
+- Per uncovered terminology entry (53 today), decide whether to ground
+  inline in a tutorial or assessment surface, or to retire the entry as
+  out of scope.
+- Expand shallow terminology entries (e.g. `aggregate function`,
+  `account`) with the contrast or trap that earns them a cert-track
+  entry.
+
+### Phase 12.5 - Assessment authoring scripts
+
+If future expansion is to happen in batch, a small set of authoring
+helpers would pay back:
+
+- A `bun run validate:quiz-distractor-quality` lint that flags
+  obviously-weak distractor patterns ("chart color", "font size",
+  "decorative", "title", "border", "viewer history", etc.) so future
+  authors do not regress on the Q-1 finding.
+- A `bun run coverage:cert-track` script that maps quiz / flashcard /
+  exam / terminology coverage against a named cert-track topic list
+  (CLS, RLS, clustering, partition filters, MV cache, MV refresh,
+  results cache, COUNT(\*) vs COUNT(column), SCD types, conformed dims,
+  surrogate keys, weighted vs average-of-averages, CRR, IFRS9, BCBS
+  239, etc.) and reports which topics are under-served at each
+  difficulty level.
+
+Phase 12 does not graduate Phase 9. Phase 9 still requires the full
+competency / coverage / gap / source matrices and a recorded formal
+review before any "complete" claim.
+
 ## Split Plans
 
 - [PLAN_BI_TUTORIAL_APP.md](PLAN_BI_TUTORIAL_APP.md): app skeleton, runtime,

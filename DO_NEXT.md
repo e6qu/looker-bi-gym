@@ -22,24 +22,34 @@
    `bun run verify:deployed-surface` before starting another implementation
    PR.
 
-## Phase 10 + Phase 11 Follow-On Sequencing
+## Active PR
 
-After PR #45 merges, take the remaining work one PR at a time:
+Task 062 (Assessment Quality And Expansion) on branch
+`assessment-quality-and-expansion`. Quality fixes, fact-corpus expansion,
+74-question quiz bank, 82-card flashcard total, 9 unified exam cards.
 
-1. Renderer support for inline `class="termRef"` markers in YAML-bound
-   surfaces (quiz prompts/explanations, flashcard front/back, exam card
-   statements, fact statements, challenge instructions).
-2. Continued inline grounding for tutorials and regulations flagged in
-   `_development/terminology-coverage.md` under "Mentioned In Prose But
-   Not Inline-Grounded".
-3. Decision pass on the 53 uncovered terminology entries (ground inline,
-   retire, or accept as future-coverage).
-4. Deepen Phase 10.2 citations: replace vendor or regulator landing pages
-   with specific deep links where a stable URL is known.
-5. Phase 11 follow-on: expand the failure scenarios in tutorials 06-09
-   with more realistic break days; backfill the remaining Phase 11.3
-   cert-track callouts that the audit flagged as `medium` but did not
-   land in this PR.
+## Follow-On After This PR Merges
+
+The remaining work toward Phase 9 minima (500 / 200 / 30) is staged in
+`PLAN.md` Phase 12:
+
+1. Phase 12.1 - more quiz questions (PSD2, AML, KYC, COREP / FINREP,
+   application questions, even spread across difficulties).
+2. Phase 12.2 - more flashcards in the remaining under-served decks,
+   focused on cert-track contrasts.
+3. Phase 12.3 - more exam cards toward 30.
+4. Phase 12.4 - terminology depth (deep-link citations, decision on
+   the 53 uncovered entries).
+5. Phase 12.5 - authoring helpers (`validate:quiz-distractor-quality`,
+   `coverage:cert-track`).
+
+Earlier follow-ons still open from Phases 10 and 11:
+
+- Renderer support so inline `class="termRef"` markers can live in
+  YAML-bound surfaces (quiz prompts, flashcard front/back, exam card
+  statements, fact statements, challenge manifests).
+- Continued inline grounding for tutorials and regulations flagged in
+  `_development/terminology-coverage.md`.
 
 ## Verification To Preserve
 

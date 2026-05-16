@@ -1,5 +1,50 @@
 # What We Did
 
+## 2026-05-16 - Task 062 Assessment Quality And Expansion
+
+Branch `assessment-quality-and-expansion` opened after PR #45 merged.
+
+- Wrote `_development/assessment-audit.md` covering all four assessment
+  surfaces (quizzes, flashcards, exams, terminology depth) against a
+  cert-track learner lens. Found 5 `high`, 8 `medium`, 1 `low` defects.
+
+- Quality fixes (commit `6c2116f`):
+  - Sharpened ~20 weak quiz distractors that a cert-track learner could
+    eliminate without knowing the material ("chart color", "font size",
+    "decorative theme", "viewer history", "report title", etc.).
+  - Reconciled two divergent exam surfaces: moved the 4 cards that
+    lived only in `tutorials/exam-mode.md` into the canonical
+    `exams/bi-foundations/bi-foundations-exam.md`; trimmed the Markdown
+    doc to a study guide pointing at the interactive `/exam` route.
+
+- Fact corpus expansion (commit `9584396`):
+  - Added 14 new `FACT-*` entries: BigQuery clustering, results cache,
+    count-star vs count-column, row access policy, column policy tag,
+    materialized view refresh; Looker Studio blend join types and
+    freshness intervals; BI SCD types, conformed dimension, surrogate
+    key; banking CRR CET1 ratio, IFRS 9 stages, BCBS 239 RDARR
+    principles.
+  - Added matching `SRC-*` source cards in
+    `sources/literature/kimball-dimensional-modeling.md`,
+    `sources/platforms/bigquery.md`, `sources/platforms/looker-studio.md`,
+    `sources/law/eu-crr.md`, `sources/law/ifrs9.md`, and
+    `sources/regulators/bcbs-239.md`.
+
+- Quiz expansion (commit `9584396`):
+  - Added 14 new hard quiz questions on the cert-track gap topics
+    above. Quiz bank: 60 -> 74 questions.
+
+- Flashcard expansion (commit pending):
+  - 18 new cards across four under-served decks: privacy-security,
+    banking-context, bi-fundamentals, controls-governance. Each deck
+    went from 4 to 10 cards. Total flashcards: 64 -> 82.
+
+- Continuity (commit pending):
+  - Added Phase 12 to `PLAN.md` staging the remaining work toward the
+    Phase 9 minima (500 / 200 / 30).
+  - Added `_development/tasks/062-assessment-quality-and-expansion.md`
+    and updated the task index.
+
 ## 2026-05-16 - Phase 11.2 CC-4 follow-up: real failure scenarios in 06-08
 
 After the user pointed out that the Phase 11.2 commit had only relabelled
