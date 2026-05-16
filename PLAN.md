@@ -403,6 +403,99 @@ Phase 10 does not graduate Phase 6 or Phase 9. The Phase 9 completeness
 gate still requires the competency, content, gap, and source matrices,
 human review, automated coverage, and a recorded formal review.
 
+## Phase 11 - Tutorial Audit Remediation
+
+A tutorial audit performed on 2026-05-16 (recorded in
+`_development/tutorial-audit.md`) found that the curriculum is structurally
+sound on the browser-first path but carries defects that meaningfully limit
+its value for a learner studying for a BI / data certification: an
+aspirational `curriculum.md` that does not match what tutorials build, end
+challenges that print their own answers, governance / operations / capstone
+work simulated through tautological synthetic VALUES blocks, a Looker
+Studio calculated-field claim that conflates aggregation modes, and a
+capstone whose rubric returns 100 by construction.
+
+Phase 11 stages the fixes across follow-up PRs so the audit doc remains the
+single source of truth and individual PRs stay reviewable.
+
+### Phase 11.1 - Cross-cutting structural fixes
+
+- CC-1: rewrite or relocate `tutorials/curriculum.md` so it describes what
+  the tutorials actually build. Aspirational mart / serve / AML / payments
+  / ops schemas move to `tutorials/design-targets.md` with an explicit
+  "not built" header.
+- CC-2: convert every "End Challenge - Expected answer" block in 00 through
+  09 into a prompt + collapsed expected-answer pattern (e.g. a `<details>`
+  block, an anchor link, or a separate `#expected-answer` section).
+- CC-3: replace browser-only `CAST(... AS VARCHAR)` with `CAST(... AS STRING)`
+  in the BigQuery-shaped tutorials, or label per-step which dialect runs.
+  Promote the `LT-DQ-006` pattern of explicitly naming BigQuery
+  alternatives.
+
+### Phase 11.2 - Add failure scenarios to 06-09
+
+- CC-4: split each synthetic VALUES check in 06, 07, 08, and 09 into a
+  passing and a failing scenario. The learner must identify the failure
+  and the remediation. Where possible, drive the check off real synthetic
+  dataset state so the learner can produce a failing case by editing the
+  seed.
+- T09-1 / T09-2: rewrite the capstone Goal so the rubric score depends on
+  artifacts the learner produced in 02-08, not on hardcoded VALUES rows.
+- T08-3: add a non-zero-reconciliation-delta day in tutorial 08 and walk
+  through the investigation.
+
+### Phase 11.3 - Tighten Looker Studio + BigQuery mechanics for cert
+
+- T04-1: fix the reusable calculated-field guidance in 04 so the aggregation
+  mode and base field configuration are correctly named.
+- T03-3 / T03-4: in 03, explicitly distinguish data-source default
+  aggregation from chart-level aggregation and calculated-field scope (chart
+  vs data source vs reusable data source).
+- T06-1 / T06-3: in 06, replace or supplement the deterministic byte
+  simulation with the actual BigQuery cost rules (only selected columns are
+  scanned, partition filter behaviour, materialized view cache vs logical
+  view re-run, table snapshot cost).
+- T07-2 / T07-3 / T07-4: in 07, add concrete authorized-view setup steps,
+  row-level security, column-level security (`policy_tag`), and a sharper
+  contrast of LS credential modes.
+- CC-5: address `SUM(COUNT(DISTINCT ...))` non-additivity in 03 and 04 with
+  a short callout and a toy counter-example.
+
+### Phase 11.4 - Banking-domain depth
+
+- T00-2: in 00, replace the abstract account-vs-depositor-grain statement
+  with a numeric worked example showing how the EUR 100,000 ceiling applies
+  to a multi-account customer.
+- T05-3: in 05, document that the allocation math assumes ownership shares
+  sum to 100 per account.
+- T08-2: in 08, make at least one DORA-shaped artifact (ICT third-party
+  register or incident severity classification) a real exercise rather than
+  a synthetic VALUES row.
+
+### Phase 11.5 - Index page and assessment scale-up
+
+- IR-2: see Phase 11.1 CC-1 for `curriculum.md`.
+- IR-1: align `tutorials/README.md` "Start Here" path with the 01-09
+  numbered sequence so learners understand when to use which.
+- IR-3: ensure every tutorial step that selects from a table links back to
+  `tutorials/data-sources.md` so learners do not assume design-target
+  tables are loaded.
+- IR-4: expand `tutorials/exam-mode.md` to at least 6-8 cards, or record
+  the current count as a Phase 9 gap.
+- IR-5: add the missing "interactive exam surface" link in `exam-mode.md`.
+
+### Phase 11.6 - Learner-task and recipe polish
+
+- L01-2, L03-1, L03-2, L04-1, L04-2, L07-1: per-task edits captured in the
+  audit. Mostly: explicit expected outputs, clearer dataset orientation,
+  fewer jargon phrases.
+- R01-1: label the Looker Studio recipe as account-required, and add a
+  fallback "describe what would render and why" path so the cert-track
+  learner without an LS account can still gain value.
+
+Phase 11 does not graduate Phase 9 or Phase 10. Any "ready" or "complete"
+claim still requires the recorded formal review.
+
 ## Split Plans
 
 - [PLAN_BI_TUTORIAL_APP.md](PLAN_BI_TUTORIAL_APP.md): app skeleton, runtime,
