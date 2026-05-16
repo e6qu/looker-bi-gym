@@ -509,6 +509,108 @@ FROM operations_summary;
     - never paste raw logs, user emails, private report links, credentials, or
       customer data into operations notes.
 
+17. Run the reconciliation-break scenario. Imagine the dashboard ledger
+    total drifted to `95740` while the source remains `95700`, and a
+    validation rule failed for one row:
+
+```sql
+WITH reconciliation_break_day AS (
+  SELECT * FROM (
+    VALUES
+      (
+        DATE '2026-04-01',
+        'deposits executive daily',
+        95700,
+        95740,
+        1,
+        'fail'
+      )
+  ) AS t(
+    report_date,
+    report_name,
+    source_ledger_total,
+    dashboard_ledger_total,
+    validation_failing_rows,
+    validation_status
+  )
+)
+SELECT
+  report_date,
+  report_name,
+  source_ledger_total,
+  dashboard_ledger_total,
+  dashboard_ledger_total - source_ledger_total AS reconciliation_delta,
+  validation_failing_rows,
+  validation_status,
+  CASE
+    WHEN dashboard_ledger_total = source_ledger_total
+      AND validation_failing_rows = 0
+      THEN 'in_service'
+    ELSE 'hold_publish_investigate'
+  END AS operations_status
+FROM reconciliation_break_day;
+```
+
+18. Confirm the failure output:
+
+| report_date | report_name              | source_ledger_total | dashboard_ledger_total | reconciliation_delta | validation_failing_rows | validation_status | operations_status        |
+| ----------- | ------------------------ | ------------------: | ---------------------: | -------------------: | ----------------------: | ----------------- | ------------------------ |
+| 2026-04-01  | deposits executive daily |               95700 |                  95740 |                   40 |                       1 | fail              | hold_publish_investigate |
+
+19. Record the break-day rule in your notes: when reconciliation delta is
+    non-zero or any validation rule fails, hold the dashboard publish and
+    open an incident in the same review window. Do not edit the dashboard
+    to match the source total; fix the source pipeline.
+
+20. Draft the DORA third-party register row that the report's BigQuery and
+    Looker Studio dependencies imply:
+
+```sql
+WITH dora_ict_third_party_register AS (
+  SELECT * FROM (
+    VALUES
+      (
+        'BigQuery',
+        'Google Cloud',
+        'critical',
+        'serving views and analytical queries',
+        'EU multi-region',
+        'replace with cross-region replica if region degrades'
+      ),
+      (
+        'Looker Studio',
+        'Google Cloud',
+        'important',
+        'reporting front-end for synthetic deposits dashboard',
+        'EU',
+        'fallback to static snapshot if reporting plane degrades'
+      )
+  ) AS t(
+    ict_service,
+    provider,
+    criticality,
+    function_supported,
+    data_location,
+    exit_plan_summary
+  )
+)
+SELECT *
+FROM dora_ict_third_party_register
+ORDER BY criticality, ict_service;
+```
+
+21. Confirm the register output:
+
+| ict_service   | provider     | criticality | function_supported                                   | data_location   | exit_plan_summary                                       |
+| ------------- | ------------ | ----------- | ---------------------------------------------------- | --------------- | ------------------------------------------------------- |
+| BigQuery      | Google Cloud | critical    | serving views and analytical queries                 | EU multi-region | replace with cross-region replica if region degrades    |
+| Looker Studio | Google Cloud | important   | reporting front-end for synthetic deposits dashboard | EU              | fallback to static snapshot if reporting plane degrades |
+
+22. Record the DORA artifact note: criticality is recorded per service, an
+    exit plan exists for every critical or important ICT third-party
+    dependency, and the register is updated when a service or function
+    changes.
+
 ### Optional BigQuery UI Path
 
 Use this section only if you have browser UI access to BigQuery and a sandbox

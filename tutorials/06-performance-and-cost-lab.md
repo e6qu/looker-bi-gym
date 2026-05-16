@@ -389,6 +389,44 @@ ORDER BY estimated_bytes_processed DESC;
     - document freshness settings because Looker Studio refresh behavior and
       source-table update time are not the same control.
 
+13. Run the cost-budget failure scenario. Imagine a new chart was added that
+    re-reads the broad raw source and lifts total estimated bytes above a
+    20 KB ceiling:
+
+```sql
+WITH cost_budget_scenarios AS (
+  SELECT * FROM (
+    VALUES
+      ('serving source baseline', 1248, 20000),
+      ('serving source plus governed currency drill', 2496, 20000),
+      ('serving source plus accidental raw raw join', 22464, 20000)
+  ) AS t(scenario, estimated_bytes_processed, byte_budget)
+)
+SELECT
+  scenario,
+  estimated_bytes_processed,
+  byte_budget,
+  estimated_bytes_processed - byte_budget AS overrun_bytes,
+  CASE
+    WHEN estimated_bytes_processed <= byte_budget THEN 'within_budget'
+    ELSE 'over_budget_hold_release'
+  END AS budget_status
+FROM cost_budget_scenarios
+ORDER BY estimated_bytes_processed;
+```
+
+14. Confirm the output:
+
+| scenario                                    | estimated_bytes_processed | byte_budget | overrun_bytes | budget_status            |
+| ------------------------------------------- | ------------------------: | ----------: | ------------: | ------------------------ |
+| serving source baseline                     |                      1248 |       20000 |        -18752 | within_budget            |
+| serving source plus governed currency drill |                      2496 |       20000 |        -17504 | within_budget            |
+| serving source plus accidental raw raw join |                     22464 |       20000 |          2464 | over_budget_hold_release |
+
+15. Record the budget-failure rule in your notes: a chart that joins the
+    broad raw source into the serving source defeats the cost reduction and
+    must be moved upstream, not absorbed into the release.
+
 ### Optional BigQuery UI Path
 
 Use this section only if you have browser UI access to BigQuery and a sandbox

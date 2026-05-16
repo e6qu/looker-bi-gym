@@ -526,6 +526,72 @@ ORDER BY dashboard_page;
     - do not record secrets, screenshots of credentials, private links, or user
       identities in release notes.
 
+15. Run the minimisation-failure scenario. Imagine a teammate added
+    `customer_id` to the candidate dashboard with a `keep` decision because
+    a stakeholder asked for "drill-down to the depositor":
+
+```sql
+WITH leaky_candidate_fields AS (
+  SELECT * FROM (
+    VALUES
+      ('business_date', 'keep', 'not_personal_data'),
+      ('currency_code', 'keep', 'not_personal_data'),
+      ('branch_city', 'keep', 'not_personal_data'),
+      ('ledger_total', 'keep', 'not_personal_data'),
+      ('account_count', 'keep', 'not_personal_data'),
+      ('source_cutoff_timestamp', 'keep', 'not_personal_data'),
+      ('account_id', 'exclude', 'personal_data_risk'),
+      ('customer_id', 'keep', 'personal_data_risk'),
+      ('synthetic_iban', 'exclude', 'personal_data_risk'),
+      ('masked_account_number', 'exclude', 'personal_data_risk'),
+      ('gdpr_restricted_flag', 'exclude_from_public_chart', 'special_handling')
+  ) AS t(field_name, release_decision, privacy_class)
+)
+SELECT
+  SUM(CASE WHEN release_decision = 'keep' THEN 1 ELSE 0 END) AS kept_fields,
+  SUM(
+    CASE
+      WHEN field_name IN (
+        'account_id',
+        'customer_id',
+        'synthetic_iban',
+        'masked_account_number'
+      )
+        AND release_decision = 'keep'
+        THEN 1
+      ELSE 0
+    END
+  ) AS sensitive_fields_kept,
+  CASE
+    WHEN SUM(
+      CASE
+        WHEN field_name IN (
+          'account_id',
+          'customer_id',
+          'synthetic_iban',
+          'masked_account_number'
+        )
+          AND release_decision = 'keep'
+          THEN 1
+        ELSE 0
+      END
+    ) = 0
+      THEN 'pass'
+    ELSE 'fail_hold_release'
+  END AS minimisation_check
+FROM leaky_candidate_fields;
+```
+
+16. Confirm the failure output:
+
+| kept_fields | sensitive_fields_kept | minimisation_check |
+| ----------: | --------------------: | ------------------ |
+|           7 |                     1 | fail_hold_release  |
+
+17. Record the failure rule: a depositor-level drill-down belongs in a
+    separately governed, access-controlled detail page; it must not appear
+    on the executive aggregate page even when a stakeholder asks for it.
+
 ### Optional BigQuery UI Path
 
 Use this section only if you have browser UI access to BigQuery and a sandbox
