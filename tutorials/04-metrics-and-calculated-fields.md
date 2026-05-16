@@ -345,6 +345,16 @@ Use this section only after the optional BigQuery view exists.
 | ------------------------- | ---------------------------------------- | ------ | ----------- |
 | `Average Account Balance` | `SUM(ledger_total) / SUM(account_count)` | Number | Auto        |
 
+Cert-track note on `Aggregation: Auto`: this works because
+`ledger_total` and `account_count` are data-source numeric fields with
+their own default aggregation of `Sum`. The calculated field formula
+wraps those underlying fields in explicit `SUM()`, so the chart layer
+does not re-aggregate the result. If you reused this field with a
+different aggregation default at the chart level, you would silently
+change the metric, which is exactly the trap this tutorial is meant to
+prevent. Treat reusable ratio metrics as "defined once at the data
+source, never overridden on the chart".
+
 4. Add this reusable data-source calculated dimension:
 
 | Field Name              | Formula                                                                                                                    | Type | Aggregation |
@@ -382,6 +392,18 @@ Use this section only after the optional BigQuery view exists.
 - Reusable business metrics are not hidden in one chart-specific formula.
 - Deposit-guarantee context is documented as depositor-bank grain, not latest
   account-balance grain.
+
+## Aggregation Notes For Cert-Track Learners
+
+- The reusable `Average Account Balance` field uses `SUM(ledger_total) /
+SUM(account_count)` so it stays correct under any chart filter context.
+  The forbidden shape is `AVG(row_average_account_balance)`, which is an
+  average of averages and gives `14012.50` instead of `15950.00`.
+- `SUM(account_count)` is summing `COUNT(DISTINCT account_id)` across
+  groups. It is correct here only because each account belongs to one
+  currency and one branch. As soon as an account spans groups, the
+  additive shortcut overstates. The cert-correct recompute is
+  `COUNT(DISTINCT account_id)` over the same window.
 
 ## Common Failure Modes
 

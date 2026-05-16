@@ -636,6 +636,53 @@ GROUP BY
    review date, and control total. Do not record private user identifiers,
    screenshots of IAM bindings, tokens, or keys.
 
+### BigQuery Access Mechanics For Cert-Track Learners
+
+The optional BigQuery path above relies on three named access mechanics.
+A cert-track learner should be able to describe each one before relying on
+a dashboard release.
+
+- Authorized views. A view is authorized when its dataset has been
+  granted access to the source dataset. Viewers query the view without
+  needing direct access to the underlying tables. In the BigQuery UI:
+  open the source dataset, choose Sharing -> Authorize views, and pick
+  the view's dataset. The equivalent SQL uses
+  `GRANT \`roles/bigquery.dataViewer\` ON SCHEMA \`PROJECT_ID.dataset\``
+  on the view dataset and registers the view as authorized in the source
+  dataset IAM policy.
+- Row-level security (RLS). A row access policy restricts which rows a
+  particular grantee can see. Use
+  `CREATE ROW ACCESS POLICY ... GRANT TO ('user:reviewer@example.com')
+FILTER USING (currency_code = 'EUR')` to expose only EUR rows to a
+  specific group. RLS is enforced inside the table; it cannot be
+  bypassed by a view that wraps the table.
+- Column-level security (CLS). A policy tag attached to a column requires
+  the viewer to have a matching fine-grained reader role. Apply policy
+  tags through Data Catalog or BigQuery UI -> column schema -> Add policy
+  tag. The cert-track example is tagging `account_id`, `customer_id`,
+  `synthetic_iban`, and `masked_account_number` with a "personal data"
+  policy tag so the column is not selectable without the matching role.
+
+Use authorized views to share an aggregate without the source. Use RLS
+when one query must return different rows for different viewers. Use CLS
+when the table must expose some columns publicly and protect others.
+
+### Looker Studio Credential Modes For Cert-Track Learners
+
+- Owner credentials: viewers see what the report owner can see. Useful
+  for share-with-everyone aggregate reports that already exclude
+  identifiers, but it removes the access-control safety net for any
+  field that should be restricted.
+- Viewer credentials: viewers must have their own access to the
+  BigQuery source. Pairs well with authorized views: the source dataset
+  trusts the view dataset, and Looker Studio passes each viewer's
+  identity to BigQuery. This is the cert-recommended default for
+  restricted internal reports.
+- Service-account credentials: the report uses a service account to
+  query BigQuery. Use only with formal platform control; a service
+  account that holds broad access is a credential-leak risk if the
+  report is shared too widely.
+
 ### Optional Looker Studio UI Path
 
 Use this section only if you have browser UI access to Looker Studio and a

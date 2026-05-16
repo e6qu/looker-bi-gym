@@ -461,6 +461,38 @@ LIMIT 50;
    the browser-first simulation. The exact values do not need to match because
    the browser-first bytes are an educational proxy.
 
+### BigQuery Cost Mechanics For Cert-Track Learners
+
+The browser-first proxy is intentionally simple
+(`rows * columns * 16 bytes`). Real BigQuery on-demand cost has named
+mechanics every cert-shape question expects you to know:
+
+- BigQuery on-demand pricing is charged per TB of data processed. Only
+  columns you select get scanned; unused columns do not bill. A narrow
+  serving view that selects six columns from an account-day balance table
+  scans far less than `SELECT *` on the raw table.
+- Partitioned tables let a `WHERE` filter on the partition column skip
+  whole partitions. If `account_daily_balances` were partitioned by
+  `business_date` and the dashboard filtered `business_date = ...`, the
+  scan would be limited to that partition.
+- Clustered tables further reduce scanning by physically ordering rows
+  inside a partition on cluster keys. Filters and aggregations on the
+  cluster keys take less work.
+- A materialized view stores precomputed results. Subsequent queries
+  against the base table that match the materialized view definition can
+  read the cached result and skip the underlying scan. A logical view
+  always re-runs its SQL.
+- Cached results: a repeated query against unchanged data can hit the
+  query results cache and bill `0` bytes. The
+  `INFORMATION_SCHEMA.JOBS_BY_PROJECT.cache_hit` field shows when this
+  happened.
+- Reservations let an organisation pay for slots (a unit of compute) per
+  hour or per month instead of paying per byte processed. Reservation
+  pricing changes the billing model but not the byte mechanics above.
+
+A learner who understands the cost rules above can answer cost-shaped
+exam questions even if a real billing dashboard is not available.
+
 ### Optional Looker Studio UI Path
 
 Use this section only if the optional Looker Studio report exists.

@@ -258,6 +258,22 @@ Use this section only after the optional BigQuery view exists.
 - Raw account, customer, and synthetic IBAN identifiers are absent from the
   dashboard source and chart specification.
 
+## Aggregation Notes For Cert-Track Learners
+
+- Default field aggregation is set on the Looker Studio data source, not on
+  the chart. Each chart inherits that default unless you override the
+  aggregation on the metric card. For this dashboard, `ledger_total` has
+  data-source aggregation `Sum` and `account_count` has data-source
+  aggregation `Sum`. The scorecard does not need to re-aggregate.
+- `account_count` is `COUNT(DISTINCT account_id)` computed per
+  `(business_date, currency_code)`. `SUM(account_count)` is safe here only
+  because, by construction of this synthetic data, no account holds rows
+  in two currencies on the same date. In general,
+  `SUM(COUNT(DISTINCT ...))` is not additive across groups; if a customer
+  ever held an account in EUR and another in RON on the same day, the sum
+  would double-count. The cert-correct recompute is
+  `COUNT(DISTINCT account_id)` over the latest day directly.
+
 ## Common Failure Modes
 
 - Opening an old report and assuming its data source still matches the intended
@@ -266,6 +282,8 @@ Use this section only after the optional BigQuery view exists.
   checked by another chart.
 - Summing balances across all dates and presenting `286570` as the latest
   executive KPI.
+- Summing `COUNT(DISTINCT account_id)` across groups without checking that
+  identifiers do not span those groups; this is the additive trap.
 - Hiding freshness so the date range and source cutoff are not visible.
 - Adding raw identifiers to make debugging easier and forgetting to remove them
   before the dashboard handoff.
