@@ -19,7 +19,7 @@ count.
 
 Sources:
 
-- [Looker Studio Help](https://support.google.com/looker-studio).
+- [About dimensions and metrics](https://support.google.com/looker-studio/answer/6291041).
 
 Related:
 <a class="termRef" href="#/terminology/bi.md#aggregate">aggregate<sup>BI</sup></a>,
@@ -35,7 +35,7 @@ keys.
 
 Sources:
 
-- [Looker Studio Help](https://support.google.com/looker-studio).
+- [About blended data](https://support.google.com/looker-studio/answer/9061204).
 
 Related:
 <a class="termRef" href="#/terminology/looker-studio.md#looker-studio-blend">Looker Studio blend<sup>LS</sup></a>,
@@ -65,7 +65,7 @@ serve other charts.
 
 Sources:
 
-- [Looker Studio Help](https://support.google.com/looker-studio).
+- [About calculated fields](https://support.google.com/looker-studio/answer/6334256).
 
 Related:
 <a class="termRef" href="#/terminology/looker-studio.md#looker-studio-calculated-field">Looker Studio calculated field<sup>LS</sup></a>,
@@ -111,7 +111,7 @@ each viewer's credentials.
 
 Sources:
 
-- [Looker Studio Help](https://support.google.com/looker-studio).
+- [Data credentials](https://support.google.com/looker-studio/answer/6291768).
 
 Related:
 <a class="termRef" href="#/terminology/looker-studio.md#owner-credentials">owner credentials<sup>LS</sup></a>,
@@ -127,7 +127,7 @@ freshness setting allows it.
 
 Sources:
 
-- [Looker Studio Help](https://support.google.com/looker-studio).
+- [About data freshness](https://support.google.com/looker-studio/answer/7020039).
 
 Related:
 <a class="termRef" href="#/terminology/bi.md#report-refresh-time">report refresh time<sup>BI</sup></a>,
@@ -157,7 +157,7 @@ Example: branch, product, date, and currency can be dimensions in a report.
 
 Sources:
 
-- [Looker Studio Help](https://support.google.com/looker-studio).
+- [About dimensions and metrics](https://support.google.com/looker-studio/answer/6291041).
 
 Related:
 <a class="termRef" href="#/terminology/bi.md#dimension">dimension<sup>BI</sup></a>,
@@ -247,7 +247,7 @@ Example: total balance and transaction count can be chart metrics.
 
 Sources:
 
-- [Looker Studio Help](https://support.google.com/looker-studio).
+- [About dimensions and metrics](https://support.google.com/looker-studio/answer/6291041).
 
 Related:
 <a class="termRef" href="#/terminology/bi.md#metric">metric<sup>BI</sup></a>,
@@ -260,6 +260,10 @@ path.
 
 Example: owner credentials can allow viewers to see report data even when they
 do not have direct source access.
+
+Sources:
+
+- [Data credentials](https://support.google.com/looker-studio/answer/6291768).
 
 Sources:
 
@@ -353,6 +357,10 @@ read.
 
 Example: viewer credentials can prevent a viewer from seeing rows they cannot
 access in the source system.
+
+Sources:
+
+- [Data credentials](https://support.google.com/looker-studio/answer/6291768).
 
 Sources:
 

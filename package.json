@@ -48,6 +48,7 @@
     "validate:static-links": "bun run --filter @looker-bi-gym/app validate:static-links",
     "validate:terminology": "bun run --filter @looker-bi-gym/app validate:terminology",
     "validate:quiz-distractors": "bun run --filter @looker-bi-gym/app validate:quiz-distractors",
+    "validate:compartmentalization": "bun run --filter @looker-bi-gym/app validate:compartmentalization",
     "coverage:terminology": "bun run --filter @looker-bi-gym/app coverage:terminology",
     "coverage:cert-track": "bun run --filter @looker-bi-gym/app coverage:cert-track",
     "typecheck": "bun run --filter facts-db-app typecheck && bun run --filter @looker-bi-gym/app typecheck",

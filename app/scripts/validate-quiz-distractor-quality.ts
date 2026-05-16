@@ -16,7 +16,10 @@ const appRoot = join(scriptDir, "..");
 const repoRoot = join(appRoot, "..");
 const quizzesRoot = join(repoRoot, "quizzes");
 
-const weakDistractorPatterns: readonly { pattern: RegExp; name: string }[] = [
+const weakDistractorPatterns: ReadonlyArray<{
+  pattern: RegExp;
+  name: string;
+}> = [
   { pattern: /\bchart\s+colou?r\b/iu, name: "chart color" },
   { pattern: /\bcolou?r\s+palette\b/iu, name: "color palette" },
   { pattern: /\bcolor\s+scheme\b/iu, name: "color scheme" },
@@ -61,7 +64,7 @@ function isExpectedQuiz(node: unknown): node is {
 
 function isQuestionList(
   node: unknown,
-): node is readonly Record<string, unknown>[] {
+): node is ReadonlyArray<Record<string, unknown>> {
   return Array.isArray(node);
 }
 
@@ -84,8 +87,8 @@ function extractFrontmatter(source: string): string | null {
 
 function findIssuesInLabel(
   label: string,
-): readonly { readonly trigger: string }[] {
-  const issues: { readonly trigger: string }[] = [];
+): ReadonlyArray<{ readonly trigger: string }> {
+  const issues: Array<{ readonly trigger: string }> = [];
   for (const candidate of weakDistractorPatterns) {
     if (candidate.pattern.test(label)) {
       issues.push({ trigger: candidate.name });
@@ -129,7 +132,7 @@ async function main(): Promise<void> {
     if (!isExpectedQuiz(parsed) || parsed.questions === undefined) {
       continue;
     }
-    const questionsByDifficulty = parsed.questions as Record<string, unknown>;
+    const questionsByDifficulty = parsed.questions;
     for (const [difficulty, questions] of Object.entries(
       questionsByDifficulty,
     )) {

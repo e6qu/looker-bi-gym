@@ -1,5 +1,109 @@
 # What We Did
 
+## 2026-05-16 - Task 062 Phase 12 follow-through + compartmentalization
+
+User direction added on the open PR #46: surfaces must not assume each
+other exist; terminology is the only shared spine; the platform itself
+must not be a topic; test data must not be in questions; no
+`looker-bi-gym` self-reference. Phase 12 of `PLAN.md` was also folded
+into the same PR.
+
+- Compartmentalization sweep:
+  - Replaced tutorial `Builds on:` sections (which named other
+    tutorials by file) with `Prior knowledge expected:` sections
+    naming concepts the learner should already understand.
+  - Renamed learner-task `## Prerequisites` to `## Setup` and dropped
+    `Complete LT-XXX` cross-task references, replacing them with
+    concept-level assumptions.
+  - Rewrote the capstone (tutorial 09) cross-tutorial "values from
+    notes/0X.md" placeholder into a self-contained derivation directly
+    from the dataset.
+  - Deleted `tutorials/curriculum.md` (pure platform-meta), rewrote
+    `tutorials/README.md` as a topic index, rewrote
+    `tutorials/quiz-bank.md` as a short pointer to the interactive
+    quiz surface with coverage notes.
+  - Replaced `this course context` phrasing in tutorial 00 and the
+    orientation-quiz prompt with the harmonised EU deposit-guarantee
+    wording.
+  - Fixed tutorial-number references in two flashcards and the BigQuery
+    Cost Triage exam card.
+
+- Authoring scripts (Phase 12.5):
+  - Added `app/scripts/validate-quiz-distractor-quality.ts` and wired
+    it into `bun run check`. Scans every quiz option label for known
+    weak-distractor patterns ("chart color", "font size", "decorative
+    theme", "viewer history", etc.). Caught 4 regressions on the
+    initial PR commit; current state is 78 questions / 268 options
+    scanned with 0 weak hits.
+  - Added `app/scripts/validate-assessment-compartmentalization.ts`
+    and wired it into `bun run check`. Scans quiz / flashcard / exam
+    visible bodies for cross-surface references (`tutorial N`,
+    `LT-X-NNN`), platform self-references (`looker-bi-gym`, "this
+    course"), and "see other surface" phrases. Current state: 107
+    files scanned, 0 hits.
+  - Added `app/scripts/generate-cert-track-coverage.ts` exposed as
+    `bun run coverage:cert-track`. Writes
+    `_development/cert-track-coverage.md` mapping 40 named cert-track
+    topics across quiz / flashcards / exam / terminology hit counts
+    and listing under-served topics per area.
+
+- Quiz expansion (60 -> 78):
+  - 14 hard questions added in the first commit covering CLS, RLS,
+    clustering, MV refresh, results cache, blend join types, freshness
+    intervals, SCD, conformed dim, surrogate key, CRR, IFRS 9, BCBS
+    239, COUNT(\*) vs COUNT(column).
+  - 5 medium questions added in the follow-on commit: weighted average
+    vs avg-of-avgs ratio, SUM(COUNT(DISTINCT)) additive trap, PSD2 SCA
+    evidence, AML / CFT alert page governance, COREP / FINREP framework
+    versioning.
+
+- Flashcard expansion (64 -> 95):
+  - 18 cards across privacy-security, banking-context, bi-fundamentals,
+    controls-governance bringing each formerly-4-card deck to 10.
+  - 7 more cards: PSD2 SCA, AML alert dashboard, COREP / FINREP
+    versioning, BigQuery results cache, clustering impact, conformed
+    dimension, account_owners fanout.
+
+- Exam expansion (5 + 6 divergent surfaces, 9 reconciled, then 17):
+  - First wave reconciled YAML pack with the 4 Phase 11.5 MD cards
+    into a unified 9-card pack.
+  - Second wave added 8 cards covering RLS / CLS design walkthrough,
+    SCD-2 historical reporting, MV refresh interval review, COREP /
+    FINREP CET1 alignment, IFRS 9 stage-transition reporting, BCBS 239
+    lineage walkthrough, AML alert dashboard governance, and the
+    existing Cost Triage / DORA cards.
+
+- Fact corpus expansion (117 -> 133 entries):
+  - 14 new FACT entries on BigQuery (clustering, results cache,
+    COUNT-star vs column, RLS, CLS, MV refresh), Looker Studio (blend
+    join types, freshness intervals), BI modeling (SCD, conformed,
+    surrogate), CRR CET1, IFRS 9, BCBS 239.
+  - 2 more FACT entries: PSD2 SCA, AML / CFT suspicious activity.
+  - 13 new SRC source cards including the EU CRR, IFRS 9 standard,
+    BCBS 239, PSD2 (EUR-Lex 2015/2366), EBA AML package, BigQuery
+    clustered tables, results cache, aggregate COUNT, row-level
+    security, column-level security, MV refresh, Looker Studio blend
+    join types and freshness intervals, Kimball SCD / conformed /
+    surrogate.
+
+- Terminology depth (Phase 12.4):
+  - Replaced 7 Looker Studio landing-page citations with deep links to
+    known-stable help articles (dimensions and metrics, blended data,
+    calculated fields, data credentials, data freshness). 16 entries
+    still cite the landing page; tracked as Phase 12 follow-on.
+
+- Continuity:
+  - Extended `PLAN.md` Phase 12.5 entry to describe the three landed
+    scripts and the compartmentalization rule.
+  - Updated STATUS, WHAT_WE_DID with full tallies.
+
+Verification: bun run format:check, lint, typecheck, content:generate,
+content:check, test:content-qa, test:flashcards, test:quiz,
+test:quiz-facts-db, test:facts-db, validate:terminology,
+validate:quiz-distractors (78 / 268, 0 hits),
+validate:compartmentalization (107 files, 0 hits), and test:e2e all
+pass.
+
 ## 2026-05-16 - Task 062 Assessment Quality And Expansion
 
 Branch `assessment-quality-and-expansion` opened after PR #45 merged.

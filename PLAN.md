@@ -566,20 +566,41 @@ Audit findings T-1, T-2, T-3, T-4 remain partially open:
 
 ### Phase 12.5 - Assessment authoring scripts
 
-If future expansion is to happen in batch, a small set of authoring
-helpers would pay back:
+Three authoring helpers landed in this phase:
 
-- A `bun run validate:quiz-distractor-quality` lint that flags
-  obviously-weak distractor patterns ("chart color", "font size",
-  "decorative", "title", "border", "viewer history", etc.) so future
-  authors do not regress on the Q-1 finding.
-- A `bun run coverage:cert-track` script that maps quiz / flashcard /
-  exam / terminology coverage against a named cert-track topic list
-  (CLS, RLS, clustering, partition filters, MV cache, MV refresh,
-  results cache, COUNT(\*) vs COUNT(column), SCD types, conformed dims,
-  surrogate keys, weighted vs average-of-averages, CRR, IFRS9, BCBS
-  239, etc.) and reports which topics are under-served at each
-  difficulty level.
+- `bun run validate:quiz-distractors` flags obviously-weak distractor
+  patterns ("chart color", "font size", "decorative", "title",
+  "border", "viewer history", etc.). Caught 4 regressions on the first
+  pass; now wired into `bun run check`.
+- `bun run validate:compartmentalization` scans quiz / flashcard / exam
+  visible content for cross-surface references (`tutorial N`, `LT-X`),
+  platform self-references (`looker-bi-gym`, "this course", "this
+  app"), and "see other surface" phrases. Wired into `bun run check`
+  so future regressions on the compartmentalization rule are caught.
+- `bun run coverage:cert-track` writes
+  `_development/cert-track-coverage.md` mapping 40 named cert-track
+  topics to quiz / flashcard / exam / terminology hit counts and
+  listing under-served topics by area.
+
+### Compartmentalization rule (carries through every later phase)
+
+Per user direction, each assessment surface stands alone. Tutorials,
+learner-tasks, quizzes, flashcards, and exams must not assume each
+other exists in their visible content; terminology is the only shared
+spine. The platform itself must not be a topic. Specifically:
+
+- Visible content (tutorial body, learner-task body, quiz prompts /
+  options / explanations, flashcard front / back, exam objectives /
+  expected outputs / self-assessment) must not name any other surface
+  by file path, ID, or descriptive phrase.
+- Tutorials and learner-tasks use `Prior knowledge expected:` (concepts,
+  not surface IDs) instead of `Builds on:` or `Prerequisites:` lists of
+  other surfaces.
+- The platform name (`looker-bi-gym`), meta phrases ("this course",
+  "this app", "this platform"), and dataset/seed names in
+  non-tutorial surfaces are not allowed.
+- `validate:compartmentalization` enforces this on quizzes,
+  flashcards, and exams.
 
 Phase 12 does not graduate Phase 9. Phase 9 still requires the full
 competency / coverage / gap / source matrices and a recorded formal

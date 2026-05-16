@@ -47,11 +47,11 @@ quality; it only spots presence or absence of the keyword set.
 | BigQuery row-level security (ROW ACCESS POLICY)                   |    5 |         12 |    3 |           0 |
 | BigQuery column-level security (policy tags)                      |    7 |          7 |    4 |           0 |
 | Looker Studio data source                                         |    4 |          8 |    0 |           5 |
-| Looker Studio calculated field scope (data-source vs chart-level) |    6 |          8 |    1 |          17 |
+| Looker Studio calculated field scope (data-source vs chart-level) |    6 |          8 |    1 |          18 |
 | Looker Studio blend (rows / leftmost / join types)                |    7 |          7 |    0 |           4 |
 | Looker Studio credentials (owner/viewer/service)                  |    2 |          5 |    3 |           9 |
 | Looker Studio controls / parameters                               |    1 |          3 |    1 |           0 |
-| Looker Studio data freshness intervals                            |   15 |          8 |    3 |           6 |
+| Looker Studio data freshness intervals                            |   15 |          8 |    3 |           7 |
 | GDPR personal data + special category                             |   10 |         15 |    0 |          17 |
 | GDPR minimisation / purpose limitation / storage limitation       |    4 |         12 |    0 |          13 |
 | DGSD / FGDB deposit guarantee                                     |   25 |         26 |    0 |          16 |
