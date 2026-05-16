@@ -45,6 +45,36 @@ model-risk advice.
 - Use the instructions below as the complete practice sequence; the workbench is only
   where you run the SQL.
 
+## Dataset Orientation
+
+This task uses the `lending-month-end` dataset, not the deposits seed used
+in `LT-BI-001` and `LT-BI-002`. The tables you will query are:
+
+- `loan_monthly_snapshots`: one row per loan and month-end snapshot date.
+  Contains `as_of_date`, `currency_code`, `outstanding_principal`,
+  `ifrs9_stage`, and contract identifiers.
+- `collateral`: one row per collateral piece tied to a loan.
+- `property_valuations`: one row per valuation event, with
+  `valuation_date` separate from the loan's `as_of_date`.
+- `romania_house_price_index_annual`: HPI reference context.
+
+The cert-track point of this task is to keep three reference dates
+distinct: exposure (`as_of_date`), origination, and valuation
+(`valuation_date`). Naive sums across all three will produce wrong
+control totals.
+
+## Expected Serving Result
+
+After the steps below, the currency-level serving result should be:
+
+| currency_code | latest_principal_total | stage3_principal_total |
+| ------------- | ---------------------: | ---------------------: |
+| EUR           |                  55000 |                      0 |
+| RON           |                 396000 |                  60000 |
+
+The reconciliation controls should report `1` non-month-end snapshot row
+and `3` stale collateral valuations.
+
 ## Steps
 
 1. In the table browser, inspect `loan_monthly_snapshots`, `collateral`,

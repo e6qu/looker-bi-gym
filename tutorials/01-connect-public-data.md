@@ -46,9 +46,14 @@ After this tutorial, you will be able to:
 
 - Build a report-ready deposits serving result from account-date balance rows.
 - Check expected row counts, totals, dates, and exposed fields before charting.
-- Use an optional BigQuery logical view as the source shape for Looker Studio.
-- Record Looker Studio credential mode without storing credentials, tokens, or
-  private links.
+- Use an optional
+  <a class="termRef" href="#/terminology/bigquery.md#bigquery-logical-view">BigQuery logical view<sup>BQ</sup></a>
+  as the source shape for Looker Studio.
+- Record Looker Studio
+  <a class="termRef" href="#/terminology/looker-studio.md#owner-credentials">owner-credentials<sup>LS</sup></a>
+  or
+  <a class="termRef" href="#/terminology/looker-studio.md#viewer-credentials">viewer-credentials<sup>LS</sup></a>
+  mode without storing credentials, tokens, or private links.
 
 Produces:
 
@@ -275,9 +280,15 @@ Write a release note in this form:
 
 `serving_rows=<count>; latest_date=<date>; latest_total=<total>; exposed_fields=<field_list>; excluded_fields=<field_list>`
 
-Expected answer:
+Fill it in from your own browser SQL output before opening the expected
+answer.
+
+<details>
+<summary>Reveal expected answer</summary>
 
 `serving_rows=6; latest_date=2026-03-31; latest_total=95700; exposed_fields=business_date,currency_code,ledger_total; excluded_fields=account_id,customer_id,synthetic_iban`
+
+</details>
 
 ## Deliverable
 

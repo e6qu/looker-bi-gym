@@ -28,7 +28,24 @@ After this index, you will be able to:
 - Distinguish core practice labs from optional applied Looker Studio recipes.
 - Find the quiz, exam mode, data-source notes, and regulatory-context briefs.
 
-## Start Here - Browser-First Path
+## Two Reading Paths
+
+There are two complementary paths through this curriculum. Pick the one
+that matches how you study.
+
+- **Practice path (15-20 minute timeboxes)**: focused browser-first
+  labs in `learner-tasks/`. Best for spaced practice and self-checking
+  one skill at a time.
+- **Tutorial path (longer reference)**: the 00-09 numbered tutorials.
+  Best for end-to-end builds that produce the artifacts the capstone
+  expects. Includes optional applied-track BigQuery and Looker Studio UI
+  steps.
+
+The two paths overlap on grain, fanout, and dashboard work. A cert-track
+learner can do the practice path first, then revisit the matching
+numbered tutorial when they need depth (or vice versa).
+
+## Start Here - Practice Path
 
 1. [00 - Orientation And Stack](00-orientation-and-stack.md)
 2. [Profile Dataset Grain](learner-tasks/lt-bi-001-profile-dataset-grain.md)
@@ -41,11 +58,17 @@ After this index, you will be able to:
 9. [Quiz Bank](quiz-bank.md)
 10. [Exam Mode](exam-mode.md)
 
-The path above is the core sequence. It runs in the browser, stores progress
-locally, and uses synthetic datasets. The numbered 01-09 tutorials below are
-longer reference and applied-track labs; some later items describe optional
-Google Cloud Console, BigQuery UI, and Looker Studio UI work that happens in
-those browser tools.
+The path above runs in the browser, stores progress locally, and uses
+synthetic datasets. The numbered 01-09 tutorials below are longer reference
+and applied-track labs; some later items describe optional Google Cloud
+Console, BigQuery UI, and Looker Studio UI work that happens in those
+browser tools.
+
+## Start Here - Tutorial Path
+
+The 00-09 sequence below is the cumulative tutorial path. Each tutorial
+produces a `notes/0X-*.md` artifact that the capstone (tutorial 09)
+consumes.
 
 ## Shared Contracts
 

@@ -32,8 +32,9 @@ After this task, you will be able to:
   charts.
 - Record synthetic evidence without pasting credentials or private exports into
   notes.
-- Distinguish a format-verified local evidence pattern from a manually verified
-  Looker Studio report.
+- Distinguish a browser-verified SQL artifact from a Looker Studio report
+  that was built by hand in the LS UI, and explain why the BI evidence
+  artifact lives at the SQL layer first.
 
 Training boundary: use synthetic training data only. This task is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or

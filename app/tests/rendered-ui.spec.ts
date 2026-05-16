@@ -292,6 +292,41 @@ test.describe("rendered UI", () => {
     await expect(
       page.getByRole("link", { name: /DuckDB And Browser Runtime/u }),
     ).toBeVisible();
+    await expect(
+      page
+        .getByRole("navigation", { name: "Matching terms" })
+        .getByRole("link", { name: "DuckDB-WASM" }),
+    ).toBeVisible();
+  });
+
+  test("terminology term anchors are reachable via deep links", async ({
+    page,
+  }) => {
+    await page.goto("/#/terminology/bi.md#grain", {
+      waitUntil: "domcontentloaded",
+    });
+
+    const grainHeading = page.getByRole("heading", {
+      level: 2,
+      name: "grain",
+    });
+    await expect(grainHeading).toBeVisible();
+    await expect(grainHeading).toHaveAttribute("id", "grain");
+  });
+
+  test("terminology vendor entries cite official sources", async ({ page }) => {
+    await page.goto("/#/terminology/bigquery.md", {
+      waitUntil: "domcontentloaded",
+    });
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: "BigQuery Terminology" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", {
+        name: /Introduction to logical views/u,
+      }),
+    ).toBeVisible();
   });
 
   test("orientation tutorial keeps the verification quiz separate and linked", async ({

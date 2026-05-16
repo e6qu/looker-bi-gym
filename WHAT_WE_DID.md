@@ -1,7 +1,129 @@
 # What We Did
 
+## 2026-05-16 - Phase 11.2 CC-4 follow-up: real failure scenarios in 06-08
+
+After the user pointed out that the Phase 11.2 commit had only relabelled
+the tautological VALUES blocks in tutorials 06-08, those three sections
+were rewritten to drive off real DuckDB queries against the committed
+synthetic data rather than VALUES theatre:
+
+- 06 cost-budget exercise: rows scanned and estimated bytes are now
+  `COUNT(*)` against the loaded tables. The over-budget signal comes
+  from a real `account_daily_balances INNER JOIN account_owners` fanout
+  (27 rows × 9 cols × 16 = 3888 bytes vs a 2000 byte budget).
+- 07 minimisation check: now runs `DESCRIBE` against the learner's real
+  query projection. Failure detection is driven by which sensitive
+  columns the learner actually selects (`leaky_candidate` exposes
+  account_id + customer_id + synthetic_iban → 3 sensitive columns;
+  `governed_candidate` exposes 0).
+- 08 reconciliation break: now compares the real source total
+  (`SELECT SUM(ledger_balance) WHERE business_date = '2026-03-31'`) to
+  two real broken queries (missing date filter → 286570, owner-join
+  fanout → 164800). Deltas are computed from data, not hand-written
+  VALUES.
+
+`app/scripts/test-sql.ts` was extended to verify all three exercises
+run in DuckDB-WASM with the expected outputs.
+
+## 2026-05-16 - Task 061 Tutorial Audit Remediation
+
+Folded into PR #45 by user direction so it lands together with the Phase
+10 follow-through.
+
+- Phase 11.1: rewrote `tutorials/curriculum.md` to describe what the
+  tutorials actually build (no aspirational mart/serve/AML/payments/ops
+  schemas). Wrapped every End Challenge expected-answer block in tutorials
+  00-09 inside `<details><summary>Reveal expected answer</summary>…` so
+  learners now attempt the challenge before the answer appears. Replaced
+  DuckDB-only `CAST(... AS VARCHAR)` with `CAST(... AS STRING)`. Fixed
+  tutorial 03 freshness label so the inner separator no longer collides
+  with the `;` outer separator.
+- Phase 11.2: added failure scenarios to tutorials 06 (cost-budget
+  overrun), 07 (minimisation failure when a sensitive field flips to
+  keep), 08 (reconciliation break plus a DORA ICT third-party register
+  exercise), and 09 (capstone scoring now depends on values the learner
+  fills from prior-tutorial notes, with a `hold_for_remediation` state
+  when a prior tutorial was skipped).
+- Phase 11.3: added Aggregation Notes (data-source vs chart aggregation
+  and the `COUNT(DISTINCT)` non-additivity trap) to tutorials 03 and 04;
+  clarified the Looker Studio reusable calculated-field guidance in 04;
+  added a BigQuery Cost Mechanics section to 06; added a BigQuery Access
+  Mechanics section (authorized views, RLS, CLS) and a Looker Studio
+  Credential Modes section to 07.
+- Phase 11.4: added a numeric depositor-bank worked example (EUR 60k +
+  EUR 60k vs EUR 100k ceiling) to tutorial 00; added the
+  ownership-share normalization assumption note to tutorial 05.
+- Phase 11.5: separated the practice and tutorial paths in
+  `tutorials/README.md`; expanded `tutorials/exam-mode.md` from 2 to 6
+  cards; added the missing interactive exam-surface link.
+- Phase 11.6: added an expected row-grain inventory to LT-BI-001; added a
+  Dataset Orientation section and an Expected Serving Result table to
+  LT-SQL-003; dropped "format-verified local evidence pattern" jargon
+  from LT-LOOKER-004; explained the BigQuery UI Query parameters dialog
+  in LT-LOOKER-007; added an Account Requirement banner and a Describe
+  Without An Account fallback path to the deposits dashboard recipe.
+- Verification: `bun run validate:terminology` passes (8 files / 158
+  headings / 300 termRef references / 75 sourced entries / 30 FACT-\*
+  links / 27 inline curriculum termRefs). `bun run format:check`,
+  `content:generate`, `content:check`, `typecheck`, `lint`,
+  `test:content-qa` all pass. `bun run test:e2e` reports 102 / 102
+  Playwright tests passing.
+
+## 2026-05-16 - Task 060 Terminology Grounding Follow-Through
+
+- Audited the merged PR #44 terminology work for incomplete, shallow, or
+  wrong parts and added Phase 10 to `PLAN.md` to stage the follow-through
+  across sub-phases (integrity, sourcing/fact linkage, search depth,
+  curriculum grounding rollout, reverse coverage, continuity).
+- Synced local `main` with `origin/main` at `d88acc7`, deleted the stale
+  local `terminology-grounding-glossary` branch, and started Phase 10 on
+  a fresh `terminology-integrity-checks` branch.
+- Opened PR #45 with Phase 10.1, then continued Phase 10.2 through 10.6 on
+  the same branch by user direction.
+- Phase 10.1 - Added `app/scripts/validate-terminology.ts`. The validator
+  fails on duplicate heading slugs inside a terminology file, broken
+  `class="termRef"` anchors, unknown target files, missing `#anchor`, and
+  missing or mismatched `<sup>HINT</sup>` domain hints. Wired into
+  `bun run check` and exposed as `bun run validate:terminology` at the
+  root workspace. Removed 148 decorative leading `<span class="termBadge">`
+  blocks from the seven terminology domain files; the `.termBadge` CSS
+  stays available for future inline reference use. Rewrote
+  `terminology/README.md` marker key so authors use the HTML anchor form
+  only.
+- Phase 10.2 - Extended the validator to parse `Sources:` blocks under each
+  entry, require an `https?://` citation on every entry in `bigquery.md`,
+  `looker-studio.md`, `duckdb.md`, and `regulations.md`, and confirm
+  referenced `FACT-*` IDs resolve against `facts/`. Backfilled 75 entries
+  with citations to official vendor documentation, regulator pages, or
+  EUR-Lex CELEX references, linking 30 entries to existing `FACT-*` IDs.
+- Phase 10.3 - Term-level search. Terminology sidebar now surfaces matching
+  `## term` headings (not only pages). Fixed hash routing so
+  `#/terminology/<file>#<anchor>` keeps the inner fragment available, and
+  added scroll-on-mount and `hashchange` behaviour in `MarkdownArticle` so
+  deep links land on the target heading. Added rendered UI coverage for
+  the term result list, deep-linked anchors, and vendor citations.
+- Phase 10.4 - Inline grounding rollout. Extended the validator to scan
+  `tutorials/`, `quizzes/`, `flashcards/`, `exams/`, `facts/`,
+  `regulations/`, and `challenges/` so any inline `class="termRef"` link
+  added to curriculum prose is held to the same anchor-resolution rules.
+  Added 27 inline references to a representative slice of tutorials and
+  regulations. Documented as out of scope: renderer changes needed to let
+  quiz/flashcard/exam/fact/challenge surfaces honour inline HTML.
+- Phase 10.5 - Added `app/scripts/generate-terminology-coverage.ts`
+  exposed as `bun run coverage:terminology`. Output is
+  `_development/terminology-coverage.md`. Initial snapshot: 148 entries,
+  93 prose-mentioned, 21 inline-grounded, 53 entirely uncovered.
+- Phase 10.6 - Marked task 059 merged in `_development/tasks/059-…`,
+  added `_development/tasks/060-terminology-integrity-checks.md`, updated
+  the task index, `STATUS.md`, `DO_NEXT.md`, and `BUGS.md`.
+
 ## 2026-05-12 - Task 059 Terminology Grounding Glossary
 
+- PR #44 squash-merged to `main` as `d88acc7` on 2026-05-12 18:10 UTC, with
+  CI passing on the PR before merge
+  (`https://github.com/e6qu/looker-bi-gym/actions/runs/25744753981/job/75604946709`).
+  Phase 10 of `PLAN.md` tracks the inline grounding, integrity, sourcing,
+  search, and coverage follow-through that this task did not deliver.
 - Created branch `terminology-grounding-glossary` from verified `main` at
   `81d4c3d`.
 - Added `_development/tasks/059-terminology-grounding-glossary.md` and updated

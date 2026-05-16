@@ -66,7 +66,7 @@ Create this first executive dashboard contract:
 | KPI 2            | latest active account count = `6`                                                            |
 | Trend            | daily total by `business_date`                                                               |
 | Breakdown        | latest total by `currency_code`                                                              |
-| Freshness label  | `Latest balance date 2026-03-31; source cutoff 2026-03-31T20:15:00Z`                         |
+| Freshness label  | `Latest balance date 2026-03-31 / source cutoff 2026-03-31T20:15:00Z`                        |
 | Exposed fields   | `business_date`, `currency_code`, `ledger_total`, `account_count`, `source_cutoff_timestamp` |
 | Excluded fields  | `account_id`, `customer_id`, `synthetic_iban`                                                |
 | Credential notes | no credentials, private links, tokens, or real banking data                                  |
@@ -191,7 +191,7 @@ ORDER BY currency_code;
     - time series: dimension `business_date`, metric `daily_ledger_total`;
     - table or bar chart: dimension `currency_code`, metrics `ledger_total` and
       `account_count`;
-    - freshness label: `Latest balance date 2026-03-31; source cutoff 2026-03-31T20:15:00Z`.
+    - freshness label: `Latest balance date 2026-03-31 / source cutoff 2026-03-31T20:15:00Z`.
 11. Record the exposed and excluded field lists from the goal section.
 
 ### Optional BigQuery UI Path
@@ -258,6 +258,22 @@ Use this section only after the optional BigQuery view exists.
 - Raw account, customer, and synthetic IBAN identifiers are absent from the
   dashboard source and chart specification.
 
+## Aggregation Notes For Cert-Track Learners
+
+- Default field aggregation is set on the Looker Studio data source, not on
+  the chart. Each chart inherits that default unless you override the
+  aggregation on the metric card. For this dashboard, `ledger_total` has
+  data-source aggregation `Sum` and `account_count` has data-source
+  aggregation `Sum`. The scorecard does not need to re-aggregate.
+- `account_count` is `COUNT(DISTINCT account_id)` computed per
+  `(business_date, currency_code)`. `SUM(account_count)` is safe here only
+  because, by construction of this synthetic data, no account holds rows
+  in two currencies on the same date. In general,
+  `SUM(COUNT(DISTINCT ...))` is not additive across groups; if a customer
+  ever held an account in EUR and another in RON on the same day, the sum
+  would double-count. The cert-correct recompute is
+  `COUNT(DISTINCT account_id)` over the latest day directly.
+
 ## Common Failure Modes
 
 - Opening an old report and assuming its data source still matches the intended
@@ -266,6 +282,8 @@ Use this section only after the optional BigQuery view exists.
   checked by another chart.
 - Summing balances across all dates and presenting `286570` as the latest
   executive KPI.
+- Summing `COUNT(DISTINCT account_id)` across groups without checking that
+  identifiers do not span those groups; this is the additive trap.
 - Hiding freshness so the date range and source cutoff are not visible.
 - Adding raw identifiers to make debugging easier and forgetting to remove them
   before the dashboard handoff.
@@ -283,13 +301,21 @@ Use this section only after the optional BigQuery view exists.
 
 ## End Challenge
 
-Write a handoff note in this form:
+Write a handoff note in this form. Each `;` separates a field; the
+`freshness` value uses `/` internally so the outer separator stays
+unambiguous.
 
 `latest_total=<total>; latest_accounts=<count>; trend=<date1:total1,date2:total2,date3:total3>; latest_breakdown=<currency1:total1,currency2:total2>; freshness=<label>; excluded_fields=<field_list>`
 
-Expected answer:
+Fill it in from your own browser SQL output before opening the expected
+answer.
 
-`latest_total=95700; latest_accounts=6; trend=2026-03-29:95190,2026-03-30:95680,2026-03-31:95700; latest_breakdown=EUR:16400,RON:79300; freshness=Latest balance date 2026-03-31; source cutoff 2026-03-31T20:15:00Z; excluded_fields=account_id,customer_id,synthetic_iban`
+<details>
+<summary>Reveal expected answer</summary>
+
+`latest_total=95700; latest_accounts=6; trend=2026-03-29:95190,2026-03-30:95680,2026-03-31:95700; latest_breakdown=EUR:16400,RON:79300; freshness=Latest balance date 2026-03-31 / source cutoff 2026-03-31T20:15:00Z; excluded_fields=account_id,customer_id,synthetic_iban`
+
+</details>
 
 ## Deliverable
 

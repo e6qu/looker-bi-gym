@@ -46,6 +46,8 @@
     "validate:datasets": "bun run --filter @looker-bi-gym/app validate:datasets",
     "validate:manifests": "bun run --filter @looker-bi-gym/app validate:manifests",
     "validate:static-links": "bun run --filter @looker-bi-gym/app validate:static-links",
+    "validate:terminology": "bun run --filter @looker-bi-gym/app validate:terminology",
+    "coverage:terminology": "bun run --filter @looker-bi-gym/app coverage:terminology",
     "typecheck": "bun run --filter facts-db-app typecheck && bun run --filter @looker-bi-gym/app typecheck",
     "preview": "bun run --filter @looker-bi-gym/app preview"
   }

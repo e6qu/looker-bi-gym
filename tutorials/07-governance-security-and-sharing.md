@@ -70,7 +70,11 @@ Produces:
 - Browser-first field-classification and governed-source outputs.
 - A draft `serve.safe_governed_deposit_summary` design.
 - A draft `serve.bi_report_sharing_register` design.
-- Optional BigQuery authorized-view and Looker Studio credential-mode notes.
+- Optional BigQuery
+  <a class="termRef" href="#/terminology/bigquery.md#authorized-view">authorized view<sup>BQ</sup></a>
+  and Looker Studio
+  <a class="termRef" href="#/terminology/looker-studio.md#viewer-credentials">credential-mode<sup>LS</sup></a>
+  notes.
 - `notes/07-governance-sharing.md`, if you keep external notes.
 
 ## Goal
@@ -522,6 +526,91 @@ ORDER BY dashboard_page;
     - do not record secrets, screenshots of credentials, private links, or user
       identities in release notes.
 
+15. Run the minimisation-failure scenario against a real candidate query.
+    A teammate has drafted a "depositor drill" view that pulls
+    `customer_id` from `account_owners` and `synthetic_iban` from
+    `accounts`. Inspect its actual output schema in DuckDB rather than a
+    hand-written VALUES list:
+
+```sql
+WITH leaky_candidate AS (
+  SELECT
+    b.business_date,
+    b.currency_code,
+    a.account_id,
+    a.synthetic_iban,
+    o.customer_id,
+    SUM(b.ledger_balance) AS ledger_total
+  FROM account_daily_balances b
+  INNER JOIN accounts a ON b.account_id = a.account_id
+  INNER JOIN account_owners o ON b.account_id = o.account_id
+  WHERE b.business_date = DATE '2026-03-31'
+  GROUP BY
+    b.business_date, b.currency_code, a.account_id, a.synthetic_iban, o.customer_id
+)
+SELECT
+  COUNT(*) AS leaky_column_count,
+  SUM(CASE WHEN column_name IN ('account_id', 'customer_id', 'synthetic_iban', 'masked_account_number') THEN 1 ELSE 0 END) AS sensitive_columns_in_output,
+  STRING_AGG(column_name, ', ' ORDER BY column_name) AS exposed_columns,
+  CASE
+    WHEN SUM(CASE WHEN column_name IN ('account_id', 'customer_id', 'synthetic_iban', 'masked_account_number') THEN 1 ELSE 0 END) = 0
+      THEN 'pass'
+    ELSE 'fail_hold_release'
+  END AS minimisation_check
+FROM (DESCRIBE SELECT * FROM leaky_candidate);
+```
+
+16. Confirm the failure output. The `sensitive_columns_in_output` count
+    comes from `DESCRIBE` reading the actual projection list, so it
+    cannot be faked by the rubric writer:
+
+| leaky_column_count | sensitive_columns_in_output | exposed_columns                                                                     | minimisation_check |
+| -----------------: | --------------------------: | ----------------------------------------------------------------------------------- | ------------------ |
+|                  6 |                           3 | account_id, business_date, currency_code, customer_id, ledger_total, synthetic_iban | fail_hold_release  |
+
+17. Now run the same `DESCRIBE` check against the governed view from
+    step 6 and confirm it returns `0` sensitive columns and a `pass`
+    status:
+
+```sql
+WITH governed_candidate AS (
+  SELECT
+    b.business_date,
+    b.currency_code,
+    COALESCE(br.city, 'UNMAPPED_BRANCH') AS branch_city,
+    SUM(b.ledger_balance) AS ledger_total,
+    COUNT(DISTINCT b.account_id) AS account_count,
+    MAX(b.source_cutoff_timestamp) AS source_cutoff_timestamp
+  FROM account_daily_balances b
+  INNER JOIN accounts a ON b.account_id = a.account_id
+  LEFT JOIN branches br ON a.branch_id = br.branch_id
+  WHERE b.business_date = DATE '2026-03-31'
+  GROUP BY b.business_date, b.currency_code, COALESCE(br.city, 'UNMAPPED_BRANCH')
+)
+SELECT
+  COUNT(*) AS governed_column_count,
+  SUM(CASE WHEN column_name IN ('account_id', 'customer_id', 'synthetic_iban', 'masked_account_number') THEN 1 ELSE 0 END) AS sensitive_columns_in_output,
+  CASE
+    WHEN SUM(CASE WHEN column_name IN ('account_id', 'customer_id', 'synthetic_iban', 'masked_account_number') THEN 1 ELSE 0 END) = 0
+      THEN 'pass'
+    ELSE 'fail_hold_release'
+  END AS minimisation_check
+FROM (DESCRIBE SELECT * FROM governed_candidate);
+```
+
+18. Confirm the governed output:
+
+| governed_column_count | sensitive_columns_in_output | minimisation_check |
+| --------------------: | --------------------------: | ------------------ |
+|                     6 |                           0 | pass               |
+
+19. Record the failure rule: a depositor-level drill-down belongs in a
+    separately governed, access-controlled detail page; it must not
+    appear on the executive aggregate page even when a stakeholder asks
+    for it. The cert-track defence is to put the minimisation check
+    into the dashboard build pipeline and have it run `DESCRIBE` against
+    every candidate serving query before release.
+
 ### Optional BigQuery UI Path
 
 Use this section only if you have browser UI access to BigQuery and a sandbox
@@ -565,6 +654,53 @@ GROUP BY
 7. Record the view name, dataset location, selected field list, owner team,
    review date, and control total. Do not record private user identifiers,
    screenshots of IAM bindings, tokens, or keys.
+
+### BigQuery Access Mechanics For Cert-Track Learners
+
+The optional BigQuery path above relies on three named access mechanics.
+A cert-track learner should be able to describe each one before relying on
+a dashboard release.
+
+- Authorized views. A view is authorized when its dataset has been
+  granted access to the source dataset. Viewers query the view without
+  needing direct access to the underlying tables. In the BigQuery UI:
+  open the source dataset, choose Sharing -> Authorize views, and pick
+  the view's dataset. The equivalent SQL uses
+  `GRANT \`roles/bigquery.dataViewer\` ON SCHEMA \`PROJECT_ID.dataset\``
+  on the view dataset and registers the view as authorized in the source
+  dataset IAM policy.
+- Row-level security (RLS). A row access policy restricts which rows a
+  particular grantee can see. Use
+  `CREATE ROW ACCESS POLICY ... GRANT TO ('user:reviewer@example.com')
+FILTER USING (currency_code = 'EUR')` to expose only EUR rows to a
+  specific group. RLS is enforced inside the table; it cannot be
+  bypassed by a view that wraps the table.
+- Column-level security (CLS). A policy tag attached to a column requires
+  the viewer to have a matching fine-grained reader role. Apply policy
+  tags through Data Catalog or BigQuery UI -> column schema -> Add policy
+  tag. The cert-track example is tagging `account_id`, `customer_id`,
+  `synthetic_iban`, and `masked_account_number` with a "personal data"
+  policy tag so the column is not selectable without the matching role.
+
+Use authorized views to share an aggregate without the source. Use RLS
+when one query must return different rows for different viewers. Use CLS
+when the table must expose some columns publicly and protect others.
+
+### Looker Studio Credential Modes For Cert-Track Learners
+
+- Owner credentials: viewers see what the report owner can see. Useful
+  for share-with-everyone aggregate reports that already exclude
+  identifiers, but it removes the access-control safety net for any
+  field that should be restricted.
+- Viewer credentials: viewers must have their own access to the
+  BigQuery source. Pairs well with authorized views: the source dataset
+  trusts the view dataset, and Looker Studio passes each viewer's
+  identity to BigQuery. This is the cert-recommended default for
+  restricted internal reports.
+- Service-account credentials: the report uses a service account to
+  query BigQuery. Use only with formal platform control; a service
+  account that holds broad access is a credential-leak risk if the
+  report is shared too widely.
 
 ### Optional Looker Studio UI Path
 
@@ -632,7 +768,12 @@ sandbox BigQuery source.
 ## End Challenge
 
 Prepare a release note for the two-page executive deposit dashboard. The note
-passes when it includes exactly this evidence:
+must include kept fields, excluded sensitive fields, sensitive fields kept,
+control total, release source, credential mode, and evidence rule. Compile
+the values from your own outputs before opening the expected evidence.
+
+<details>
+<summary>Reveal expected evidence</summary>
 
 - `kept_fields=6`
 - `excluded_sensitive_fields=4`
@@ -641,6 +782,8 @@ passes when it includes exactly this evidence:
 - `release_source=safe_governed_deposit_summary`
 - `credential_mode=viewer_credentials_or_authorized_view`
 - `evidence_rule=no_credentials_no_private_links`
+
+</details>
 
 ## Deliverable
 

@@ -12,8 +12,6 @@ tags: [terminology, sql]
 
 ## aggregate function
 
-<span class="termBadge">SQL</span>
-
 A function that combines values from multiple rows into one result per group.
 
 Example: `SUM`, `COUNT`, `AVG`, `MIN`, and `MAX` are aggregate functions.
@@ -23,8 +21,6 @@ Related:
 <a class="termRef" href="#/terminology/sql.md#group-by">GROUP BY<sup>SQL</sup></a>.
 
 ## AVG
-
-<span class="termBadge">SQL</span>
 
 Calculates the average of non-NULL numeric values in a group.
 
@@ -36,8 +32,6 @@ Related:
 <a class="termRef" href="#/terminology/sql.md#null">NULL<sup>SQL</sup></a>.
 
 ## CASE
-
-<span class="termBadge">SQL</span>
 
 Applies conditional logic and returns different values for different
 conditions.
@@ -51,8 +45,6 @@ Related:
 
 ## CAST
 
-<span class="termBadge">SQL</span>
-
 Converts a value from one data type to another and can fail when the value is
 not valid for the target type.
 
@@ -63,8 +55,6 @@ Related:
 <a class="termRef" href="#/terminology/bi.md#missing-value-policy">missing-value policy<sup>BI</sup></a>.
 
 ## common table expression
-
-<span class="termBadge">SQL</span>
 
 A named temporary query block introduced with `WITH` and used inside a larger
 SQL statement.
@@ -78,8 +68,6 @@ Related:
 
 ## COUNT
 
-<span class="termBadge">SQL</span>
-
 Counts rows or non-NULL values, depending on the expression used.
 
 Example: `COUNT(*)` counts rows; `COUNT(customer_key)` counts rows where
@@ -90,8 +78,6 @@ Related:
 <a class="termRef" href="#/terminology/sql.md#null">NULL<sup>SQL</sup></a>.
 
 ## COUNT DISTINCT
-
-<span class="termBadge">SQL</span>
 
 Counts unique values inside each result group.
 
@@ -104,8 +90,6 @@ Related:
 
 ## DATE_TRUNC
 
-<span class="termBadge">SQL</span>
-
 Converts a date or timestamp to a chosen period boundary.
 
 Example: `DATE_TRUNC(transaction_date, MONTH)` creates a month bucket.
@@ -116,8 +100,6 @@ Related:
 
 ## filter predicate
 
-<span class="termBadge">SQL</span>
-
 A Boolean condition in a `WHERE`, `HAVING`, `ON`, or similar clause.
 
 Example: `business_date = DATE '2026-03-31'` is a filter predicate.
@@ -127,8 +109,6 @@ Related:
 <a class="termRef" href="#/terminology/sql.md#where">WHERE<sup>SQL</sup></a>.
 
 ## GROUP BY
-
-<span class="termBadge">SQL</span>
 
 Defines the grouping level for aggregate results.
 
@@ -141,8 +121,6 @@ Related:
 
 ## HAVING
 
-<span class="termBadge">SQL</span>
-
 Filters grouped rows after aggregation.
 
 Example: `HAVING SUM(balance_amount) <> 0` keeps only groups with non-zero
@@ -154,8 +132,6 @@ Related:
 
 ## JOIN
 
-<span class="termBadge">SQL</span>
-
 Combines rows from two inputs according to join conditions.
 
 Example: joining accounts to branches can add branch attributes to account
@@ -166,8 +142,6 @@ Related:
 <a class="termRef" href="#/terminology/bi.md#fanout">fanout<sup>BI</sup></a>.
 
 ## LEFT JOIN
-
-<span class="termBadge">SQL</span>
 
 Keeps all rows from the left input and matches rows from the right input when
 the join condition succeeds.
@@ -181,8 +155,6 @@ Related:
 
 ## NULL
 
-<span class="termBadge">SQL</span>
-
 A missing or unknown value marker, not zero and not an empty string.
 
 Example: `SUM(amount)` and `COUNT(amount)` handle NULL differently from
@@ -194,8 +166,6 @@ Related:
 
 ## ORDER BY
 
-<span class="termBadge">SQL</span>
-
 Sorts result rows or defines ordering within a window function.
 
 Example: `ORDER BY business_date DESC` sorts newest dates first.
@@ -205,8 +175,6 @@ Related:
 <a class="termRef" href="#/terminology/sql.md#window-function">window function<sup>SQL</sup></a>.
 
 ## partition predicate
-
-<span class="termBadge">SQL</span>
 
 A filter on a partitioning column that lets the warehouse skip irrelevant
 partitions.
@@ -219,8 +187,6 @@ Related:
 
 ## QUALIFY
 
-<span class="termBadge">SQL</span>
-
 Filters rows after window functions are evaluated.
 
 Example: `QUALIFY ROW_NUMBER() OVER (...) = 1` keeps the first ranked row in
@@ -232,8 +198,6 @@ Related:
 
 ## ROW_NUMBER
 
-<span class="termBadge">SQL</span>
-
 Assigns a sequence number to rows inside a window partition.
 
 Example: `ROW_NUMBER() OVER (PARTITION BY account_id ORDER BY business_date
@@ -244,8 +208,6 @@ Related:
 <a class="termRef" href="#/terminology/sql.md#partition-by">PARTITION BY<sup>SQL</sup></a>.
 
 ## SAFE_CAST
-
-<span class="termBadge">SQL</span>
 
 Converts a value to a type and returns NULL instead of failing when conversion
 is invalid.
@@ -259,8 +221,6 @@ Related:
 
 ## SELECT list
 
-<span class="termBadge">SQL</span>
-
 The output expressions or columns returned by a query.
 
 Example: `SELECT branch_id, SUM(balance_amount) AS total_balance` has two
@@ -271,8 +231,6 @@ Related:
 <a class="termRef" href="#/terminology/bi.md#metric-contract">metric contract<sup>BI</sup></a>.
 
 ## SUM
-
-<span class="termBadge">SQL</span>
 
 Adds numeric values.
 
@@ -285,8 +243,6 @@ Related:
 
 ## WHERE
 
-<span class="termBadge">SQL</span>
-
 Filters rows before aggregation.
 
 Example: `WHERE currency_code = 'EUR'` keeps only EUR rows before grouping.
@@ -296,8 +252,6 @@ Related:
 <a class="termRef" href="#/terminology/sql.md#having">HAVING<sup>SQL</sup></a>.
 
 ## window frame
-
-<span class="termBadge">SQL</span>
 
 The subset of rows within a window partition used by some window functions.
 
@@ -310,8 +264,6 @@ Related:
 
 ## window function
 
-<span class="termBadge">SQL</span>
-
 A function evaluated over related rows while preserving one output row for each
 input row.
 
@@ -323,8 +275,6 @@ Related:
 <a class="termRef" href="#/terminology/sql.md#window-frame">window frame<sup>SQL</sup></a>.
 
 ## PARTITION BY
-
-<span class="termBadge">SQL</span>
 
 Divides rows into independent groups for a window function.
 

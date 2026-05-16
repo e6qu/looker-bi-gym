@@ -39,14 +39,21 @@ Required tools:
 - Do not use Google Cloud CLI, BigQuery CLI, service account keys, Python, or
   Docker.
 
-Objective: decide which metric logic belongs upstream, which reusable
-calculated fields belong in a Looker Studio data source, and which calculations
-are only chart formatting.
+Objective: decide which
+<a class="termRef" href="#/terminology/bi.md#metric">metric<sup>BI</sup></a>
+logic belongs upstream, which reusable
+<a class="termRef" href="#/terminology/looker-studio.md#looker-studio-calculated-field">calculated fields<sup>LS</sup></a>
+belong in a
+<a class="termRef" href="#/terminology/looker-studio.md#looker-studio-data-source">Looker Studio data source<sup>LS</sup></a>,
+and which calculations are only chart formatting.
 
 After this tutorial, you will be able to:
 
-- Write a metric contract with owner, grain, formula, allowed dimensions, and
-  expected values.
+- Write a
+  <a class="termRef" href="#/terminology/bi.md#metric-contract">metric contract<sup>BI</sup></a>
+  with owner,
+  <a class="termRef" href="#/terminology/bi.md#grain">grain<sup>BI</sup></a>,
+  formula, allowed dimensions, and expected values.
 - Use weighted formulas for ratio metrics instead of averaging displayed
   averages.
 - Configure reusable Looker Studio calculated fields with explicit aggregation
@@ -338,6 +345,16 @@ Use this section only after the optional BigQuery view exists.
 | ------------------------- | ---------------------------------------- | ------ | ----------- |
 | `Average Account Balance` | `SUM(ledger_total) / SUM(account_count)` | Number | Auto        |
 
+Cert-track note on `Aggregation: Auto`: this works because
+`ledger_total` and `account_count` are data-source numeric fields with
+their own default aggregation of `Sum`. The calculated field formula
+wraps those underlying fields in explicit `SUM()`, so the chart layer
+does not re-aggregate the result. If you reused this field with a
+different aggregation default at the chart level, you would silently
+change the metric, which is exactly the trap this tutorial is meant to
+prevent. Treat reusable ratio metrics as "defined once at the data
+source, never overridden on the chart".
+
 4. Add this reusable data-source calculated dimension:
 
 | Field Name              | Formula                                                                                                                    | Type | Aggregation |
@@ -376,6 +393,18 @@ Use this section only after the optional BigQuery view exists.
 - Deposit-guarantee context is documented as depositor-bank grain, not latest
   account-balance grain.
 
+## Aggregation Notes For Cert-Track Learners
+
+- The reusable `Average Account Balance` field uses `SUM(ledger_total) /
+SUM(account_count)` so it stays correct under any chart filter context.
+  The forbidden shape is `AVG(row_average_account_balance)`, which is an
+  average of averages and gives `14012.50` instead of `15950.00`.
+- `SUM(account_count)` is summing `COUNT(DISTINCT account_id)` across
+  groups. It is correct here only because each account belongs to one
+  currency and one branch. As soon as an account spans groups, the
+  additive shortcut overstates. The cert-correct recompute is
+  `COUNT(DISTINCT account_id)` over the same window.
+
 ## Common Failure Modes
 
 - Summing balance snapshots across all dates and getting `286570` instead of
@@ -408,9 +437,15 @@ Write a metric handoff note in this form:
 
 `latest_total=<total>; active_accounts=<count>; weighted_average=<value>; currency_share_ron=<percent>; unmapped_total=<total>; reusable_average_formula=<formula>; guarantee_grain=<grain>`
 
-Expected answer:
+Fill it in from your own browser SQL output before opening the expected
+answer.
+
+<details>
+<summary>Reveal expected answer</summary>
 
 `latest_total=95700; active_accounts=6; weighted_average=15950.00; currency_share_ron=82.86%; unmapped_total=5000; reusable_average_formula=SUM(ledger_total)/SUM(account_count); guarantee_grain=depositor-bank`
+
+</details>
 
 ## Deliverable
 

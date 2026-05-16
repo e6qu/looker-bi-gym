@@ -1,8 +1,46 @@
 # Bugs And Known Gaps
 
-Last updated: 2026-05-11
+Last updated: 2026-05-16
 
 ## Open Issues
+
+- ID: TERMINOLOGY-FIRST-PASS-FOLLOWTHROUGH-2026-05-16.
+  - Area: terminology pages, curriculum grounding, content QA, search.
+  - Severity: high.
+  - Description: PR #44 (`d88acc7`) shipped rendered terminology pages and a
+    route but did not deliver the Phase 6 grounding requirement. No
+    learner-facing surface used `class="termRef"`. There was no build-time
+    validation of the in-terminology cross-links, no external sources for
+    vendor or regulatory entries, no `FACT-*` linkage, and the sidebar
+    search filtered pages instead of term headings.
+  - Fix plan: Phase 10 of `PLAN.md`. Task 060 on branch
+    `terminology-integrity-checks` (PR #45) carries Phase 10.1 through 10.6
+    in one PR by user direction. Remaining work after PR #45 merges:
+    renderer support for inline HTML in YAML-bound surfaces, continued
+    inline grounding across the tutorials/regulations flagged in
+    `_development/terminology-coverage.md`, and a decision pass on the 53
+    uncovered entries.
+  - Status: open; Phase 10.1 through 10.5 implemented in PR #45.
+
+- ID: TUTORIAL-AUDIT-DEFECTS-2026-05-16.
+  - Area: numbered tutorials, learner tasks, recipe, cross-cutting
+    tutorial index pages.
+  - Severity: high.
+  - Description: tutorial audit recorded in
+    `_development/tutorial-audit.md` found 1 block / 9 high / 27 medium
+    / 17 low defects against the certification-track reading lens. Top
+    items were the aspirational `curriculum.md`, leaked End Challenge
+    answers, tautological VALUES checks in tutorials 06-09 (especially
+    the capstone scoring), Looker Studio reusable calculated-field
+    accuracy, and DuckDB-only `CAST(... AS VARCHAR)` in BigQuery-shaped
+    SQL.
+  - Fix plan: Phase 11 of `PLAN.md`. PR #45 carries all six sub-phases
+    (11.1 through 11.6) by user direction. Renderer changes that would
+    let YAML-bound surfaces render inline HTML, deeper deep-link
+    citations, and exhaustive inline grounding across every prose
+    occurrence remain follow-on work.
+  - Status: open; PR #45 implements all six sub-phases pending CI and
+    merge.
 
 - ID: QUIZ-WORKSHEET-SCAFFOLDING-2026-05-11.
   - Area: quiz bank and content QA.

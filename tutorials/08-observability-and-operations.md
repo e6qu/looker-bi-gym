@@ -509,6 +509,126 @@ FROM operations_summary;
     - never paste raw logs, user emails, private report links, credentials, or
       customer data into operations notes.
 
+17. Run the reconciliation-break scenario against a real broken query.
+    A teammate published a dashboard query that forgot the
+    `WHERE business_date = ...` filter, so the dashboard total quietly
+    sums every day of balance snapshots. Compute the real source total
+    and the real broken-dashboard total side by side, then compare:
+
+```sql
+WITH source_total AS (
+  SELECT SUM(ledger_balance) AS source_ledger_total
+  FROM account_daily_balances
+  WHERE business_date = DATE '2026-03-31'
+),
+broken_dashboard AS (
+  -- Intentionally wrong: the WHERE clause is missing, so the dashboard
+  -- aggregates every business_date in the seed.
+  SELECT SUM(ledger_balance) AS dashboard_ledger_total
+  FROM account_daily_balances
+),
+fanout_dashboard AS (
+  -- Intentionally wrong: an account_owners join multiplies balance rows
+  -- before aggregation.
+  SELECT SUM(b.ledger_balance) AS dashboard_ledger_total
+  FROM account_daily_balances b
+  INNER JOIN account_owners o
+    ON b.account_id = o.account_id
+  WHERE b.business_date = DATE '2026-03-31'
+)
+SELECT
+  'all-dates sum' AS broken_query_shape,
+  s.source_ledger_total,
+  bd.dashboard_ledger_total,
+  bd.dashboard_ledger_total - s.source_ledger_total AS reconciliation_delta,
+  CASE
+    WHEN bd.dashboard_ledger_total = s.source_ledger_total THEN 'in_service'
+    ELSE 'hold_publish_investigate'
+  END AS operations_status
+FROM source_total s
+CROSS JOIN broken_dashboard bd
+UNION ALL
+SELECT
+  'owner-join fanout',
+  s.source_ledger_total,
+  fd.dashboard_ledger_total,
+  fd.dashboard_ledger_total - s.source_ledger_total AS reconciliation_delta,
+  CASE
+    WHEN fd.dashboard_ledger_total = s.source_ledger_total THEN 'in_service'
+    ELSE 'hold_publish_investigate'
+  END AS operations_status
+FROM source_total s
+CROSS JOIN fanout_dashboard fd;
+```
+
+18. Confirm the failure output. The deltas come from the real broken
+    queries running against the actual `deposits-seed/v0.1.0` dataset.
+    The `all-dates sum` reconciliation delta is the sum of the
+    2026-03-29 and 2026-03-30 daily totals (`95190 + 95680 = 190870`),
+    and the `owner-join fanout` delta matches the fanout proof from
+    tutorial 05 (`164800 - 95700 = 69100`):
+
+| broken_query_shape | source_ledger_total | dashboard_ledger_total | reconciliation_delta | operations_status        |
+| ------------------ | ------------------: | ---------------------: | -------------------: | ------------------------ |
+| all-dates sum      |               95700 |                 286570 |               190870 | hold_publish_investigate |
+| owner-join fanout  |               95700 |                 164800 |                69100 | hold_publish_investigate |
+
+19. Record the break-day rule in your notes: when reconciliation delta
+    is non-zero, hold the dashboard publish and open an incident. Do
+    not edit the dashboard to match the source total; fix the source
+    pipeline. The two failure shapes above (missing date filter, raw
+    owner-join fanout) are the most common real breaks; both are
+    detected by this same source-vs-dashboard reconciliation check.
+
+20. Draft the DORA third-party register row that the report's BigQuery and
+    Looker Studio dependencies imply:
+
+```sql
+WITH dora_ict_third_party_register AS (
+  SELECT * FROM (
+    VALUES
+      (
+        'BigQuery',
+        'Google Cloud',
+        'critical',
+        'serving views and analytical queries',
+        'EU multi-region',
+        'replace with cross-region replica if region degrades'
+      ),
+      (
+        'Looker Studio',
+        'Google Cloud',
+        'important',
+        'reporting front-end for synthetic deposits dashboard',
+        'EU',
+        'fallback to static snapshot if reporting plane degrades'
+      )
+  ) AS t(
+    ict_service,
+    provider,
+    criticality,
+    function_supported,
+    data_location,
+    exit_plan_summary
+  )
+)
+SELECT *
+FROM dora_ict_third_party_register
+ORDER BY criticality, ict_service;
+```
+
+21. Confirm the register output:
+
+| ict_service   | provider     | criticality | function_supported                                   | data_location   | exit_plan_summary                                       |
+| ------------- | ------------ | ----------- | ---------------------------------------------------- | --------------- | ------------------------------------------------------- |
+| BigQuery      | Google Cloud | critical    | serving views and analytical queries                 | EU multi-region | replace with cross-region replica if region degrades    |
+| Looker Studio | Google Cloud | important   | reporting front-end for synthetic deposits dashboard | EU              | fallback to static snapshot if reporting plane degrades |
+
+22. Record the DORA artifact note: criticality is recorded per service, an
+    exit plan exists for every critical or important ICT third-party
+    dependency, and the register is updated when a service or function
+    changes.
+
 ### Optional BigQuery UI Path
 
 Use this section only if you have browser UI access to BigQuery and a sandbox
@@ -598,8 +718,14 @@ sandbox BigQuery data source.
 
 ## End Challenge
 
-Prepare the daily operations handoff for the executive deposit dashboard. The
-handoff passes when it includes exactly this evidence:
+Prepare the daily operations handoff for the executive deposit dashboard.
+The handoff must include dependencies, freshness status, reconciliation
+delta, simulated bytes total, incident open items, validation failures, and
+evidence rule. Compile the values from your own outputs before opening the
+expected evidence.
+
+<details>
+<summary>Reveal expected evidence</summary>
 
 - `dependencies=6`
 - `freshness_status=ok`
@@ -608,6 +734,8 @@ handoff passes when it includes exactly this evidence:
 - `incident_open_items=1`
 - `validation_failures=0`
 - `evidence_rule=aggregate_no_private_logs`
+
+</details>
 
 ## Deliverable
 

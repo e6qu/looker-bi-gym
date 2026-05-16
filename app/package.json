@@ -8,7 +8,7 @@
     "content:generate": "bun run scripts/generate-content-catalog.ts",
     "content:check": "bun run scripts/generate-content-catalog.ts --check",
     "build": "bun run content:generate && bun run validate:manifests && bun run validate:datasets && bun run typecheck && vite build --config configs/vite.config.ts",
-    "check": "bun run format:check && bun run content:generate && bun run content:check && bun run validate:manifests && bun run lint && bun run typecheck && bun run validate:datasets && bun run test:quiz && bun run test:sql && bun run test:fixtures && bun run test:derived-expectations && bun run test:cloud-evidence && bun run test:browser-config && bun run test:progress-export && bun run test:flashcards && bun run test:quiz-facts-db && bun run test:content-qa && bun run test:facts-db && bun run test:llm-workbench && bun run test:platform-boundary && bun run test:validators && bun run test:e2e && vite build --config configs/vite.config.ts && bun run validate:static-links",
+    "check": "bun run format:check && bun run content:generate && bun run content:check && bun run validate:manifests && bun run validate:terminology && bun run lint && bun run typecheck && bun run validate:datasets && bun run test:quiz && bun run test:sql && bun run test:fixtures && bun run test:derived-expectations && bun run test:cloud-evidence && bun run test:browser-config && bun run test:progress-export && bun run test:flashcards && bun run test:quiz-facts-db && bun run test:content-qa && bun run test:facts-db && bun run test:llm-workbench && bun run test:platform-boundary && bun run test:validators && bun run test:e2e && vite build --config configs/vite.config.ts && bun run validate:static-links",
     "lint": "bun run content:generate && bun run validate:manifests && eslint --config configs/eslint.config.ts . --max-warnings 0",
     "format": "prettier --write .. --ignore-path ../.prettierignore",
     "format:check": "prettier --check .. --ignore-path ../.prettierignore",
@@ -41,6 +41,8 @@
     "validate:datasets": "bun run scripts/validate-datasets.ts",
     "validate:manifests": "bun run scripts/validate-challenge-manifests.ts",
     "validate:static-links": "bun run scripts/validate-static-links.ts",
+    "validate:terminology": "bun run scripts/validate-terminology.ts",
+    "coverage:terminology": "bun run scripts/generate-terminology-coverage.ts",
     "typecheck": "bun run content:generate && bun run validate:manifests && tsc -p tsconfig.json --noEmit --pretty false && tsc -p tsconfig.node.json --noEmit --pretty false",
     "preview": "vite preview --config configs/vite.config.ts --host 127.0.0.1"
   },

@@ -119,7 +119,10 @@ Review gates before this phase can be called complete:
 - Curriculum vocabulary must be grounded in rendered terminology pages. Specific
   words should be visibly distinguishable as BI concepts, SQL syntax, BigQuery
   terms, Looker Studio terms, banking terms, regulatory terms, or
-  DuckDB/browser-runtime terms when precision matters.
+  DuckDB/browser-runtime terms when precision matters. The terminology pages
+  themselves landed in PR #44 but no learner-facing surface yet references
+  them; Phase 10 stages the inline grounding rollout and the integrity,
+  sourcing, search, and coverage gaps that the first pass left open.
 - Quizzes and challenges are separate verification surfaces. Tutorial steps
   must not depend on completing a quiz, and quiz questions should verify the
   same competencies with distinct scenario prompts rather than duplicating the
@@ -228,9 +231,12 @@ Required question, exam, and flashcard standard:
 Required external verification:
 
 - Platform behavior must be backed by official vendor documentation where
-  available.
+  available. Terminology entries for `BQ`, `LS`, and `DB` terms must carry the
+  citations defined in Phase 10.2 before this gate can pass.
 - Regulatory and banking-domain context must be backed by regulator, official
-  legal, standards-body, or clearly identified authoritative sources.
+  legal, standards-body, or clearly identified authoritative sources. The
+  `REG` terminology entries must carry the citations defined in Phase 10.2
+  before this gate can pass.
 - Dataset-derived claims must be reproducible from committed synthetic data and
   deterministic fixtures.
 - External review notes must identify which official or authoritative sources
@@ -263,6 +269,232 @@ claude --print --permission-mode plan --output-format text "<phase-specific revi
 
 If Claude CLI hangs, is unavailable, or cannot authenticate, the phase is
 `blocked` or `implemented but not Claude-reviewed`; do not call it complete.
+
+## Phase 10 - Terminology Grounding Follow-Through
+
+PR #44 (`d88acc7`, merged 2026-05-12) landed a rendered terminology area but
+delivered only the surface of the Phase 6 grounding requirement. The
+follow-through work below is staged so each PR stays reviewable and so the
+plan does not blur "glossary pages exist" with "curriculum is grounded in
+them".
+
+### Findings From The First Pass
+
+These are the incomplete, shallow, or wrong parts of the merged terminology
+work that this phase must address. They are not minor docs issues; several
+of them are why Phase 6 and Phase 9 cannot yet move.
+
+- No curriculum surface uses the new term-link convention. `class="termRef"`
+  and `class="termBadge"` occur only inside `terminology/*.md` itself. No
+  tutorial, quiz, flashcard, exam, fact, regulation, or challenge file
+  references a terminology anchor. The stated purpose ("ground learner-facing
+  vocabulary") was not delivered.
+- Cross-link integrity is not enforced. Heading anchors are slugged at render
+  time in `app/src/markdown.ts`. Nothing in `bun run check` validates that
+  `<a class="termRef" href="#/terminology/.../#anchor">` resolves to a real
+  heading; renaming any `## term` silently breaks links across ~250 inline
+  references in the terminology files alone.
+- No external sourcing. Vendor terms (BigQuery, Looker Studio, DuckDB-WASM)
+  and regulatory terms (GDPR, DGSD, DORA) are written from memory. None
+  carry a citation to official vendor documentation, regulator pages, or
+  standards bodies. Phase 9 cannot accept these as externally verified.
+- No fact linkage. The corpus has `FACT-*` IDs and a fact database, but
+  terminology entries do not reference them. Term definitions and fact
+  claims can drift independently.
+- Search is page-level, not term-level. The "Search terminology" sidebar
+  filters which terminology pages appear; it does not surface or jump to the
+  matching `## term` heading on the page.
+- Decorative redundancy. Every entry repeats a `<span class="termBadge">`
+  domain label at the top, which duplicates the file's own scope. The badge
+  earns its place inline (next to a referenced term), not as a leading
+  decoration on the definition.
+- Content QA only registers the section. `app/scripts/test-content-qa.ts`
+  was extended to know terminology exists, but no scan checks for duplicate
+  term IDs, mis-marked domain hints (`LS` pointing to `bigquery.md`), or
+  unreachable Related cross-links.
+- README convention is half-shown. The marker key advertises "normal Markdown
+  or HTML link with a short superscript domain hint", but only the HTML form
+  works through `marked` (Markdown links cannot embed `<sup>`). The README
+  should drop the Markdown form or document an alternative.
+- Continuity drift. Task 059, STATUS.md, and DO_NEXT.md still describe PR
+  #44 as open. The local `terminology-grounding-glossary` branch is two
+  pre-squash commits ahead of `origin/main` and should be deleted after the
+  follow-through tasks are scheduled.
+
+### Phase 10.1 - Terminology Integrity Checks
+
+- Validate every `## term` heading is unique within its terminology file and
+  that derived slugs are unique across the terminology section.
+- Validate every `class="termRef" href="#/terminology/<file>#<anchor>"`
+  resolves to a real heading on a real terminology page; fail
+  `bun run content:check` (or a dedicated `validate:terminology-links`) on
+  break.
+- Validate marker hints match the linked file's domain (e.g. `LS` only on
+  links to `looker-studio.md`).
+- Detect dead `Related:` entries and reciprocal gaps (term A links to term B
+  but B does not link back when both share a domain).
+- Drop or justify the leading per-entry `<span class="termBadge">` block;
+  keep badges as inline hints only.
+
+### Phase 10.2 - Terminology Sourcing And Fact Linkage
+
+- Add a `sources` field (frontmatter list or a trailing `Sources:` block)
+  per term. Required for vendor (`BQ`, `LS`, `DB`) and regulatory (`REG`)
+  terms; encouraged for `BI`, `SQL`, `BNK`.
+- Backfill citations to official vendor docs, regulator pages,
+  standards-body publications, or clearly identified authoritative sources.
+  Coverage is judged by named-domain term count, not total entry count.
+- Where a term overlaps an existing `FACT-*` claim, add the fact ID and add
+  a content-QA check that the term definition and fact wording stay
+  compatible.
+- Reject "memory-only" entries during review; mark unsourced vendor and
+  regulatory terms as known gaps until backfilled.
+
+### Phase 10.3 - Terminology Search Depth
+
+- Surface matching `## term` headings in the sidebar search result list, not
+  only the parent page, with a direct jump-to-anchor link.
+- Support `#/terminology/?q=...` deep links for sharing or learner-task
+  prompts.
+- Add rendered UI coverage for term-level search and anchor jumps.
+
+### Phase 10.4 - Curriculum Grounding Rollout
+
+Inline `class="termRef"` markers must be added across learner-facing surfaces
+so Phase 6's grounding requirement is actually met. Stage the rollout one
+surface per PR; each PR must include a stale scan that no inline marker
+links to a missing anchor:
+
+1. Tutorials.
+2. Quizzes.
+3. Flashcards.
+4. Exams.
+5. Facts.
+6. Regulations.
+7. Challenges.
+
+Each rollout PR must:
+
+- Identify the precise terms that need marking (ambiguous, vendor-specific,
+  regulatory, grain/metric/contract-shaped) rather than blanket-marking
+  prose.
+- Mark on first or salient mention only, to keep prose readable.
+- Add (or extend) a content-QA scan that fails on broken
+  `terminology/.../#anchor` references inside that surface.
+
+### Phase 10.5 - Reverse Coverage Matrix
+
+- Generate a coverage matrix: every named term occurrence across tutorials,
+  quizzes, flashcards, exams, facts, regulations, and challenges, mapped
+  back to its terminology entry (or flagged as missing).
+- Flag terminology entries that are never referenced; treat them as either
+  drift or candidates for removal.
+- Treat unresolved coverage entries as explicit Phase 9 gaps until closed.
+
+### Phase 10.6 - Continuity Reconciliation
+
+- Mark task 059 `merged` and record the squash commit `d88acc7` on `main`.
+- Update `STATUS.md`, `DO_NEXT.md`, `BUGS.md`, and `WHAT_WE_DID.md` so PR
+  #44 reads as merged and the Phase 10 sub-phases are the active scope.
+- Delete the local `terminology-grounding-glossary` branch once the
+  follow-through tasks are scheduled and recorded.
+
+Phase 10 does not graduate Phase 6 or Phase 9. The Phase 9 completeness
+gate still requires the competency, content, gap, and source matrices,
+human review, automated coverage, and a recorded formal review.
+
+## Phase 11 - Tutorial Audit Remediation
+
+A tutorial audit performed on 2026-05-16 (recorded in
+`_development/tutorial-audit.md`) found that the curriculum is structurally
+sound on the browser-first path but carries defects that meaningfully limit
+its value for a learner studying for a BI / data certification: an
+aspirational `curriculum.md` that does not match what tutorials build, end
+challenges that print their own answers, governance / operations / capstone
+work simulated through tautological synthetic VALUES blocks, a Looker
+Studio calculated-field claim that conflates aggregation modes, and a
+capstone whose rubric returns 100 by construction.
+
+Phase 11 stages the fixes across follow-up PRs so the audit doc remains the
+single source of truth and individual PRs stay reviewable.
+
+### Phase 11.1 - Cross-cutting structural fixes
+
+- CC-1: rewrite or relocate `tutorials/curriculum.md` so it describes what
+  the tutorials actually build. Aspirational mart / serve / AML / payments
+  / ops schemas move to `tutorials/design-targets.md` with an explicit
+  "not built" header.
+- CC-2: convert every "End Challenge - Expected answer" block in 00 through
+  09 into a prompt + collapsed expected-answer pattern (e.g. a `<details>`
+  block, an anchor link, or a separate `#expected-answer` section).
+- CC-3: replace browser-only `CAST(... AS VARCHAR)` with `CAST(... AS STRING)`
+  in the BigQuery-shaped tutorials, or label per-step which dialect runs.
+  Promote the `LT-DQ-006` pattern of explicitly naming BigQuery
+  alternatives.
+
+### Phase 11.2 - Add failure scenarios to 06-09
+
+- CC-4: split each synthetic VALUES check in 06, 07, 08, and 09 into a
+  passing and a failing scenario. The learner must identify the failure
+  and the remediation. Where possible, drive the check off real synthetic
+  dataset state so the learner can produce a failing case by editing the
+  seed.
+- T09-1 / T09-2: rewrite the capstone Goal so the rubric score depends on
+  artifacts the learner produced in 02-08, not on hardcoded VALUES rows.
+- T08-3: add a non-zero-reconciliation-delta day in tutorial 08 and walk
+  through the investigation.
+
+### Phase 11.3 - Tighten Looker Studio + BigQuery mechanics for cert
+
+- T04-1: fix the reusable calculated-field guidance in 04 so the aggregation
+  mode and base field configuration are correctly named.
+- T03-3 / T03-4: in 03, explicitly distinguish data-source default
+  aggregation from chart-level aggregation and calculated-field scope (chart
+  vs data source vs reusable data source).
+- T06-1 / T06-3: in 06, replace or supplement the deterministic byte
+  simulation with the actual BigQuery cost rules (only selected columns are
+  scanned, partition filter behaviour, materialized view cache vs logical
+  view re-run, table snapshot cost).
+- T07-2 / T07-3 / T07-4: in 07, add concrete authorized-view setup steps,
+  row-level security, column-level security (`policy_tag`), and a sharper
+  contrast of LS credential modes.
+- CC-5: address `SUM(COUNT(DISTINCT ...))` non-additivity in 03 and 04 with
+  a short callout and a toy counter-example.
+
+### Phase 11.4 - Banking-domain depth
+
+- T00-2: in 00, replace the abstract account-vs-depositor-grain statement
+  with a numeric worked example showing how the EUR 100,000 ceiling applies
+  to a multi-account customer.
+- T05-3: in 05, document that the allocation math assumes ownership shares
+  sum to 100 per account.
+- T08-2: in 08, make at least one DORA-shaped artifact (ICT third-party
+  register or incident severity classification) a real exercise rather than
+  a synthetic VALUES row.
+
+### Phase 11.5 - Index page and assessment scale-up
+
+- IR-2: see Phase 11.1 CC-1 for `curriculum.md`.
+- IR-1: align `tutorials/README.md` "Start Here" path with the 01-09
+  numbered sequence so learners understand when to use which.
+- IR-3: ensure every tutorial step that selects from a table links back to
+  `tutorials/data-sources.md` so learners do not assume design-target
+  tables are loaded.
+- IR-4: expand `tutorials/exam-mode.md` to at least 6-8 cards, or record
+  the current count as a Phase 9 gap.
+- IR-5: add the missing "interactive exam surface" link in `exam-mode.md`.
+
+### Phase 11.6 - Learner-task and recipe polish
+
+- L01-2, L03-1, L03-2, L04-1, L04-2, L07-1: per-task edits captured in the
+  audit. Mostly: explicit expected outputs, clearer dataset orientation,
+  fewer jargon phrases.
+- R01-1: label the Looker Studio recipe as account-required, and add a
+  fallback "describe what would render and why" path so the cert-track
+  learner without an LS account can still gain value.
+
+Phase 11 does not graduate Phase 9 or Phase 10. Any "ready" or "complete"
+claim still requires the recorded formal review.
 
 ## Split Plans
 

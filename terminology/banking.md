@@ -12,8 +12,6 @@ tags: [terminology, banking]
 
 ## account
 
-<span class="termBadge">BNK</span>
-
 A banking product instance that records balances, transactions, ownership, and
 status over time.
 
@@ -26,8 +24,6 @@ Related:
 
 ## account holder
 
-<span class="termBadge">BNK</span>
-
 A person or entity recorded as holding an account.
 
 Example: a joint account can have two or more account holders.
@@ -37,8 +33,6 @@ Related:
 <a class="termRef" href="#/terminology/banking.md#depositor">depositor<sup>BNK</sup></a>.
 
 ## balance snapshot
-
-<span class="termBadge">BNK</span>
 
 A recorded balance at a reference date or time.
 
@@ -50,8 +44,6 @@ Related:
 
 ## branch
 
-<span class="termBadge">BNK</span>
-
 A banking location or organizational unit used for customer service, ownership,
 management, or reporting.
 
@@ -62,8 +54,6 @@ Related:
 <a class="termRef" href="#/terminology/banking.md#branch-liquidity">branch liquidity<sup>BNK</sup></a>.
 
 ## branch liquidity
-
-<span class="termBadge">BNK</span>
 
 A reporting theme for monitoring balances, flows, and funding indicators by
 branch, currency, and reference date.
@@ -77,8 +67,6 @@ Related:
 
 ## collateral
 
-<span class="termBadge">BNK</span>
-
 An asset pledged to support a credit exposure.
 
 Example: real estate collateral may have a valuation date distinct from a loan
@@ -89,8 +77,6 @@ Related:
 <a class="termRef" href="#/terminology/banking.md#valuation-date">valuation date<sup>BNK</sup></a>.
 
 ## covered deposit
-
-<span class="termBadge">BNK</span>
 
 A deposit amount that falls within applicable deposit-guarantee coverage rules.
 
@@ -103,8 +89,6 @@ Related:
 
 ## currency
 
-<span class="termBadge">BNK</span>
-
 The monetary unit in which an account, transaction, balance, or compensation
 amount is denominated.
 
@@ -116,8 +100,6 @@ Related:
 
 ## deposit
 
-<span class="termBadge">BNK</span>
-
 Money placed with a bank under a deposit product or account relationship.
 
 Example: current accounts and term deposits can both contribute to deposit
@@ -128,8 +110,6 @@ Related:
 <a class="termRef" href="#/terminology/banking.md#eligible-deposit">eligible deposit<sup>BNK</sup></a>.
 
 ## depositor
-
-<span class="termBadge">BNK</span>
 
 The person or entity whose deposits are being considered for coverage or
 reporting.
@@ -143,8 +123,6 @@ Related:
 
 ## eligible deposit
 
-<span class="termBadge">BNK</span>
-
 A deposit that satisfies the eligibility conditions for a guarantee or reporting
 treatment.
 
@@ -157,8 +135,6 @@ Related:
 
 ## excluded deposit
 
-<span class="termBadge">BNK</span>
-
 A deposit excluded from a guarantee or reporting treatment.
 
 Example: excluded rows should be separated before applying a coverage ceiling.
@@ -168,8 +144,6 @@ Related:
 <a class="termRef" href="#/terminology/bi.md#metric-contract">metric contract<sup>BI</sup></a>.
 
 ## exchange-rate date
-
-<span class="termBadge">BNK</span>
 
 The reference date for converting amounts between currencies.
 
@@ -182,8 +156,6 @@ Related:
 
 ## exposure
 
-<span class="termBadge">BNK</span>
-
 The amount at risk or outstanding for a customer, facility, product, or
 portfolio.
 
@@ -194,8 +166,6 @@ Related:
 <a class="termRef" href="#/terminology/bi.md#semi-additive-metric">semi-additive metric<sup>BI</sup></a>.
 
 ## guarantee ceiling
-
-<span class="termBadge">BNK</span>
 
 The maximum standard amount applied by a deposit-guarantee rule before special
 cases are considered.
@@ -209,8 +179,6 @@ Related:
 
 ## joint account
 
-<span class="termBadge">BNK</span>
-
 An account with more than one holder.
 
 Example: joint ownership can change how account balances are allocated before
@@ -221,8 +189,6 @@ Related:
 <a class="termRef" href="#/terminology/bi.md#fanout">fanout<sup>BI</sup></a>.
 
 ## ledger balance
-
-<span class="termBadge">BNK</span>
 
 The recorded account balance at a reference point according to the bank's
 ledger.
@@ -235,8 +201,6 @@ Related:
 
 ## product
 
-<span class="termBadge">BNK</span>
-
 A banking offering or account category.
 
 Example: current account, savings account, term deposit, mortgage, and credit
@@ -247,8 +211,6 @@ Related:
 <a class="termRef" href="#/terminology/bi.md#dimension">dimension<sup>BI</sup></a>.
 
 ## temporary high balance
-
-<span class="termBadge">BNK</span>
 
 A balance above the standard guarantee ceiling that may receive temporary
 protection under defined event conditions.
@@ -261,8 +223,6 @@ Related:
 <a class="termRef" href="#/terminology/regulations.md#temporary-high-balance">temporary high balance<sup>REG</sup></a>.
 
 ## valuation date
-
-<span class="termBadge">BNK</span>
 
 The date on which an asset or collateral value is assessed.
 

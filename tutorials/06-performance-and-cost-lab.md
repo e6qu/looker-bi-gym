@@ -56,7 +56,10 @@ private operational metadata.
 After this tutorial, you will be able to:
 
 - Compare a broad raw source with a narrow serving source.
-- Explain why logical views still run their SQL when queried.
+- Explain why
+  <a class="termRef" href="#/terminology/bigquery.md#bigquery-logical-view">logical views<sup>BQ</sup></a>
+  still run their SQL when queried, and when to prefer a
+  <a class="termRef" href="#/terminology/bigquery.md#bigquery-materialized-view">materialized view<sup>BQ</sup></a>.
 - Read BigQuery job fields that matter for BI cost review.
 - Draft a daily report operations control that records source, owner, query
   count, bytes, freshness, and control totals.
@@ -386,6 +389,85 @@ ORDER BY estimated_bytes_processed DESC;
     - document freshness settings because Looker Studio refresh behavior and
       source-table update time are not the same control.
 
+13. Run the cost-budget failure scenario against real dataset state. Three
+    different chart shapes will be costed below using the actual row and
+    column counts that the workbench reports, so the failure must come from
+    real query shape rather than a hand-written number:
+
+```sql
+WITH safe_serving_costed AS (
+  SELECT
+    'serving source baseline' AS scenario,
+    COUNT(*) AS rows_scanned,
+    5 AS columns_scanned,
+    COUNT(*) * 5 * 16 AS estimated_bytes_processed
+  FROM (
+    SELECT
+      b.currency_code,
+      COALESCE(br.city, 'UNMAPPED_BRANCH') AS branch_city,
+      SUM(b.ledger_balance) AS ledger_total,
+      COUNT(DISTINCT b.account_id) AS account_count,
+      MAX(b.source_cutoff_timestamp) AS source_cutoff_timestamp
+    FROM account_daily_balances b
+    INNER JOIN accounts a ON b.account_id = a.account_id
+    LEFT JOIN branches br ON a.branch_id = br.branch_id
+    WHERE b.business_date = DATE '2026-03-31'
+    GROUP BY b.currency_code, COALESCE(br.city, 'UNMAPPED_BRANCH')
+  ) s
+),
+raw_join_costed AS (
+  SELECT
+    'serving source plus accidental raw owner join' AS scenario,
+    COUNT(*) AS rows_scanned,
+    9 AS columns_scanned,
+    COUNT(*) * 9 * 16 AS estimated_bytes_processed
+  FROM account_daily_balances b
+  INNER JOIN accounts a ON b.account_id = a.account_id
+  LEFT JOIN branches br ON a.branch_id = br.branch_id
+  INNER JOIN account_owners o ON b.account_id = o.account_id
+),
+budget AS (
+  SELECT 2000 AS byte_budget
+)
+SELECT
+  c.scenario,
+  c.rows_scanned,
+  c.columns_scanned,
+  c.estimated_bytes_processed,
+  b.byte_budget,
+  c.estimated_bytes_processed - b.byte_budget AS overrun_bytes,
+  CASE
+    WHEN c.estimated_bytes_processed <= b.byte_budget THEN 'within_budget'
+    ELSE 'over_budget_hold_release'
+  END AS budget_status
+FROM (
+  SELECT * FROM safe_serving_costed
+  UNION ALL
+  SELECT * FROM raw_join_costed
+) c
+CROSS JOIN budget
+ORDER BY c.estimated_bytes_processed;
+```
+
+14. Confirm the output. The numbers come from the actual workbench row
+    counts; if a future committed dataset change adds rows, the bytes
+    update automatically:
+
+| scenario                                      | rows_scanned | columns_scanned | estimated_bytes_processed | byte_budget | overrun_bytes | budget_status            |
+| --------------------------------------------- | -----------: | --------------: | ------------------------: | ----------: | ------------: | ------------------------ |
+| serving source baseline                       |            6 |               5 |                       480 |        2000 |         -1520 | within_budget            |
+| serving source plus accidental raw owner join |           27 |               9 |                      3888 |        2000 |          1888 | over_budget_hold_release |
+
+The `27` row count for the raw-join scenario is the real fanout from
+`account_daily_balances` (18 rows) inner-joining `account_owners`
+(9 ownership rows) and produces a real over-budget signal. The
+governed serving view aggregates to 6 rows and stays within budget.
+
+15. Record the budget-failure rule in your notes: a chart that joins
+    `account_owners` into the latest-day path multiplies the rows
+    scanned and breaks the byte budget. The fix is upstream
+    aggregation, not chart-level filters.
+
 ### Optional BigQuery UI Path
 
 Use this section only if you have browser UI access to BigQuery and a sandbox
@@ -419,6 +501,38 @@ LIMIT 50;
 5. Compare real `total_bytes_processed` and `total_bytes_billed` values with
    the browser-first simulation. The exact values do not need to match because
    the browser-first bytes are an educational proxy.
+
+### BigQuery Cost Mechanics For Cert-Track Learners
+
+The browser-first proxy is intentionally simple
+(`rows * columns * 16 bytes`). Real BigQuery on-demand cost has named
+mechanics every cert-shape question expects you to know:
+
+- BigQuery on-demand pricing is charged per TB of data processed. Only
+  columns you select get scanned; unused columns do not bill. A narrow
+  serving view that selects six columns from an account-day balance table
+  scans far less than `SELECT *` on the raw table.
+- Partitioned tables let a `WHERE` filter on the partition column skip
+  whole partitions. If `account_daily_balances` were partitioned by
+  `business_date` and the dashboard filtered `business_date = ...`, the
+  scan would be limited to that partition.
+- Clustered tables further reduce scanning by physically ordering rows
+  inside a partition on cluster keys. Filters and aggregations on the
+  cluster keys take less work.
+- A materialized view stores precomputed results. Subsequent queries
+  against the base table that match the materialized view definition can
+  read the cached result and skip the underlying scan. A logical view
+  always re-runs its SQL.
+- Cached results: a repeated query against unchanged data can hit the
+  query results cache and bill `0` bytes. The
+  `INFORMATION_SCHEMA.JOBS_BY_PROJECT.cache_hit` field shows when this
+  happened.
+- Reservations let an organisation pay for slots (a unit of compute) per
+  hour or per month instead of paying per byte processed. Reservation
+  pricing changes the billing model but not the byte mechanics above.
+
+A learner who understands the cost rules above can answer cost-shaped
+exam questions even if a real billing dashboard is not available.
 
 ### Optional Looker Studio UI Path
 
@@ -484,9 +598,15 @@ Write the release decision in this form:
 
 `raw_bytes=<bytes>; serving_bytes=<bytes>; reduction_pct=<pct>; release_source=<source>; evidence_rule=<rule>`
 
-Expected answer:
+Fill it in from your own browser SQL output before opening the expected
+answer.
+
+<details>
+<summary>Reveal expected answer</summary>
 
 `raw_bytes=11232; serving_bytes=1248; reduction_pct=88.89; release_source=serving_source; evidence_rule=bounded_redacted_job_metadata`
+
+</details>
 
 ## Deliverable
 

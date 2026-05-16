@@ -1,0 +1,278 @@
+import { readdir, readFile, writeFile } from "node:fs/promises";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+type TermEntry = {
+  readonly file: string;
+  readonly slug: string;
+  readonly text: string;
+};
+
+type CurriculumFile = {
+  readonly relativePath: string;
+  readonly source: string;
+};
+
+type FileHitCount = {
+  readonly path: string;
+  readonly count: number;
+};
+
+type TermCoverage = {
+  readonly entry: TermEntry;
+  readonly prose: readonly FileHitCount[];
+  readonly inlineRefs: readonly FileHitCount[];
+};
+
+const scriptDir = dirname(fileURLToPath(import.meta.url));
+const appRoot = join(scriptDir, "..");
+const repoRoot = join(appRoot, "..");
+const terminologyRoot = join(repoRoot, "terminology");
+const outputPath = join(repoRoot, "_development", "terminology-coverage.md");
+
+const curriculumRoots: readonly string[] = [
+  "tutorials",
+  "quizzes",
+  "flashcards",
+  "exams",
+  "facts",
+  "regulations",
+  "challenges",
+];
+
+const headingPattern = /^##\s+(.+?)\s*$/gmu;
+const termRefHrefPattern =
+  /<a\s+class="termRef"\s+href="(#\/terminology\/([^"#]+)#([^"]+))"/gu;
+
+function slugifyHeading(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/`/gu, "")
+    .replace(/[^a-z0-9]+/gu, "-")
+    .replace(/^-+|-+$/gu, "");
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+}
+
+async function collectTermEntries(): Promise<readonly TermEntry[]> {
+  const entries: TermEntry[] = [];
+  const fileNames = (await readdir(terminologyRoot)).filter(
+    (name) => name.endsWith(".md") && name !== "README.md",
+  );
+
+  for (const fileName of fileNames) {
+    const source = await readFile(join(terminologyRoot, fileName), "utf8");
+    for (const match of source.matchAll(headingPattern)) {
+      const text = match[1]?.trim();
+      if (text === undefined || text.length === 0) {
+        continue;
+      }
+      const slug = slugifyHeading(text);
+      if (slug.length === 0) {
+        continue;
+      }
+      entries.push({ file: fileName, slug, text });
+    }
+  }
+
+  return entries;
+}
+
+async function* walkMarkdown(root: string): AsyncGenerator<CurriculumFile> {
+  const entries = await readdir(root, { withFileTypes: true });
+  for (const entry of entries) {
+    const fullPath = join(root, entry.name);
+    if (entry.isDirectory()) {
+      yield* walkMarkdown(fullPath);
+      continue;
+    }
+    if (!entry.name.endsWith(".md")) {
+      continue;
+    }
+    const source = await readFile(fullPath, "utf8");
+    yield {
+      relativePath: fullPath.slice(repoRoot.length + 1),
+      source,
+    };
+  }
+}
+
+async function collectCurriculumFiles(): Promise<readonly CurriculumFile[]> {
+  const out: CurriculumFile[] = [];
+  for (const dirName of curriculumRoots) {
+    const root = join(repoRoot, dirName);
+    try {
+      await readdir(root);
+    } catch {
+      continue;
+    }
+    for await (const file of walkMarkdown(root)) {
+      out.push(file);
+    }
+  }
+  return out;
+}
+
+function countOccurrencesInProse(text: string, source: string): number {
+  if (text.length < 3) {
+    // Skip very short labels to avoid noise like "id" or "j".
+    return 0;
+  }
+  const pattern = new RegExp(`\\b${escapeRegExp(text)}\\b`, "giu");
+  let count = 0;
+  for (const match of source.matchAll(pattern)) {
+    void match;
+    count += 1;
+  }
+  return count;
+}
+
+function countInlineRefs(entry: TermEntry, source: string): number {
+  let count = 0;
+  for (const match of source.matchAll(termRefHrefPattern)) {
+    const file = match[2];
+    const anchor = match[3];
+    if (file === entry.file && anchor === entry.slug) {
+      count += 1;
+    }
+  }
+  return count;
+}
+
+function buildCoverage(
+  entries: readonly TermEntry[],
+  files: readonly CurriculumFile[],
+): readonly TermCoverage[] {
+  return entries.map((entry) => {
+    const prose: FileHitCount[] = [];
+    const inlineRefs: FileHitCount[] = [];
+
+    for (const file of files) {
+      const proseCount = countOccurrencesInProse(entry.text, file.source);
+      const refCount = countInlineRefs(entry, file.source);
+
+      if (proseCount > 0) {
+        prose.push({ path: file.relativePath, count: proseCount });
+      }
+      if (refCount > 0) {
+        inlineRefs.push({ path: file.relativePath, count: refCount });
+      }
+    }
+
+    return { entry, prose, inlineRefs };
+  });
+}
+
+function summarize(coverage: readonly TermCoverage[]): string {
+  const total = coverage.length;
+  const proseHits = coverage.filter((c) => c.prose.length > 0).length;
+  const inlineHits = coverage.filter((c) => c.inlineRefs.length > 0).length;
+  const dark = coverage.filter(
+    (c) => c.prose.length === 0 && c.inlineRefs.length === 0,
+  );
+
+  const lines: string[] = [];
+  lines.push("# Terminology Coverage Matrix");
+  lines.push("");
+  lines.push(
+    "Generated by `bun run coverage:terminology`. The matrix maps every",
+  );
+  lines.push(
+    "terminology entry to its occurrences across `tutorials/`, `quizzes/`,",
+  );
+  lines.push(
+    "`flashcards/`, `exams/`, `facts/`, `regulations/`, and `challenges/`.",
+  );
+  lines.push("");
+  lines.push("## Summary");
+  lines.push("");
+  lines.push(`- Total terminology entries: ${total}.`);
+  lines.push(
+    `- Entries with at least one prose mention in curriculum: ${proseHits}.`,
+  );
+  lines.push(
+    `- Entries with at least one inline \`class="termRef"\` reference: ${inlineHits}.`,
+  );
+  lines.push(`- Entries with zero curriculum coverage: ${dark.length}.`);
+  lines.push("");
+
+  if (dark.length > 0) {
+    lines.push("## Entries With Zero Curriculum Coverage");
+    lines.push("");
+    lines.push(
+      "These terms exist in `terminology/` but are not mentioned in any",
+    );
+    lines.push(
+      "tracked learner-facing file. Decide whether to ground them inline or",
+    );
+    lines.push("retire them.");
+    lines.push("");
+    for (const item of dark) {
+      lines.push(
+        `- \`${item.entry.file}#${item.entry.slug}\` - "${item.entry.text}".`,
+      );
+    }
+    lines.push("");
+  }
+
+  const proseOnly = coverage.filter(
+    (c) => c.prose.length > 0 && c.inlineRefs.length === 0,
+  );
+  if (proseOnly.length > 0) {
+    lines.push("## Mentioned In Prose But Not Inline-Grounded");
+    lines.push("");
+    lines.push("These terms appear in curriculum prose but have no");
+    lines.push(
+      '`class="termRef"` marker pointing to terminology. Candidates for',
+    );
+    lines.push("Phase 10.4 follow-on grounding passes.");
+    lines.push("");
+    for (const item of proseOnly) {
+      const fileSummary = item.prose
+        .slice(0, 3)
+        .map((p) => `${p.path}×${p.count}`)
+        .join(", ");
+      const overflow =
+        item.prose.length > 3 ? ` (+${item.prose.length - 3} more files)` : "";
+      lines.push(
+        `- \`${item.entry.file}#${item.entry.slug}\` - "${item.entry.text}": ${fileSummary}${overflow}.`,
+      );
+    }
+    lines.push("");
+  }
+
+  const inlineCovered = coverage.filter((c) => c.inlineRefs.length > 0);
+  if (inlineCovered.length > 0) {
+    lines.push("## Inline-Grounded Terms");
+    lines.push("");
+    for (const item of inlineCovered) {
+      const fileSummary = item.inlineRefs
+        .map((p) => `${p.path}×${p.count}`)
+        .join(", ");
+      lines.push(
+        `- \`${item.entry.file}#${item.entry.slug}\` - "${item.entry.text}": ${fileSummary}.`,
+      );
+    }
+    lines.push("");
+  }
+
+  return lines.join("\n");
+}
+
+async function main(): Promise<void> {
+  const [entries, files] = await Promise.all([
+    collectTermEntries(),
+    collectCurriculumFiles(),
+  ]);
+  const coverage = buildCoverage(entries, files);
+  const document = summarize(coverage);
+  await writeFile(outputPath, `${document.trimEnd()}\n`, "utf8");
+  process.stdout.write(
+    `Wrote ${outputPath.slice(repoRoot.length + 1)} for ${entries.length} terminology entries across ${files.length} curriculum files.\n`,
+  );
+}
+
+await main();

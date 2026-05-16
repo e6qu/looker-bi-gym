@@ -1,61 +1,98 @@
 # Status
 
-Last updated: 2026-05-12
+Last updated: 2026-05-16
 
 ## Current Branch And PR
 
-- Current branch: `terminology-grounding-glossary`, based on verified `main` at
-  `81d4c3d`.
-- Current PR: #44,
-  `https://github.com/e6qu/looker-bi-gym/pull/44`.
-- PR #43, `https://github.com/e6qu/looker-bi-gym/pull/43`, is squash-merged at
-  `81d4c3d`.
-- Main CI for `81d4c3d` passed:
-  `https://github.com/e6qu/looker-bi-gym/actions/runs/25680564739`.
-- GitHub Pages workflow for `81d4c3d` passed:
-  `https://github.com/e6qu/looker-bi-gym/actions/runs/25680562973`.
-- Live Pages URL verified HTTP 200 on 2026-05-11 after PR #43:
-  `https://e6qu.github.io/looker-bi-gym/`, with
-  `last-modified: Mon, 11 May 2026 15:45:25 GMT`.
-- Deployed learning-surface verifier passed on 2026-05-11:
-  `bun run verify:deployed-surface`.
-- No open PRs were present when Task 058 started.
+- Current branch: `terminology-integrity-checks`, based on verified `main` at
+  `d88acc7`.
+- Current PR: #45,
+  `https://github.com/e6qu/looker-bi-gym/pull/45`. Phase 10.1 landed in the
+  opening commit; Phase 10.2 through 10.5 plus the Phase 10.6 reconciliation
+  followed on the same branch by user direction.
+- PR #44, `https://github.com/e6qu/looker-bi-gym/pull/44`, is squash-merged
+  at `d88acc7` (2026-05-12).
 
 ## Active Task
 
-Task 059 - Terminology Grounding Glossary.
+Tasks 060 (Terminology Grounding Follow-Through) and 061 (Tutorial Audit
+Remediation), both carried in PR #45 by user direction.
 
 Current state:
 
-- Added rendered `terminology/` Markdown pages for BI, SQL, BigQuery, Looker
-  Studio, banking, regulations, and DuckDB/browser-runtime vocabulary.
-- Kept terminology domain/platform focused: no schema-only glossary, no
-  app-specific training table or column entries, and no self-referential course
-  terminology.
-- Added examples and cross-links for term entries using short visible domain
-  hints such as `BI`, `SQL`, `BQ`, `LS`, `BNK`, `REG`, and `DB`.
-- Added the `terminology` app route, content catalog support, searchable content
-  navigation, term badge styling, and stable heading anchors for cross-links.
-- Local verification passed:
-  - `bun run content:generate`;
-  - `bun run content:check`;
-  - `bun run format:check`;
-  - `bun run test:content-qa`;
-  - `bun run validate:static-links`;
-  - `bun run typecheck`;
-  - `bun run lint`;
-  - terminology stale scan for app-specific/schema/self-referential glossary
-    wording;
-  - `bun run test:e2e` after approved local Vite preview binding, with all 100
-    Playwright tests passing;
-  - `bun run check` after approved local Vite preview binding, with all 100
-    Playwright tests passing.
+- Phase 11 (Tutorial Audit Remediation) - All six sub-phases delivered.
+  See `_development/tasks/061-tutorial-audit-remediation.md` and
+  `_development/tutorial-audit.md` for details. Highlights:
+  - 11.1: rewrote `tutorials/curriculum.md` to match what the tutorials
+    actually build; wrapped every End Challenge expected-answer block in
+    `<details>` in tutorials 00-09; replaced DuckDB-only `VARCHAR` with
+    `STRING` in BigQuery-shaped SQL; fixed tutorial 03 freshness label
+    semicolon collision.
+  - 11.2: added failure scenarios to tutorials 06-09 so the checks no
+    longer pass by construction. Capstone (09) now requires cross-
+    tutorial values from the learner's own notes.
+  - 11.3: added Aggregation Notes (data-source vs chart-level, COUNT
+    DISTINCT non-additivity), BigQuery Cost Mechanics, BigQuery Access
+    Mechanics, and Looker Studio Credential Modes sections.
+  - 11.4: numeric depositor-bank worked example in tutorial 00;
+    ownership-share normalization assumption note in tutorial 05.
+  - 11.5: README separates practice and tutorial paths; exam mode
+    expanded from 2 to 6 cards; missing interactive exam link added.
+  - 11.6: per-task polish for LT-BI-001, LT-SQL-003, LT-LOOKER-004,
+    LT-LOOKER-007 and the deposits dashboard recipe.
+
+Earlier in the PR:
+
+- Phase 10.1 - Integrity checks. `app/scripts/validate-terminology.ts` fails
+  on duplicate heading slugs, broken `class="termRef"` anchors, unknown
+  target files, missing `#anchor`, missing or mismatched `<sup>HINT</sup>`.
+  Wired into `bun run check`. 148 decorative leading `<span class="termBadge">`
+  blocks removed. `terminology/README.md` rewritten.
+- Phase 10.2 - Sourcing and FACT linkage. Sources block convention added.
+  75 vendor and regulatory entries backfilled with official-source URLs.
+  30 entries linked to existing `FACT-*` IDs, validated against `facts/`.
+- Phase 10.3 - Term-level search. Terminology sidebar surfaces matching
+  `## term` headings, not only pages. Hash routing now keeps an inner
+  `#anchor` fragment so `#/terminology/<file>#<slug>` deep links work, with
+  scroll-on-mount and hashchange behaviour added to `MarkdownArticle`.
+- Phase 10.4 - Inline grounding rollout. Validator extended to scan
+  `tutorials/`, `quizzes/`, `flashcards/`, `exams/`, `facts/`,
+  `regulations/`, and `challenges/` for `class="termRef"` links. 27 inline
+  references added to a representative slice of tutorials and regulations.
+  YAML-bound surfaces (quiz, flashcards, exams, fact statements, challenge
+  manifests) still need renderer changes to honour inline HTML; documented
+  as Phase 10.4 follow-on.
+- Phase 10.5 - Reverse coverage matrix. `app/scripts/generate-terminology-coverage.ts`
+  (`bun run coverage:terminology`) writes
+  `_development/terminology-coverage.md`. Today's snapshot: 148 entries
+  total, 93 mentioned in curriculum prose, 21 inline-grounded, 53 entirely
+  uncovered.
+- Phase 10.6 - Continuity reconciliation. Task 059 marked merged, this
+  file, `DO_NEXT.md`, `BUGS.md`, `WHAT_WE_DID.md`, and the task index
+  updated. Stale local `terminology-grounding-glossary` branch already
+  deleted at branch-creation time.
+
+## Phase 10 Follow-On Backlog
+
+After PR #45 merges, Phase 10 remaining work:
+
+- Renderer support so quiz prompts/explanations, flashcard front/back, exam
+  card statements, fact statements, and challenge instructions can honour
+  inline HTML `class="termRef"` markers.
+- Continued inline grounding for the tutorials, regulations, and other
+  Markdown surfaces flagged in the coverage matrix's "Mentioned In Prose
+  But Not Inline-Grounded" section.
+- Decide per uncovered entry (the 53 dark terms) whether to ground inline
+  or retire.
 
 ## Blockers And Gaps
 
-- Task 059 is locally verified and open in PR #44. CI is pending unless checked
-  later.
-- Claude CLI formal review remains blocked by authentication or prior hangs;
-  Task 059 does not mark any phase complete.
-- Curriculum completeness, external verification, and full assessment coverage
-  remain Phase 9 gaps.
+- Claude CLI formal review remains blocked by authentication or prior
+  hangs; Task 060 does not mark any phase complete.
+- Curriculum completeness, external verification, and full assessment
+  coverage remain Phase 9 gaps. Phase 10.2 backfilled named-domain
+  citations but Phase 9 still requires the competency / coverage / gap /
+  source matrices and a recorded formal review.
+- Some Phase 10.2 citations point to vendor or regulator landing pages
+  rather than deep-linked specific pages; deepening those citations is
+  follow-on work.

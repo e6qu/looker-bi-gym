@@ -71,7 +71,7 @@ serving_rows AS (
   GROUP BY business_date, currency_code
 )
 SELECT
-  CAST(serving_rows.business_date AS VARCHAR) AS business_date,
+  CAST(serving_rows.business_date AS STRING) AS business_date,
   serving_rows.currency_code,
   CAST(serving_rows.ledger_total AS DOUBLE) AS ledger_total,
   serving_rows.source_account_count
@@ -109,6 +109,15 @@ GROUP BY business_date, currency_code;
 | ------------------------ | ------ | ------------- | -------------- |
 | `selected_business_date` | DATE   | 2026-03-31    | date control   |
 | `selected_currency`      | STRING | RON           | list control   |
+
+In the BigQuery UI, parameter values are bound through the query
+editor's Query parameters dialog (More -> Query settings -> Query
+parameters in classic UI, or the parameter button in the modern UI).
+Each parameter listed in the SQL with `@name` must have a matching
+row in that dialog with a type (`DATE`, `STRING`, etc.) and a value
+before the query runs. The same SQL works from the
+`bq query --parameter` CLI shape, but the cert-track path is the UI
+dialog.
 
 6. Add this publication checkpoint: before the query backs a dashboard page,
    the query editor or dry-run evidence must show an acceptable estimated byte

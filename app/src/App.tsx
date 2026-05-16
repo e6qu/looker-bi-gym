@@ -39,7 +39,7 @@ import {
   formatRequiredTools,
 } from "./challenges";
 import { examPacks, quizBanks, type Difficulty } from "./learningContent";
-import { renderMarkdown } from "./markdown";
+import { renderMarkdown, slugifyHeading } from "./markdown";
 import {
   evaluateChallengeQuestions,
   evaluateQuiz,
@@ -74,7 +74,11 @@ import type {
   BrowserConfigAnswerState,
   BrowserConfigValue,
 } from "./configEvidence";
-import type { ContentDocument, ContentSectionId } from "./content";
+import type {
+  ContentDocument,
+  ContentSection,
+  ContentSectionId,
+} from "./content";
 import type {
   BrowserProgressPersistence,
   LearnerProgressImportResult,
@@ -204,12 +208,23 @@ function isContentSectionId(value: RouteId): value is ContentSectionId {
 }
 
 function routeFromHash(): AppRoute {
-  const hashPath = window.location.hash.replace(/^#\/?/, "");
-  const [sectionCandidate, ...fileParts] = hashPath.split("/");
+  const fullHash = window.location.hash.replace(/^#\/?/, "");
+  const [routePath = ""] = fullHash.split("#", 1);
+  const [sectionCandidate, ...fileParts] = routePath.split("/");
   const section = isRouteId(sectionCandidate) ? sectionCandidate : "home";
   const fileName = fileParts.join("/");
 
   return fileName.length > 0 ? { section, fileName } : { section };
+}
+
+function fragmentFromHash(): string | undefined {
+  const fullHash = window.location.hash.replace(/^#\/?/, "");
+  const hashIndex = fullHash.indexOf("#");
+  if (hashIndex === -1) {
+    return undefined;
+  }
+  const fragment = fullHash.slice(hashIndex + 1);
+  return fragment.length > 0 ? fragment : undefined;
 }
 
 function formatDatasetRef(datasetRef: RuntimeDatasetRef): string {
@@ -2775,6 +2790,39 @@ function HomePage(): JSX.Element {
   );
 }
 
+type TermAnchor = {
+  readonly filePath: string;
+  readonly fileName: string;
+  readonly slug: string;
+  readonly text: string;
+};
+
+function collectTermAnchors(section: ContentSection): readonly TermAnchor[] {
+  const anchors: TermAnchor[] = [];
+  const headingPattern = /^##\s+(.+?)\s*$/gmu;
+
+  for (const document of section.documents) {
+    for (const match of document.markdown.matchAll(headingPattern)) {
+      const text = match[1]?.trim();
+      if (text === undefined || text.length === 0) {
+        continue;
+      }
+      const slug = slugifyHeading(text);
+      if (slug.length === 0) {
+        continue;
+      }
+      anchors.push({
+        filePath: document.filePath,
+        fileName: document.fileName,
+        slug,
+        text,
+      });
+    }
+  }
+
+  return anchors;
+}
+
 function ContentPage({
   sectionId,
   fileName,
@@ -2786,6 +2834,19 @@ function ContentPage({
   const document = getDocument(sectionId, fileName);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+  const isTerminologySection = sectionId === "terminology";
+  const termAnchors = useMemo(
+    () => (section !== undefined ? collectTermAnchors(section) : []),
+    [section],
+  );
+  const matchingTermAnchors = useMemo(() => {
+    if (!isTerminologySection || normalizedSearchTerm.length === 0) {
+      return [];
+    }
+    return termAnchors.filter((anchor) =>
+      anchor.text.toLowerCase().includes(normalizedSearchTerm),
+    );
+  }, [isTerminologySection, normalizedSearchTerm, termAnchors]);
   const visibleDocuments =
     section?.documents.filter((candidate) => {
       if (normalizedSearchTerm.length === 0) {
@@ -2825,11 +2886,34 @@ function ContentPage({
             onChange={(event) => {
               setSearchTerm(event.target.value);
             }}
-            placeholder="Search terms and pages"
+            placeholder={
+              isTerminologySection ? "Search terms" : "Search terms and pages"
+            }
             type="search"
             value={searchTerm}
           />
         </label>
+        {matchingTermAnchors.length > 0 ? (
+          <nav className="termAnchorResults" aria-label="Matching terms">
+            <p className="eyebrow">Terms</p>
+            {matchingTermAnchors.slice(0, 25).map((anchor) => (
+              <a
+                className="termAnchorLink"
+                href={`#/${anchor.filePath}#${anchor.slug}`}
+                key={`${anchor.filePath}#${anchor.slug}`}
+              >
+                <span>{anchor.text}</span>
+                <small>{anchor.fileName}</small>
+              </a>
+            ))}
+            {matchingTermAnchors.length > 25 ? (
+              <p className="emptyState">
+                Showing 25 of {matchingTermAnchors.length} matching terms.
+                Refine the search to narrow down.
+              </p>
+            ) : null}
+          </nav>
+        ) : null}
         <nav>
           {visibleDocuments.map((candidate) => (
             <a
@@ -2859,6 +2943,27 @@ function MarkdownArticle({
   readonly document: ContentDocument;
 }): JSX.Element {
   const html = useMemo(() => renderMarkdown(document), [document]);
+
+  useEffect(() => {
+    const scrollToFragment = (): void => {
+      const fragment = fragmentFromHash();
+      if (fragment === undefined) {
+        return;
+      }
+      requestAnimationFrame(() => {
+        const target = window.document.getElementById(fragment);
+        if (target !== null) {
+          target.scrollIntoView({ behavior: "auto", block: "start" });
+        }
+      });
+    };
+
+    scrollToFragment();
+    window.addEventListener("hashchange", scrollToFragment);
+    return () => {
+      window.removeEventListener("hashchange", scrollToFragment);
+    };
+  }, [html]);
 
   return (
     <article className="markdownArticle">

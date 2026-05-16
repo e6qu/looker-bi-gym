@@ -179,6 +179,89 @@ GROUP BY artifact_status;
 | --------------- | -------------: | ------------: |
 | ready           |              8 |           100 |
 
+> Honest read: the previous query reads 8 hardcoded ready rows. The next
+> step replaces those ready flags with values you carry forward from your
+> own `notes/0X-*.md` outputs. If a prior tutorial was skipped, the score
+> drops and the package status moves to `hold_for_remediation`.
+
+3a. Carry forward your prior-tutorial evidence values. Open the SQL below
+and replace each `_FILL_FROM_NOTES_` placeholder with the value from
+the corresponding tutorial's notes. The cross-tutorial consistency
+check then either passes the capstone or holds it:
+
+```sql
+WITH prior_tutorial_outputs AS (
+  SELECT * FROM (
+    VALUES
+      (
+        -- replace with the value from notes/02-grain-and-model-contract.md
+        18,                  -- balance_rows
+        -- replace with the value from notes/02 / 03 / 05 / 07 / 09
+        95700,               -- latest_ledger_total
+        -- replace with the value from notes/02
+        1,                   -- missing_branch_mappings
+        -- replace with the value from notes/05
+        164800,              -- naive_owner_join_total
+        -- replace with the value from notes/05
+        69100,               -- fanout_delta
+        -- replace with the value from notes/06
+        1248,                -- serving_estimated_bytes
+        -- replace with the value from notes/07
+        4,                   -- excluded_sensitive_fields
+        -- replace with the value from notes/07
+        0,                   -- sensitive_fields_kept
+        -- replace with the value from notes/08
+        0                    -- reconciliation_delta
+      )
+  ) AS t(
+    balance_rows,
+    latest_ledger_total,
+    missing_branch_mappings,
+    naive_owner_join_total,
+    fanout_delta,
+    serving_estimated_bytes,
+    excluded_sensitive_fields,
+    sensitive_fields_kept,
+    reconciliation_delta
+  )
+)
+SELECT
+  balance_rows,
+  latest_ledger_total,
+  missing_branch_mappings,
+  fanout_delta,
+  serving_estimated_bytes,
+  excluded_sensitive_fields,
+  reconciliation_delta,
+  CASE
+    WHEN balance_rows = 18
+      AND latest_ledger_total = 95700
+      AND missing_branch_mappings = 1
+      AND naive_owner_join_total - latest_ledger_total = fanout_delta
+      AND fanout_delta = 69100
+      AND serving_estimated_bytes <= 2000
+      AND excluded_sensitive_fields = 4
+      AND sensitive_fields_kept = 0
+      AND reconciliation_delta = 0
+      THEN 'ready'
+    ELSE 'hold_for_remediation'
+  END AS capstone_consistency_status
+FROM prior_tutorial_outputs;
+```
+
+3b. Confirm the consistency output when every prior tutorial value matches
+what the deposit-seed dataset produces:
+
+| balance_rows | latest_ledger_total | missing_branch_mappings | fanout_delta | serving_estimated_bytes | excluded_sensitive_fields | reconciliation_delta | capstone_consistency_status |
+| -----------: | ------------------: | ----------------------: | -----------: | ----------------------: | ------------------------: | -------------------: | --------------------------- |
+|           18 |               95700 |                       1 |        69100 |                    1248 |                         4 |                    0 | ready                       |
+
+3c. If you skipped tutorial 02, 05, 06, 07, or 08, the placeholder values
+will not match the expected cross-tutorial chain and the consistency
+status becomes `hold_for_remediation`. Capstones with that status
+cannot be released. Return to the missing tutorial, regenerate its
+notes, and rerun this check.
+
 4. Produce the governed capstone source:
 
 ```sql
@@ -619,8 +702,14 @@ Details`, and `Governance And Operations`.
 
 ## End Challenge
 
-Prepare the capstone README. The package passes when it includes exactly this
-evidence:
+Prepare the capstone README. The package must compile the artifacts count,
+control total, currency totals, fanout evidence, governance evidence, cost
+evidence, reconciliation evidence, rubric score, review status, and
+evidence rule from your own prior-tutorial outputs. Compile the values
+before opening the expected evidence.
+
+<details>
+<summary>Reveal expected evidence</summary>
 
 - `required_artifacts=8`
 - `ready_artifacts=8`
@@ -636,6 +725,8 @@ evidence:
 - `rubric_score=100`
 - `review_status=ready`
 - `evidence_rule=no_credentials_no_private_links_no_raw_logs`
+
+</details>
 
 ## Deliverable
 

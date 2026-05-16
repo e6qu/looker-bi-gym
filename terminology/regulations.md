@@ -12,12 +12,15 @@ tags: [terminology, regulations]
 
 ## accountability
 
-<span class="termBadge">REG</span>
-
 The principle that an organization must be able to demonstrate responsible
 handling of regulated obligations and controls.
 
 Example: a BI source shared broadly should have an owner and a stated purpose.
+
+Sources:
+
+- [Regulation (EU) 2016/679 (GDPR)](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679).
+- `FACT-GDPR-ACCOUNTABILITY`.
 
 Related:
 <a class="termRef" href="#/terminology/regulations.md#gdpr-purpose-limitation">GDPR purpose limitation<sup>REG</sup></a>,
@@ -25,11 +28,14 @@ Related:
 
 ## data controller
 
-<span class="termBadge">REG</span>
-
 The party that determines the purposes and means of personal-data processing.
 
 Example: a bank can be a controller for customer reporting data.
+
+Sources:
+
+- [Regulation (EU) 2016/679 (GDPR)](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679).
+- `FACT-GDPR-PROCESSING-PRINCIPLES`.
 
 Related:
 <a class="termRef" href="#/terminology/regulations.md#personal-data">personal data<sup>REG</sup></a>,
@@ -37,12 +43,14 @@ Related:
 
 ## data processor
 
-<span class="termBadge">REG</span>
-
 The party that processes personal data on behalf of a controller.
 
 Example: a managed analytics platform can act as a processor depending on the
 arrangement.
+
+Sources:
+
+- [Regulation (EU) 2016/679 (GDPR)](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679).
 
 Related:
 <a class="termRef" href="#/terminology/regulations.md#data-controller">data controller<sup>REG</sup></a>,
@@ -50,13 +58,15 @@ Related:
 
 ## DGSD guarantee ceiling
 
-<span class="termBadge">REG</span>
-
 The EU deposit-guarantee framework concept for the standard EUR 100,000 ceiling
 per depositor per bank.
 
 Example: deposit coverage modelling must aggregate by depositor and bank before
 applying the ceiling.
+
+Sources:
+
+- [Directive 2014/49/EU (DGSD)](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32014L0049).
 
 Related:
 <a class="termRef" href="#/terminology/banking.md#guarantee-ceiling">guarantee ceiling<sup>BNK</sup></a>,
@@ -64,13 +74,16 @@ Related:
 
 ## DORA ICT dependency register
 
-<span class="termBadge">REG</span>
-
 An operational-resilience inventory context for important ICT assets,
 dependencies, and evidence used by control reporting.
 
 Example: a critical dashboard can need recorded source, owner, platform, and
 monitoring dependencies.
+
+Sources:
+
+- [Regulation (EU) 2022/2554 (DORA)](https://eur-lex.europa.eu/eli/reg/2022/2554/oj).
+- `FACT-DORA-THIRD-PARTY-REGISTER`.
 
 Related:
 <a class="termRef" href="#/terminology/regulations.md#ict-risk">ICT risk<sup>REG</sup></a>,
@@ -78,12 +91,15 @@ Related:
 
 ## DORA incident reporting
 
-<span class="termBadge">REG</span>
-
 Operational-resilience reporting context for significant ICT-related incidents.
 
 Example: a dashboard outage used in an incident review needs a clear incident
 window and affected dependencies.
+
+Sources:
+
+- [Regulation (EU) 2022/2554 (DORA)](https://eur-lex.europa.eu/eli/reg/2022/2554/oj).
+- `FACT-DORA-INCIDENTS`.
 
 Related:
 <a class="termRef" href="#/terminology/regulations.md#ict-risk">ICT risk<sup>REG</sup></a>,
@@ -91,12 +107,15 @@ Related:
 
 ## EBA validation rule
 
-<span class="termBadge">REG</span>
-
 A rule used to validate regulatory reporting data or templates.
 
 Example: a changed validation rule can explain why a submission passes in one
 framework version and fails in another.
+
+Sources:
+
+- [European Banking Authority](https://www.eba.europa.eu/).
+- `FACT-EBA-DPM-VALIDATION-RULES`.
 
 Related:
 <a class="termRef" href="#/terminology/regulations.md#reporting-framework-version">reporting framework version<sup>REG</sup></a>,
@@ -104,13 +123,16 @@ Related:
 
 ## FGDB compensation context
 
-<span class="termBadge">REG</span>
-
 Romanian deposit-guarantee context, including RON compensation and
 exchange-rate-date considerations.
 
 Example: a coverage note may need to distinguish account currency from payment
 currency.
+
+Sources:
+
+- [Directive 2014/49/EU (DGSD)](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32014L0049).
+- [Banca Naţională a României](https://www.bnr.ro/).
 
 Related:
 <a class="termRef" href="#/terminology/banking.md#exchange-rate-date">exchange-rate date<sup>BNK</sup></a>,
@@ -118,13 +140,16 @@ Related:
 
 ## GDPR data minimisation
 
-<span class="termBadge">REG</span>
-
 The principle that personal-data processing should be limited to data necessary
 for the stated purpose.
 
 Example: a branch aggregate dashboard should not include customer identifiers
 unless they are necessary for that purpose.
+
+Sources:
+
+- [Regulation (EU) 2016/679 (GDPR)](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679).
+- `FACT-GDPR-DATA-MINIMISATION`.
 
 Related:
 <a class="termRef" href="#/terminology/regulations.md#personal-data">personal data<sup>REG</sup></a>,
@@ -132,13 +157,16 @@ Related:
 
 ## GDPR purpose limitation
 
-<span class="termBadge">REG</span>
-
 The principle that data should be used for specified, explicit, and legitimate
 purposes rather than unrelated future possibilities.
 
 Example: fields retained only because they might be useful later should be
 challenged.
+
+Sources:
+
+- [Regulation (EU) 2016/679 (GDPR)](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679).
+- `FACT-GDPR-PURPOSE-LIMITATION`.
 
 Related:
 <a class="termRef" href="#/terminology/regulations.md#gdpr-data-minimisation">GDPR data minimisation<sup>REG</sup></a>,
@@ -146,13 +174,16 @@ Related:
 
 ## ICT risk
 
-<span class="termBadge">REG</span>
-
 Risk related to information and communication technology systems, services,
 dependencies, and operations.
 
 Example: a dashboard pipeline dependency can be part of ICT risk review if it
 supports an important process.
+
+Sources:
+
+- [Regulation (EU) 2022/2554 (DORA)](https://eur-lex.europa.eu/eli/reg/2022/2554/oj).
+- `FACT-DORA-ICT-RISK-FRAMEWORK`.
 
 Related:
 <a class="termRef" href="#/terminology/regulations.md#dora-ict-dependency-register">DORA ICT dependency register<sup>REG</sup></a>,
@@ -160,12 +191,15 @@ Related:
 
 ## personal data
 
-<span class="termBadge">REG</span>
-
 Information relating to an identified or identifiable natural person.
 
 Example: a customer identifier can be personal data when it can be linked to a
 person.
+
+Sources:
+
+- [Regulation (EU) 2016/679 (GDPR)](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679).
+- `FACT-GDPR-PERSONAL-DATA`.
 
 Related:
 <a class="termRef" href="#/terminology/regulations.md#pseudonymised-data">pseudonymised data<sup>REG</sup></a>,
@@ -173,13 +207,16 @@ Related:
 
 ## pseudonymised data
 
-<span class="termBadge">REG</span>
-
 Data transformed so it cannot be attributed to a person without additional
 information. It can still be personal data when re-identification remains
 possible.
 
 Example: hashed customer IDs can still require personal-data handling.
+
+Sources:
+
+- [Regulation (EU) 2016/679 (GDPR)](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679).
+- `FACT-GDPR-PSEUDONYMIZED-STILL-PERSONAL`.
 
 Related:
 <a class="termRef" href="#/terminology/regulations.md#personal-data">personal data<sup>REG</sup></a>,
@@ -187,13 +224,17 @@ Related:
 
 ## reporting framework version
 
-<span class="termBadge">REG</span>
-
 The version of a regulatory reporting framework used for a period, template, or
 validation rule set.
 
 Example: validation breaks should be compared against the framework version
 used for each reporting period.
+
+Sources:
+
+- [European Banking Authority](https://www.eba.europa.eu/).
+- `FACT-EBA-FRAMEWORK-VERSIONING`.
+- `FACT-EBA-REFERENCE-DATES`.
 
 Related:
 <a class="termRef" href="#/terminology/regulations.md#eba-validation-rule">EBA validation rule<sup>REG</sup></a>,
@@ -201,12 +242,15 @@ Related:
 
 ## special category personal data
 
-<span class="termBadge">REG</span>
-
 Personal data requiring heightened protection because of its sensitive nature.
 
 Example: a dashboard source should exclude unnecessary fields that could reveal
 special-category data.
+
+Sources:
+
+- [Regulation (EU) 2016/679 (GDPR)](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679).
+- `FACT-GDPR-SPECIAL-CATEGORIES`.
 
 Related:
 <a class="termRef" href="#/terminology/regulations.md#personal-data">personal data<sup>REG</sup></a>,
@@ -214,13 +258,15 @@ Related:
 
 ## temporary high balance
 
-<span class="termBadge">REG</span>
-
 A deposit-guarantee treatment for qualifying balances above the standard
 coverage ceiling for a limited period.
 
 Example: event type and protected-until date are needed before modelling this
 treatment.
+
+Sources:
+
+- [Directive 2014/49/EU (DGSD)](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32014L0049).
 
 Related:
 <a class="termRef" href="#/terminology/banking.md#temporary-high-balance">temporary high balance<sup>BNK</sup></a>,

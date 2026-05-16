@@ -56,8 +56,8 @@ SELECT
   COUNT(CASE
     WHEN as_of_date NOT IN ('2026-02-28', '2026-03-31') THEN 1
   END) AS non_month_end_snapshot_count,
-  CAST(MIN(as_of_date) AS VARCHAR) AS first_snapshot_date,
-  CAST(MAX(as_of_date) AS VARCHAR) AS latest_snapshot_date
+  CAST(MIN(as_of_date) AS STRING) AS first_snapshot_date,
+  CAST(MAX(as_of_date) AS STRING) AS latest_snapshot_date
 FROM loan_monthly_snapshots;
 ```
 

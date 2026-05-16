@@ -57,18 +57,30 @@ regulatory-context boundaries before you touch any banking BI examples.
    `Serving layer`, `Reporting layer`, `Sensitive fields`, and
    `Banking grain`.
 2. Under `Serving layer`, write that reusable dashboard logic belongs upstream
-   in governed SQL. In BigQuery, a logical view is a virtual table defined by a
-   SQL query and queried like a table.
+   in governed SQL. In BigQuery, a
+   <a class="termRef" href="#/terminology/bigquery.md#bigquery-logical-view">logical view<sup>BQ</sup></a>
+   is a virtual table defined by a SQL query and queried like a table.
 3. Under `Reporting layer`, write that Looker Studio charts read fields through
-   a data source. Before charting, inspect the data-source fields, aggregation
+   a
+   <a class="termRef" href="#/terminology/looker-studio.md#looker-studio-data-source">data source<sup>LS</sup></a>.
+   Before charting, inspect the data-source fields,
+   <a class="termRef" href="#/terminology/looker-studio.md#aggregation">aggregation<sup>LS</sup></a>
    defaults, and credential mode.
 4. Under `Sensitive fields`, write that raw account, customer, and synthetic
    IBAN identifiers should stay out of dashboard-ready serving outputs unless a
    specific approved purpose requires them.
 5. Under `Banking grain`, write that account balances are account-level facts
    for a business date, while deposit-guarantee checks require depositor-bank
-   grain. The standard ceiling used in this course context is EUR 100,000 per
-   depositor per bank.
+   <a class="termRef" href="#/terminology/bi.md#grain">grain<sup>BI</sup></a>.
+   The standard ceiling used in this course context is EUR 100,000 per
+   depositor per bank
+   (<a class="termRef" href="#/terminology/regulations.md#dgsd-guarantee-ceiling">DGSD guarantee ceiling<sup>REG</sup></a>).
+   Worked example: a synthetic customer with two RON accounts at the same
+   bank holding EUR 60,000 each has a total account balance of EUR 120,000,
+   but the depositor-bank coverage is capped at EUR 100,000. The
+   EUR 20,000 difference is uninsured even though both accounts and both
+   balances are real. The two grains answer different questions and must
+   not be combined in a single KPI.
 6. Add one ready/not-ready rule: a dashboard source is not ready if it exposes
    raw identifiers, hides metric logic inside chart-only calculations, or
    compares account-balance totals to guarantee wording without changing grain.
@@ -112,12 +124,17 @@ Only the final statement is ready for the later beginner tutorials.
 
 A stakeholder asks for a branch balance dashboard and wants to include account
 IDs so reviewers can drill into details. Write three corrections before work
-starts:
+starts. Try this before opening the expected answer below.
+
+<details>
+<summary>Reveal expected answer</summary>
 
 - Move reusable metric logic into the governed serving layer.
 - Keep raw identifiers out of the routine dashboard source.
 - Treat guarantee-related wording as depositor-bank grain, not account-balance
   grain.
+
+</details>
 
 ## Separate Verification
 

@@ -15,9 +15,13 @@ Training boundary: this brief is technical orientation for synthetic BI training
 
 ## Why A BI Developer Cares
 
-Bank BI systems often process personal data: names, addresses, account numbers, national identifiers, transactions, card events, complaints, employee assignments, fraud flags, and investigation metadata.
+Bank BI systems often process
+<a class="termRef" href="#/terminology/regulations.md#personal-data">personal data<sup>REG</sup></a>:
+names, addresses, account numbers, national identifiers, transactions, card events, complaints, employee assignments, fraud flags, and investigation metadata.
 
-Even pseudonymized data can remain personal data if re-identification is possible.
+Even
+<a class="termRef" href="#/terminology/regulations.md#pseudonymised-data">pseudonymised data<sup>REG</sup></a>
+can remain personal data if re-identification is possible.
 
 ## Critical Article Coordinates
 

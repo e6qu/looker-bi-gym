@@ -43,8 +43,13 @@ contract without changing metric grain or exposing unnecessary identifiers.
 
 After this tutorial, you will be able to:
 
-- Declare source-table grain before aggregation.
-- Separate fact, dimension, and serving-output responsibilities.
+- Declare source-table
+  <a class="termRef" href="#/terminology/bi.md#grain">grain<sup>BI</sup></a>
+  before aggregation.
+- Separate
+  <a class="termRef" href="#/terminology/bi.md#fact-table">fact<sup>BI</sup></a>,
+  <a class="termRef" href="#/terminology/bi.md#dimension">dimension<sup>BI</sup></a>,
+  and serving-output responsibilities.
 - Build a safe serving output that preserves branch-mapping exceptions.
 - Explain why ownership rows must not be joined before account-date balance
   grain is controlled.
@@ -79,8 +84,8 @@ SELECT
   COUNT(*) AS balance_rows,
   COUNT(DISTINCT account_id) AS account_count,
   COUNT(DISTINCT currency_code) AS currency_count,
-  CAST(MIN(business_date) AS VARCHAR) AS first_business_date,
-  CAST(MAX(business_date) AS VARCHAR) AS latest_business_date
+  CAST(MIN(business_date) AS STRING) AS first_business_date,
+  CAST(MAX(business_date) AS STRING) AS latest_business_date
 FROM account_daily_balances;
 ```
 
@@ -246,9 +251,15 @@ Write a model handoff note in this form:
 
 `balance_rows=<rows>; latest_total=<total>; missing_branch_mappings=<count>; serving_grain=<grain>; excluded_fields=<field_list>; fanout_warning=<yes/no>`
 
-Expected answer:
+Fill it in from your own browser SQL output before opening the expected
+answer.
+
+<details>
+<summary>Reveal expected answer</summary>
 
 `balance_rows=18; latest_total=95700; missing_branch_mappings=1; serving_grain=business_date+currency_code+branch_city; excluded_fields=account_id,customer_id,synthetic_iban; fanout_warning=yes`
+
+</details>
 
 ## Deliverable
 
