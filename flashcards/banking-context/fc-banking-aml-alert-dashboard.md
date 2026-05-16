@@ -31,5 +31,7 @@ A governed aggregate serving view (alert counts, ageing categories, type
 breakdown) for the broad audience, and a separately access-controlled
 detail page for the investigation team that can show per-alert
 narratives and KYC fields. The aggregate must not carry customer IDs,
-narratives, or KYC fields, because those are sensitive and special-
-category-adjacent.
+narratives, or KYC fields. They are highly sensitive personal data with
+strict access-control expectations under the AML / CFT regime, and
+specific narrative content may incidentally reveal GDPR Article 9
+special-category data, which would raise the bar further.

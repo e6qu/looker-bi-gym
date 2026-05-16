@@ -34,7 +34,7 @@ const routeChecks: readonly RouteCheck[] = [
   { route: "/#/terminology/README.md", expectedText: "Vocabulary Reference" },
   {
     route: "/#/tutorials/learner-tasks/lt-dq-006-ratio-null-contract.md",
-    expectedText: "LT-DQ-006 - Define A Ratio Null Contract",
+    expectedText: "Define A Ratio Null Contract",
   },
   { route: "/#/flashcards", expectedText: "Flashcards" },
   { route: "/#/quiz", expectedText: "BI Foundations Mixed Quiz" },

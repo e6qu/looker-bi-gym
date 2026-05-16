@@ -1,8 +1,159 @@
 # Bugs And Known Gaps
 
-Last updated: 2026-05-16
+Last updated: 2026-05-17
 
 ## Open Issues
+
+- ID: CODEX-REVIEW-FINDINGS-2026-05-17.
+  - Area: tutorials, learner-tasks, quizzes, exams, flashcards,
+    coverage script, source cards.
+  - Severity: high; one item is `block`.
+  - Description: Codex CLI second-opinion review of PR #46 surfaced
+    concrete defects. Recording each case below for tracking, then
+    fixing.
+  - Sub-issues:
+    1. `block` Compartmentalization violated outside the validator's
+       scope. `validate:compartmentalization` scans only
+       `quizzes/`, `flashcards/`, `exams/`. The visible-text
+       violations in `tutorials/` and `tutorials/learner-tasks/`:
+       - `tutorials/03-first-executive-dashboard.md:202-203` ("synthetic
+         table from tutorial 01 already exists" / "use the inline
+         BigQuery setup SQL in tutorial 01 first").
+       - `tutorials/04-metrics-and-calculated-fields.md:281-282` (same
+         pattern referencing "tutorial 01").
+       - `tutorials/05-blending-vs-upstream-joins.md:348-349`
+         ("synthetic tables from tutorial 01 do not exist...").
+       - `tutorials/06-performance-and-cost-lab.md:135` ("from tutorial
+         05 and keeps the unmapped branch visible") and `:587`
+         ("rerun the tutorial 05 safe source").
+       - `tutorials/08-observability-and-operations.md:571` ("tutorial
+         05 (`164800 - 95700 = 69100`)").
+       - `tutorials/learner-tasks/lt-dq-005-reconcile-dashboard-controls.md:50`
+         ("Complete [LT-SQL-003]") - the cross-task reference I thought
+         I had removed.
+       - `tutorials/learner-tasks/lt-sql-003-month-end-serving-result.md:53`
+         ("`LT-BI-001` and `LT-BI-002`. The tables you will query are").
+       - `tutorials/learner-tasks/README.md:36-41` (lists LT-\* IDs as
+         a sequence).
+       - `tutorials/recipes/r-looker-001-deposits-dashboard.md:24`
+         ("Optional follow-on after [LT-LOOKER-004]").
+       - `tutorials/exam-mode.md` and `tutorials/quiz-bank.md` are
+         themselves wrappers around assessment surfaces, which
+         re-introduces cross-surface coupling at the tutorial level.
+    2. `high` `q-hard-freshness-interval-cost` quiz answer teaches the
+       wrong Looker Studio freshness model. Says "A 1-minute freshness
+       causes the report to refresh every minute it is open." Looker
+       Studio freshness is a cache-staleness threshold, not an
+       auto-refresh interval; report auto-refresh is a separate
+       configuration. See https://cloud.google.com/looker/docs/studio/manage-data-freshness.
+       Cases:
+       - `quizzes/bi-foundations/bi-foundations-mixed.md:1941`.
+       - `quizzes/bi-foundations/bi-foundations-mixed.md:1945`
+         (`cache_hits_no_cost` distractor mentions "every refresh"
+         under 1-minute freshness).
+       - `quizzes/bi-foundations/bi-foundations-mixed.md:1947`
+         (`interval_caps_bytes` distractor leans on the same flawed
+         framing).
+    3. `high` Materialized view "30 minutes" SLA wording is too
+       absolute. BigQuery MV automatic refresh is best-effort, not a
+       hard SLA contract. Cases:
+       - `quizzes/bi-foundations/bi-foundations-mixed.md:1877` ("cached
+         result is no more than 30 minutes behind the base table at
+         any point").
+       - `exams/bi-foundations/bi-foundations-exam.md:291` ("materialized
+         view refresh interval is configured to at most 30 minutes").
+       - `exam-card-materialized-view-refresh-review` objective and
+         self-assessment also imply hard-SLA semantics.
+    4. `high` `q-hard-row-access-policy` answer uses pseudo-SQL
+       (`SESSION_USER_BRANCH(...)`) that does not exist in BigQuery.
+       Cases:
+       - `quizzes/bi-foundations/bi-foundations-mixed.md:1781`.
+    5. `medium` AML / KYC content invokes GDPR "special-category" too
+       loosely. KYC data is sensitive and confidential but not
+       automatically Article 9 unless it reveals an Article 9 category.
+       Cases:
+       - `quizzes/bi-foundations/bi-foundations-mixed.md:1119` ("KYC
+         narratives or customer IDs into the aggregate page violates
+         minimisation and special-category handling rules").
+       - `flashcards/banking-context/fc-banking-aml-alert-dashboard.md`
+         back ("...because those are sensitive and special-category-
+         adjacent").
+       - The AML exam card `exam-card-aml-alert-dashboard-governance`
+         may inherit similar framing.
+    6. `medium` New source cards lack article-specific quotes that
+       support the FACT claims:
+       - `FACT-PSD2-STRONG-CUSTOMER-AUTHENTICATION` claims SCA event
+         evidence "must be retained for supervisory inspection";
+         `SRC-PSD2-ELI-2015-2366` only quotes "strong customer
+         authentication" (`sources/law/eu-crr.md:28`).
+       - `FACT-IFRS9-STAGES` claims 12-month / lifetime ECL split per
+         stage with credit-impaired definition; `SRC-IFRS9-STANDARD`
+         only quotes "expected credit losses"
+         (`sources/law/ifrs9.md`).
+       - `FACT-BCBS-239-RDARR-PRINCIPLES` claims 14 named principles;
+         `SRC-BCBS-239-PRINCIPLES` only quotes "risk data aggregation"
+         (`sources/regulators/bcbs-239.md`).
+       - `FACT-CRR-CET1-RATIO` is similarly under-quoted relative to
+         the 4.5% minimum claim.
+    7. `medium` `coverage:cert-track` inflates counts because it
+       concatenates whole files including frontmatter, source_facts
+       lists, and identifiers, then regex-counts. Topics like "grain"
+       show 37 hits but many of those come from frontmatter metadata.
+       The matrix is a useful smoke test, not a coverage matrix.
+       Cases: `app/scripts/generate-cert-track-coverage.ts` body, plus
+       the regenerated `_development/cert-track-coverage.md`.
+    8. `medium` `validate:quiz-distractors` only matches a banned
+       string list. It cannot catch semantic defects: "technically
+       correct but not best" answers, invalid SQL function names,
+       unsupported absolutes, or stale platform mechanics. Cases:
+       `app/scripts/validate-quiz-distractor-quality.ts`.
+    9. `medium` IFRS 9 + AML exam cards read as design prompts without
+       deterministic fixture data. The committed lending dataset has
+       `ifrs9_stage` and principal columns but no ECL amounts or a
+       stage-transition fixture; AML has no fixture at all. Cases:
+       - `exams/bi-foundations/bi-foundations-exam.md`
+         `exam-card-ifrs9-stage-transition` objective and
+         `expected_outputs`.
+       - `exams/bi-foundations/bi-foundations-exam.md`
+         `exam-card-aml-alert-dashboard-governance` objective and
+         `expected_outputs`.
+    10. `low` Stale tallies in `_development/assessment-audit.md` say
+        60 quiz questions and 64 flashcards. Actual final state on
+        this branch: 78 quiz questions, 89 flashcards, 17 exam cards,
+        133 facts.
+  - Fix plan: address each sub-issue in turn on the same branch.
+    Extend `validate:compartmentalization` to also scan tutorials and
+    learner-tasks. Rewrite the LS freshness and MV refresh wording to
+    match the actual product semantics. Replace the pseudo-SQL with a
+    real BigQuery RLS shape. Tighten AML/KYC privacy wording so
+    "special category" is reserved for actual Article 9 reveals.
+    Strengthen source-card quotes with article / section coordinates.
+    Refit `coverage:cert-track` to count unique authored items rather
+    than whole-file regex hits. Soften the IFRS 9 / AML exam cards or
+    annotate them as design-evidence cards. Refresh the audit tallies.
+  - Status: fixed on branch `assessment-quality-and-expansion`.
+    All 10 sub-issues addressed: compartmentalization validator
+    extended to `tutorials/` (now scans 130 files clean); LS freshness
+    rewrote as cache-staleness threshold; MV refresh wording softened
+    to best-effort across quiz / exam / flashcard / fact; pseudo-SQL
+    `SESSION_USER_BRANCH(...)` replaced with real BigQuery
+    `ROW ACCESS POLICY ... FILTER USING (branch_id = ...)`; AML / KYC
+    privacy wording tightened so "special category" appears only where
+    narrative content actually reveals Article 9 data; PSD2, CRR,
+    IFRS 9, BCBS 239 source cards expanded with article / section
+    quotes; `coverage:cert-track` refit to count unique authored items
+    (parses frontmatter, iterates questions / cards / flashcards /
+    terminology entries); `validate:quiz-distractors` extended with
+    invented-SQL-identifier and semantic-anti-pattern rule sets, plus
+    a scope-and-limits comment block; AML and IFRS 9 exam cards
+    annotated as design exercises with non-numeric expected outputs;
+    `_development/assessment-audit.md` tally lines updated to record
+    pre- and post-fix counts. Tutorial wrapper pages
+    (`tutorials/quiz-bank.md`, `tutorials/exam-mode.md`) reshaped
+    into self-contained topic / review maps. Learner-task H1 and
+    frontmatter `title` fields stripped of LT-ID prefix (the ID lives
+    only in frontmatter `id` and in `recommended_learner_tasks`
+    references). Full local gate green.
 
 - ID: ASSESSMENT-AUDIT-DEFECTS-2026-05-16.
   - Area: quizzes, flashcards, exams, terminology depth.

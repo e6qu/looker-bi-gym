@@ -1,7 +1,7 @@
 ---
 {
   "id": "LT-BI-002",
-  "title": "LT-BI-002 - Detect Fanout Before Reporting",
+  "title": "Detect Fanout Before Reporting",
   "content_type": "learner_task",
   "status": "published",
   "version": "0.1.0",
@@ -17,7 +17,7 @@
 }
 ---
 
-# LT-BI-002 - Detect Fanout Before Reporting
+# Detect Fanout Before Reporting
 
 Area: BI fundamentals. Timebox: 15-20 minutes. Dataset:
 `deposits-seed/v0.1.0`.

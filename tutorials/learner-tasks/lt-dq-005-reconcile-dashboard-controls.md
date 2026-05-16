@@ -1,7 +1,7 @@
 ---
 {
   "id": "LT-DQ-005",
-  "title": "LT-DQ-005 - Reconcile Dashboard Controls",
+  "title": "Reconcile Dashboard Controls",
   "content_type": "learner_task",
   "status": "published",
   "version": "0.1.0",
@@ -17,7 +17,7 @@
 }
 ---
 
-# LT-DQ-005 - Reconcile Dashboard Controls
+# Reconcile Dashboard Controls
 
 Area: data quality and controls. Timebox: 15-20 minutes. Dataset:
 `lending-month-end/v0.1.0`.
@@ -46,8 +46,10 @@ model-risk advice.
 
 ## Steps
 
-1. Start from the serving query in
-   [LT-SQL-003](lt-sql-003-month-end-serving-result.md).
+1. Start from a serving query for the `lending-month-end` dataset that
+   exposes one row per `as_of_date` plus `currency_code`, summing
+   `outstanding_principal` per loan to the dashboard grain (one row per
+   month-end + currency) and filtering to the latest `as_of_date`.
 2. Run this focused control query:
 
 ```sql

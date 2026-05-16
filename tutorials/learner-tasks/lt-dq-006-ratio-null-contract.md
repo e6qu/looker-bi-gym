@@ -1,7 +1,7 @@
 ---
 {
   "id": "LT-DQ-006",
-  "title": "LT-DQ-006 - Define A Ratio Null Contract",
+  "title": "Define A Ratio Null Contract",
   "content_type": "learner_task",
   "status": "published",
   "version": "0.1.0",
@@ -17,7 +17,7 @@
 }
 ---
 
-# LT-DQ-006 - Define A Ratio Null Contract
+# Define A Ratio Null Contract
 
 Area: data quality and metric contracts. Timebox: 15-20 minutes. Dataset:
 `deposits-seed/v0.1.0`.

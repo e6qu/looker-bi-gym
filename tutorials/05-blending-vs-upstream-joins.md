@@ -345,9 +345,10 @@ FROM allocated_owner_balances;
 ### Optional BigQuery UI Path
 
 Use this section only if you have browser UI access to BigQuery. If the
-synthetic tables from tutorial 01 do not exist, use the inline BigQuery setup
-SQL in tutorial 01 first and add the `accounts`, `branches`, and
-`account_owners` synthetic tables before creating these views.
+synthetic deposits tables referenced in this lesson do not exist, run the
+inline BigQuery setup SQL given in the data-sources reference first and add
+the `accounts`, `branches`, and `account_owners` synthetic tables before
+creating these views.
 
 1. Create a safe current-balance view with the same logic as
    `safe_branch_currency`.

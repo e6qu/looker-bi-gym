@@ -1,7 +1,7 @@
 ---
 {
   "id": "LT-LOOKER-007",
-  "title": "LT-LOOKER-007 - Design A Control Parameter Handoff",
+  "title": "Design A Control Parameter Handoff",
   "content_type": "learner_task",
   "status": "published",
   "version": "0.1.0",
@@ -19,7 +19,7 @@
 }
 ---
 
-# LT-LOOKER-007 - Design A Control Parameter Handoff
+# Design A Control Parameter Handoff
 
 Area: Looker Studio mechanics and BigQuery serving patterns. Timebox: 15-20 minutes.
 Dataset: `deposits-seed/v0.1.0`.

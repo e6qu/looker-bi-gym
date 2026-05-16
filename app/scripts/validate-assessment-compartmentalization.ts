@@ -23,6 +23,13 @@ const repoRoot = join(appRoot, "..");
 
 const surfaceRoots: readonly string[] = ["quizzes", "flashcards", "exams"];
 
+const tutorialRoots: readonly string[] = ["tutorials"];
+
+const tutorialAllowlist: ReadonlySet<string> = new Set([
+  // Index files where listing IDs is the file's purpose.
+  "tutorials/learner-tasks/README.md",
+]);
+
 const violationPatterns: ReadonlyArray<{
   readonly pattern: RegExp;
   readonly kind: ViolationKind;
@@ -173,6 +180,18 @@ function checkFlashcard(
   checkText(body, file, "body", violations);
 }
 
+function checkTutorialBody(
+  file: string,
+  source: string,
+  violations: Violation[],
+): void {
+  if (tutorialAllowlist.has(file)) {
+    return;
+  }
+  const body = extractMarkdownBody(source);
+  checkText(body, file, "body", violations);
+}
+
 type ExamFrontmatter = {
   description?: unknown;
   cards?: readonly unknown[];
@@ -267,6 +286,14 @@ async function main(): Promise<void> {
       } else if (root === "exams") {
         checkExam(relativePath, source, violations);
       }
+    }
+  }
+
+  for (const root of tutorialRoots) {
+    const tutorialRoot = join(repoRoot, root);
+    for await (const { relativePath, source } of walkMarkdown(tutorialRoot)) {
+      scannedFiles += 1;
+      checkTutorialBody(relativePath, source, violations);
     }
   }
 

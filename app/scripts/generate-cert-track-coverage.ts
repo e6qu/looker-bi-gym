@@ -1,6 +1,7 @@
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { parse as parseYaml } from "yaml";
 
 type Topic = {
   readonly id: string;
@@ -250,7 +251,7 @@ const topics: readonly Topic[] = [
     area: "Looker Studio",
     keywords: [
       /data\s+freshness/iu,
-      /freshness\s+(?:interval|setting|memory)/iu,
+      /freshness\s+(?:interval|setting|memory|threshold|target|cache)/iu,
     ],
   },
   {
@@ -364,40 +365,165 @@ async function* walkMarkdown(root: string): AsyncGenerator<SurfaceFile> {
   }
 }
 
-async function collectText(root: string): Promise<string> {
-  let combined = "";
-  for await (const file of walkMarkdown(join(repoRoot, root))) {
-    combined += "\n" + file.text;
+function extractFrontmatter(source: string): string | null {
+  if (!source.startsWith("---\n")) {
+    return null;
   }
-  return combined;
+  const close = source.indexOf("\n---\n", 4);
+  if (close === -1) {
+    return null;
+  }
+  return source.slice(4, close);
 }
 
-function countHits(text: string, topic: Topic): number {
-  let count = 0;
+function extractMarkdownBody(source: string): string {
+  if (!source.startsWith("---\n")) {
+    return source;
+  }
+  const close = source.indexOf("\n---\n", 4);
+  if (close === -1) {
+    return source;
+  }
+  return source.slice(close + 5);
+}
+
+function isObject(node: unknown): node is Record<string, unknown> {
+  return typeof node === "object" && node !== null;
+}
+
+function matchesAnyKeyword(text: string, topic: Topic): boolean {
   for (const keyword of topic.keywords) {
-    const matches = text.match(new RegExp(keyword.source, keyword.flags + "g"));
-    if (matches !== null) {
-      count += matches.length;
+    if (keyword.test(text)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+async function collectQuizItems(): Promise<string[]> {
+  const items: string[] = [];
+  for await (const file of walkMarkdown(join(repoRoot, "quizzes"))) {
+    const frontmatter = extractFrontmatter(file.text);
+    if (frontmatter === null) continue;
+    const parsed = parseYaml(frontmatter) as unknown;
+    if (!isObject(parsed)) continue;
+    const questionsRoot = parsed["questions"];
+    if (!isObject(questionsRoot)) continue;
+    for (const questions of Object.values(questionsRoot)) {
+      if (!Array.isArray(questions)) continue;
+      for (const q of questions) {
+        if (!isObject(q)) continue;
+        const visible: string[] = [];
+        for (const field of ["prompt", "explanation", "self_assessment"]) {
+          const v = q[field];
+          if (typeof v === "string") visible.push(v);
+        }
+        const options = q["options"];
+        if (Array.isArray(options)) {
+          for (const opt of options) {
+            if (isObject(opt) && typeof opt["label"] === "string") {
+              visible.push(opt["label"]);
+            }
+          }
+        }
+        items.push(visible.join("\n"));
+      }
+    }
+  }
+  return items;
+}
+
+async function collectFlashcardItems(): Promise<string[]> {
+  const items: string[] = [];
+  for await (const file of walkMarkdown(join(repoRoot, "flashcards"))) {
+    items.push(extractMarkdownBody(file.text));
+  }
+  return items;
+}
+
+async function collectExamItems(): Promise<string[]> {
+  const items: string[] = [];
+  for await (const file of walkMarkdown(join(repoRoot, "exams"))) {
+    const frontmatter = extractFrontmatter(file.text);
+    if (frontmatter === null) {
+      // Markdown-only exam card.
+      items.push(extractMarkdownBody(file.text));
+      continue;
+    }
+    const parsed = parseYaml(frontmatter) as unknown;
+    if (!isObject(parsed)) continue;
+    const cards = parsed["cards"];
+    if (!Array.isArray(cards)) {
+      // Fall back to whole body when not card-structured.
+      items.push(extractMarkdownBody(file.text));
+      continue;
+    }
+    for (const card of cards) {
+      if (!isObject(card)) continue;
+      const visible: string[] = [];
+      for (const field of ["title", "objective"]) {
+        const v = card[field];
+        if (typeof v === "string") visible.push(v);
+      }
+      const verification = card["verification"];
+      if (isObject(verification)) {
+        const expected = verification["expected_outputs"];
+        if (Array.isArray(expected)) {
+          for (const line of expected) {
+            if (typeof line === "string") visible.push(line);
+          }
+        }
+        const self = verification["self_assessment"];
+        if (typeof self === "string") visible.push(self);
+      }
+      items.push(visible.join("\n"));
+    }
+  }
+  return items;
+}
+
+async function collectTerminologyItems(): Promise<string[]> {
+  const items: string[] = [];
+  for await (const file of walkMarkdown(join(repoRoot, "terminology"))) {
+    const body = extractMarkdownBody(file.text);
+    // Split on `## ` H2 entries (each entry is one term).
+    const entries = body.split(/^## /mu).slice(1);
+    if (entries.length === 0) {
+      items.push(body);
+    } else {
+      for (const entry of entries) {
+        items.push(entry);
+      }
+    }
+  }
+  return items;
+}
+
+function countItemsMatching(items: readonly string[], topic: Topic): number {
+  let count = 0;
+  for (const item of items) {
+    if (matchesAnyKeyword(item, topic)) {
+      count += 1;
     }
   }
   return count;
 }
 
 async function main(): Promise<void> {
-  const [quizText, flashcardText, examText, terminologyText] =
+  const [quizItems, flashcardItems, examItems, terminologyItems] =
     await Promise.all([
-      collectText("quizzes"),
-      collectText("flashcards"),
-      collectText("exams"),
-      collectText("terminology"),
+      collectQuizItems(),
+      collectFlashcardItems(),
+      collectExamItems(),
+      collectTerminologyItems(),
     ]);
 
   const rows = topics.map((topic) => {
     const coverage: SurfaceCoverage = {
-      quizHits: countHits(quizText, topic),
-      flashcardHits: countHits(flashcardText, topic),
-      examHits: countHits(examText, topic),
-      terminologyHits: countHits(terminologyText, topic),
+      quizHits: countItemsMatching(quizItems, topic),
+      flashcardHits: countItemsMatching(flashcardItems, topic),
+      examHits: countItemsMatching(examItems, topic),
+      terminologyHits: countItemsMatching(terminologyItems, topic),
     };
     return { topic, coverage };
   });
@@ -406,9 +532,21 @@ async function main(): Promise<void> {
   lines.push("# Cert-Track Coverage Matrix");
   lines.push("");
   lines.push(
-    "Generated by `bun run coverage:cert-track`. Counts keyword hits per",
+    "Generated by `bun run coverage:cert-track`. Counts the number of",
   );
-  lines.push("named cert-track topic across each assessment surface.");
+  lines.push(
+    "**authored items** (questions, flashcards, exam cards, terminology",
+  );
+  lines.push("entries) whose learner-visible text matches at least one");
+  lines.push(
+    "keyword for each cert-track topic. Frontmatter, `source_facts` lists,",
+  );
+  lines.push("and IDs are excluded so the matrix reflects assessment intent,");
+  lines.push("not metadata noise.");
+  lines.push("");
+  lines.push(
+    `Item counts: quiz=${quizItems.length}, flashcards=${flashcardItems.length}, exam cards=${examItems.length}, terminology entries=${terminologyItems.length}.`,
+  );
   lines.push("");
   lines.push(
     "A `0` for a topic on a surface means no question / card / entry on",
@@ -475,7 +613,7 @@ async function main(): Promise<void> {
 
   await writeFile(outputPath, lines.join("\n").trimEnd() + "\n", "utf8");
   process.stdout.write(
-    `Wrote ${outputPath.slice(repoRoot.length + 1)} for ${topics.length} cert-track topics across 4 surfaces.\n`,
+    `Wrote ${outputPath.slice(repoRoot.length + 1)} for ${topics.length} cert-track topics across 4 surfaces (item-based counts).\n`,
   );
 }
 

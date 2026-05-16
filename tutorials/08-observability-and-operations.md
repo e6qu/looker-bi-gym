@@ -567,8 +567,9 @@ CROSS JOIN fanout_dashboard fd;
     queries running against the actual `deposits-seed/v0.1.0` dataset.
     The `all-dates sum` reconciliation delta is the sum of the
     2026-03-29 and 2026-03-30 daily totals (`95190 + 95680 = 190870`),
-    and the `owner-join fanout` delta matches the fanout proof from
-    tutorial 05 (`164800 - 95700 = 69100`):
+    and the `owner-join fanout` delta is the difference between the
+    unsafe owner-join total and the safe single-share total
+    (`164800 - 95700 = 69100`):
 
 | broken_query_shape | source_ledger_total | dashboard_ledger_total | reconciliation_delta | operations_status        |
 | ------------------ | ------------------: | ---------------------: | -------------------: | ------------------------ |

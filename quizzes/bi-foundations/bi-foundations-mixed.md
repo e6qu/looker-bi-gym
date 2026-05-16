@@ -1112,11 +1112,17 @@ questions:
           label: A blend between AML alerts and the marketing dashboard so account managers can see alert flags in their own page.
       answer: aggregate_governed
       explanation: >
-        AML records are highly sensitive. The cert-correct pattern is an
-        aggregate governed view for the broad audience and a separately
-        access-controlled detail page for investigation. Carrying KYC
-        narratives or customer IDs into the aggregate page violates
-        minimisation and special-category handling rules.
+        AML records, KYC narratives, and per-customer suspicion
+        evidence are highly sensitive personal data with strict
+        access-control expectations; specific fields may also reveal
+        GDPR Article 9 special-category data (for example health,
+        political opinion, religious belief) when narrative text
+        captures it. The cert-correct pattern is an aggregate governed
+        view for the broad audience and a separately access-controlled
+        detail page for investigation. Carrying KYC narratives or
+        customer IDs into the aggregate page violates data minimisation
+        and the case-by-case access boundary the AML / CFT regime
+        expects.
       self_assessment: >
         If an AML aggregate page exposes investigation-level fields,
         split the surface into a governed summary and a restricted
@@ -1778,7 +1784,7 @@ questions:
         branch. Which BigQuery mechanic is the cert-correct primary control?
       options:
         - id: row_access_policy
-          label: "`CREATE ROW ACCESS POLICY ... GRANT TO (...) FILTER USING (branch_id = SESSION_USER_BRANCH(...))`, scoped per branch manager group."
+          label: "One `CREATE ROW ACCESS POLICY` per branch-manager group with `GRANT TO ('group:branch-NN-managers@example.com')` and `FILTER USING (branch_id = 'BNN')`, so each grantee group sees only its branch's rows."
         - id: per_branch_views
           label: Create one logical view per branch and grant each manager access only to their view.
         - id: scheduled_query_per_branch
@@ -1869,29 +1875,31 @@ questions:
         - FACT-LOOKER-STUDIO-DATA-FRESHNESS-TRADEOFF
       prompt: >
         A dashboard's logical view is replaced with a materialized view to
-        reduce repeated cost. The dashboard SLA requires data no more than 30
-        minutes stale. Which refresh consideration belongs in the design
-        record?
+        reduce repeated cost. The freshness target says results should
+        usually be within 30 minutes of the base table. Which refresh
+        consideration belongs in the design record?
       options:
-        - id: refresh_interval_must_fit_sla
-          label: The materialized view's refresh interval must be configured so the cached result is no more than 30 minutes behind the base table at any point during the dashboard window.
+        - id: refresh_interval_best_effort
+          label: Configure the materialized view's `max_staleness` / `refresh_interval_minutes` toward the freshness target, with the explicit caveat that BigQuery automatic refresh is best-effort; queries on stale results may either return cached results or trigger a refresh depending on configuration, so the design record names the target plus the staleness fallback.
         - id: refresh_only_on_query
           label: Materialized views refresh only when queried, so the dashboard automatically sees current data on every load.
         - id: refresh_disable_for_perf
-          label: Disable automatic refresh; rely on `cache_hit` in INFORMATION_SCHEMA.JOBS to identify when data is stale.
+          label: Disable automatic refresh; rely on `cache_hit` in `INFORMATION_SCHEMA.JOBS` to identify when data is stale.
         - id: refresh_via_ls_freshness
           label: Set Looker Studio data freshness to 30 minutes so the materialized view automatically refreshes at that interval.
-      answer: refresh_interval_must_fit_sla
+      answer: refresh_interval_best_effort
       explanation: >
-        Materialized views refresh automatically when base-table data
-        changes, but the cached result has a freshness bound set by the
-        refresh interval. The interval must fit the SLA; Looker Studio
-        freshness controls report-level memory and does not configure the
-        warehouse refresh.
+        BigQuery materialized-view automatic refresh is best-effort. The
+        refresh interval / `max_staleness` settings express a target, not
+        a hard SLA. A design record should name the target, what
+        configuration was applied, and the documented behaviour when the
+        cached result is older than the target. Looker Studio data
+        freshness is a separate report-side cache threshold and does not
+        configure warehouse refresh.
       self_assessment: >
-        If a materialized view is introduced for cost, write the refresh
-        interval into the dashboard handoff so the freshness review can check
-        it.
+        If a freshness target is treated as a guarantee, restate it as a
+        best-effort target and record the staleness fallback the design
+        accepts.
     - id: q-hard-blend-join-types
       type: multiple_choice
       estimated_seconds: 85
@@ -1934,27 +1942,34 @@ questions:
         - FACT-BIGQUERY-RESULTS-CACHE
       prompt: >
         A Looker Studio report sets data freshness to 1 minute on a
-        BigQuery-backed source. What is the expected cost behaviour and what
-        belongs in the operations note?
+        BigQuery-backed source. The report is opened and a viewer
+        interacts with charts repeatedly over several minutes. What does
+        the data freshness setting actually do, and what belongs in the
+        cost-observability note?
       options:
-        - id: short_interval_more_refreshes
-          label: A 1-minute freshness causes the report to refresh every minute it is open; the operations note should record the expected refresh count per active session and the SLA reason for choosing 1 minute.
+        - id: freshness_is_cache_threshold
+          label: Freshness is a cache-staleness threshold; cached chart data is reused for up to the configured interval, and a subsequent chart interaction after the interval has elapsed (or any cache-invalidating change) sends a fresh query. Cost grows with how often viewers interact after the threshold lapses, not with seconds elapsed.
         - id: interval_only_first_load
           label: Freshness affects only the first load; subsequent chart interactions never re-query BigQuery regardless of interval.
         - id: cache_hits_no_cost
-          label: At 1-minute freshness every refresh is a cache hit, so cost is zero regardless of data change patterns.
+          label: A 1-minute freshness guarantees every refresh hits the query results cache, so cost is zero regardless of data-change patterns.
         - id: interval_caps_bytes
           label: The freshness interval caps the bytes any single refresh can bill, so 1-minute freshness is the cheapest option.
-      answer: short_interval_more_refreshes
+      answer: freshness_is_cache_threshold
       explanation: >
-        Short freshness intervals increase the number of report refreshes
-        and therefore the underlying BigQuery query frequency. Cache hits
-        only apply when query text and data are stable; a 1-minute window is
-        likely to mix cache hits with billed scans on changing tables.
+        Looker Studio data freshness is the maximum age the report will
+        reuse a cached result before issuing a new query, not an
+        auto-refresh interval. Shorter freshness raises the chance that a
+        chart interaction triggers a billed BigQuery query, because the
+        cached data expires sooner. The cost-observability note should
+        record the freshness threshold, the expected interaction
+        frequency after threshold lapse, and the change rate of the base
+        table.
       self_assessment: >
-        If freshness is shorter than the source-table change frequency, write
-        the expected cost into the operations note rather than treating it
-        as free.
+        If a freshness change is treated as an auto-refresh-frequency
+        change, restate the setting as a cache-staleness threshold and
+        recompute the cost expectation against viewer interaction
+        patterns instead of seconds-on-screen.
     - id: q-hard-scd-type
       type: multiple_choice
       estimated_seconds: 95

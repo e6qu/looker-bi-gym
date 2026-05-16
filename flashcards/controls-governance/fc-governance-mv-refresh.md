@@ -27,8 +27,11 @@ review?
 
 ## Back
 
-A materialized view caches its result and refreshes on a configurable
-interval. The cached result is at most that interval behind the base
-table. Replacing a logical view with a materialized view does not
-eliminate freshness review; the dashboard SLA must fit the refresh
-interval.
+A materialized view caches its result. BigQuery automatic refresh
+targets the configured interval / `max_staleness` setting, but is
+best-effort - it is a freshness target, not a hard SLA. Queries can
+land on stale results when refresh has not run yet. Replacing a
+logical view with a materialized view does not eliminate freshness
+review; the design record names the target, the applied configuration,
+and the documented behaviour when the cached result is older than the
+target.

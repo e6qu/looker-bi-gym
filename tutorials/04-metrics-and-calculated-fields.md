@@ -278,8 +278,9 @@ ORDER BY ledger_total DESC;
 ### Optional BigQuery UI Path
 
 Use this section only if you have browser UI access to BigQuery. If the
-synthetic table from tutorial 01 already exists, create only the view below. If
-it does not exist, use the inline BigQuery setup SQL in tutorial 01 first.
+synthetic deposits table referenced in this lesson already exists, create only
+the view below. If it does not, run the inline BigQuery setup SQL given in the
+data-sources reference first.
 
 1. In the BigQuery browser UI, run this view SQL after replacing `PROJECT_ID`:
 

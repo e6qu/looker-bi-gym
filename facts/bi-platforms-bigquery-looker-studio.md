@@ -471,9 +471,11 @@ GRANT TO ('user:...', 'group:...') FILTER USING (...)` to restrict which
 ### FACT-BIGQUERY-MATERIALIZED-VIEW-REFRESH
 
 - Statement: BigQuery materialized views refresh automatically when underlying
-  base-table data changes; the refresh interval can be configured per
-  materialized view and the freshness of the cached result is bounded by that
-  interval.
+  base-table data changes. The refresh interval and `max_staleness` can be
+  configured per materialized view to target a freshness goal, but the
+  automatic refresh is best-effort - the configured target is not a hard
+  SLA guarantee, and queries can hit the materialized view before the next
+  refresh has completed.
 - Source: [`SRC-BIGQUERY-MATERIALIZED-VIEW-REFRESH`](../sources/platforms/bigquery.md#src-bigquery-materialized-view-refresh).
 - Source quote: "automatically refreshes".
 - Derived implication: Replacing a logical view with a materialized view does

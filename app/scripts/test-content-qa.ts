@@ -353,12 +353,12 @@ function readLearnerTaskIds(
       continue;
     }
 
-    const headingMatch = /^#\s+(LT-[A-Z]+-\d+)\s+-\s+/mu.exec(
-      markdownFile.source,
-    );
-
-    if (headingMatch?.[1] !== undefined) {
-      learnerTaskIds.add(headingMatch[1]);
+    // The visible H1 no longer carries the LT-* prefix (the assessment-
+    // compartmentalization rule forbids cross-surface IDs in body text),
+    // so the canonical ID lives in frontmatter only.
+    const idMatch = /"id":\s*"(LT-[A-Z]+-\d+)"/u.exec(markdownFile.source);
+    if (idMatch?.[1] !== undefined) {
+      learnerTaskIds.add(idMatch[1]);
     }
   }
 

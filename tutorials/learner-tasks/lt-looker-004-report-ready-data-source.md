@@ -1,7 +1,7 @@
 ---
 {
   "id": "LT-LOOKER-004",
-  "title": "LT-LOOKER-004 - Prepare A Report-Ready Data Source",
+  "title": "Prepare A Report-Ready Data Source",
   "content_type": "learner_task",
   "status": "published",
   "version": "0.1.0",
@@ -18,7 +18,7 @@
 }
 ---
 
-# LT-LOOKER-004 - Prepare A Report-Ready Data Source
+# Prepare A Report-Ready Data Source
 
 Area: Looker Studio mechanics. Timebox: 15-20 minutes. Dataset:
 `deposits-seed/v0.1.0`.

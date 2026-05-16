@@ -8,6 +8,14 @@ applied governance and regulatory thinking for banking). Phase 9 minima
 (500 flashcards / 200 quiz questions / 30 exam cards) are the destination,
 but quality leads count.
 
+Counts at original audit time: 60 quiz questions, 64 flashcards in 10
+decks, 5 YAML + 6 MD exam cards (only 2 overlapping), 148 terminology
+entries, 119 FACT entries. Counts after the expansion + Codex-review
+remediation work below: 78 quiz questions, 105 flashcards in 10 decks,
+16 unified exam cards (single source of truth), 150 terminology entries,
+133 FACT entries. The defects below were the audit findings; the count
+fields in each section reflect the post-fix state.
+
 Severity:
 
 - `block`: would teach wrong information or fail a cert-shape question.
@@ -15,7 +23,7 @@ Severity:
 - `medium`: rough edge or missed teaching opportunity.
 - `low`: cosmetic.
 
-## Quizzes (1 file, 60 questions)
+## Quizzes (1 file, 78 questions after expansion; audited at 60)
 
 `quizzes/bi-foundations/bi-foundations-mixed.md`.
 
@@ -114,7 +122,7 @@ MATERIALIZED VIEW`, smart-tuning, freshness staleness.
   "fill in the missing predicate". The numeric fanout question
   (`q-medium-fanout-delta`) is the model.
 
-## Flashcards (10 decks, 64 cards)
+## Flashcards (10 decks, 105 cards after expansion; audited at 64)
 
 ### F-1 Lopsided deck distribution
 
@@ -159,7 +167,7 @@ MATERIALIZED VIEW`, smart-tuning, freshness staleness.
   cert-track concept lands as both a recall flashcard and an applied
   quiz question.
 
-## Exams (two surfaces, 5+6 cards, only 2 overlap)
+## Exams (reconciled to one canonical YAML pack, 16 cards after expansion; audited at 5+6)
 
 ### E-1 Two divergent exam surfaces
 
@@ -198,7 +206,7 @@ MATERIALIZED VIEW`, smart-tuning, freshness staleness.
   depending on which file is read. Adding cards should follow the
   quiz/flashcard cert-track gap list so the three surfaces compose.
 
-## Terminology depth (148 entries, 93 prose-mentioned, 21 inline-grounded)
+## Terminology depth (150 entries after expansion; audited at 148, 93 prose-mentioned, 21 inline-grounded)
 
 ### T-1 Looker Studio citations are all landing-page
 

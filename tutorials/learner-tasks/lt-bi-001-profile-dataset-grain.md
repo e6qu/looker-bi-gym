@@ -1,7 +1,7 @@
 ---
 {
   "id": "LT-BI-001",
-  "title": "LT-BI-001 - Profile Dataset Grain",
+  "title": "Profile Dataset Grain",
   "content_type": "learner_task",
   "status": "published",
   "version": "0.1.0",
@@ -17,7 +17,7 @@
 }
 ---
 
-# LT-BI-001 - Profile Dataset Grain
+# Profile Dataset Grain
 
 Area: BI fundamentals. Timebox: 15-20 minutes. Dataset:
 `deposits-seed/v0.1.0`.

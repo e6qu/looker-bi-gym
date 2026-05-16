@@ -541,7 +541,7 @@ FROM account_daily_balances;`);
     await expect(
       page.getByRole("heading", {
         level: 1,
-        name: "LT-BI-001 - Profile Dataset Grain",
+        name: "Profile Dataset Grain",
       }),
     ).toBeVisible();
     await expect(

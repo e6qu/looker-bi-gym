@@ -1,7 +1,7 @@
 ---
 {
   "id": "LT-SQL-003",
-  "title": "LT-SQL-003 - Build A Month-End Serving Result",
+  "title": "Build A Month-End Serving Result",
   "content_type": "learner_task",
   "status": "published",
   "version": "0.1.0",
@@ -17,7 +17,7 @@
 }
 ---
 
-# LT-SQL-003 - Build A Month-End Serving Result
+# Build A Month-End Serving Result
 
 Area: BigQuery and SQL mechanics. Timebox: 15-20 minutes. Dataset:
 `lending-month-end/v0.1.0`.
@@ -50,7 +50,7 @@ model-risk advice.
 ## Dataset Orientation
 
 This task uses the `lending-month-end` dataset, not the deposits seed used
-in `LT-BI-001` and `LT-BI-002`. The tables you will query are:
+in other BI fundamentals exercises. The tables you will query are:
 
 - `loan_monthly_snapshots`: one row per loan and month-end snapshot date.
   Contains `as_of_date`, `currency_code`, `outstanding_principal`,

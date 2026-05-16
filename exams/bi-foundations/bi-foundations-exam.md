@@ -283,17 +283,17 @@
             "FACT-BIGQUERY-MATERIALIZED-VIEW-CACHE",
             "FACT-LOOKER-STUDIO-DATA-FRESHNESS-TRADEOFF",
           ],
-        "objective": "Replace an expensive logical view backing an executive dashboard with a materialized view, choosing a refresh interval that fits a 30-minute freshness SLA and recording the design in the operations review.\n",
+        "objective": "Replace an expensive logical view backing an executive dashboard with a materialized view, choosing a refresh configuration aimed at a 30-minute freshness target, and recording the design (including the best-effort nature of automatic refresh) in the operations review.\n",
         "verification":
           {
             "expected_outputs":
               [
-                "materialized view refresh interval is configured to at most 30 minutes",
-                "Looker Studio data freshness is set to align with the materialized refresh interval",
-                "the materialized view SQL is validated against MV limitations (no chained views, no wildcard tables, allowed aggregations)",
-                "the operations review records the SLA, the refresh interval, and the cost expectation",
+                "materialized view refresh configuration (refresh_interval_minutes and/or max_staleness) targets the 30-minute freshness goal, with the design record explicitly noting that BigQuery automatic refresh is best-effort and not a hard SLA guarantee",
+                "Looker Studio data freshness (a separate report-side cache threshold) is set in alignment with the warehouse refresh target, not relied on as the warehouse refresh control",
+                "the materialized view SQL is validated against MV limitations (no chained logical views, no wildcard tables, allowed aggregations)",
+                "the operations review records the freshness target, the applied configuration, the documented behaviour when a query lands on stale results, and the cost expectation",
               ],
-            "self_assessment": "Explain why Looker Studio freshness alone does not control the warehouse refresh; explain why a materialized view is not a substitute for SLA review.\n",
+            "self_assessment": "Explain why Looker Studio freshness alone does not control the warehouse refresh; explain why the materialized-view refresh target is best-effort and what the design records when a query hits stale data.\n",
           },
       },
       {
@@ -321,7 +321,7 @@
       },
       {
         "id": "exam-card-ifrs9-stage-transition",
-        "title": "IFRS 9 Stage-Transition Reporting",
+        "title": "IFRS 9 Stage-Transition Reporting (design exercise)",
         "recommended_learner_tasks": ["LT-SQL-003"],
         "source_facts":
           [
@@ -329,17 +329,18 @@
             "FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT",
             "FACT-BI-REFERENCE-DATE-SEPARATION",
           ],
-        "objective": "Build a credit-risk dashboard page that explains a month-over-month ECL movement in terms of IFRS 9 stage transitions rather than as a single ECL total.\n",
+        "objective": "Design (but do not implement against committed fixture data) a credit-risk dashboard page that would explain a month-over-month ECL movement in terms of IFRS 9 stage transitions rather than as a single ECL total. Treat the synthetic lending tables as a starting shape; ECL amounts and a stage-transition fixture are not committed, so the design record names the inputs you would expect rather than a numeric output.\n",
         "verification":
           {
             "expected_outputs":
               [
-                "ECL exposure totals broken down by stage 1 / stage 2 / stage 3 per reporting date",
-                "a transition matrix showing how many loans moved between stages between the two reporting dates",
-                "stage-aware monthly trend chart instead of a single aggregate ECL line",
-                "explanation note: ECL movement is decomposed into stage movements rather than smoothed by a rolling average",
+                "the design names the per-stage ECL split (stage 1 / stage 2 / stage 3) and the reporting reference date used for each total",
+                "the design names a stage-transition matrix between two reporting dates and the SQL shape that would produce it (e.g. self-join on loan_id with stage_prev vs stage_current)",
+                "the design names a stage-aware monthly trend chart instead of a single aggregate ECL line",
+                "the design records that ECL movement is decomposed into stage movements rather than smoothed by a rolling average",
+                "the design lists the inputs a credit-risk pipeline would need to provide beyond the synthetic lending dataset (per-loan ECL amount, stage_at_reporting_date) before the page could be populated",
               ],
-            "self_assessment": "Explain why a single ECL total hides credit-risk signal; explain why semi-additive exposure cannot be summed across reporting dates.\n",
+            "self_assessment": "Explain why a single ECL total hides credit-risk signal; explain why semi-additive exposure cannot be summed across reporting dates; name what fixture data would need to be added before the design could be evaluated against deterministic numbers.\n",
           },
       },
       {
@@ -367,7 +368,7 @@
       },
       {
         "id": "exam-card-aml-alert-dashboard-governance",
-        "title": "AML Alert Dashboard Governance",
+        "title": "AML Alert Dashboard Governance (design exercise)",
         "recommended_learner_tasks": ["LT-LOOKER-004"],
         "source_facts":
           [
@@ -375,7 +376,7 @@
             "FACT-GDPR-DATA-MINIMISATION",
             "FACT-GDPR-SPECIAL-CATEGORIES",
           ],
-        "objective": "Design two dashboard surfaces for a bank's compliance audience: a governed aggregate AML alert page for the broad team, and a separately access-controlled investigation page for the alert handlers.\n",
+        "objective": "Design (but do not implement against committed fixture data) two dashboard surfaces for a bank's compliance audience: a governed aggregate AML alert page for the broad team, and a separately access-controlled investigation page for the alert handlers. The synthetic corpus does not commit an AML alert fixture; the design record names inputs and access mechanics, not a deterministic numeric output.\n",
         "verification":
           {
             "expected_outputs":
