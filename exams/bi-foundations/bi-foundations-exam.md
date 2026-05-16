@@ -226,6 +226,168 @@
             "self_assessment": "Explain the difference between freshness lag and reconciliation delta; explain why a non-zero delta or failed validation rule must hold the publish; write one row of an ICT third-party register covering service, provider, criticality, function supported, data location, and exit-plan summary.\n",
           },
       },
+      {
+        "id": "exam-card-rls-cls-design",
+        "title": "Row-Level And Column-Level Security Design",
+        "recommended_learner_tasks": ["LT-LOOKER-004"],
+        "source_facts":
+          [
+            "FACT-BIGQUERY-ROW-ACCESS-POLICY",
+            "FACT-BIGQUERY-COLUMN-POLICY-TAG",
+            "FACT-BIGQUERY-AUTHORIZED-VIEW-ACCESS-CONTROL",
+          ],
+        "objective": "Design BigQuery access controls for a single account-day balance table that must serve a wide aggregate audience and three branch-manager audiences without exposing personal-data identifiers to any of them.\n",
+        "verification":
+          {
+            "expected_outputs":
+              [
+                "policy tags applied to account_id, customer_id, synthetic_iban, masked_account_number",
+                "ROW ACCESS POLICY granted per branch-manager group with FILTER USING (branch_id = ...)",
+                "authorized view exposes the aggregate (currency, branch, balance) without raw identifiers",
+                "credential mode for the dashboard is viewer credentials, paired with the authorized view",
+              ],
+            "self_assessment": "Explain when row-level security beats per-audience views; explain why column-level security still applies when a row policy is already in place; explain why an authorized view does not by itself protect tagged columns.\n",
+          },
+      },
+      {
+        "id": "exam-card-scd2-historical-reporting",
+        "title": "SCD Type 2 Historical Reporting",
+        "recommended_learner_tasks": ["LT-BI-001"],
+        "source_facts":
+          [
+            "FACT-BI-SCD-TYPES",
+            "FACT-BI-SURROGATE-KEY",
+            "FACT-BI-REFERENCE-DATE-SEPARATION",
+          ],
+        "objective": "Design a branch dimension that preserves history when a branch is renamed mid-year, and explain how the monthly deposit trend will read each month's totals under the correct branch name.\n",
+        "verification":
+          {
+            "expected_outputs":
+              [
+                "dim_branch carries surrogate key branch_sk plus natural branch_id, effective_from, effective_to columns",
+                "fct_account_daily_balances references branch_sk valid at business_date",
+                "trend chart for 2026-01 reports totals under the old branch name",
+                "trend chart for 2026-03 reports totals under the new branch name",
+                "no SCD type 1 overwrite is used on branch_name",
+              ],
+            "self_assessment": "Explain why type-1 overwrite would silently rewrite the 2026-01 trend; explain why natural-key joins fail under SCD type 2 history.\n",
+          },
+      },
+      {
+        "id": "exam-card-materialized-view-refresh-review",
+        "title": "Materialized View Refresh Interval Review",
+        "recommended_learner_tasks": ["LT-DQ-005"],
+        "source_facts":
+          [
+            "FACT-BIGQUERY-MATERIALIZED-VIEW-REFRESH",
+            "FACT-BIGQUERY-MATERIALIZED-VIEW-CACHE",
+            "FACT-LOOKER-STUDIO-DATA-FRESHNESS-TRADEOFF",
+          ],
+        "objective": "Replace an expensive logical view backing an executive dashboard with a materialized view, choosing a refresh interval that fits a 30-minute freshness SLA and recording the design in the operations review.\n",
+        "verification":
+          {
+            "expected_outputs":
+              [
+                "materialized view refresh interval is configured to at most 30 minutes",
+                "Looker Studio data freshness is set to align with the materialized refresh interval",
+                "the materialized view SQL is validated against MV limitations (no chained views, no wildcard tables, allowed aggregations)",
+                "the operations review records the SLA, the refresh interval, and the cost expectation",
+              ],
+            "self_assessment": "Explain why Looker Studio freshness alone does not control the warehouse refresh; explain why a materialized view is not a substitute for SLA review.\n",
+          },
+      },
+      {
+        "id": "exam-card-corep-finrep-alignment",
+        "title": "COREP / FINREP Capital Ratio Alignment",
+        "recommended_learner_tasks": ["LT-DQ-005"],
+        "source_facts":
+          [
+            "FACT-CRR-CET1-RATIO",
+            "FACT-EBA-FRAMEWORK-VERSIONING",
+            "FACT-EBA-DPM-VALIDATION-RULES",
+          ],
+        "objective": "Align a capital-monitoring dashboard with the bank's COREP / FINREP submission for the latest reporting reference date; record the evidence that lets a reviewer trust the on-screen CET1 ratio.\n",
+        "verification":
+          {
+            "expected_outputs":
+              [
+                "CET1 numerator (CET1 capital) and denominator (total RWA) read from the same reporting reference date",
+                "reporting framework version and validation rule version recorded next to the displayed ratio per period",
+                "reconciliation evidence linking the dashboard CET1 to the COREP capital adequacy template",
+                "no cross-period mixing of CET1 numerator with prior-period RWA denominator",
+              ],
+            "self_assessment": "Explain why a single CET1 ratio without numerator/denominator coordinates is not reviewable; explain why the framework version matters even when the absolute ratio looks unchanged.\n",
+          },
+      },
+      {
+        "id": "exam-card-ifrs9-stage-transition",
+        "title": "IFRS 9 Stage-Transition Reporting",
+        "recommended_learner_tasks": ["LT-SQL-003"],
+        "source_facts":
+          [
+            "FACT-IFRS9-STAGES",
+            "FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT",
+            "FACT-BI-REFERENCE-DATE-SEPARATION",
+          ],
+        "objective": "Build a credit-risk dashboard page that explains a month-over-month ECL movement in terms of IFRS 9 stage transitions rather than as a single ECL total.\n",
+        "verification":
+          {
+            "expected_outputs":
+              [
+                "ECL exposure totals broken down by stage 1 / stage 2 / stage 3 per reporting date",
+                "a transition matrix showing how many loans moved between stages between the two reporting dates",
+                "stage-aware monthly trend chart instead of a single aggregate ECL line",
+                "explanation note: ECL movement is decomposed into stage movements rather than smoothed by a rolling average",
+              ],
+            "self_assessment": "Explain why a single ECL total hides credit-risk signal; explain why semi-additive exposure cannot be summed across reporting dates.\n",
+          },
+      },
+      {
+        "id": "exam-card-bcbs-239-lineage-walkthrough",
+        "title": "BCBS 239 Lineage Walkthrough For A Risk-Decision Dashboard",
+        "recommended_learner_tasks": ["LT-DQ-005"],
+        "source_facts":
+          [
+            "FACT-BCBS-239-RDARR-PRINCIPLES",
+            "FACT-BI-RECONCILIATION-WINDOWS",
+            "FACT-DORA-DATA-CONFIDENTIALITY-INTEGRITY",
+          ],
+        "objective": "Document the BCBS 239 evidence chain for a credit-risk dashboard metric: source-to-metric lineage, named owner, and per-period reconciliation evidence.\n",
+        "verification":
+          {
+            "expected_outputs":
+              [
+                "named source tables and intermediate serving views feeding the metric",
+                "a named owner or reviewer accountable for the metric definition",
+                "per-reporting-date reconciliation between the dashboard total and an upstream control total",
+                "an integrity / confidentiality note for the underlying pipeline",
+              ],
+            "self_assessment": "Explain why a metric without lineage, owner, or reconciliation cannot pass a BCBS 239-style review; explain why visual styling is not in scope of the review.\n",
+          },
+      },
+      {
+        "id": "exam-card-aml-alert-dashboard-governance",
+        "title": "AML Alert Dashboard Governance",
+        "recommended_learner_tasks": ["LT-LOOKER-004"],
+        "source_facts":
+          [
+            "FACT-AML-CFT-SUSPICIOUS-ACTIVITY",
+            "FACT-GDPR-DATA-MINIMISATION",
+            "FACT-GDPR-SPECIAL-CATEGORIES",
+          ],
+        "objective": "Design two dashboard surfaces for a bank's compliance audience: a governed aggregate AML alert page for the broad team, and a separately access-controlled investigation page for the alert handlers.\n",
+        "verification":
+          {
+            "expected_outputs":
+              [
+                "aggregate page exposes alert counts, ageing categories, type / channel breakdown only",
+                "aggregate page excludes customer_id, KYC narrative, account-level identifiers",
+                "investigation page sits on a separate authorized view with viewer credentials matching the handler role",
+                "no blend between aggregate AML page and any marketing or account-management report",
+              ],
+            "self_assessment": "Explain why combining aggregate and investigation evidence on one page violates minimisation; explain which BigQuery access mechanic guards the investigation page.\n",
+          },
+      },
     ],
   "content_type": "exam_pack",
   "status": "published",

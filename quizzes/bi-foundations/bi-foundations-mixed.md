@@ -991,6 +991,170 @@ questions:
         Speculative raw-detail fields weaken both privacy and BI contracts.
       self_assessment: >
         If the source has no stated purpose or owner, pause publication.
+    - id: q-medium-weighted-average-ratio
+      type: multiple_choice
+      estimated_seconds: 85
+      recommended_learner_tasks: [LT-DQ-006]
+      source_facts:
+        - FACT-BI-RATIO-SUM-COMPONENTS-FIRST
+        - FACT-LOOKER-STUDIO-DEFAULT-AGGREGATION
+      prompt: >
+        A retail bank reports `Average account balance per active account`
+        on an executive dashboard. Two implementations are proposed:
+        formula A computes `SUM(account_balance) / SUM(active_account_count)`
+        from a daily branch-level serving view; formula B computes
+        `AVG(branch_average_balance)` from the same serving view. Which
+        gives the cert-correct weighted result under a chart filter that
+        drops the smallest branches?
+      options:
+        - id: formula_a_weighted
+          label: Formula A; the numerator and denominator re-aggregate at the filtered grain so each retained branch contributes in proportion to its account count.
+        - id: formula_b_average
+          label: Formula B; averaging an already-averaged column produces a stable cross-branch number that survives any filter.
+        - id: either_match
+          label: Either; for a fixed serving view the two formulas mathematically agree.
+        - id: a_only_if_unfiltered
+          label: Formula A only on the unfiltered total; under any filter, formula B is required to recompute.
+      answer: formula_a_weighted
+      explanation: >
+        Weighted ratios aggregate components first so they recompute
+        correctly at any filter context. Averaging branch averages
+        discards the branch weights and is an average-of-averages
+        antipattern.
+      self_assessment: >
+        If a chart filter changes the ratio's meaning, suspect an
+        average-of-averages formula and replace with `SUM(num) / SUM(den)`.
+    - id: q-medium-sum-count-distinct-trap
+      type: multiple_choice
+      estimated_seconds: 85
+      recommended_learner_tasks: [LT-BI-002]
+      source_facts:
+        - FACT-BIGQUERY-COUNT-DISTINCT-GRAIN
+        - FACT-BI-FANOUT-JOIN-RISK
+      prompt: >
+        A wealth-management dashboard groups account totals by
+        `relationship_manager` and by `service_tier`, then reports
+        `SUM(distinct_customer_count)` across the two groupings as
+        "unique customers served". One customer is served by two
+        relationship managers across two service tiers. How does the
+        reported number compare to the real distinct-customer count?
+      options:
+        - id: overstates
+          label: It overstates the true distinct-customer count because each customer is counted once per group they appear in.
+        - id: understates
+          label: It understates because BigQuery deduplicates across the SUM and skips the customer.
+        - id: matches
+          label: It matches the true distinct-customer count because `COUNT(DISTINCT)` is additive across non-overlapping groups.
+        - id: depends_on_join
+          label: It depends on whether the dashboard uses an `INNER JOIN` or `LEFT JOIN` between customers and accounts.
+      answer: overstates
+      explanation: >
+        `COUNT(DISTINCT)` is not additive across groups when the same
+        entity appears in multiple groups. Summing per-group distinct
+        counts double-counts shared entities. The cert-correct fix is to
+        compute `COUNT(DISTINCT customer_id)` over the same window
+        directly.
+      self_assessment: >
+        Whenever a grouped report sums distinct counts, ask whether the
+        entity can appear in multiple groups; if so, recompute on the
+        full window.
+    - id: q-medium-psd2-sca-evidence
+      type: select_all
+      estimated_seconds: 90
+      recommended_learner_tasks: [LT-DQ-005]
+      source_facts:
+        - FACT-PSD2-STRONG-CUSTOMER-AUTHENTICATION
+        - FACT-GDPR-DATA-MINIMISATION
+      prompt: >
+        A payments BI dashboard tracks strong customer authentication
+        outcomes for electronic transactions. Which fields belong in the
+        governed serving view feeding the aggregate page?
+      options:
+        - id: sca_outcome
+          label: SCA outcome (success / failure / skipped) per transaction reporting date.
+        - id: exemption_reason
+          label: The applied SCA exemption category (when an exemption was used).
+        - id: counterparty_channel
+          label: Counterparty type and acceptance channel categories.
+        - id: raw_customer_id
+          label: The raw customer identifier on every row so support staff can drill into a specific cardholder from the aggregate.
+      answer: [sca_outcome, exemption_reason, counterparty_channel]
+      explanation: >
+        Aggregate SCA dashboards need outcome, exemption, and channel
+        categories. Raw customer identifiers fail PSD2-aware data
+        minimisation when they sit on a broadly shared aggregate page;
+        per-customer investigation belongs on a separately governed
+        detail surface.
+      self_assessment: >
+        If aggregate authentication metrics rely on per-customer fields
+        being present, separate the aggregate page from the
+        access-controlled investigation page.
+    - id: q-medium-aml-cft-alert-page
+      type: multiple_choice
+      estimated_seconds: 85
+      recommended_learner_tasks: [LT-DQ-005]
+      source_facts:
+        - FACT-AML-CFT-SUSPICIOUS-ACTIVITY
+        - FACT-GDPR-DATA-MINIMISATION
+        - FACT-GDPR-SPECIAL-CATEGORIES
+      prompt: >
+        A bank's compliance team needs an internal dashboard summarising
+        AML alert volumes by reporting period. Which serving design fits
+        cert-track expectations for AML / CFT BI?
+      options:
+        - id: aggregate_governed
+          label: A governed aggregate serving view with alert counts and ageing categories; per-alert narratives and KYC fields stay on a separately access-controlled detail page.
+        - id: full_alert_export
+          label: A flat extract that joins every alert with the full KYC record and customer narrative, so compliance can analyse without leaving the report.
+        - id: aggregate_with_customer_ids
+          label: An aggregate page that keeps customer IDs as a chart dimension so investigators can pivot from the totals.
+        - id: blend_kyc_to_marketing
+          label: A blend between AML alerts and the marketing dashboard so account managers can see alert flags in their own page.
+      answer: aggregate_governed
+      explanation: >
+        AML records are highly sensitive. The cert-correct pattern is an
+        aggregate governed view for the broad audience and a separately
+        access-controlled detail page for investigation. Carrying KYC
+        narratives or customer IDs into the aggregate page violates
+        minimisation and special-category handling rules.
+      self_assessment: >
+        If an AML aggregate page exposes investigation-level fields,
+        split the surface into a governed summary and a restricted
+        detail page.
+    - id: q-medium-corep-finrep-versioning
+      type: multiple_choice
+      estimated_seconds: 90
+      recommended_learner_tasks: [LT-DQ-005]
+      source_facts:
+        - FACT-EBA-FRAMEWORK-VERSIONING
+        - FACT-EBA-DPM-VALIDATION-RULES
+        - FACT-CRR-CET1-RATIO
+      prompt: >
+        A bank prepares its COREP / FINREP submission for 2026-Q1. A
+        capital-monitoring dashboard already reports the same CET1
+        numerator and denominator using the prior framework version. The
+        reviewer asks the BI team to align the dashboard with the
+        version used for the submission. Which alignment evidence
+        belongs in the dashboard release record?
+      options:
+        - id: framework_version_per_period
+          label: The reporting framework version, validation rule version, and reference date, recorded next to the CET1 value for each period shown.
+        - id: chart_only_alignment
+          label: Only that the chart appears next to the COREP submission link, since the data source is upstream and is implicitly aligned.
+        - id: relabel_to_match
+          label: A note that the dashboard label is renamed to match the COREP cell coordinate; that proves alignment.
+        - id: latest_version_only
+          label: Only the latest framework version, applied retroactively to all periods so the chart looks consistent.
+      answer: framework_version_per_period
+      explanation: >
+        Validation outcomes and capital ratios can change between
+        framework versions. Period comparisons need the rule and
+        framework version recorded per period before a regulatory-style
+        BI metric can be aligned to the submission template.
+      self_assessment: >
+        If a regulatory-flavoured dashboard does not record the
+        framework version per period, comparisons across periods are
+        not trustworthy.
   hard:
     - id: q-hard-semi-additive-exposure
       type: multiple_choice

@@ -213,3 +213,37 @@ advice.
   into a single total obscures the credit-risk trend.
 - Related facts: [`FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT`](bi-modeling-banking.md#fact-bi-semi-additive-balance-snapshot),
   [`FACT-BI-REFERENCE-DATE-SEPARATION`](bi-modeling-banking.md#fact-bi-reference-date-separation).
+
+### FACT-PSD2-STRONG-CUSTOMER-AUTHENTICATION
+
+- Statement: PSD2 (Directive (EU) 2015/2366) requires strong customer
+  authentication (SCA) for electronic payment transactions, defined as
+  authentication based on the use of two or more independent elements
+  drawn from knowledge, possession, and inherence; data evidencing SCA
+  events must be retained for supervisory inspection.
+- Source: [`SRC-PSD2-ELI-2015-2366`](../sources/law/eu-crr.md#src-psd2-eli-2015-2366).
+- Source quote: "strong customer authentication".
+- Derived implication: A payments BI dashboard reporting authentication
+  failure rates or SCA exemption usage needs to keep SCA outcome,
+  exemption reason, and counterparty / channel context per transaction
+  reporting date. SCA fields are sensitive and should not be exposed at
+  user level on broad dashboards.
+- Related facts: [`FACT-GDPR-PERSONAL-DATA`](privacy-gdpr.md#fact-gdpr-personal-data),
+  [`FACT-GDPR-DATA-MINIMISATION`](privacy-gdpr.md#fact-gdpr-data-minimisation).
+
+### FACT-AML-CFT-SUSPICIOUS-ACTIVITY
+
+- Statement: AML / CFT supervisory expectations require credit
+  institutions to detect, document, and where applicable report
+  suspicious transactions and customer behaviour, including the
+  underlying customer due diligence (CDD / KYC) evidence and the
+  rationale for suspicion; the resulting records are highly sensitive
+  and have strict access controls.
+- Source: [`SRC-EBA-AML-PACKAGE`](../sources/regulators/eba-reporting-frameworks.md#src-eba-aml-package).
+- Source quote: "suspicious".
+- Derived implication: A BI dashboard touching AML alert queues or KYC
+  status should publish counts and aging metrics through governed
+  serving views without exposing alert-level identifiers, narratives,
+  or customer-specific KYC fields to wide audiences.
+- Related facts: [`FACT-GDPR-SPECIAL-CATEGORIES`](privacy-gdpr.md#fact-gdpr-special-categories),
+  [`FACT-GDPR-PERSONAL-DATA`](privacy-gdpr.md#fact-gdpr-personal-data).
