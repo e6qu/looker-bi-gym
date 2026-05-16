@@ -526,71 +526,90 @@ ORDER BY dashboard_page;
     - do not record secrets, screenshots of credentials, private links, or user
       identities in release notes.
 
-15. Run the minimisation-failure scenario. Imagine a teammate added
-    `customer_id` to the candidate dashboard with a `keep` decision because
-    a stakeholder asked for "drill-down to the depositor":
+15. Run the minimisation-failure scenario against a real candidate query.
+    A teammate has drafted a "depositor drill" view that pulls
+    `customer_id` from `account_owners` and `synthetic_iban` from
+    `accounts`. Inspect its actual output schema in DuckDB rather than a
+    hand-written VALUES list:
 
 ```sql
-WITH leaky_candidate_fields AS (
-  SELECT * FROM (
-    VALUES
-      ('business_date', 'keep', 'not_personal_data'),
-      ('currency_code', 'keep', 'not_personal_data'),
-      ('branch_city', 'keep', 'not_personal_data'),
-      ('ledger_total', 'keep', 'not_personal_data'),
-      ('account_count', 'keep', 'not_personal_data'),
-      ('source_cutoff_timestamp', 'keep', 'not_personal_data'),
-      ('account_id', 'exclude', 'personal_data_risk'),
-      ('customer_id', 'keep', 'personal_data_risk'),
-      ('synthetic_iban', 'exclude', 'personal_data_risk'),
-      ('masked_account_number', 'exclude', 'personal_data_risk'),
-      ('gdpr_restricted_flag', 'exclude_from_public_chart', 'special_handling')
-  ) AS t(field_name, release_decision, privacy_class)
+WITH leaky_candidate AS (
+  SELECT
+    b.business_date,
+    b.currency_code,
+    a.account_id,
+    a.synthetic_iban,
+    o.customer_id,
+    SUM(b.ledger_balance) AS ledger_total
+  FROM account_daily_balances b
+  INNER JOIN accounts a ON b.account_id = a.account_id
+  INNER JOIN account_owners o ON b.account_id = o.account_id
+  WHERE b.business_date = DATE '2026-03-31'
+  GROUP BY
+    b.business_date, b.currency_code, a.account_id, a.synthetic_iban, o.customer_id
 )
 SELECT
-  SUM(CASE WHEN release_decision = 'keep' THEN 1 ELSE 0 END) AS kept_fields,
-  SUM(
-    CASE
-      WHEN field_name IN (
-        'account_id',
-        'customer_id',
-        'synthetic_iban',
-        'masked_account_number'
-      )
-        AND release_decision = 'keep'
-        THEN 1
-      ELSE 0
-    END
-  ) AS sensitive_fields_kept,
+  COUNT(*) AS leaky_column_count,
+  SUM(CASE WHEN column_name IN ('account_id', 'customer_id', 'synthetic_iban', 'masked_account_number') THEN 1 ELSE 0 END) AS sensitive_columns_in_output,
+  STRING_AGG(column_name, ', ' ORDER BY column_name) AS exposed_columns,
   CASE
-    WHEN SUM(
-      CASE
-        WHEN field_name IN (
-          'account_id',
-          'customer_id',
-          'synthetic_iban',
-          'masked_account_number'
-        )
-          AND release_decision = 'keep'
-          THEN 1
-        ELSE 0
-      END
-    ) = 0
+    WHEN SUM(CASE WHEN column_name IN ('account_id', 'customer_id', 'synthetic_iban', 'masked_account_number') THEN 1 ELSE 0 END) = 0
       THEN 'pass'
     ELSE 'fail_hold_release'
   END AS minimisation_check
-FROM leaky_candidate_fields;
+FROM (DESCRIBE SELECT * FROM leaky_candidate);
 ```
 
-16. Confirm the failure output:
+16. Confirm the failure output. The `sensitive_columns_in_output` count
+    comes from `DESCRIBE` reading the actual projection list, so it
+    cannot be faked by the rubric writer:
 
-| kept_fields | sensitive_fields_kept | minimisation_check |
-| ----------: | --------------------: | ------------------ |
-|           7 |                     1 | fail_hold_release  |
+| leaky_column_count | sensitive_columns_in_output | exposed_columns                                                                     | minimisation_check |
+| -----------------: | --------------------------: | ----------------------------------------------------------------------------------- | ------------------ |
+|                  6 |                           3 | account_id, business_date, currency_code, customer_id, ledger_total, synthetic_iban | fail_hold_release  |
 
-17. Record the failure rule: a depositor-level drill-down belongs in a
-    separately governed, access-controlled detail page; it must not appear
-    on the executive aggregate page even when a stakeholder asks for it.
+17. Now run the same `DESCRIBE` check against the governed view from
+    step 6 and confirm it returns `0` sensitive columns and a `pass`
+    status:
+
+```sql
+WITH governed_candidate AS (
+  SELECT
+    b.business_date,
+    b.currency_code,
+    COALESCE(br.city, 'UNMAPPED_BRANCH') AS branch_city,
+    SUM(b.ledger_balance) AS ledger_total,
+    COUNT(DISTINCT b.account_id) AS account_count,
+    MAX(b.source_cutoff_timestamp) AS source_cutoff_timestamp
+  FROM account_daily_balances b
+  INNER JOIN accounts a ON b.account_id = a.account_id
+  LEFT JOIN branches br ON a.branch_id = br.branch_id
+  WHERE b.business_date = DATE '2026-03-31'
+  GROUP BY b.business_date, b.currency_code, COALESCE(br.city, 'UNMAPPED_BRANCH')
+)
+SELECT
+  COUNT(*) AS governed_column_count,
+  SUM(CASE WHEN column_name IN ('account_id', 'customer_id', 'synthetic_iban', 'masked_account_number') THEN 1 ELSE 0 END) AS sensitive_columns_in_output,
+  CASE
+    WHEN SUM(CASE WHEN column_name IN ('account_id', 'customer_id', 'synthetic_iban', 'masked_account_number') THEN 1 ELSE 0 END) = 0
+      THEN 'pass'
+    ELSE 'fail_hold_release'
+  END AS minimisation_check
+FROM (DESCRIBE SELECT * FROM governed_candidate);
+```
+
+18. Confirm the governed output:
+
+| governed_column_count | sensitive_columns_in_output | minimisation_check |
+| --------------------: | --------------------------: | ------------------ |
+|                     6 |                           0 | pass               |
+
+19. Record the failure rule: a depositor-level drill-down belongs in a
+    separately governed, access-controlled detail page; it must not
+    appear on the executive aggregate page even when a stakeholder asks
+    for it. The cert-track defence is to put the minimisation check
+    into the dashboard build pipeline and have it run `DESCRIBE` against
+    every candidate serving query before release.
 
 ### Optional BigQuery UI Path
 

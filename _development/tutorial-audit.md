@@ -50,9 +50,13 @@ wrong, bad, or other defects. Severity is one of:
 
 - Severity: `medium`.
 - Surfaces: 06 (`synthetic_job_events` VALUES), 07 (`candidate_dashboard_fields` and `credential_modes` VALUES), 08 (dependency/operations VALUES), 09 (capstone artifact checklist VALUES).
-- Defect: many of the later tutorials simulate ops/governance work with hand-written `VALUES` rows, then run a `CASE` expression that compares the constructed columns to constants ("ready", "pass", "ok"). The check is tautological; the learner cannot produce a failing state from the steps as written.
+- Defect: many of the later tutorials simulated ops/governance work with hand-written `VALUES` rows, then ran a `CASE` expression that compared the constructed columns to constants. The check was tautological; the learner could not produce a failing state from the steps as written.
 - Why it matters: ops/governance work in practice is mostly about handling failed checks. A learner who completes 06-09 will not have seen freshness fail, a reconciliation break appear, a cost overrun, or a sensitive-field leak. Cert-shape questions love these failure modes.
-- Fix proposal: split the synthetic VALUES into two scenarios per check (one passing, one failing), and ask the learner to identify what changed and what to remediate. Alternative: drive at least one check off real synthetic-dataset state (e.g., the actual `account_daily_balances` cutoff) so a learner who edits the seed can produce a failure.
+- Resolution status: addressed in Phase 11.2 follow-up.
+  - **09** capstone now requires nine values the learner fills from prior-tutorial outputs; skipping a prior tutorial moves the rubric to `hold_for_remediation`.
+  - **06** cost-budget exercise now computes `estimated_bytes_processed` from real `COUNT(*)` of the loaded tables. The over-budget signal comes from a real `account_daily_balances INNER JOIN account_owners` fanout (27 rows × 9 cols × 16 = 3888 bytes vs 2000 budget).
+  - **07** minimisation check now runs `DESCRIBE` against the learner's real query projection, so the failure detection is driven by which columns the learner actually selects (3 sensitive columns in the leaky query, 0 in the governed query).
+  - **08** reconciliation break now compares the real source total to a real broken query (missing date filter → 286570 vs 95700 → delta 190870, and the tutorial-05 owner-join fanout → 164800 vs 95700 → delta 69100). Verified end-to-end by `bun run test:sql`.
 
 ### CC-5 - COUNT(DISTINCT) is summed across groups as if additive
 

@@ -1,5 +1,30 @@
 # What We Did
 
+## 2026-05-16 - Phase 11.2 CC-4 follow-up: real failure scenarios in 06-08
+
+After the user pointed out that the Phase 11.2 commit had only relabelled
+the tautological VALUES blocks in tutorials 06-08, those three sections
+were rewritten to drive off real DuckDB queries against the committed
+synthetic data rather than VALUES theatre:
+
+- 06 cost-budget exercise: rows scanned and estimated bytes are now
+  `COUNT(*)` against the loaded tables. The over-budget signal comes
+  from a real `account_daily_balances INNER JOIN account_owners` fanout
+  (27 rows × 9 cols × 16 = 3888 bytes vs a 2000 byte budget).
+- 07 minimisation check: now runs `DESCRIBE` against the learner's real
+  query projection. Failure detection is driven by which sensitive
+  columns the learner actually selects (`leaky_candidate` exposes
+  account_id + customer_id + synthetic_iban → 3 sensitive columns;
+  `governed_candidate` exposes 0).
+- 08 reconciliation break: now compares the real source total
+  (`SELECT SUM(ledger_balance) WHERE business_date = '2026-03-31'`) to
+  two real broken queries (missing date filter → 286570, owner-join
+  fanout → 164800). Deltas are computed from data, not hand-written
+  VALUES.
+
+`app/scripts/test-sql.ts` was extended to verify all three exercises
+run in DuckDB-WASM with the expected outputs.
+
 ## 2026-05-16 - Task 061 Tutorial Audit Remediation
 
 Folded into PR #45 by user direction so it lands together with the Phase

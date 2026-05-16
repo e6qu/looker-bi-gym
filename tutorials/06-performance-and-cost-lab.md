@@ -389,43 +389,84 @@ ORDER BY estimated_bytes_processed DESC;
     - document freshness settings because Looker Studio refresh behavior and
       source-table update time are not the same control.
 
-13. Run the cost-budget failure scenario. Imagine a new chart was added that
-    re-reads the broad raw source and lifts total estimated bytes above a
-    20 KB ceiling:
+13. Run the cost-budget failure scenario against real dataset state. Three
+    different chart shapes will be costed below using the actual row and
+    column counts that the workbench reports, so the failure must come from
+    real query shape rather than a hand-written number:
 
 ```sql
-WITH cost_budget_scenarios AS (
-  SELECT * FROM (
-    VALUES
-      ('serving source baseline', 1248, 20000),
-      ('serving source plus governed currency drill', 2496, 20000),
-      ('serving source plus accidental raw raw join', 22464, 20000)
-  ) AS t(scenario, estimated_bytes_processed, byte_budget)
+WITH safe_serving_costed AS (
+  SELECT
+    'serving source baseline' AS scenario,
+    COUNT(*) AS rows_scanned,
+    5 AS columns_scanned,
+    COUNT(*) * 5 * 16 AS estimated_bytes_processed
+  FROM (
+    SELECT
+      b.currency_code,
+      COALESCE(br.city, 'UNMAPPED_BRANCH') AS branch_city,
+      SUM(b.ledger_balance) AS ledger_total,
+      COUNT(DISTINCT b.account_id) AS account_count,
+      MAX(b.source_cutoff_timestamp) AS source_cutoff_timestamp
+    FROM account_daily_balances b
+    INNER JOIN accounts a ON b.account_id = a.account_id
+    LEFT JOIN branches br ON a.branch_id = br.branch_id
+    WHERE b.business_date = DATE '2026-03-31'
+    GROUP BY b.currency_code, COALESCE(br.city, 'UNMAPPED_BRANCH')
+  ) s
+),
+raw_join_costed AS (
+  SELECT
+    'serving source plus accidental raw owner join' AS scenario,
+    COUNT(*) AS rows_scanned,
+    9 AS columns_scanned,
+    COUNT(*) * 9 * 16 AS estimated_bytes_processed
+  FROM account_daily_balances b
+  INNER JOIN accounts a ON b.account_id = a.account_id
+  LEFT JOIN branches br ON a.branch_id = br.branch_id
+  INNER JOIN account_owners o ON b.account_id = o.account_id
+),
+budget AS (
+  SELECT 2000 AS byte_budget
 )
 SELECT
-  scenario,
-  estimated_bytes_processed,
-  byte_budget,
-  estimated_bytes_processed - byte_budget AS overrun_bytes,
+  c.scenario,
+  c.rows_scanned,
+  c.columns_scanned,
+  c.estimated_bytes_processed,
+  b.byte_budget,
+  c.estimated_bytes_processed - b.byte_budget AS overrun_bytes,
   CASE
-    WHEN estimated_bytes_processed <= byte_budget THEN 'within_budget'
+    WHEN c.estimated_bytes_processed <= b.byte_budget THEN 'within_budget'
     ELSE 'over_budget_hold_release'
   END AS budget_status
-FROM cost_budget_scenarios
-ORDER BY estimated_bytes_processed;
+FROM (
+  SELECT * FROM safe_serving_costed
+  UNION ALL
+  SELECT * FROM raw_join_costed
+) c
+CROSS JOIN budget
+ORDER BY c.estimated_bytes_processed;
 ```
 
-14. Confirm the output:
+14. Confirm the output. The numbers come from the actual workbench row
+    counts; if a future committed dataset change adds rows, the bytes
+    update automatically:
 
-| scenario                                    | estimated_bytes_processed | byte_budget | overrun_bytes | budget_status            |
-| ------------------------------------------- | ------------------------: | ----------: | ------------: | ------------------------ |
-| serving source baseline                     |                      1248 |       20000 |        -18752 | within_budget            |
-| serving source plus governed currency drill |                      2496 |       20000 |        -17504 | within_budget            |
-| serving source plus accidental raw raw join |                     22464 |       20000 |          2464 | over_budget_hold_release |
+| scenario                                      | rows_scanned | columns_scanned | estimated_bytes_processed | byte_budget | overrun_bytes | budget_status            |
+| --------------------------------------------- | -----------: | --------------: | ------------------------: | ----------: | ------------: | ------------------------ |
+| serving source baseline                       |            6 |               5 |                       480 |        2000 |         -1520 | within_budget            |
+| serving source plus accidental raw owner join |           27 |               9 |                      3888 |        2000 |          1888 | over_budget_hold_release |
 
-15. Record the budget-failure rule in your notes: a chart that joins the
-    broad raw source into the serving source defeats the cost reduction and
-    must be moved upstream, not absorbed into the release.
+The `27` row count for the raw-join scenario is the real fanout from
+`account_daily_balances` (18 rows) inner-joining `account_owners`
+(9 ownership rows) and produces a real over-budget signal. The
+governed serving view aggregates to 6 rows and stays within budget.
+
+15. Record the budget-failure rule in your notes: a chart that joins
+    `account_owners` into the latest-day path multiplies the rows
+    scanned and breaks the byte budget. The fix is upstream
+    aggregation, not chart-level filters.
 
 ### Optional BigQuery UI Path
 

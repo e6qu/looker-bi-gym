@@ -509,58 +509,76 @@ FROM operations_summary;
     - never paste raw logs, user emails, private report links, credentials, or
       customer data into operations notes.
 
-17. Run the reconciliation-break scenario. Imagine the dashboard ledger
-    total drifted to `95740` while the source remains `95700`, and a
-    validation rule failed for one row:
+17. Run the reconciliation-break scenario against a real broken query.
+    A teammate published a dashboard query that forgot the
+    `WHERE business_date = ...` filter, so the dashboard total quietly
+    sums every day of balance snapshots. Compute the real source total
+    and the real broken-dashboard total side by side, then compare:
 
 ```sql
-WITH reconciliation_break_day AS (
-  SELECT * FROM (
-    VALUES
-      (
-        DATE '2026-04-01',
-        'deposits executive daily',
-        95700,
-        95740,
-        1,
-        'fail'
-      )
-  ) AS t(
-    report_date,
-    report_name,
-    source_ledger_total,
-    dashboard_ledger_total,
-    validation_failing_rows,
-    validation_status
-  )
+WITH source_total AS (
+  SELECT SUM(ledger_balance) AS source_ledger_total
+  FROM account_daily_balances
+  WHERE business_date = DATE '2026-03-31'
+),
+broken_dashboard AS (
+  -- Intentionally wrong: the WHERE clause is missing, so the dashboard
+  -- aggregates every business_date in the seed.
+  SELECT SUM(ledger_balance) AS dashboard_ledger_total
+  FROM account_daily_balances
+),
+fanout_dashboard AS (
+  -- Intentionally wrong: an account_owners join multiplies balance rows
+  -- before aggregation.
+  SELECT SUM(b.ledger_balance) AS dashboard_ledger_total
+  FROM account_daily_balances b
+  INNER JOIN account_owners o
+    ON b.account_id = o.account_id
+  WHERE b.business_date = DATE '2026-03-31'
 )
 SELECT
-  report_date,
-  report_name,
-  source_ledger_total,
-  dashboard_ledger_total,
-  dashboard_ledger_total - source_ledger_total AS reconciliation_delta,
-  validation_failing_rows,
-  validation_status,
+  'all-dates sum' AS broken_query_shape,
+  s.source_ledger_total,
+  bd.dashboard_ledger_total,
+  bd.dashboard_ledger_total - s.source_ledger_total AS reconciliation_delta,
   CASE
-    WHEN dashboard_ledger_total = source_ledger_total
-      AND validation_failing_rows = 0
-      THEN 'in_service'
+    WHEN bd.dashboard_ledger_total = s.source_ledger_total THEN 'in_service'
     ELSE 'hold_publish_investigate'
   END AS operations_status
-FROM reconciliation_break_day;
+FROM source_total s
+CROSS JOIN broken_dashboard bd
+UNION ALL
+SELECT
+  'owner-join fanout',
+  s.source_ledger_total,
+  fd.dashboard_ledger_total,
+  fd.dashboard_ledger_total - s.source_ledger_total AS reconciliation_delta,
+  CASE
+    WHEN fd.dashboard_ledger_total = s.source_ledger_total THEN 'in_service'
+    ELSE 'hold_publish_investigate'
+  END AS operations_status
+FROM source_total s
+CROSS JOIN fanout_dashboard fd;
 ```
 
-18. Confirm the failure output:
+18. Confirm the failure output. The deltas come from the real broken
+    queries running against the actual `deposits-seed/v0.1.0` dataset.
+    The `all-dates sum` reconciliation delta is the sum of the
+    2026-03-29 and 2026-03-30 daily totals (`95190 + 95680 = 190870`),
+    and the `owner-join fanout` delta matches the fanout proof from
+    tutorial 05 (`164800 - 95700 = 69100`):
 
-| report_date | report_name              | source_ledger_total | dashboard_ledger_total | reconciliation_delta | validation_failing_rows | validation_status | operations_status        |
-| ----------- | ------------------------ | ------------------: | ---------------------: | -------------------: | ----------------------: | ----------------- | ------------------------ |
-| 2026-04-01  | deposits executive daily |               95700 |                  95740 |                   40 |                       1 | fail              | hold_publish_investigate |
+| broken_query_shape | source_ledger_total | dashboard_ledger_total | reconciliation_delta | operations_status        |
+| ------------------ | ------------------: | ---------------------: | -------------------: | ------------------------ |
+| all-dates sum      |               95700 |                 286570 |               190870 | hold_publish_investigate |
+| owner-join fanout  |               95700 |                 164800 |                69100 | hold_publish_investigate |
 
-19. Record the break-day rule in your notes: when reconciliation delta is
-    non-zero or any validation rule fails, hold the dashboard publish and
-    open an incident in the same review window. Do not edit the dashboard
-    to match the source total; fix the source pipeline.
+19. Record the break-day rule in your notes: when reconciliation delta
+    is non-zero, hold the dashboard publish and open an incident. Do
+    not edit the dashboard to match the source total; fix the source
+    pipeline. The two failure shapes above (missing date filter, raw
+    owner-join fanout) are the most common real breaks; both are
+    detected by this same source-vs-dashboard reconciliation check.
 
 20. Draft the DORA third-party register row that the report's BigQuery and
     Looker Studio dependencies imply:
