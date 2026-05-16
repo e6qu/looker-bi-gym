@@ -598,8 +598,14 @@ sandbox BigQuery data source.
 
 ## End Challenge
 
-Prepare the daily operations handoff for the executive deposit dashboard. The
-handoff passes when it includes exactly this evidence:
+Prepare the daily operations handoff for the executive deposit dashboard.
+The handoff must include dependencies, freshness status, reconciliation
+delta, simulated bytes total, incident open items, validation failures, and
+evidence rule. Compile the values from your own outputs before opening the
+expected evidence.
+
+<details>
+<summary>Reveal expected evidence</summary>
 
 - `dependencies=6`
 - `freshness_status=ok`
@@ -608,6 +614,8 @@ handoff passes when it includes exactly this evidence:
 - `incident_open_items=1`
 - `validation_failures=0`
 - `evidence_rule=aggregate_no_private_logs`
+
+</details>
 
 ## Deliverable
 

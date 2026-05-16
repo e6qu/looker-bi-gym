@@ -487,9 +487,15 @@ Write the release decision in this form:
 
 `raw_bytes=<bytes>; serving_bytes=<bytes>; reduction_pct=<pct>; release_source=<source>; evidence_rule=<rule>`
 
-Expected answer:
+Fill it in from your own browser SQL output before opening the expected
+answer.
+
+<details>
+<summary>Reveal expected answer</summary>
 
 `raw_bytes=11232; serving_bytes=1248; reduction_pct=88.89; release_source=serving_source; evidence_rule=bounded_redacted_job_metadata`
+
+</details>
 
 ## Deliverable
 

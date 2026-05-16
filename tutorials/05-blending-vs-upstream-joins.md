@@ -408,9 +408,15 @@ Write a blend handoff note in this form:
 
 `correct_total=<total>; naive_total=<total>; fanout_delta=<delta>; overstatement_pct=<pct>; safe_current_source=<source>; owner_source=<source>; guarantee_grain=<grain>`
 
-Expected answer:
+Fill it in from your own browser SQL output before opening the expected
+answer.
+
+<details>
+<summary>Reveal expected answer</summary>
 
 `correct_total=95700; naive_total=164800; fanout_delta=69100; overstatement_pct=72.20; safe_current_source=safe_branch_currency; owner_source=allocated_owner_balances; guarantee_grain=depositor-bank`
+
+</details>
 
 ## Deliverable
 

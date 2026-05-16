@@ -619,8 +619,14 @@ Details`, and `Governance And Operations`.
 
 ## End Challenge
 
-Prepare the capstone README. The package passes when it includes exactly this
-evidence:
+Prepare the capstone README. The package must compile the artifacts count,
+control total, currency totals, fanout evidence, governance evidence, cost
+evidence, reconciliation evidence, rubric score, review status, and
+evidence rule from your own prior-tutorial outputs. Compile the values
+before opening the expected evidence.
+
+<details>
+<summary>Reveal expected evidence</summary>
 
 - `required_artifacts=8`
 - `ready_artifacts=8`
@@ -636,6 +642,8 @@ evidence:
 - `rubric_score=100`
 - `review_status=ready`
 - `evidence_rule=no_credentials_no_private_links_no_raw_logs`
+
+</details>
 
 ## Deliverable
 

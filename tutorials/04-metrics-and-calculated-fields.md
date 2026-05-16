@@ -415,9 +415,15 @@ Write a metric handoff note in this form:
 
 `latest_total=<total>; active_accounts=<count>; weighted_average=<value>; currency_share_ron=<percent>; unmapped_total=<total>; reusable_average_formula=<formula>; guarantee_grain=<grain>`
 
-Expected answer:
+Fill it in from your own browser SQL output before opening the expected
+answer.
+
+<details>
+<summary>Reveal expected answer</summary>
 
 `latest_total=95700; active_accounts=6; weighted_average=15950.00; currency_share_ron=82.86%; unmapped_total=5000; reusable_average_formula=SUM(ledger_total)/SUM(account_count); guarantee_grain=depositor-bank`
+
+</details>
 
 ## Deliverable
 

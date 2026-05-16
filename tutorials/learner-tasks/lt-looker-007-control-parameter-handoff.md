@@ -71,7 +71,7 @@ serving_rows AS (
   GROUP BY business_date, currency_code
 )
 SELECT
-  CAST(serving_rows.business_date AS VARCHAR) AS business_date,
+  CAST(serving_rows.business_date AS STRING) AS business_date,
   serving_rows.currency_code,
   CAST(serving_rows.ledger_total AS DOUBLE) AS ledger_total,
   serving_rows.source_account_count

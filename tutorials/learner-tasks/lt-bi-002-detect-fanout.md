@@ -92,7 +92,7 @@ fanout_proof AS (
   CROSS JOIN naive_total
 )
 SELECT
-  CAST((SELECT MAX(business_date) FROM latest_balances) AS VARCHAR)
+  CAST((SELECT MAX(business_date) FROM latest_balances) AS STRING)
     AS latest_balance_date,
   correct_ledger_total,
   naive_joined_total,

@@ -118,12 +118,17 @@ Only the final statement is ready for the later beginner tutorials.
 
 A stakeholder asks for a branch balance dashboard and wants to include account
 IDs so reviewers can drill into details. Write three corrections before work
-starts:
+starts. Try this before opening the expected answer below.
+
+<details>
+<summary>Reveal expected answer</summary>
 
 - Move reusable metric logic into the governed serving layer.
 - Keep raw identifiers out of the routine dashboard source.
 - Treat guarantee-related wording as depositor-bank grain, not account-balance
   grain.
+
+</details>
 
 ## Separate Verification
 

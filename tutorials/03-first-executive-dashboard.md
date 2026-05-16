@@ -66,7 +66,7 @@ Create this first executive dashboard contract:
 | KPI 2            | latest active account count = `6`                                                            |
 | Trend            | daily total by `business_date`                                                               |
 | Breakdown        | latest total by `currency_code`                                                              |
-| Freshness label  | `Latest balance date 2026-03-31; source cutoff 2026-03-31T20:15:00Z`                         |
+| Freshness label  | `Latest balance date 2026-03-31 / source cutoff 2026-03-31T20:15:00Z`                        |
 | Exposed fields   | `business_date`, `currency_code`, `ledger_total`, `account_count`, `source_cutoff_timestamp` |
 | Excluded fields  | `account_id`, `customer_id`, `synthetic_iban`                                                |
 | Credential notes | no credentials, private links, tokens, or real banking data                                  |
@@ -191,7 +191,7 @@ ORDER BY currency_code;
     - time series: dimension `business_date`, metric `daily_ledger_total`;
     - table or bar chart: dimension `currency_code`, metrics `ledger_total` and
       `account_count`;
-    - freshness label: `Latest balance date 2026-03-31; source cutoff 2026-03-31T20:15:00Z`.
+    - freshness label: `Latest balance date 2026-03-31 / source cutoff 2026-03-31T20:15:00Z`.
 11. Record the exposed and excluded field lists from the goal section.
 
 ### Optional BigQuery UI Path
@@ -283,13 +283,21 @@ Use this section only after the optional BigQuery view exists.
 
 ## End Challenge
 
-Write a handoff note in this form:
+Write a handoff note in this form. Each `;` separates a field; the
+`freshness` value uses `/` internally so the outer separator stays
+unambiguous.
 
 `latest_total=<total>; latest_accounts=<count>; trend=<date1:total1,date2:total2,date3:total3>; latest_breakdown=<currency1:total1,currency2:total2>; freshness=<label>; excluded_fields=<field_list>`
 
-Expected answer:
+Fill it in from your own browser SQL output before opening the expected
+answer.
 
-`latest_total=95700; latest_accounts=6; trend=2026-03-29:95190,2026-03-30:95680,2026-03-31:95700; latest_breakdown=EUR:16400,RON:79300; freshness=Latest balance date 2026-03-31; source cutoff 2026-03-31T20:15:00Z; excluded_fields=account_id,customer_id,synthetic_iban`
+<details>
+<summary>Reveal expected answer</summary>
+
+`latest_total=95700; latest_accounts=6; trend=2026-03-29:95190,2026-03-30:95680,2026-03-31:95700; latest_breakdown=EUR:16400,RON:79300; freshness=Latest balance date 2026-03-31 / source cutoff 2026-03-31T20:15:00Z; excluded_fields=account_id,customer_id,synthetic_iban`
+
+</details>
 
 ## Deliverable
 

@@ -280,9 +280,15 @@ Write a release note in this form:
 
 `serving_rows=<count>; latest_date=<date>; latest_total=<total>; exposed_fields=<field_list>; excluded_fields=<field_list>`
 
-Expected answer:
+Fill it in from your own browser SQL output before opening the expected
+answer.
+
+<details>
+<summary>Reveal expected answer</summary>
 
 `serving_rows=6; latest_date=2026-03-31; latest_total=95700; exposed_fields=business_date,currency_code,ledger_total; excluded_fields=account_id,customer_id,synthetic_iban`
+
+</details>
 
 ## Deliverable
 

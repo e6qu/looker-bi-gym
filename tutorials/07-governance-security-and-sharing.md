@@ -636,7 +636,12 @@ sandbox BigQuery source.
 ## End Challenge
 
 Prepare a release note for the two-page executive deposit dashboard. The note
-passes when it includes exactly this evidence:
+must include kept fields, excluded sensitive fields, sensitive fields kept,
+control total, release source, credential mode, and evidence rule. Compile
+the values from your own outputs before opening the expected evidence.
+
+<details>
+<summary>Reveal expected evidence</summary>
 
 - `kept_fields=6`
 - `excluded_sensitive_fields=4`
@@ -645,6 +650,8 @@ passes when it includes exactly this evidence:
 - `release_source=safe_governed_deposit_summary`
 - `credential_mode=viewer_credentials_or_authorized_view`
 - `evidence_rule=no_credentials_no_private_links`
+
+</details>
 
 ## Deliverable
 
