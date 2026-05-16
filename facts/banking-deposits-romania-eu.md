@@ -182,3 +182,34 @@ advice.
   entity fields before a guarantee calculation can be graded.
 - Related facts: [`FACT-FGDB-MEMBER-BANKS`](#fact-fgdb-member-banks),
   [`FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION`](bi-modeling-banking.md#fact-bi-grain-declare-before-aggregation).
+
+### FACT-CRR-CET1-RATIO
+
+- Statement: The CRR (Capital Requirements Regulation, EU 575/2013) defines
+  the Common Equity Tier 1 (CET1) ratio as CET1 capital divided by total
+  risk-weighted exposure amount, with a minimum CET1 ratio of 4.5% before
+  buffers; capital conservation and countercyclical buffers can raise the
+  effective minimum further.
+- Source: [Regulation (EU) No 575/2013 (CRR)](https://eur-lex.europa.eu/eli/reg/2013/575/oj).
+- Source quote: "Common Equity Tier 1 capital ratio".
+- Derived implication: A capital-monitoring BI report needs the CET1
+  numerator and denominator at the same reporting date, with reconciliation
+  to the COREP capital adequacy template; mixing reporting dates or RWA
+  approaches produces a ratio that cannot be compared period-over-period.
+- Related facts: [`FACT-EBA-FRAMEWORK-VERSIONING`](governance-reporting-operations.md#fact-eba-framework-versioning),
+  [`FACT-BI-REFERENCE-DATE-SEPARATION`](bi-modeling-banking.md#fact-bi-reference-date-separation).
+
+### FACT-IFRS9-STAGES
+
+- Statement: IFRS 9 classifies financial assets into three impairment stages
+  for expected credit loss (ECL) measurement - stage 1 (12-month ECL,
+  performing), stage 2 (lifetime ECL, significant increase in credit risk
+  but not credit-impaired), stage 3 (lifetime ECL, credit-impaired).
+- Source: [IFRS Foundation, IFRS 9 Financial Instruments](https://www.ifrs.org/issued-standards/list-of-standards/ifrs-9-financial-instruments/).
+- Source quote: "expected credit losses".
+- Derived implication: A credit-risk dashboard reporting exposure or ECL
+  needs the IFRS 9 stage assignment per loan and per reporting date. Stage
+  transitions explain large ECL movements between periods; mixing stages
+  into a single total obscures the credit-risk trend.
+- Related facts: [`FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT`](bi-modeling-banking.md#fact-bi-semi-additive-balance-snapshot),
+  [`FACT-BI-REFERENCE-DATE-SEPARATION`](bi-modeling-banking.md#fact-bi-reference-date-separation).

@@ -184,3 +184,30 @@ advice.
   - "pass parameters back"
 - Notes: Use this source for dashboard interaction, filter-field, and parameter
   handoff lessons.
+
+## SRC-LOOKER-STUDIO-BLEND-JOIN-TYPES
+
+- Type: official product documentation.
+- Publisher: Google Cloud.
+- URL: https://support.google.com/looker-studio/answer/9061204
+- Accessed: 2026-05-16.
+- Used by facts:
+  - `FACT-LOOKER-STUDIO-BLEND-JOIN-TYPES`
+- Relevant quotes:
+  - "left outer"
+  - "inner"
+- Notes: Use this source when a blend over- or under-counts vs the upstream
+  serving view.
+
+## SRC-LOOKER-STUDIO-FRESHNESS-INTERVALS
+
+- Type: official product documentation.
+- Publisher: Google Cloud.
+- URL: https://support.google.com/looker-studio/answer/7020039
+- Accessed: 2026-05-16.
+- Used by facts:
+  - `FACT-LOOKER-STUDIO-FRESHNESS-INTERVALS`
+- Relevant quotes:
+  - "data freshness"
+- Notes: Use this source to relate freshness interval choice to BigQuery
+  refresh cost.
