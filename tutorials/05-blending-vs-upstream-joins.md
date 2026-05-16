@@ -232,7 +232,15 @@ FROM safe_branch_currency;
 |             95700 |                  6 |                  5000 |
 
 11. If owner-level analysis is required, run this upstream allocation query
-    instead of blending raw owners into a current-balance KPI chart:
+    instead of blending raw owners into a current-balance KPI chart. The
+    allocation logic divides each account's balance by the account's own
+    summed ownership-share total, so if the synthetic
+    `account_owners.ownership_share_pct` values for an account sum to
+    `100`, the division leaves each owner's share at face value. If the
+    shares ever sum to something else (data quality break), each owner
+    receives a proportional share of the account balance rather than a
+    multiplied amount, and the overall allocation total still reconciles
+    to the account-grain ledger total:
 
 ```sql
 WITH latest_balances AS (

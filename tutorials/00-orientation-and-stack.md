@@ -75,6 +75,12 @@ regulatory-context boundaries before you touch any banking BI examples.
    The standard ceiling used in this course context is EUR 100,000 per
    depositor per bank
    (<a class="termRef" href="#/terminology/regulations.md#dgsd-guarantee-ceiling">DGSD guarantee ceiling<sup>REG</sup></a>).
+   Worked example: a synthetic customer with two RON accounts at the same
+   bank holding EUR 60,000 each has a total account balance of EUR 120,000,
+   but the depositor-bank coverage is capped at EUR 100,000. The
+   EUR 20,000 difference is uninsured even though both accounts and both
+   balances are real. The two grains answer different questions and must
+   not be combined in a single KPI.
 6. Add one ready/not-ready rule: a dashboard source is not ready if it exposes
    raw identifiers, hides metric logic inside chart-only calculations, or
    compares account-balance totals to guarantee wording without changing grain.
