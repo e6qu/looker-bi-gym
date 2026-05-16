@@ -26,11 +26,12 @@ Synthetic-data boundary: use only the predefined synthetic deposits dataset. Do
 not use real, masked production, customer, account, transaction, employee, or
 regulatory data.
 
-Builds on:
+Prior knowledge expected:
 
-- [00 - Orientation And Stack](00-orientation-and-stack.md)
-- [01 - Prepare A Synthetic Serving View For Looker Studio](01-connect-public-data.md)
-- [Data Sources](data-sources.md)
+- Synthetic-data discipline.
+- Basic dimensional-modeling vocabulary: fact table, dimension table,
+  grain.
+- SQL `INNER JOIN` vs `LEFT JOIN` semantics.
 
 Required tools:
 

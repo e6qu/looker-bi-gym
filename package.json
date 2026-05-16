@@ -47,7 +47,9 @@
     "validate:manifests": "bun run --filter @looker-bi-gym/app validate:manifests",
     "validate:static-links": "bun run --filter @looker-bi-gym/app validate:static-links",
     "validate:terminology": "bun run --filter @looker-bi-gym/app validate:terminology",
+    "validate:quiz-distractors": "bun run --filter @looker-bi-gym/app validate:quiz-distractors",
     "coverage:terminology": "bun run --filter @looker-bi-gym/app coverage:terminology",
+    "coverage:cert-track": "bun run --filter @looker-bi-gym/app coverage:cert-track",
     "typecheck": "bun run --filter facts-db-app typecheck && bun run --filter @looker-bi-gym/app typecheck",
     "preview": "bun run --filter @looker-bi-gym/app preview"
   }

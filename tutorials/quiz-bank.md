@@ -4,7 +4,7 @@
   "title": "Quiz Bank",
   "content_type": "tutorial",
   "status": "published",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "topic": "core",
   "tags": ["tutorial", "synthetic-data"],
 }
@@ -12,37 +12,48 @@
 
 # Quiz Bank
 
-Use the interactive quiz when you want a broad self-check across banking BI,
-BigQuery SQL, and Looker Studio reporting decisions. Each question stands on its
-own as a scenario, so the bank can be used for review without looking back at a
-worked example.
+Use the [interactive quiz surface](#/quiz) to attempt scenario-driven
+questions on banking BI, BigQuery SQL and serving patterns, Looker
+Studio mechanics, dashboard controls, governance, and cost / operations
+decisions.
 
-Objective: check whether you can recall and apply core BI mechanics without
-using worked examples as prompts.
+Objective: check whether you can recall and apply core BI mechanics
+against a banking scenario without reference material.
 
 After this quiz, you will be able to:
 
-- Start the mixed quiz from the app navigation.
-- Recognize the competency areas covered by the easy, medium, and hard groups.
-- Decide which BI topic needs more practice before attempting exam cards.
+- Recognise which competency area each question targets.
+- Translate a missed question into a focused review of the underlying
+  concept rather than a fix to the answer text.
+- Decide which terminology or tutorial area to revisit before retrying.
 
-Training boundary: use synthetic training data only. This quiz is technical
-learning material, not legal, regulatory, accounting, privacy, compliance, or
-model-risk advice.
+Training boundary: use synthetic training data only. The questions are
+technical learning material, not legal, regulatory, accounting, privacy,
+compliance, or model-risk advice.
 
-## Coverage
+## Coverage Areas
 
-The current mixed bank contains 60 standalone scenario questions:
+The bank covers, across easy / medium / hard difficulty groups:
 
-| Difficulty | Count | Main coverage                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| ---------- | ----: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Easy       |    20 | BI grain, distinct counts, NULL totals, date grouping, partition filters, Looker Studio dimensions and data sources, reusable fields, logical views, controls, query parameters, pseudonymised identifiers, purpose limitation, and deposit-guarantee basics                                                                                                                                                                                                                   |
-| Medium     |    20 | fanout deltas, reduce-before-join patterns, QUALIFY, window partitions, month-end SQL checks, failed casts, chart aggregation context, blends, credentials, dry runs, parameter predicates, exact versus approximate counts, view regions, view SQL changes, freshness memory, and deposit eligibility                                                                                                                                                                         |
-| Hard       |    20 | semi-additive exposure, shared metric ownership, blend freshness, refresh cost evidence, control publication checks, authorized views, materialized-view decisions, job-evidence privacy, depositor-bank grain, operations dependencies, temporary high balances, incident evidence, validation versioning, region-aware serving layers, cost triage, stale blended reports, NULL reconciliation, exact coverage evidence, special-category data, and upstream modelling fixes |
+- BI grain, dimension vs metric, weighted vs average-of-averages,
+  fanout repair, conformed dimensions, surrogate keys, SCD types.
+- BigQuery SQL: logical and materialized views, partition filters,
+  clustering, `QUALIFY`, `DATE_TRUNC`, `SAFE_CAST`, `SAFE_DIVIDE`,
+  parameterized queries, query results cache, count semantics.
+- BigQuery governance: authorized views, row-level security
+  (`CREATE ROW ACCESS POLICY`), column-level security (policy tags),
+  job metadata privacy.
+- Looker Studio: data sources, default aggregation, calculated field
+  scope, blends and join operators, controls and parameter bindings,
+  data freshness intervals, credential modes.
+- Banking and regulatory context: deposit-guarantee grain (DGSD /
+  FGDB), DORA ICT third-party register and incidents, EBA validation
+  rule versioning, CRR CET1 ratio, IFRS 9 stages, BCBS 239 RDARR
+  principles, GDPR personal data and special-category data.
 
-## How To Use It
+## Self-Assessment Pattern
 
-Open the Quiz surface from the navigation and answer a focused subset or the
-full bank. For each miss, write down whether the gap was about row grain, join
-behavior, Looker Studio mechanics, BigQuery SQL behavior, control evidence, or
-banking context.
+Each question stands alone as a banking BI scenario. For any miss, note
+which competency area was unclear (grain, join behaviour, governance
+mechanic, cost mechanic, regulatory context) and revisit the
+terminology or tutorial covering that area.

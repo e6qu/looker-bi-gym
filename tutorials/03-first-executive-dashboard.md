@@ -25,10 +25,12 @@ Synthetic-data boundary: dashboard pages must use synthetic serving results
 only. Do not paste real production screenshots, URLs, credentials, customer
 data, account data, or regulatory data into notes.
 
-Builds on:
+Prior knowledge expected:
 
-- [01 - Prepare A Synthetic Serving View For Looker Studio](01-connect-public-data.md)
-- [02 - Build A BI-Friendly Model](02-build-a-bi-friendly-model.md)
+- A governed serving view that exposes one row per business date and
+  currency (or equivalent grain) with no row-identifier columns.
+- BI dimension vs metric vocabulary.
+- Synthetic-data discipline.
 
 Required tools:
 

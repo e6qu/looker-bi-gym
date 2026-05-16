@@ -187,7 +187,7 @@
             "FACT-BIGQUERY-VIEW-QUERY-RUNS-EACH-TIME",
             "FACT-BIGQUERY-MATERIALIZED-VIEW-CACHE",
           ],
-        "objective": "Explain why a narrow serving view costs less than a broad raw scan and name three real BigQuery cost mechanics that the simulated proxy in tutorial 06 does not model.\n",
+        "objective": "Explain why a narrow serving view costs less than a broad raw scan for a banking dashboard, and name three BigQuery cost mechanics (partition pruning, query results cache, materialized view cache) that determine real-world billed bytes.\n",
         "verification":
           {
             "expected_outputs":

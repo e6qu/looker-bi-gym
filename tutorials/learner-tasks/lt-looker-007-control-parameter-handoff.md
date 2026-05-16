@@ -38,10 +38,12 @@ Training boundary: use synthetic training data only. This task is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
 
-## Prerequisites
+## Setup
 
-- Complete [LT-LOOKER-004](lt-looker-004-report-ready-data-source.md).
 - Open the [deposits seed workbench](#/workbench/deposits-seed/v0.1.0).
+- A report-ready data-source design is assumed as the starting point:
+  a governed metric, a minimised field list, and a named credential
+  mode.
 - Use only the synthetic dataset already loaded in the browser workbench.
 
 ## Steps

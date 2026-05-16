@@ -36,11 +36,14 @@ synthetic deposits dataset. Do not inspect, export, paste, or screenshot private
 billing data, job metadata, user emails, customer data, credentials, tokens, or
 private report links.
 
-Builds on:
+Prior knowledge expected:
 
-- [03 - Build The First Executive Dashboard](03-first-executive-dashboard.md)
-- [04 - Define Governed Metrics And Calculated Fields](04-metrics-and-calculated-fields.md)
-- [05 - Compare Blends With Upstream Joins](05-blending-vs-upstream-joins.md)
+- A governed serving view, an executive dashboard spec, and an
+  understanding that owner-joined raw rows can fanout balances.
+- Awareness that a BigQuery logical view re-runs its SQL every time it is
+  queried.
+- Basic comfort with reading job metadata fields (bytes processed,
+  bytes billed).
 
 Required tools:
 

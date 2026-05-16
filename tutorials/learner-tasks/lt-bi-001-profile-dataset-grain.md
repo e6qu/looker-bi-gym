@@ -36,13 +36,13 @@ Training boundary: use synthetic training data only. This task is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
 
-## Prerequisites
+## Setup
 
 - Open the [deposits seed workbench](#/workbench/deposits-seed/v0.1.0).
-- Keep the workbench in browser mode. No backend, CLI, Python, Docker, or real
-  banking data is required.
-- Use the instructions below as the complete practice sequence; the workbench is only
-  where you run the SQL.
+- Keep the workbench in browser mode. No backend, CLI, Python, Docker, or
+  real banking data is required.
+- The instructions below are the complete practice sequence; the workbench
+  is only where you run the SQL.
 
 ## Steps
 

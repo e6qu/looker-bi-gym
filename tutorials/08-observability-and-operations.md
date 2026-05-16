@@ -38,11 +38,13 @@ operations examples. Do not copy production incident records, job logs, user
 emails, reconciliation breaks, report links, credentials, keys, screenshots of
 access settings, or customer data into evidence notes.
 
-Builds on:
+Prior knowledge expected:
 
-- [03 - Build The First Executive Dashboard](03-first-executive-dashboard.md)
-- [06 - Measure Dashboard Performance And Cost Signals](06-performance-and-cost-lab.md)
-- [07 - Govern Dashboard Access, Fields, And Sharing](07-governance-security-and-sharing.md)
+- A governed serving view feeding an executive dashboard with named
+  control totals.
+- Awareness that report refresh time and source business reference date
+  are separate concepts.
+- Familiarity with BigQuery job metadata as a cost-evidence source.
 
 Required tools:
 

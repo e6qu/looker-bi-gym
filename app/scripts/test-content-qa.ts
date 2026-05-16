@@ -626,7 +626,7 @@ function assertMarkdownBoundaryLanguage(
         markdownFile.path.includes(`${repoRoot}/tutorials/learner-tasks/lt-`)
       ) {
         for (const requiredHeading of [
-          "## Prerequisites",
+          "## Setup",
           "## Steps",
           "## Checkpoints",
           "## Visualization Or Reporting Action",

@@ -27,8 +27,9 @@ Why does `SUM(numerator) / SUM(denominator)` survive chart filters when
 ## Back
 
 The weighted formula aggregates components first, so any chart filter
-reduces the components consistently; the ratio recomputes correctly at
+reduces the components consistently and the ratio recomputes correctly at
 the filtered grain. `AVG(row_average)` averages already-aggregated row
-values, which discards the row weights and gives a different answer (the
-worked example in tutorial 04: 15950.00 weighted vs 14012.50
-average-of-averages).
+values, which discards the row weights. A bank that has one large branch
+holding most of the balance and many small branches will see the
+weighted average pulled toward the large branch (correct) while the
+average-of-averages flattens every branch to equal weight (wrong).

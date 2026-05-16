@@ -27,10 +27,12 @@ Synthetic-data boundary: use only the predefined synthetic deposits dataset.
 Do not use real balances, real customer attributes, screenshots from private
 reports, credentials, or production regulatory outputs.
 
-Builds on:
+Prior knowledge expected:
 
-- [02 - Build A BI-Friendly Deposit Model](02-build-a-bi-friendly-model.md)
-- [03 - Build A First Executive Dashboard Spec](03-first-executive-dashboard.md)
+- A dimensional model with declared grain and a governed serving layer.
+- A working executive dashboard spec or equivalent KPI definition.
+- Weighted-average reasoning: why `SUM(a) / SUM(b)` differs from
+  `AVG(row_ratio)`.
 
 Required tools:
 

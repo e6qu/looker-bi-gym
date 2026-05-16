@@ -35,12 +35,14 @@ Training boundary: use synthetic training data only. This task is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
 
-## Prerequisites
+## Setup
 
-- Complete [LT-SQL-003](lt-sql-003-month-end-serving-result.md).
 - Open the [lending month-end workbench](#/workbench/lending-month-end/v0.1.0).
-- Use the instructions below as the complete practice sequence; the workbench is only
-  where you run the SQL.
+- A month-end serving result for lending exposure is assumed as the
+  starting point; the steps below extend it with reconciliation
+  controls.
+- The instructions below are the complete practice sequence; the workbench
+  is only where you run the SQL.
 
 ## Steps
 

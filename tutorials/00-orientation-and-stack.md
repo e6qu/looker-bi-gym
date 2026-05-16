@@ -27,7 +27,7 @@ Area: A - Orientation And Source Data
 Synthetic-data boundary: use synthetic training data only. Do not use real,
 masked, anonymized, or production-derived banking data.
 
-Builds on: none.
+Prior knowledge expected: none.
 
 Required tools: browser only.
 
@@ -72,8 +72,8 @@ regulatory-context boundaries before you touch any banking BI examples.
 5. Under `Banking grain`, write that account balances are account-level facts
    for a business date, while deposit-guarantee checks require depositor-bank
    <a class="termRef" href="#/terminology/bi.md#grain">grain<sup>BI</sup></a>.
-   The standard ceiling used in this course context is EUR 100,000 per
-   depositor per bank
+   The harmonised EU deposit-guarantee ceiling is EUR 100,000 per
+   depositor per credit institution
    (<a class="termRef" href="#/terminology/regulations.md#dgsd-guarantee-ceiling">DGSD guarantee ceiling<sup>REG</sup></a>).
    Worked example: a synthetic customer with two RON accounts at the same
    bank holding EUR 60,000 each has a total account balance of EUR 120,000,

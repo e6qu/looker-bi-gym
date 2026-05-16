@@ -78,8 +78,8 @@ questions:
           label: The data source that connects data and exposes the field schema.
         - id: chart_layer
           label: The chart layer, because chart-level calculated fields can rename underlying fields.
-        - id: report_theme
-          label: The report theme, because theme settings configure default field types.
+        - id: blend_definition
+          label: The blend definition, because a blend takes precedence over the underlying data-source schema.
       answer: data_source
       explanation: >
         Looker Studio charts and controls use fields exposed by the data source.
@@ -195,8 +195,8 @@ questions:
       options:
         - id: field_values_default_charts
           label: The bound field, allowed values, default value, and affected charts.
-        - id: bound_to_chart_title
-          label: The chart title text, so the control rewrites the title when the value changes.
+        - id: bound_to_natural_label
+          label: The displayed branch name string; renaming the label is enough to keep the control aligned with the underlying field.
         - id: bound_to_calculated_field
           label: A chart-level calculated field expression, with the control rewriting the expression at runtime.
       answer: field_values_default_charts
@@ -317,10 +317,10 @@ questions:
       options:
         - id: date_range_filter
           label: A predicate on the business-date partition field.
-        - id: title_filter
-          label: A report title that mentions the month.
+        - id: chart_date_filter
+          label: A chart-level date filter applied after the serving query runs.
         - id: no_filter
-          label: No date predicate, because the dashboard chart has a date axis.
+          label: No predicate at all, because the date partition is automatically pruned when the chart axis is a date.
       answer: date_range_filter
       explanation: >
         Partition pruning depends on filters that reference the partition field.
@@ -955,8 +955,8 @@ questions:
           label: Remove or separately report rows with an exclusion reason.
         - id: deposit_definition
           label: Confirm the balance represents a deposit or due interest concept.
-        - id: branch_color
-          label: Choose a branch chart color before checking eligibility.
+        - id: branch_grain_substitution
+          label: Aggregate to branch grain first; branch totals can stand in for depositor-bank coverage when account-level data is unavailable.
       answer: [eligible_deposit, exclusion_reason, deposit_definition]
       explanation: >
         Coverage calculations need deposit definition and eligibility logic
@@ -1929,8 +1929,8 @@ questions:
           label: A named owner and reviewer responsible for the metric definition.
         - id: reconciliation_record
           label: A reconciliation record between the dashboard total and an upstream control total per reporting date.
-        - id: chart_palette_only
-          label: Only the chart's colour palette and font choices.
+        - id: cache_hit_replaces_lineage
+          label: A `cache_hit = TRUE` rate above 95 percent in `INFORMATION_SCHEMA.JOBS`, treated as a substitute for lineage and reconciliation evidence.
       answer: [source_lineage, named_owner, reconciliation_record]
       explanation: >
         BCBS 239 principles require risk-data lineage, accountability, and

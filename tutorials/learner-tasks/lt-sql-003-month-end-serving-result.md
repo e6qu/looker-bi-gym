@@ -38,12 +38,14 @@ Training boundary: use synthetic training data only. This task is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
 
-## Prerequisites
+## Setup
 
-- Complete [LT-BI-001](lt-bi-001-profile-dataset-grain.md).
 - Open the [lending month-end workbench](#/workbench/lending-month-end/v0.1.0).
-- Use the instructions below as the complete practice sequence; the workbench is only
-  where you run the SQL.
+- Comfort with the idea of declaring row grain before aggregation is
+  assumed; semi-additive measures (balances, exposures) cannot be summed
+  across snapshot dates as if they were transaction events.
+- The instructions below are the complete practice sequence; the workbench
+  is only where you run the SQL.
 
 ## Dataset Orientation
 

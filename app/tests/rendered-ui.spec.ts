@@ -39,7 +39,6 @@ const tutorialContentRoutes = [
   "/#/tutorials/08-observability-and-operations.md",
   "/#/tutorials/09-technical-bi-capstone.md",
   "/#/tutorials/README.md",
-  "/#/tutorials/curriculum.md",
   "/#/tutorials/data-sources.md",
   "/#/tutorials/exam-mode.md",
   "/#/tutorials/learner-tasks/README.md",

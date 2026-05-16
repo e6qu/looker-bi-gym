@@ -31,10 +31,12 @@ Do not use real account-owner tables, production customer attributes, private
 Looker Studio reports, screenshots with private account details, credentials,
 or real regulatory outputs.
 
-Builds on:
+Prior knowledge expected:
 
-- [02 - Build A BI-Friendly Deposit Model](02-build-a-bi-friendly-model.md)
-- [04 - Define Governed Metrics And Calculated Fields](04-metrics-and-calculated-fields.md)
+- Account-day balance grain and dimensional-model basics.
+- Governed metric contract concept (formula + grain + owner).
+- Difference between an `INNER JOIN` to a many-to-many side and a
+  pre-aggregated join.
 
 Required tools:
 

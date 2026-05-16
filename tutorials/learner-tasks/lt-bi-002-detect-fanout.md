@@ -36,12 +36,13 @@ Training boundary: use synthetic training data only. This task is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
 
-## Prerequisites
+## Setup
 
-- Complete [LT-BI-001](lt-bi-001-profile-dataset-grain.md).
 - Open the [deposits seed workbench](#/workbench/deposits-seed/v0.1.0).
-- Use the instructions below as the complete practice sequence; the workbench is only
-  where you run the SQL.
+- Comfort with `INNER JOIN` semantics and `SUM` / `COUNT DISTINCT`
+  aggregation is assumed.
+- The instructions below are the complete practice sequence; the workbench
+  is only where you run the SQL.
 
 ## Steps
 
