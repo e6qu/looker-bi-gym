@@ -331,34 +331,36 @@ test.describe("rendered UI", () => {
     ).toBeVisible();
   });
 
-  test("orientation tutorial keeps the verification quiz separate and linked", async ({
+  test("orientation tutorial is an executable lesson with a profile query", async ({
     page,
   }) => {
     await page.goto("/#/tutorials/00-orientation-and-stack.md", {
       waitUntil: "domcontentloaded",
     });
 
+    // The orientation lesson now teaches by running SQL against the
+    // synthetic deposits seed, not by routing the learner to a
+    // separate quiz challenge.
     await expect(
-      page.getByRole("heading", { level: 2, name: "Separate Verification" }),
+      page.getByRole("heading", {
+        level: 1,
+        name: "00 - Orient Yourself With The Deposits Dataset",
+      }),
     ).toBeVisible();
-    await expect(page.getByRole("main")).not.toContainText(
-      "Open #/challenges/orientation-quiz",
+    await expect(page.getByRole("main")).toContainText(
+      "SELECT\n     business_date",
     );
     await expect(page.getByRole("main")).not.toContainText(
-      "Complete the browser quiz",
+      "#/challenges/orientation-quiz",
     );
 
-    const quizLink = page.getByRole("link", {
-      name: "Start the separate orientation quiz",
+    const workbenchLink = page.getByRole("link", {
+      name: "deposits seed workbench",
     });
-
-    await expect(quizLink).toHaveAttribute(
+    await expect(workbenchLink).toHaveAttribute(
       "href",
-      /#\/challenges\/orientation-quiz$/u,
+      /#\/workbench\/deposits-seed\/v0\.1\.0$/u,
     );
-    await expect(
-      page.locator("code").filter({ hasText: "#/challenges/orientation-quiz" }),
-    ).toHaveCount(0);
   });
 
   for (const route of tutorialContentRoutes) {
