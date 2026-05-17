@@ -5631,152 +5631,557 @@ questions:
         patterns instead of seconds-on-screen.
     - id: q-hard-scd-type
       type: multiple_choice
-      estimated_seconds: 95
+      estimated_seconds: 110
       recommended_learner_tasks: [LT-BI-001]
       source_facts:
         - FACT-BI-SCD-TYPES
         - FACT-BI-SURROGATE-KEY
         - FACT-BI-REFERENCE-DATE-SEPARATION
-      prompt: >
-        A branch is renamed on 2026-02-15. A trend chart of monthly deposits
-        by branch should report 2026-01 totals under the old name and
-        2026-03 totals under the new name. Which dimension design supports
-        this without rewriting history?
+      prompt: |
+        Branch `BR-B-01` was renamed from "Bucuresti Central" to
+        "Bucuresti Unirii" on 2026-02-15. The monthly deposit
+        trend chart reads:
+
+            2026-01: ??? at branch BR-B-01
+            2026-02: ??? at branch BR-B-01
+            2026-03: ??? at branch BR-B-01
+
+        The risk committee wants 2026-01 to show under the
+        old name (the report at the time used "Bucuresti
+        Central"), 2026-03 under the new name, and 2026-02
+        labelled with the name in force at the rename date.
+        The fact table has 18 rows; `dim_branch` has 1 row per
+        `branch_id`. Which dimension design supports this?
       options:
         - id: scd2
-          label: SCD type 2 on `dim_branch` with effective-from / effective-to columns and a surrogate key; facts reference the surrogate valid at the reference date.
+          label: |
+            **SCD type 2** on `dim_branch`. Split the row when
+            it changes:
+
+                branch_sk | branch_id | branch_name           | effective_from | effective_to
+                1         | BR-B-01   | Bucuresti Central     | 2024-01-01     | 2026-02-14
+                2         | BR-B-01   | Bucuresti Unirii      | 2026-02-15     | 9999-12-31
+
+            Facts reference `branch_sk` that was valid at the
+            row's `business_date`. The 2026-01 trend point joins
+            to `branch_sk = 1` ("Bucuresti Central"); the 2026-03
+            point joins to `branch_sk = 2` ("Bucuresti Unirii").
         - id: scd1_overwrite
-          label: SCD type 1; overwrite `branch_name` with the new value, accepting that historical totals will appear under the new name.
+          label: |
+            **SCD type 1** (overwrite). Replace
+            `branch_name = 'Bucuresti Centrale'` with
+            `branch_name = 'Bucuresti Unirii'` in the single
+            `dim_branch` row. Historical reports will now show
+            every period under the new name; document the change
+            in a release note.
         - id: branch_per_period
-          label: Add a new branch row for every month; facts join on natural `branch_id` + reference month.
+          label: |
+            **One branch row per month**. Maintain
+            `dim_branch_history` with `(branch_id, year_month,
+            branch_name)`. Facts join on `branch_id` plus
+            `DATE_TRUNC(business_date, MONTH)`. The dimension
+            grows by one row per branch per month.
         - id: no_change_needed
-          label: No change needed; `business_date` already separates historical and current reporting.
+          label: |
+            **No change needed**. `business_date` already
+            distinguishes the periods, so the dashboard can
+            interpret the branch name correctly at chart time
+            without changing the dimension.
       answer: scd2
-      explanation: >
-        SCD type 2 splits the dimension on every change with effective-from
-        and effective-to dates. Facts reference the surrogate key valid at
-        the fact's reference date, so each period's totals stay under the
-        name in force at that time.
-      self_assessment: >
-        If a historical metric must respect period-specific dimension
-        attributes, prefer SCD type 2 over SCD type 1 overwrite.
+      explanation: |
+        SCD type 2 is the canonical pattern for "preserve
+        history when a dimension attribute changes":
+
+        - Each version of the branch row carries its own
+          surrogate key (`branch_sk`).
+        - The fact table references the surrogate that was
+          valid on the row's `business_date`.
+        - History reads correctly because the join naturally
+          picks up the right name per period; current reads
+          pick up the latest.
+
+        Why the alternatives fail:
+
+        - **SCD type 1 (overwrite)** silently rewrites history.
+          The 2026-01 trend point now shows under "Bucuresti
+          Unirii" - which was not the branch's name at that
+          time. Auditors and risk reviewers do not accept this.
+        - **One row per month** technically works but creates
+          a dimension that grows linearly with time. Every
+          branch needs one row per month even when nothing
+          changes; joins on `(branch_id, year_month)` lose the
+          natural surrogate-key contract and complicate every
+          downstream query.
+        - **"No change needed"** misreads the problem. The
+          dimension's current row holds *one* name; whichever
+          name it is gets applied to every period of the trend
+          regardless of `business_date`. The chart cannot pick
+          "the right name for this period" because the
+          dimension only stores one.
+
+        Production tip: SCD type 2 is typically implemented in
+        the warehouse load step. The fact's `business_date`
+        join condition becomes `business_date BETWEEN
+        effective_from AND effective_to`. Some BigQuery teams
+        materialize the joined fact + active dimension row in
+        a daily-refreshed view to avoid the BETWEEN cost on
+        every query.
+      self_assessment: |
+        Any time a dimension attribute changes and historical
+        reports must respect the prior value, SCD type 2 is
+        the right answer. Type 1 overwrite is for attributes
+        where history doesn't matter (typos, formatting); a
+        branch rename for a regulated-bank dashboard is not
+        one of those.
     - id: q-hard-conformed-dimensions
       type: multiple_choice
-      estimated_seconds: 90
+      estimated_seconds: 100
       recommended_learner_tasks: [LT-BI-002]
       source_facts:
         - FACT-BI-CONFORMED-DIMENSION
         - FACT-BI-FANOUT-JOIN-RISK
-      prompt: >
-        A bank's deposits, lending, and fees subject areas each build their
-        own `dim_branch` table from different source pipelines. A new
-        executive page wants to compare deposits vs lending exposure by
-        branch. What is the cert-correct durable fix?
+      prompt: |
+        Your bank has three subject areas, each with its own
+        engineering team and its own `dim_branch`:
+
+        - **Deposits** has `dim_branch_deposits`: 6 rows,
+          natural key `branch_id`, attributes include
+          `region, opened_year, has_atm`.
+        - **Lending** has `dim_branch_lending`: 7 rows,
+          natural key `branch_code` (not `branch_id`),
+          attributes include `region, lending_specialty`.
+        - **Fees** has `dim_branch_fees`: 5 rows, natural
+          key `branch_id`, attributes include
+          `region, fee_band`.
+
+        A new executive page wants to plot "deposits balance
+        vs lending exposure by region per quarter". The three
+        dimensions agree on region for the 4 branches all
+        three know about, but disagree on the 7-branch
+        lending side: lending uses `branch_code = 'B-01'`
+        where deposits uses `branch_id = 'BR-B-01'`. What is
+        the durable fix?
       options:
         - id: conformed_dim_branch
-          label: Build one conformed `dim_branch` shared across all subject areas, with the same grain, keys, and attribute semantics; switch fact tables to reference it.
+          label: |
+            **One conformed `dim_branch`** at bank-wide grain,
+            owned by one team, with:
+            - a stable surrogate `branch_sk` per logical
+              branch,
+            - all the natural-key variants (`branch_id`,
+              `branch_code`) as alternate keys for back-fill,
+            - the shared attributes (region, etc.) as the
+              single source of truth.
+            Each subject area's fact table joins to this one
+            dimension via the surrogate. Cross-subject reports
+            now share the same region values by construction.
         - id: blend_per_chart
-          label: Blend deposits and lending in Looker Studio per chart, joining on `branch_id` at the report layer.
+          label: |
+            **Per-chart blend** in Looker Studio. Each
+            executive chart blends deposits and lending on
+            `branch_id = branch_code`; the blend's join keys
+            are documented per chart. New charts repeat the
+            same blend setup.
         - id: union_subject_dims
-          label: Union the three `dim_branch` tables into one BI view; deduplicate by `branch_id` at query time.
+          label: |
+            **Runtime UNION** of the three dimensions into a
+            single BI view, dedupe by `LOWER(branch_id)` at
+            query time. Subject areas keep their own
+            `dim_branch` tables; the unioned view papers over
+            the differences for cross-subject queries.
         - id: chart_filter_only
-          label: Use a chart filter that aligns the two metrics to a shared branch list at presentation time.
+          label: |
+            **Chart-level filter** that constrains the
+            comparison to the 4 branches all three subject
+            areas agree on. The other branches simply don't
+            appear on cross-subject charts.
       answer: conformed_dim_branch
-      explanation: >
-        Conformed dimensions are a documented BI durable fix for cross-mart
-        consistency. Per-chart blends, runtime unions, and chart-level
-        filters do not protect future subject areas added on the same shape.
-      self_assessment: >
-        If two subject areas keep diverging on the same dimension, the right
-        fix is a shared conformed table, not a chart-level workaround.
+      explanation: |
+        Conformed dimensions (Kimball's term) are dimensions
+        shared across multiple fact tables / subject areas
+        with the same grain, keys, and attribute semantics.
+        For cross-subject reporting they are the only durable
+        fix:
+
+        - **One source of truth for `region`** means deposits
+          + lending agree by construction. The next new
+          metric ("fees by region") gets the same answer
+          without extra coordination.
+        - **One stable surrogate `branch_sk`** means new
+          subject areas can join in by referencing the
+          surrogate, without reasoning about each subject's
+          natural-key choices.
+        - **One ownership boundary** means upgrades to the
+          dimension (new attribute, region renaming) happen
+          once. Today's "deposits vs lending vs fees"
+          disagreement becomes tomorrow's "marketing vs
+          ops vs risk" disagreement without one.
+
+        Why the alternatives fail:
+
+        - **Per-chart blend** scales linearly with the number
+          of cross-subject charts. The same join logic gets
+          re-implemented every time; sooner or later, two
+          charts disagree.
+        - **Runtime UNION + dedupe** papers over the problem.
+          The dedupe rule has to encode every difference
+          between subject areas; new differences are not
+          caught until a chart misbehaves.
+        - **Chart filter to common-4 branches** silently
+          drops half the lending portfolio from comparisons.
+          Useful for a sanity check; useless as a durable
+          design.
+
+        Production note: conformed dimensions usually live in
+        a warehouse-team-owned dataset (e.g.
+        `proj.shared_dims.dim_branch`); subject-area teams
+        join to it instead of building their own. Migration
+        is usually phased: introduce the shared dimension,
+        backfill the surrogate into each fact, deprecate the
+        per-subject versions.
+      self_assessment: |
+        Whenever two subject areas keep disagreeing on a
+        shared dimension (branch, customer, product), the
+        durable answer is one conformed dimension owned by
+        one team. Chart-level workarounds make the problem
+        worse over time.
     - id: q-hard-crr-cet1-grain
       type: multiple_choice
-      estimated_seconds: 90
+      estimated_seconds: 100
       recommended_learner_tasks: [LT-DQ-005]
       source_facts:
         - FACT-CRR-CET1-RATIO
         - FACT-BI-REFERENCE-DATE-SEPARATION
-      prompt: >
-        A capital-monitoring dashboard reports a CET1 ratio of 13.7% for
-        2026-03-31. A reviewer asks where the numerator and denominator
-        originate. Which combination of evidence is required for the BI
-        ratio to be cert-trustworthy?
+      prompt: |
+        The capital-monitoring dashboard tile reads "CET1
+        ratio 13.7% as of 2026-03-31". A reviewer asks: "where
+        do the numerator and denominator come from, and how
+        does this tie to the COREP submission?". Which
+        evidence pack makes the dashboard ratio
+        cert-trustworthy?
       options:
         - id: same_period_numer_denom
-          label: CET1 capital and total risk-weighted exposure (RWA) for the same reporting date, reconciled to the COREP capital adequacy template.
+          label: |
+            **CET1 capital and total RWA from the same
+            reporting reference date** (2026-03-31),
+            sourced from the same data feed the COREP
+            template uses, with a small reconciliation
+            table:
+
+                metric           | dashboard | COREP submission | source view
+                CET1 capital     | 4,520M    | 4,520M           | reg.cet1_components_qtr
+                Total RWA        | 33,000M   | 33,000M          | reg.rwa_components_qtr
+                CET1 ratio       | 13.70%    | 13.70%           | <derived>
+
+            The numerator and denominator come from the
+            same period, the same upstream data, and tie
+            line-for-line to the COREP template's capital
+            adequacy section.
         - id: ratio_only
-          label: The ratio value from the regulatory submission and the report refresh time; the components are an implementation detail.
+          label: |
+            **The 13.7% ratio value** from the regulatory
+            submission file plus the report refresh time.
+            Components are an implementation detail of the
+            regulatory engine; the dashboard's job is to
+            display the final number.
         - id: prior_period_numer
-          label: CET1 capital from the prior month-end (because capital reports lag), with RWA from 2026-03-31.
+          label: |
+            **CET1 capital from 2026-02-29** (because
+            capital reports always lag a month) with **RWA
+            from 2026-03-31**. The convention reflects the
+            real operational sequence and is more
+            conservative than using same-period numerator.
         - id: rwa_average
-          label: An average of RWA across the last four month-ends, with CET1 from 2026-03-31 only.
+          label: |
+            **CET1 capital from 2026-03-31** with **average
+            RWA across the last four month-ends**. The
+            averaging smooths RWA volatility and reduces
+            month-to-month ratio swings.
       answer: same_period_numer_denom
-      explanation: >
-        The CRR CET1 ratio is a same-period numerator-over-denominator
-        construction. Mixing reporting dates or RWA methodologies produces a
-        number that cannot be compared period-over-period or to the COREP
-        template.
-      self_assessment: >
-        If a regulatory-style BI metric reports a ratio with two
-        components, both components must come from the same period and the
-        same approach.
+      explanation: |
+        Under CRR (Regulation 575/2013), the CET1 ratio is a
+        same-period construction:
+
+            CET1 ratio = CET1 capital / Total RWA
+            (both as of the same reporting reference date)
+
+        Anything else produces a number that:
+
+        - Cannot be reconciled to the COREP submission
+          (which uses same-period numerator and denominator).
+        - Cannot be compared period-over-period (because the
+          numerator and denominator drift by different rules).
+        - Cannot be explained to a regulator without
+          extensive caveats.
+
+        Why the wrong distractors mislead:
+
+        - **"Just show the submitted ratio"** is the smallest
+          design but it makes the dashboard a label, not a
+          metric. Reviewers cannot diagnose differences
+          between periods; the dashboard cannot detect
+          upstream errors.
+        - **Lagged numerator** sounds like a real
+          operational reality (capital reports often do
+          take time to finalise) but pretending to be more
+          conservative by intentionally mixing periods
+          creates a number that doesn't match anything.
+        - **RWA averaging** is a smoothing trick used in
+          stress testing and some buffer calculations,
+          *never* in the headline ratio. Smoothing the
+          denominator hides the capital position you are
+          supposed to be monitoring.
+
+        Practical dashboard evidence: every CET1 ratio
+        chart should carry a side panel that lists CET1
+        capital and Total RWA for each plotted period,
+        sourced from the same underlying tables the
+        regulatory pipeline reads. The dashboard then ties
+        to the submission by construction.
+      self_assessment: |
+        Same-period numerator and same-period denominator
+        is the cert-correct construction for any regulatory
+        ratio. Any cross-period mixing is a smell; smoothing
+        the denominator is one of the documented anti-
+        patterns for regulatory metrics.
     - id: q-hard-ifrs9-stage
       type: multiple_choice
-      estimated_seconds: 95
+      estimated_seconds: 110
       recommended_learner_tasks: [LT-SQL-003]
       source_facts:
         - FACT-IFRS9-STAGES
         - FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT
-      prompt: >
-        A credit-risk dashboard reports a single "ECL total" by month. The
-        risk committee notices a large month-over-month jump but cannot
-        explain it. What is the BI design fix?
+      prompt: |
+        The credit-risk dashboard's monthly "ECL total" tile
+        jumped from EUR 25M (2026-02) to EUR 41M (2026-03) -
+        a 64% increase. The risk committee asks the BI team
+        for an explanation by tomorrow. The underlying serving
+        view has one row per loan per month-end snapshot with
+        `loan_id, as_of_date, outstanding_principal,
+        ifrs9_stage, ecl_amount, dpd_days`.
+
+        Which dashboard change actually lets the committee
+        diagnose the cause?
       options:
         - id: stage_breakdown
-          label: Break the ECL total by IFRS 9 stage (1, 2, 3) per reporting date; stage transitions usually explain large ECL movements.
+          label: |
+            Replace the single "ECL total" tile with **a
+            stage-breakdown table**: one row per `(as_of_date,
+            ifrs9_stage)` showing ECL amount, count of
+            loans, and stage-transition counts (`stage_1
+            -> stage_2`, `stage_2 -> stage_3`) between
+            consecutive month-ends. The committee will see
+            whether the jump came from new defaults
+            (stage_2 -> stage_3), early-warning signals
+            (stage_1 -> stage_2), or stage 1 ECL recalc.
+            Most large ECL movements have a clear stage-
+            transition story.
         - id: average_ecl
-          label: Replace the monthly ECL total with a 12-month rolling average to dampen the jump.
+          label: |
+            Replace the monthly ECL total with a **12-month
+            rolling average**. The jump will be dampened by
+            the inclusion of prior quieter months; the
+            committee will see a smoother trend that is
+            easier to interpret.
         - id: filter_stage_3
-          label: Filter the dashboard to stage 3 only, since stage 1 and 2 ECL are immaterial.
+          label: |
+            **Filter the dashboard to stage 3 only** and
+            display the stage 3 ECL trend separately. Stage 3
+            losses are the most material; stage 1 and 2 are
+            forward-looking and typically not the cause of
+            visible movements.
         - id: cross_period_sum
-          label: Sum ECL across the latest 3 months as the "current" ECL so single-month jumps disappear.
+          label: |
+            Compute ECL as the **sum of the latest 3 months'
+            ECL totals**, treating that 3-month sum as the
+            "current" ECL. Month-to-month volatility
+            disappears because the rolling sum smooths over
+            individual months.
       answer: stage_breakdown
-      explanation: >
-        IFRS 9 ECL is staged; movements between stages are the main driver
-        of ECL variance. A single total hides the cause. Dampening
-        techniques (rolling averages, cross-period sums) obscure the signal
-        the committee needs.
-      self_assessment: >
-        If a regulatory-flavoured metric is volatile, surface the breakdown
-        that explains the volatility rather than smoothing it.
+      explanation: |
+        IFRS 9 expected credit losses are computed in stages:
+
+        - **Stage 1**: 12-month ECL for performing loans
+          with no significant increase in credit risk.
+        - **Stage 2**: lifetime ECL for loans with a
+          significant increase in credit risk since
+          origination (but not yet credit-impaired).
+        - **Stage 3**: lifetime ECL for credit-impaired
+          loans.
+
+        Almost every large ECL movement is explained by:
+
+        - **Stage transitions**: loans moving 1 -> 2 -> 3
+          carry dramatically different ECL coverage levels.
+          A handful of large loans crossing the 30-DPD or
+          90-DPD thresholds can shift the portfolio total
+          materially.
+        - **Stage 1 forward-looking parameter changes**:
+          PD/LGD model updates, scenario re-weighting,
+          macroeconomic forecast revisions. A small change
+          in stage 1 PD multiplied by a large stage 1
+          balance produces a visible total change.
+        - **New origination** entering stage 1.
+
+        The single total hides all three. The right BI
+        design is to surface the breakdown:
+
+            as_of_date | stage_1_ecl | stage_2_ecl | stage_3_ecl | total_ecl
+            2026-02-28 | 8M          | 10M         | 7M          | 25M
+            2026-03-31 | 8M          | 12M         | 21M         | 41M
+                                                    ^ here
+            Stage 3 jumped from 7M to 21M; the committee
+            now knows to ask about late-stage credit-
+            impaired movements between Feb and Mar.
+
+        Why the smoothing distractors are wrong:
+
+        - **Rolling average / cross-period sum** hide the
+          signal the committee needs. A 64% jump in
+          one month is not a chart-formatting problem; it
+          is a fact about the portfolio, and the committee
+          is asking precisely because they need to
+          understand it.
+        - **Filter to stage 3 only** assumes the answer is
+          in stage 3. It often is, but if a stage 1 model
+          revision drove the movement, filtering hides
+          that.
+
+        Production tip: include a stage-transition pivot
+        next to the breakdown table:
+
+            from_stage | to_stage | loan_count | new_stage_ecl
+            1          | 2        | 47         | 4M
+            2          | 3        | 12         | 14M
+
+        That makes the cause explicit instead of inviting
+        the reviewer to infer.
+      self_assessment: |
+        Volatile regulatory metrics are usually composed of
+        a small number of named components; surface the
+        components, not a smoothed total. Smoothing is
+        appropriate for trend narration; it is the wrong
+        response to "what changed and why".
     - id: q-hard-bcbs-239-lineage
       type: select_all
-      estimated_seconds: 95
+      estimated_seconds: 110
       recommended_learner_tasks: [LT-DQ-005]
       source_facts:
         - FACT-BCBS-239-RDARR-PRINCIPLES
         - FACT-BI-RECONCILIATION-WINDOWS
         - FACT-DORA-DATA-CONFIDENTIALITY-INTEGRITY
-      prompt: >
-        A banking BI dashboard feeds a credit-risk decision body. Which
-        evidence should be available per metric for BCBS 239-style review?
+      prompt: |
+        The credit committee uses a "Loan loss provisioning"
+        dashboard to approve quarterly provisions. The
+        dashboard reads a single tile: "Provision recommended:
+        EUR 12.4M for 2026-Q1". A BCBS 239 review asks for the
+        evidence behind that number. Which artefacts belong on
+        the metric's evidence record? (Select all that apply.)
       options:
         - id: source_lineage
-          label: Source-to-metric data lineage including the upstream serving views and base tables.
+          label: |
+            **Source-to-metric lineage**: a small graph or
+            table showing the metric's components, the
+            serving view that produces them, and the base
+            tables the serving view reads.
+
+                metric -> serving view (loss_provision_qtr)
+                       -> intermediate (stg_ifrs9_ecl_qtr)
+                       -> base tables (raw.loans,
+                                       raw.scenarios,
+                                       raw.pd_lgd_overrides)
+
+            The lineage answers "if the input changes, what
+            downstream value changes" and is checkable
+            against the BI repository.
         - id: named_owner
-          label: A named owner and reviewer responsible for the metric definition.
+          label: |
+            **A named owner role** accountable for the
+            metric definition - "Credit Risk Reporting
+            Lead" or similar role identifier, not a team
+            mailing list. The owner approves changes,
+            responds to evidence requests, and is the
+            single point of contact during reviews.
         - id: reconciliation_record
-          label: A reconciliation record between the dashboard total and an upstream control total per reporting date.
+          label: |
+            **A per-period reconciliation record** between
+            the dashboard total and an independently-derived
+            control total (e.g. the regulatory submission's
+            equivalent line, or a separate
+            risk-engine-derived figure). Documented as a
+            table:
+
+                period   | dashboard | submission | delta
+                2026-Q1  | 12.4M     | 12.4M      | 0
+                2025-Q4  | 9.8M      | 9.8M       | 0
+
+            Differences either tie out exactly or have a
+            documented adjustment.
         - id: cache_hit_replaces_lineage
-          label: A `cache_hit = TRUE` rate above 95 percent in `INFORMATION_SCHEMA.JOBS`, treated as a substitute for lineage and reconciliation evidence.
+          label: |
+            **A query-results-cache hit rate** above 95% in
+            `INFORMATION_SCHEMA.JOBS`, treated as evidence
+            that the dashboard's number is stable and
+            therefore reliable. High cache-hit rate
+            substitutes for lineage and reconciliation
+            documentation.
       answer: [source_lineage, named_owner, reconciliation_record]
-      explanation: >
-        BCBS 239 principles require risk-data lineage, accountability, and
-        reconciliation evidence. Visual styling is not in scope.
-      self_assessment: >
-        If a metric is used in a credit-risk decision, its evidence chain
-        (lineage + owner + reconciliation) must be retrievable, not just its
-        last-period value.
+      explanation: |
+        BCBS 239 ("Principles for effective risk data
+        aggregation and risk reporting") sets explicit
+        expectations for risk-decision metrics. Three of
+        the most directly relevant principles:
+
+        - **Accuracy and integrity** (Principle 3): risk
+          data should be generated on a largely automated
+          basis with minimal manual intervention, with
+          documented lineage from source to metric.
+        - **Accountability** (Principle 2 in spirit):
+          named ownership of risk data and reporting.
+        - **Reconciliation** (Principle 11): risk reports
+          should be reconcilable to the source data, with
+          deltas explained.
+
+        The three correct rows map onto those expectations
+        directly. The cache-hit-rate distractor is the
+        kind of metric that sounds technical and useful
+        but answers a question nobody asked. Cache hits
+        measure query stability, not data accuracy or
+        provenance. A wrong number that's been cached for
+        a week has 100% cache-hit rate.
+
+        Practical evidence shape: every BCBS-239-flavoured
+        metric should be reproducible from its evidence
+        record alone. A new engineer with access to the
+        lineage table, the owner contact, and the
+        reconciliation history should be able to: (a) find
+        the underlying tables, (b) ask the owner to
+        validate definitions, (c) confirm the dashboard
+        ties to an independent source. If any of those is
+        missing, the metric is not BCBS-239-ready.
+
+        Operational tip: build the evidence record into the
+        same view as the metric, not as a side document.
+        For example, the serving view can emit:
+
+            SELECT
+              '2026-Q1' AS period,
+              12_400_000 AS provision,
+              'Credit Risk Reporting Lead' AS owner_role,
+              'loss_provision_qtr_v3.4' AS view_version,
+              '2026-04-15T14:00:00Z' AS last_reconciled_at
+            FROM ...
+
+        And a small dashboard sidebar reads that metadata
+        alongside the headline number. Lineage stays in
+        version control; the dashboard reads it.
+      self_assessment: |
+        Risk-decision metrics need three pieces of
+        evidence: lineage (where it comes from), owner
+        (who is accountable), and reconciliation (how it
+        ties to an independent source). Anything that
+        doesn't carry those three is not ready for a
+        BCBS-239-style review.
 content_type: quiz_bank
 status: published
 version: 0.1.0
