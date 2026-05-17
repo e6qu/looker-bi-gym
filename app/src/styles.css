@@ -1595,6 +1595,21 @@ h3 {
   background: #fbfcfd;
 }
 
+.examCardObjective {
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  overflow-x: auto;
+}
+
 .examCard h4 {
   margin: 0 0 8px;
   font-size: 0.9rem;
@@ -1604,6 +1619,11 @@ h3 {
 .examCard ul {
   margin: 0;
   padding-left: 18px;
+}
+
+.examCard ul li {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .factArticle .markdownBody h1 {

@@ -25,9 +25,11 @@ const surfaceRoots: readonly string[] = ["quizzes", "flashcards", "exams"];
 
 const tutorialRoots: readonly string[] = ["tutorials"];
 
-const tutorialAllowlist: ReadonlySet<string> = new Set([
-  // Index files where listing IDs is the file's purpose.
-  "tutorials/learner-tasks/README.md",
+const tutorialAllowlist: ReadonlySet<string> = new Set<string>([
+  // Intentionally empty. Index files were previously allowlisted, but
+  // hiding any file from this validator lets visible cross-surface or
+  // platform-meta references slip through. Tutorial indexes must list
+  // labs by topic name only, without LT- prefixes or ordering claims.
 ]);
 
 const violationPatterns: ReadonlyArray<{

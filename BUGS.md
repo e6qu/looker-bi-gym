@@ -1,8 +1,151 @@
 # Bugs And Known Gaps
 
-Last updated: 2026-05-17 (post-Codex review remediation, full sweep)
+Last updated: 2026-05-17 (Codex re-review punch list recorded; fixing
+on the same PR)
 
 ## Open Issues
+
+- ID: CODEX-RE-REVIEW-FINDINGS-2026-05-17.
+  - Area: tutorials/learner-tasks/README, exam pack fixture
+    backing, source-card depth, PSD2 fact wording, continuity docs.
+  - Severity: high; one item is `block`.
+  - Description: After the first round of Codex remediation
+    (commits `cff8f96` and `bb7a5f5`), a fresh Codex CLI read-only
+    review on 2026-05-17 (`/tmp/codex-review-2.md`) confirmed the
+    original 10-item punch list is mostly closed but flagged 5 new
+    items still open.
+  - Sub-issues:
+    1. `block` `tutorials/learner-tasks/README.md` violates the hard
+       compartmentalization rule and is hidden from the validator by
+       the `tutorialAllowlist` entry in
+       `app/scripts/validate-assessment-compartmentalization.ts:28`.
+       Visible defects:
+       - `tutorials/learner-tasks/README.md:23` describes a
+         "browser-first sequence" (treats the tasks as an ordered
+         path, not standalone exercises).
+       - `tutorials/learner-tasks/README.md:35` exposes raw `LT-*`
+         IDs in visible link text.
+       - `tutorials/learner-tasks/README.md:51` says
+         "Complete the practice labs in order".
+         Fix: rewrite as a self-contained topic index (one line per
+         task by subject, no LT- prefix, no ordering claim, no
+         "browser-first sequence" framing) AND drop the allowlist so
+         the validator covers the file.
+    2. `high` The unified exam pack at
+       `exams/bi-foundations/bi-foundations-exam.md` still
+       overclaims fixture-backed deterministic shape. The IFRS 9 and
+       AML cards are now fixture-backed, but several others remain
+       design / prose:
+       - `exam-card-ratio-null-contract-review`
+         (file:65): expected outputs are contract prose, not a
+         numeric result.
+       - `exam-card-dashboard-refresh-operations-review`
+         (file:88): no committed job-metadata / freshness fixture
+         behind the expected outputs.
+       - RLS / CLS access-design card (file:239): generic prose,
+         not anchored to a specific scenario with deterministic
+         field-list or grant outputs.
+       - SCD2 card (file:262): expected outputs assume a branch-
+         rename fixture that is not committed.
+       - `exam-card-bcbs-239-lineage-walkthrough` (file:359):
+         lineage prose, no named source tables / owners / control
+         totals in the expected outputs.
+         Fix: for each card, either add explicit inline deterministic
+         data in the card body (table of rows or named fields with
+         expected counts) OR remove the card from the pack.
+         `test:fixtures` does not cover exam cards (only the
+         `challenges/solution-fixtures` tree), so passing
+         `test:fixtures` does not prove the exam pack is fixture-
+         backed.
+    3. `medium` SRC card depth still thin for some claims:
+       - `FACT-BIGQUERY-MATERIALIZED-VIEW-REFRESH` at
+         `facts/bi-platforms-bigquery-looker-studio.md:473` claims
+         `max_staleness`, best-effort refresh, and "not a hard SLA",
+         but the linked `SRC-BIGQUERY-MATERIALIZED-VIEW-REFRESH`
+         card at `sources/platforms/bigquery.md:179` only quotes
+         "automatically refreshes" and "refresh interval".
+       - `FACT-LOOKER-STUDIO-FRESHNESS-INTERVALS` at
+         `facts/bi-platforms-bigquery-looker-studio.md:504` claims
+         specific interval behaviour and cost implications, but the
+         linked `SRC-LOOKER-STUDIO-FRESHNESS-INTERVALS` card at
+         `sources/platforms/looker-studio.md:202` only quotes
+         "data freshness".
+         Fix: expand each source card with the specific quoted text
+         the fact relies on (best-effort, `max_staleness`, specific
+         freshness values, cost-of-refresh linkage).
+    4. `medium` `FACT-PSD2-STRONG-CUSTOMER-AUTHENTICATION` at
+       `facts/banking-deposits-romania-eu.md:219` says SCA event
+       data "must be retained for supervisory inspection". The
+       linked source card cites Articles 95 / 96 / 97 at
+       `sources/law/eu-crr.md:39`, which support SCA application,
+       risk and security control evidence, and incident reporting,
+       but not an event-level SCA retention rule as currently
+       phrased. Fix: soften the fact to "SCA application, evidence
+       of mitigation measures, and incident reporting are subject
+       to supervisory oversight" (or similar), aligning with what
+       the source card actually quotes; expand the source card if
+       a retention article is added.
+    5. `medium` `DO_NEXT.md` is stale:
+       - `DO_NEXT.md:14` still tells the next session to continue
+         PR #45 on `terminology-integrity-checks`.
+       - `DO_NEXT.md:25` lists stale tallies (74 quiz, 82
+         flashcards, 9 exam cards) that conflict with the final
+         post-fix counts in `STATUS.md:61`,
+         `_development/assessment-audit.md:11`, and
+         `_development/tasks/062-assessment-quality-and-expansion.md:65`.
+         Fix: rewrite `DO_NEXT.md` to point at the current PR #46
+         remediation state and refresh the count lines.
+  - Fix plan: address sub-issues 1-5 in order on the same PR #46;
+    after fixes commit, push, and request another Codex read-only
+    review.
+  - Status: fully remediated on branch
+    `assessment-quality-and-expansion`. All 5 sub-issues closed:
+    - `tutorials/learner-tasks/README.md` rewritten as a topic-area
+      index (alphabetical by area, no LT-\* prefixes, no ordering
+      claim, no "browser-first sequence" framing). The
+      `tutorialAllowlist` is now empty in
+      `app/scripts/validate-assessment-compartmentalization.ts:28`,
+      so the validator actively covers the README.
+      `validate:compartmentalization` reports 130 files scanned and
+      0 hits.
+    - The five remaining design / prose exam cards
+      (`exam-card-ratio-null-contract`,
+      `exam-card-dashboard-refresh-ops`,
+      `exam-card-rls-cls-design`,
+      `exam-card-scd2-historical-reporting`,
+      `exam-card-bcbs-239-lineage-walkthrough`) all rewritten with
+      inline deterministic data (synthetic tables, named schemas,
+      concrete grant strings, named lineage chains) and numeric /
+      schema / field-list expected_outputs. The pack now has zero
+      cards whose expected outputs are bare prose. Rendering CSS
+      adjusted (`.examCardObjective` with `white-space: pre-wrap;
+overflow-wrap: anywhere; overflow-x: auto`, plus `.examCard
+ul li` with `overflow-wrap: anywhere`) so the wider inline
+      tables and identifier names do not cause horizontal overflow
+      on mobile. Playwright rendered-UI suite passes 101/101.
+    - Source cards deepened:
+      `SRC-BIGQUERY-MATERIALIZED-VIEW-REFRESH` now quotes
+      `enable_refresh`, `refresh_interval_minutes`, `max_staleness`,
+      and the explicit best-effort line; URL updated to the
+      materialized-views-manage page with the create page as
+      companion. `SRC-LOOKER-STUDIO-FRESHNESS-INTERVALS` now quotes
+      the cache-staleness-threshold definition, the
+      query-frequency-and-cost link, and the connector-specific
+      minimum freshness; URL updated to the manage-data-freshness
+      page.
+    - `FACT-PSD2-STRONG-CUSTOMER-AUTHENTICATION` rephrased so it
+      matches what `SRC-PSD2-ELI-2015-2366` actually quotes
+      (Articles 4(30), 95, 96, 97): SCA application, framework with
+      mitigation measures and control mechanisms, evidence of those
+      measures, and incident reporting. The retention-for-
+      supervisory-inspection wording was removed.
+    - `DO_NEXT.md` refreshed: now points at PR #46 on
+      `assessment-quality-and-expansion`, references the Codex
+      review loop discipline, and records the final post-fix surface
+      tallies (78 quiz / 105 flashcards / 16 exam cards / 133 facts /
+      150 terminology entries).
+      Full local gate (`bun run check`) green. Codex re-review
+      queued for after commit + push.
 
 - ID: CODEX-REVIEW-FINDINGS-2026-05-17.
   - Area: tutorials, learner-tasks, quizzes, exams, flashcards,

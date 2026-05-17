@@ -219,10 +219,15 @@ advice.
 - Statement: PSD2 (Directive (EU) 2015/2366) requires strong customer
   authentication (SCA) for electronic payment transactions, defined as
   authentication based on the use of two or more independent elements
-  drawn from knowledge, possession, and inherence; data evidencing SCA
-  events must be retained for supervisory inspection.
+  drawn from knowledge, possession, and inherence; payment service
+  providers must apply SCA on remote access and transactions, maintain
+  a framework with mitigation measures and control mechanisms, provide
+  evidence of those measures to competent authorities, and report
+  major operational or security incidents.
 - Source: [`SRC-PSD2-ELI-2015-2366`](../sources/law/eu-crr.md#src-psd2-eli-2015-2366).
-- Source quote: "strong customer authentication".
+- Source quote: "strong customer authentication", "framework with
+  mitigation measures and control mechanisms", "evidence of those
+  measures", "report major operational or security incidents".
 - Derived implication: A payments BI dashboard reporting authentication
   failure rates or SCA exemption usage needs to keep SCA outcome,
   exemption reason, and counterparty / channel context per transaction

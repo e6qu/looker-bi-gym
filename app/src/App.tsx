@@ -1064,7 +1064,7 @@ function ExamCardView({ card }: { readonly card: ExamCard }): JSX.Element {
         <h3>{card.title}</h3>
         <span className="status statusReady">Self-assessed</span>
       </div>
-      <p>{card.objective}</p>
+      <pre className="examCardObjective">{card.objective}</pre>
       <section>
         <h4>Expected Outputs</h4>
         <ul>

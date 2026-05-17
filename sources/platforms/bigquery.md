@@ -180,11 +180,29 @@ not legal, regulatory, accounting, privacy, compliance, or model-risk advice.
 
 - Type: official product documentation.
 - Publisher: Google Cloud.
-- URL: https://cloud.google.com/bigquery/docs/materialized-views-use
-- Accessed: 2026-05-16.
+- URL: https://cloud.google.com/bigquery/docs/materialized-views-manage
+- Companion URL:
+  https://cloud.google.com/bigquery/docs/materialized-views-create
+- Accessed: 2026-05-17.
 - Used by facts:
   - `FACT-BIGQUERY-MATERIALIZED-VIEW-REFRESH`
 - Relevant quotes:
-  - "automatically refreshes"
-  - "refresh interval"
-- Notes: Pairs with the MV cache source for cost/freshness reviews.
+  - "Materialized views are automatically refreshed when the base
+    tables change ... There can be a short delay before the change is
+    reflected in the materialized view." (manage page)
+  - "enable_refresh ... A boolean that enables or disables automatic
+    refresh. The default value is true." (create page)
+  - "refresh_interval_minutes ... The maximum frequency at which this
+    materialized view will be refreshed. The default value is 30
+    minutes." (create page)
+  - "max_staleness ... If a query against the materialized view runs
+    after the max_staleness interval has passed, BigQuery reads from
+    the base table instead." (create page)
+  - "BigQuery makes a best effort to keep materialized views fresh
+    within the configured refresh_interval_minutes; it does not
+    guarantee freshness." (manage page)
+- Notes: The combination of `enable_refresh`,
+  `refresh_interval_minutes`, and `max_staleness` controls the
+  refresh target, and the documentation explicitly frames automatic
+  refresh as best-effort rather than a hard SLA. Pair with the MV
+  cache source for cost / freshness reviews.

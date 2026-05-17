@@ -62,16 +62,24 @@
             "FACT-BI-RATIO-SUM-COMPONENTS-FIRST",
             "FACT-LOOKER-STUDIO-DEFAULT-AGGREGATION",
           ],
-        "objective": "Write a metric contract note for a dashboard ratio that uses numerator and denominator components, handles zero denominators, and states how Looker Studio should display or flag NULL results.\n",
+        "objective": "Given the synthetic ratio components table below (five reporting periods of a monthly average-balance ratio), compute each period's safe ratio and the aggregate sum-of-components ratio. Use SAFE_DIVIDE for the per-period ratio so a zero or NULL denominator returns NULL rather than erroring. Synthetic ratio components table:\n\n```\nperiod      numerator   denominator\n2026-01     150         10\n2026-02     180         0\n2026-03     200         12\n2026-04     NULL        15\n2026-05     220         NULL\n```\n",
         "verification":
           {
             "expected_outputs":
               [
-                "ratio numerator and denominator are named before aggregation",
-                "zero-denominator behavior is documented as NULL, hidden, zero, or flagged",
-                "Looker Studio field aggregation is checked before chart release",
+                "ratio_2026_01 = 15.0",
+                "ratio_2026_02 = NULL (zero denominator)",
+                "ratio_2026_03 ~= 16.6667",
+                "ratio_2026_04 = NULL (NULL numerator)",
+                "ratio_2026_05 = NULL (NULL denominator)",
+                "non_null_ratio_period_count = 2",
+                "null_ratio_period_count = 3",
+                "aggregate_numerator_sum = 750",
+                "aggregate_denominator_sum = 37",
+                "aggregate_ratio (SAFE_DIVIDE(SUM(numerator), SUM(denominator))) ~= 20.2703",
+                "Looker Studio chart display rule names how NULL ratios render (hidden, dash, or 'n/a' label) and what an average-of-per-period-ratios would have produced as an antipattern",
               ],
-            "self_assessment": "Explain why SQL safety behavior and dashboard display behavior are separate contract decisions.\n",
+            "self_assessment": "Explain why averaging per-period ratios is not equal to the aggregate ratio computed from summed components; explain why SAFE_DIVIDE protects the SQL but not the chart display.\n",
           },
       },
       {
@@ -85,16 +93,22 @@
             "FACT-BIGQUERY-JOBS-BYTES",
             "FACT-BIGQUERY-JOBS-CREATION-TIME",
           ],
-        "objective": "Prepare a handoff note for a BigQuery-backed Looker Studio report that names the freshness setting, cost-observability evidence, and the operational checks needed before publication.\n",
+        "objective": "Given the synthetic BigQuery job metadata sample below (eight `INFORMATION_SCHEMA.JOBS` rows for one Looker Studio report over one hour, with a current Looker Studio data freshness setting of 5 minutes), compute the deterministic daily-cost evidence and propose a freshness setting that aligns with a documented 30-minute cache-staleness target. Note that Looker Studio data freshness is a cache-staleness threshold, not an auto-refresh interval; the report still re-queries when a viewer opens it after the threshold expires. Synthetic job metadata sample (one hour, all jobs run by the dashboard service principal):\n\n```\njob_id  creation_time           total_bytes_processed   user_email\nJ001    2026-03-31T09:00:00Z    8388608                 dash-svc@example.com\nJ002    2026-03-31T09:05:00Z    8388608                 dash-svc@example.com\nJ003    2026-03-31T09:10:00Z    8388608                 dash-svc@example.com\nJ004    2026-03-31T09:15:00Z    8388608                 dash-svc@example.com\nJ005    2026-03-31T09:20:00Z    8388608                 dash-svc@example.com\nJ006    2026-03-31T09:30:00Z    8388608                 dash-svc@example.com\nJ007    2026-03-31T09:45:00Z    8388608                 dash-svc@example.com\nJ008    2026-03-31T09:55:00Z    8388608                 dash-svc@example.com\n```\n",
         "verification":
           {
             "expected_outputs":
               [
-                "freshness SLA or review interval is stated",
-                "BigQuery refresh cost risk is acknowledged",
-                "job bytes and job creation time evidence are listed as review inputs",
+                "observed_jobs_in_sample_hour = 8",
+                "observed_bytes_in_sample_hour = 67108864 (= 64 MiB)",
+                "extrapolated_jobs_per_24h = 192",
+                "extrapolated_bytes_per_24h = 1610612736 (= 1.5 GiB)",
+                "with_proposed_30_min_freshness_threshold_expected_jobs_per_24h = 48",
+                "with_proposed_30_min_freshness_threshold_expected_bytes_per_24h = 402653184 (= 384 MiB)",
+                "freshness_setting_modelled_as_cache_staleness_threshold = true",
+                "auto_refresh_assumption_rejected = true (Looker Studio data freshness is not a periodic refresh interval)",
+                "review_inputs_listed = [total_bytes_processed, creation_time, user_email service-principal filter]",
               ],
-            "self_assessment": "Connect report freshness settings to BigQuery job evidence instead of treating dashboard refresh as invisible platform behavior.\n",
+            "self_assessment": "Explain why the 30-minute freshness threshold reduces job and byte counts proportionally rather than by a flat percentage; explain why the dashboard still incurs cost when a viewer opens the report after the threshold expires.\n",
           },
       },
       {
@@ -236,17 +250,21 @@
             "FACT-BIGQUERY-COLUMN-POLICY-TAG",
             "FACT-BIGQUERY-AUTHORIZED-VIEW-ACCESS-CONTROL",
           ],
-        "objective": "Design BigQuery access controls for a single account-day balance table that must serve a wide aggregate audience and three branch-manager audiences without exposing personal-data identifiers to any of them.\n",
+        "objective": "Design BigQuery access controls for the synthetic base table `fct_account_daily_balances` below (one row per account per business date). Three branch-manager audiences must each see only their own branch's rows; a wide aggregate audience must see a row-count and balance summary with no personal-data identifiers. The base table schema is fixed:\n\n```\ntable: fct_account_daily_balances\ncolumns: account_id, customer_id, synthetic_iban, masked_account_number,\n         business_date, branch_id, currency_code, ledger_balance,\n         available_balance\nbranches: B01, B02, B03\nbranch-manager groups: branch-01-managers@example.com,\n                       branch-02-managers@example.com,\n                       branch-03-managers@example.com\n```\n",
         "verification":
           {
             "expected_outputs":
               [
-                "policy tags applied to account_id, customer_id, synthetic_iban, masked_account_number",
-                "ROW ACCESS POLICY granted per branch-manager group with FILTER USING (branch_id = ...)",
-                "authorized view exposes the aggregate (currency, branch, balance) without raw identifiers",
-                "credential mode for the dashboard is viewer credentials, paired with the authorized view",
+                "policy_tagged_columns = [account_id, customer_id, synthetic_iban, masked_account_number]",
+                "policy_tagged_column_count = 4",
+                "row_access_policy_count = 3",
+                "row_access_policy_filters = [FILTER USING (branch_id = 'B01'), FILTER USING (branch_id = 'B02'), FILTER USING (branch_id = 'B03')]",
+                "row_access_policy_grants = [GRANT TO ('group:branch-01-managers@example.com'), GRANT TO ('group:branch-02-managers@example.com'), GRANT TO ('group:branch-03-managers@example.com')]",
+                "aggregate_authorized_view_columns = [branch_id, currency_code, business_date, ledger_total, available_total, account_count]",
+                "aggregate_authorized_view_excludes_personal = true",
+                "dashboard_credential_mode = viewer credentials, paired with the authorized view",
               ],
-            "self_assessment": "Explain when row-level security beats per-audience views; explain why column-level security still applies when a row policy is already in place; explain why an authorized view does not by itself protect tagged columns.\n",
+            "self_assessment": "Explain why row-level security applies per query rather than per view (so adding a new audience does not require a new view); explain why column-level security still applies when a row policy is already in place; explain why an authorized view by itself does not protect tagged columns.\n",
           },
       },
       {
@@ -259,18 +277,22 @@
             "FACT-BI-SURROGATE-KEY",
             "FACT-BI-REFERENCE-DATE-SEPARATION",
           ],
-        "objective": "Design a branch dimension that preserves history when a branch is renamed mid-year, and explain how the monthly deposit trend will read each month's totals under the correct branch name.\n",
+        "objective": "Given the synthetic SCD type 2 branch dimension and fact-balance rows below (one branch is renamed mid-year), produce the historical deposit-trend output. The dimension stores effective-dated rows; the fact stores `branch_sk` valid at the business date. Synthetic dim_branch and fct_account_daily_balances rows:\n\n```\ndim_branch:\nbranch_sk  branch_id  branch_name        effective_from  effective_to\n1          B01        Branch Alpha       2026-01-01      2026-02-28\n2          B01        Branch Centro      2026-03-01      2099-12-31\n3          B02        Branch Beta        2026-01-01      2099-12-31\n\nfct_account_daily_balances:\nbusiness_date  account_id  branch_sk  ledger_balance\n2026-01-15     A1          1          1000\n2026-02-15     A1          1          1100\n2026-03-15     A1          2          1200\n2026-01-15     A2          3           500\n2026-03-15     A2          3           600\n```\n",
         "verification":
           {
             "expected_outputs":
               [
-                "dim_branch carries surrogate key branch_sk plus natural branch_id, effective_from, effective_to columns",
-                "fct_account_daily_balances references branch_sk valid at business_date",
-                "trend chart for 2026-01 reports totals under the old branch name",
-                "trend chart for 2026-03 reports totals under the new branch name",
-                "no SCD type 1 overwrite is used on branch_name",
+                "dim_branch_row_count_for_B01 = 2",
+                "trend_chart_2026_01_B01_label = Branch Alpha",
+                "trend_chart_2026_02_B01_label = Branch Alpha",
+                "trend_chart_2026_03_B01_label = Branch Centro",
+                "trend_chart_2026_01_B02_label = Branch Beta",
+                "trend_chart_2026_03_B02_label = Branch Beta",
+                "scd_type_1_overwrite_would_have_relabelled_2026_01_B01 = Branch Centro (data loss)",
+                "natural_key_join_only_on_branch_id_returns_current_name_for_all_history = true (incorrect behaviour)",
+                "scd_type_2_surrogate_key_join_returns_historically_correct_name = true",
               ],
-            "self_assessment": "Explain why type-1 overwrite would silently rewrite the 2026-01 trend; explain why natural-key joins fail under SCD type 2 history.\n",
+            "self_assessment": "Explain why SCD type 1 overwrite would silently rewrite the 2026-01 trend; explain why a natural-key join on `branch_id` only would still misreport historical totals under the current branch name.\n",
           },
       },
       {
@@ -356,17 +378,23 @@
             "FACT-BI-RECONCILIATION-WINDOWS",
             "FACT-DORA-DATA-CONFIDENTIALITY-INTEGRITY",
           ],
-        "objective": "Document the BCBS 239 evidence chain for a credit-risk dashboard metric: source-to-metric lineage, named owner, and per-period reconciliation evidence.\n",
+        "objective": "Document the BCBS 239 evidence chain for the credit-risk dashboard metric `total_outstanding_principal_per_currency` at the 2026-03-31 reporting reference date. Use the committed synthetic lending data (`loan_monthly_snapshots` in the `lending-month-end/v0.1.0` dataset) as the source of truth and produce explicit named-table, named-owner, named-control-total evidence. Lineage chain to record:\n\n```\nsource:      raw_lending.loan_monthly_snapshots\nstaging:     stg_loan_exposure  (one row per loan + as_of_date,\n                                 outstanding_principal kept as-is)\nmart:        fct_credit_risk_exposure  (one row per\n                                       as_of_date + currency_code)\nmetric:      total_outstanding_principal_per_currency\n             at as_of_date = 2026-03-31\nowner role:  Credit Risk Reporting Lead (role identifier, not a person)\n```\n",
         "verification":
           {
             "expected_outputs":
               [
-                "named source tables and intermediate serving views feeding the metric",
-                "a named owner or reviewer accountable for the metric definition",
-                "per-reporting-date reconciliation between the dashboard total and an upstream control total",
-                "an integrity / confidentiality note for the underlying pipeline",
+                "source_table_named = raw_lending.loan_monthly_snapshots",
+                "staging_table_named = stg_loan_exposure",
+                "mart_table_named = fct_credit_risk_exposure",
+                "owner_role_named = Credit Risk Reporting Lead",
+                "source_control_total_RON_at_2026_03_31 = 396000",
+                "source_control_total_EUR_at_2026_03_31 = 55000",
+                "mart_control_total_RON_at_2026_03_31 = 396000",
+                "mart_control_total_EUR_at_2026_03_31 = 55000",
+                "reconciliation_pass = true (source SUM equals mart SUM per currency at the reporting reference date)",
+                "integrity_confidentiality_note_records = [no personal data in the dashboard mart, encryption at rest for the warehouse, audit log retention for the serving views]",
               ],
-            "self_assessment": "Explain why a metric without lineage, owner, or reconciliation cannot pass a BCBS 239-style review; explain why visual styling is not in scope of the review.\n",
+            "self_assessment": "Explain why a per-currency reconciliation at the reporting reference date is sufficient for this metric while a cross-period sum would not be (semi-additive exposure); explain why a metric without lineage, owner, or reconciliation cannot pass a BCBS 239-style review.\n",
           },
       },
       {

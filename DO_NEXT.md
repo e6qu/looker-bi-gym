@@ -11,22 +11,38 @@
    gh pr list --state open --limit 10
    ```
 
-3. Continue PR #45 on branch `terminology-integrity-checks`:
-   `https://github.com/e6qu/looker-bi-gym/pull/45`. The PR covers Phase 10.1
-   through 10.6 by user direction.
-4. Wait for PR CI. If it fails, fix failures on the same branch and rerun
-   relevant local checks.
-5. Before merging, fetch `origin/main`, rebase the branch on top of it, and
-   merge only after CI passes on the rebased branch.
-6. After merge, verify main CI, GitHub Pages deployment, live HTTP 200, and
-   `bun run verify:deployed-surface` before starting another implementation
-   PR.
+3. Continue PR #46 on branch `assessment-quality-and-expansion`:
+   `https://github.com/e6qu/looker-bi-gym/pull/46`. PR #45 merged at
+   `4e26667` on 2026-05-16. The current PR carries Task 062 (Assessment
+   Quality And Expansion) plus the Codex CLI second-opinion remediation
+   (recorded as `CODEX-REVIEW-FINDINGS-2026-05-17` and
+   `CODEX-RE-REVIEW-FINDINGS-2026-05-17` in `BUGS.md`).
+4. If the current branch is clean and all fixes from the BUGS.md codex
+   entries are closed, request another `codex exec` read-only review
+   (see `BUGS.md` for the review-loop discipline). Any new finding is
+   added to `BUGS.md` immediately and fixed on the same PR.
+5. Wait for PR CI. If it fails, fix failures on the same branch and
+   rerun relevant local checks.
+6. Before merging, fetch `origin/main`, rebase the branch on top of it,
+   and merge only after CI passes on the rebased branch.
+7. After merge, verify main CI, GitHub Pages deployment, live HTTP 200,
+   and `bun run verify:deployed-surface` before starting another
+   implementation PR.
 
 ## Active PR
 
 Task 062 (Assessment Quality And Expansion) on branch
-`assessment-quality-and-expansion`. Quality fixes, fact-corpus expansion,
-74-question quiz bank, 82-card flashcard total, 9 unified exam cards.
+`assessment-quality-and-expansion`, plus the full Codex remediation.
+Final post-fix surface tallies:
+
+- Quiz bank: 78 scenario-driven questions (was 60).
+- Flashcards: 105 cards across 10 decks (was 64).
+- Exam: 16 fixture-backed cards in
+  `exams/bi-foundations/bi-foundations-exam.md` (was 5 YAML + 6 MD
+  duplicated). Every card produces deterministic numeric, schema, or
+  field-list expected outputs.
+- Facts: 133 FACT entries (was 117).
+- Terminology: 150 entries (was 148).
 
 ## Follow-On After This PR Merges
 
