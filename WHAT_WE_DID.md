@@ -1,5 +1,22 @@
 # What We Did
 
+## 2026-05-17 - PR #46 merged + post-merge verifier fix
+
+- PR #46 (Task 062 + Codex remediation across three review rounds)
+  merged at `92d3999` on 2026-05-17.
+- Post-merge verification on the merge commit: main CI run
+  25982998170 success; Pages deployment run 25982998172 success;
+  live HTTPS HEAD against https://e6qu.github.io/looker-bi-gym/
+  returned HTTP 200 with `last-modified: Sun, 17 May 2026 06:04:08 GMT`.
+- `bun run verify:deployed-surface` initially failed on one stale
+  assertion: it asserted the visible string
+  "zero-denominator behavior is documented" on the exam page, which
+  was that card's prose expected output before PR #46 fixture-backed
+  it. Updated the assertion in
+  `app/scripts/verify-deployed-learning-surface.ts:222` to the new
+  deterministic expected output (`aggregate_denominator_sum = 37`).
+  Verifier now passes against the deployed Pages site.
+
 ## 2026-05-17 - Task 062 Codex CLI re-review remediation (second pass)
 
 The first remediation pass (commits `cff8f96` and `bb7a5f5`) was

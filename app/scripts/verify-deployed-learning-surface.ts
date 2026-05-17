@@ -219,7 +219,7 @@ async function assertQuizAndExamAssessmentBoundary(
   await assertVisibleText(page, "Ratio Null Contract Review", "exam surface");
   await assertVisibleText(
     page,
-    "zero-denominator behavior is documented",
+    "aggregate_denominator_sum = 37",
     "exam expected outputs",
   );
   await assertNoVisibleText(
