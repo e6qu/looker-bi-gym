@@ -2597,353 +2597,1192 @@ questions:
         engine happens to use.
     - id: q-medium-select-list-vs-star
       type: select_all
-      estimated_seconds: 80
+      estimated_seconds: 90
       recommended_learner_tasks: [LT-LOOKER-004]
       source_facts:
         - FACT-BIGQUERY-SELECT-LIST-NARROWING
         - FACT-GDPR-DATA-MINIMISATION
         - FACT-BIGQUERY-VIEW-SCOPE
-      prompt: >
-        A serving view feeds a public branch-level dashboard. Which choices make
-        the output safer and cheaper than `SELECT *`?
+      prompt: |
+        A teammate writes the deposits branch-level dashboard
+        serving view like this:
+
+            CREATE OR REPLACE VIEW serving_deposit_branch_daily AS
+            SELECT *
+            FROM `proj.dataset.account_daily_balances`
+            WHERE business_date = (
+              SELECT MAX(business_date)
+              FROM `proj.dataset.account_daily_balances`
+            );
+
+        The underlying table has 32 columns including
+        `account_id`, `customer_id`, `synthetic_iban`,
+        `account_status`, `regulatory_context_tag`, and several
+        operational timestamps. The dashboard renders exactly
+        five fields: `business_date`, `branch_id`, `currency_code`,
+        `SUM(ledger_balance)`, `COUNT(DISTINCT account_id)`.
+        Which design changes make this view safer and cheaper?
+        (Select all that apply.)
       options:
         - id: required_columns
-          label: Select only fields required by the dashboard purpose.
+          label: |
+            Replace `SELECT *` with an explicit column list that
+            names exactly the five fields the dashboard reads.
+            Smaller scan, smaller surface, and the next reader
+            can tell what the view is for from the SQL.
         - id: aggregate_before_publish
-          label: Expose aggregated branch metrics instead of raw customer rows.
+          label: |
+            Aggregate to branch / currency grain inside the view
+            itself (`SUM(ledger_balance), COUNT(DISTINCT
+            account_id) GROUP BY business_date, branch_id,
+            currency_code`). The view's output rows are then a
+            handful (one per branch-currency-day), and the
+            dashboard reads them directly with no per-account
+            rows ever leaving the warehouse.
         - id: documented_scope
-          label: Document the view scope and grain.
+          label: |
+            Add a comment block at the top of the view DDL
+            naming the audience ("branch finance dashboard"),
+            the grain (one row per business_date + branch_id +
+            currency_code), and the excluded fields and why
+            they are excluded. The next BI author can read the
+            scope without guessing.
         - id: all_raw_columns
-          label: Include every raw column so future charts have more options.
+          label: |
+            Keep `SELECT *` and add a note to the dashboard wiki
+            that downstream charts should ignore the identifier
+            columns. Future charts can opt into more columns by
+            referencing them without redeploying the view.
       answer: [required_columns, aggregate_before_publish, documented_scope]
-      explanation: >
-        Narrow serving views reduce scanned data and unnecessary personal-data
-        exposure. They also make the BI contract easier to review.
-      self_assessment: >
-        If a dashboard source uses every raw column, challenge both performance
-        and minimisation.
+      explanation: |
+        `SELECT *` in a published view is three problems in one:
+
+        - **Cost**: BigQuery bills on bytes processed. Reading
+          32 columns when 5 are needed costs ~6x what it should.
+          For a partitioned daily table refreshed every 15
+          minutes, that compounds.
+        - **Surface**: every additional column is a place a
+          sensitive value (`synthetic_iban`,
+          `regulatory_context_tag`) can leak into a downstream
+          report or a CSV export. The dashboard wiki note in
+          the wrong distractor is *not* a control - it's a
+          hope.
+        - **Reviewability**: a `SELECT *` view obscures intent.
+          A future BI author cannot tell from the DDL what the
+          view is supposed to expose; they have to read the
+          dashboard and the underlying table to triangulate.
+
+        Aggregating inside the view (`SUM`, `COUNT(DISTINCT)`,
+        `GROUP BY`) takes this one step further: no per-account
+        rows ever leave the warehouse layer. The dashboard reads
+        already-aggregated rows; minimisation is enforced by
+        the view's shape, not by the consumer's discipline.
+
+        The documentation block looks like a soft touch but is
+        the only piece that makes the design durable across
+        engineer turnover. Without it, the view inevitably
+        accumulates columns over time.
+      self_assessment: |
+        Every `SELECT *` in a published view is a smell. The
+        right shape is: explicit column list, aggregated to the
+        consumer's grain when possible, and a one-line scope
+        comment at the top.
     - id: q-medium-view-region-check
       type: multiple_choice
-      estimated_seconds: 70
+      estimated_seconds: 85
       recommended_learner_tasks: [LT-LOOKER-004]
       source_facts:
         - FACT-BIGQUERY-VIEW-SAME-REGION
         - FACT-BIGQUERY-VIEW-LIMITATIONS
-      prompt: >
-        A BigQuery view in an EU dataset references a table in a different
-        location. Which deployment issue should be checked first?
+      prompt: |
+        Your team deploys a new logical view to a BigQuery
+        dataset in the `EU` multi-region:
+
+            CREATE OR REPLACE VIEW `eu-proj.deposits_eu.serving_branch_daily`
+            AS
+            SELECT business_date, branch_id, currency_code,
+                   SUM(ledger_balance) AS ledger_total
+            FROM `us-proj.deposits_us.account_daily_balances`
+            WHERE business_date = DATE '2026-03-31'
+            GROUP BY 1, 2, 3;
+
+        The CREATE statement parses fine, but queries against the
+        new view return `Cannot read in location: EU; dataset
+        ... is in location US`. Which deployment issue is the
+        first thing to check?
       options:
         - id: same_location
-          label: Whether the view and referenced resources are in the same location (EU multi-region vs us multi-region).
+          label: |
+            Whether the **view and every referenced table are
+            in the same BigQuery location**. The error message
+            is BigQuery's specific signal for a cross-region
+            view: `eu-proj.deposits_eu` is in `EU`, but
+            `us-proj.deposits_us.account_daily_balances` is in
+            `US`. Logical views cannot read across BigQuery
+            locations. Fix: move the view to a dataset in `US`,
+            or replicate the source data into an `EU` dataset.
         - id: dataset_naming_only
-          label: Whether the dataset names start with the same prefix so the view can resolve them.
+          label: |
+            Whether the dataset **names** start with the same
+            prefix so BigQuery can resolve the cross-dataset
+            reference. The error means the resolver couldn't
+            find `deposits_eu` and `deposits_us` as siblings.
+            Rename them to share a prefix and the view will
+            resolve.
         - id: same_project
-          label: Whether both the view and the referenced tables sit in the same Google Cloud project.
+          label: |
+            Whether the view and the referenced tables are in
+            the **same Google Cloud project**. The error
+            indicates a project boundary, not a location
+            boundary; move both into the same project and the
+            view will work.
       answer: same_location
-      explanation: >
-        BigQuery logical views must reference resources in the same location as
-        the view. Region mismatch is a serving-layer issue, not a chart-style
-        issue.
-      self_assessment: >
-        If a view fails before any chart is built, check dataset locations and
-        view limitations.
+      explanation: |
+        BigQuery datasets have a **location** (region or
+        multi-region) that determines where the underlying data
+        lives. A logical view in dataset X can only reference
+        tables in datasets that are in the **same location** as
+        X. The compile-time CREATE statement parses fine - it's
+        just text - but the first read attempt fails because
+        the optimiser needs to read data from a location the
+        view isn't allowed to span.
+
+        Why the other distractors mislead:
+
+        - **Dataset naming** has nothing to do with the
+          cross-region restriction. BigQuery resolves
+          `project.dataset.table` references by ID, not by
+          name prefix.
+        - **Same project** is a more subtle wrong answer
+          because projects often coincide with locations in
+          practice. But the rule is about location, not
+          project: a view in `proj.eu_dataset` can read
+          `proj.us_dataset` only if both are in the same
+          location, even though they share the project.
+
+        Fix options:
+        - Move the view to a dataset in `US` (data stays
+          where it is; consumers query through the `US`
+          location).
+        - Replicate `account_daily_balances` to an `EU`
+          dataset (use BigQuery Data Transfer Service or a
+          scheduled copy); then both view and source are in
+          `EU`. This costs egress / compute but supports
+          cross-region BI when the source can't be moved.
+      self_assessment: |
+        Any time a BigQuery view fails on first query with a
+        "Cannot read in location" message, the issue is
+        cross-location reference. Project boundaries don't
+        cause it; naming doesn't cause it; location is the
+        single variable.
     - id: q-medium-view-sql-change
       type: multiple_choice
-      estimated_seconds: 75
+      estimated_seconds: 90
       recommended_learner_tasks: [LT-LOOKER-004]
       source_facts:
         - FACT-BIGQUERY-VIEW-SQL-VERSIONING
         - FACT-BIGQUERY-LOGICAL-VIEW
-      prompt: >
-        A dashboard still points to the same BigQuery view name, but the view's
-        SQL has changed. What should the BI owner assume?
+      prompt: |
+        The deposits dashboard reads from `proj.dataset.serving_branch_daily`.
+        On 2026-04-15, the warehouse team
+        `CREATE OR REPLACE VIEW`-ed it to add a new `account_status`
+        filter:
+
+            -- before
+            CREATE OR REPLACE VIEW serving_branch_daily AS
+            SELECT business_date, branch_id, currency_code,
+                   SUM(ledger_balance) AS ledger_total
+            FROM account_daily_balances
+            GROUP BY 1, 2, 3;
+
+            -- after
+            CREATE OR REPLACE VIEW serving_branch_daily AS
+            SELECT business_date, branch_id, currency_code,
+                   SUM(ledger_balance) AS ledger_total
+            FROM account_daily_balances
+            WHERE account_status = 'ACTIVE'
+            GROUP BY 1, 2, 3;
+
+        The dashboard's view name and field schema are
+        unchanged. The dashboard hasn't been touched. What
+        should the BI owner assume on 2026-04-16?
       options:
         - id: downstream_behavior_changed
-          label: Downstream behavior may have changed even though the object name stayed the same.
+          label: |
+            **Downstream numbers may have changed** even though
+            the view name and schema are unchanged. A logical
+            view is its SQL; changing the SQL changes the
+            virtual table the dashboard reads. Reconcile every
+            scorecard against its prior value and check whether
+            "ACTIVE" filtered out accounts that the dashboard
+            previously counted. Then either accept the change
+            (publish a release note) or revert.
         - id: no_change_possible
-          label: Nothing can change unless the view name changes.
+          label: |
+            Nothing can change because the dashboard's binding
+            references the view by name. Looker Studio caches
+            the column schema, not the SQL, so the renderer
+            keeps producing the previous totals.
         - id: charts_ignore_sql
-          label: Looker Studio ignores view SQL once a chart has been created.
+          label: |
+            Looker Studio reads the view's data once at chart
+            creation and stores its own copy. Updating the
+            underlying SQL is irrelevant; the chart's data is
+            internal to Looker Studio.
       answer: downstream_behavior_changed
-      explanation: >
-        A logical view is defined by SQL. Changing that SQL changes the virtual
-        table contract consumed by reports.
-      self_assessment: >
-        If a view powers reports, treat SQL changes as report-impacting changes.
+      explanation: |
+        A BigQuery **logical view is its SQL**. The view object
+        is essentially a stored query plus metadata. When the
+        DDL changes, every subsequent query against the view
+        runs the new SQL against the current source data. The
+        view name, signature, and downstream tooling stay the
+        same; the *answer* the view returns can change.
+
+        In the example, adding `WHERE account_status = 'ACTIVE'`
+        is the kind of "obvious safety" change that quietly
+        moves the dashboard total. If `account_status = 'ACTIVE'`
+        excludes 10% of accounts that previously contributed
+        non-zero balances, every scorecard drops by ~10% on
+        the 16th with no warning.
+
+        The two wrong distractors describe Looker Studio
+        behaviour as if it caches view definitions, which it
+        does not. Looker Studio:
+
+        - reads the data source schema (field names + types)
+          when the data source is created or refreshed,
+        - queries the warehouse on chart refresh (subject to
+          data-freshness threshold),
+        - displays whatever the warehouse returns.
+
+        Operational habit: treat any `CREATE OR REPLACE VIEW`
+        on a view that powers reports as a downstream-affecting
+        change. Send the diff and a reconciliation table to
+        the dashboard owners; flag the change in a release log;
+        keep the prior SQL recoverable.
+      self_assessment: |
+        A view whose SQL changes is not the same view anymore -
+        regardless of name, schema, or downstream pipeline.
+        Always reconcile the new total against the old before
+        publishing.
     - id: q-medium-freshness-memory
       type: multiple_choice
-      estimated_seconds: 75
+      estimated_seconds: 85
       recommended_learner_tasks: [LT-DQ-005]
       source_facts:
         - FACT-LOOKER-STUDIO-FRESHNESS-MEMORY
         - FACT-LOOKER-STUDIO-DATA-FRESHNESS-TRADEOFF
-      prompt: >
-        A Looker Studio page displays an older value even after the source table
-        was updated. Which explanation is plausible?
+      prompt: |
+        On Monday at 14:00, the data engineer runs the daily
+        ingest job and updates `account_daily_balances` with
+        the 2026-03-31 close. A branch manager looks at the
+        deposits dashboard at 14:05 and the scorecard still
+        reads Friday's total. The dashboard's data-source
+        freshness setting is "12 hours". The dashboard was last
+        opened by the manager on Friday at 16:30. Which
+        explanation is most likely correct - and what does the
+        BI author do about it?
       options:
         - id: freshness_cache
-          label: The report may still serve data from memory under the data freshness setting.
+          label: |
+            Looker Studio is **serving from memory** under the
+            12-hour freshness setting. The data source's last
+            successful query was Friday at 16:30; the freshness
+            timer says "data is still fresh for 12 hours from
+            then", so Monday at 14:05 still hits the cached
+            Friday result. Fix: drop the freshness setting (to
+            e.g. 1 hour) for time-sensitive scorecards, or click
+            "Refresh data" in the report header to force a
+            fetch, or restructure so the data-source caching
+            window aligns with the warehouse refresh cadence.
         - id: source_deleted
-          label: The source table must have been deleted.
+          label: |
+            The source table must have been deleted between
+            Friday and Monday. The dashboard is showing the
+            last in-memory result before the table was dropped;
+            check `INFORMATION_SCHEMA.TABLES` to confirm the
+            table is present.
         - id: metric_invalid
-          label: Every metric on the page is automatically invalid.
+          label: |
+            Every metric on the page is automatically invalid
+            after a weekend. Looker Studio invalidates metrics
+            on Mondays and the displayed totals are residual
+            artifacts; the metric definitions need to be
+            re-applied.
       answer: freshness_cache
-      explanation: >
-        Looker Studio freshness settings can allow report data to be served from
-        memory. Freshness review should separate source updates from report
-        serving behavior.
-      self_assessment: >
-        If values look stale, compare source update time, report freshness, and
-        refresh behavior before changing metric logic.
+      explanation: |
+        Looker Studio's **data freshness** setting is a
+        cache-staleness window, not an auto-refresh schedule.
+        For BigQuery sources, valid values include 15 minutes,
+        1 hour, 4 hours, 12 hours, and "Manual". When a viewer
+        opens the report, Looker Studio asks "is the last
+        cached result within the freshness window?". If yes,
+        it serves from memory; if no, it re-queries the
+        warehouse.
+
+        In the scenario, Friday 16:30 + 12h freshness window =
+        cached result is valid until ... well past Monday 14:05.
+        So the manager sees Friday's number until the
+        12-hour timer expires (or until someone hits "Refresh
+        data" manually). This is the textbook trade-off the
+        freshness setting was designed for: cheaper warehouse
+        queries vs more recent data.
+
+        Why the distractors fail:
+
+        - **Source deleted** is the kind of explanation that
+          sounds reasonable when you're under pressure. A
+          dropped table doesn't return stale data - it returns
+          an error.
+        - **Metrics invalidated on Mondays** is fiction. Looker
+          Studio has no day-of-week behaviour for metric
+          validity.
+
+        Fix shapes:
+
+        - **Tighten freshness** on time-sensitive scorecards
+          (15 min or 1 hour). Costs more BigQuery queries.
+        - **Manual refresh on open** via the report header's
+          "Refresh data" button; viewers must remember to
+          click.
+        - **Align freshness window to ingest cadence**: if the
+          warehouse refreshes at 14:00 daily, set freshness to
+          something less than the inter-refresh interval so
+          stale rolls over correctly.
+      self_assessment: |
+        Stale-looking dashboards on the morning after an
+        update are usually a freshness-window mismatch, not a
+        data problem. Trace: source updated when? data source
+        last queried when? freshness window length? Three
+        timestamps tell the whole story.
     - id: q-medium-leftmost-blend-source
       type: multiple_choice
-      estimated_seconds: 80
+      estimated_seconds: 90
       recommended_learner_tasks: [LT-LOOKER-004]
       source_facts:
         - FACT-LOOKER-STUDIO-BLEND-LEFTMOST
         - FACT-LOOKER-STUDIO-BLEND-JOIN-CONFIG
-      prompt: >
-        A blend combines a complete balance source with a smaller branch mapping
-        table. In the documented default pattern, why does source order matter?
+      prompt: |
+        You build a Looker Studio blend with two sources:
+
+        - **Left source**: `serving_deposit_branch_daily` - 8
+          rows (6 branches with EUR/RON splits including
+          UNMAPPED).
+        - **Right source**: `branch_enrichment` - 5 rows
+          (`branch_id, region`); does not include the
+          UNMAPPED branch_id.
+
+        Join: `branch_id`, default left-outer.
+
+        The blend's bar chart shows 8 rows (matching the left
+        source) with `region` populated for 7 and NULL for the
+        UNMAPPED branch. Marketing then asks for a variant that
+        only includes branches the marketing team enriched. You
+        swap the **order** of the two sources (`branch_enrichment`
+        on the left, `serving_deposit_branch_daily` on the
+        right). Why does source order matter?
       options:
         - id: retained_records
-          label: The leftmost source determines the retained records in a left-outer blend by default.
+          label: |
+            In the default left-outer blend, the **leftmost
+            source determines retained records**. With
+            `branch_enrichment` on the left (5 branches),
+            the blend retains 5 rows; the UNMAPPED branch's
+            deposit row drops out because no enrichment row
+            exists for it. Swap-back to keep all 8 deposit
+            rows for the operations view, or keep the new
+            order for the marketing view.
         - id: inherit_aggregation
-          label: The leftmost source determines the default aggregation for every metric on the right.
+          label: |
+            The leftmost source determines the **default
+            aggregation** for every metric on every right
+            source. Putting `branch_enrichment` on the left
+            switches the deposit metric's aggregation from
+            SUM to COUNT.
         - id: refresh_anchor
-          label: The leftmost source sets the data freshness for every right-side source.
+          label: |
+            The leftmost source sets the **data freshness**
+            for every right-side source. Swapping anchors the
+            blend on `branch_enrichment`'s freshness setting
+            instead.
       answer: retained_records
-      explanation: >
-        Blend join configuration includes source order and join keys. In the
-        documented default pattern, the leftmost source determines retained
-        records.
-      self_assessment: >
-        If a blend loses expected rows, inspect join keys and source order.
+      explanation: |
+        Looker Studio blends default to a left-outer join
+        shape: every record from the leftmost source is kept;
+        right-side fields fill in where the join key matches,
+        NULL where it doesn't. The order of source panels in
+        the blend editor literally controls which side is the
+        outer side.
+
+        In the scenario:
+
+        - **Original** (deposits left, enrichment right): 8
+          rows out. UNMAPPED's deposit row has NULL `region`.
+        - **Swapped** (enrichment left, deposits right): 5
+          rows out. UNMAPPED's deposit row is dropped because
+          there's no enrichment row to anchor it.
+
+        Both are correct outputs of correct queries; they
+        answer different questions. The marketing variant is
+        "branches we know about"; the operations variant is
+        "all our deposits, even at branches we haven't
+        enriched".
+
+        The two distractors confuse blend mechanics with other
+        features:
+
+        - **Default aggregation** is set per-metric on the
+          data source (`SUM` for `ledger_balance`, etc.) and
+          doesn't change based on blend order.
+        - **Data freshness** is per data source; blends
+          inherit each side's setting independently and use
+          whichever was last cached, not "anchored" to one
+          side.
+
+        Production rule: every blend release should document
+        which question it answers and check the row count on
+        both source orders before publishing.
+      self_assessment: |
+        Blend source order is the join-shape choice. Whoever
+        is on the left is the outer side; whoever is on the
+        right contributes lookups. Spell that out in the
+        blend's release note.
     - id: q-medium-eligible-excluded-deposits
       type: select_all
-      estimated_seconds: 85
+      estimated_seconds: 100
       recommended_learner_tasks: [LT-BI-002]
       source_facts:
         - FACT-FGDB-ELIGIBLE-DEPOSITS
         - FACT-FGDB-EXCLUDED-DEPOSITS
         - FACT-FGDB-DEPOSIT-DEFINITION
-      prompt: >
-        A deposit-guarantee dataset contains account balances, depositor IDs,
-        and an exclusion reason field. Which checks are needed before calculating
-        covered balance?
+      prompt: |
+        The compliance team wants a "covered deposits estimate"
+        on the deposits dashboard. You're handed a working
+        dataset with these columns per row:
+
+            depositor_id, account_id, account_type,
+            balance_amount, currency_code, exclusion_reason,
+            deposit_classification
+
+        Sample exclusion_reason values seen in the data:
+
+            NULL                  (eligible deposit, no exclusion)
+            'CREDIT_INSTITUTION'  (interbank deposit; not eligible)
+            'LOCAL_AUTHORITY'     (public-sector exclusion)
+            'COLLATERAL_PLEDGED'  (deposit pledged as collateral)
+
+        Sample deposit_classification values:
+
+            'DEMAND_DEPOSIT', 'TERM_DEPOSIT', 'DUE_INTEREST',
+            'SUSPENSE_ACCOUNT', 'LOAN_PRINCIPAL'
+
+        Before applying the EUR 100,000 ceiling, which checks
+        belong in the covered-amount calculation? (Select all
+        that apply.)
       options:
         - id: eligible_deposit
-          label: Keep only deposits that are eligible for guarantee treatment.
+          label: |
+            **Keep only eligible deposits**: rows whose
+            `exclusion_reason IS NULL`. The other reasons
+            (`CREDIT_INSTITUTION`, `LOCAL_AUTHORITY`,
+            `COLLATERAL_PLEDGED`) name the standard regulatory
+            categories of deposits **excluded** from FGDB
+            coverage.
         - id: exclusion_reason
-          label: Remove or separately report rows with an exclusion reason.
+          label: |
+            **Report excluded rows separately** (count and
+            balance per reason) so reviewers can see why the
+            covered total is smaller than the raw deposit
+            total. A silent drop is a red flag for an auditor.
         - id: deposit_definition
-          label: Confirm the balance represents a deposit or due interest concept.
+          label: |
+            **Confirm the balance is a deposit**, not a related
+            but distinct concept. Rows with `deposit_classification
+            = 'LOAN_PRINCIPAL'` or `'SUSPENSE_ACCOUNT'` are not
+            deposits in the regulatory sense and should be
+            filtered out before applying the ceiling. Due
+            interest is generally included; suspense accounts
+            and loan principals are not.
         - id: branch_grain_substitution
-          label: Aggregate to branch grain first; branch totals can stand in for depositor-bank coverage when account-level data is unavailable.
+          label: |
+            **Aggregate to branch grain first** and use the
+            branch totals as the coverage number. Branch
+            totals are a reasonable proxy for depositor-bank
+            coverage when account-level data is unavailable.
       answer: [eligible_deposit, exclusion_reason, deposit_definition]
-      explanation: >
-        Coverage calculations need deposit definition and eligibility logic
-        before applying the ceiling. Chart appearance cannot repair eligibility
-        mistakes.
-      self_assessment: >
-        If excluded deposits are mixed with covered deposits, separate them
-        before aggregating.
+      explanation: |
+        The deposit-guarantee covered amount has three filter
+        layers before the EUR 100,000 cap is applied:
+
+        - **Is this a deposit?** Many bank balances aren't.
+          Loan principals, suspense accounts, and certain
+          non-customer ledger entries fail the definition.
+          A "covered amount" metric that sums every
+          `balance_amount` overstates by including
+          non-deposits.
+        - **Is the depositor eligible?** FGDB / DGSD excludes
+          deposits made by other credit institutions,
+          certain public authorities, and a handful of other
+          categories. Rows with a non-null `exclusion_reason`
+          carry the regulatory category and must be filtered
+          out (or shown as a separate "excluded" total) before
+          the cap is applied.
+        - **Is the balance one that counts?** Pledged
+          collateral, frozen amounts, and disputed items have
+          specific treatment under the directive.
+
+        The fourth distractor (`branch_grain_substitution`)
+        looks helpful and is wrong in a load-bearing way:
+        FGDB coverage is **per depositor per credit
+        institution**. Branch grain (within one institution,
+        across many depositors) is a *different* grain from
+        depositor-bank grain. A branch's total balance is not
+        a coverage estimate; the same depositor can hold
+        accounts at multiple branches of the same bank, and
+        coverage applies to the depositor's combined balance
+        across all of them.
+
+        The right output shape for the dashboard:
+
+            -- Step 1: keep only deposits
+            -- Step 2: keep only eligible rows
+            -- Step 3: group to depositor-bank grain
+            -- Step 4: cap each depositor's total at EUR 100,000
+            -- Step 5: aggregate across depositors for the bank-level metric
+
+        Report excluded balances separately so a reviewer can
+        reconcile.
+      self_assessment: |
+        Any covered-deposit calculation needs three filters
+        (deposit definition, eligibility, exclusion-reason)
+        and a final cap at depositor-bank grain. Branch-level
+        rollups answer a different question and are not a
+        substitute.
     - id: q-medium-purpose-and-minimisation
       type: select_all
-      estimated_seconds: 80
+      estimated_seconds: 90
       recommended_learner_tasks: [LT-LOOKER-004]
       source_facts:
         - FACT-GDPR-PURPOSE-LIMITATION
         - FACT-GDPR-ACCOUNTABILITY
         - FACT-BIGQUERY-VIEW-SCOPE
-      prompt: >
-        A new dashboard source will be shared with branch managers. Which
-        evidence should exist before publishing?
+      prompt: |
+        A new Looker Studio data source `serving_branch_daily`
+        is about to be shared with the branch-management
+        audience. The chart needs five fields; the data source
+        currently exposes twelve. Code review asks for
+        publishing evidence. Which artefacts should exist
+        before the share goes out? (Select all that apply.)
       options:
         - id: stated_purpose
-          label: A stated reporting purpose.
+          label: |
+            **A named reporting purpose** in plain language
+            ("monthly branch liquidity monitoring for retail
+            branch managers"). The purpose tells future
+            reviewers, auditors, and the next BI author what
+            the data source was approved for, and is the
+            basis for accepting / rejecting change requests
+            later.
         - id: scoped_fields
-          label: A field list limited to that purpose.
+          label: |
+            **A field list limited to that purpose**, with a
+            short explanation per field. Each row of the list
+            answers "what does the dashboard use this for?".
+            Fields the dashboard doesn't read get removed
+            from the data source (not just hidden on charts).
         - id: accountable_owner
-          label: An owner or reviewer for the published source.
+          label: |
+            **A named owner / reviewer**. Not a team alias -
+            a specific role identifier (e.g. "Retail BI
+            Lead") that is unambiguously responsible for
+            keeping the data source aligned with the stated
+            purpose and for responding to change requests.
         - id: speculative_fields
-          label: Extra raw fields kept for unrelated future ideas.
+          label: |
+            **A buffer of unrelated raw fields** kept "in case
+            we need them later" (customer_id, transaction
+            descriptions, marketing campaign IDs). Including
+            them keeps the data source flexible for future
+            dashboards on the same source.
       answer: [stated_purpose, scoped_fields, accountable_owner]
-      explanation: >
-        Purpose, scoped fields, and ownership make the BI source reviewable.
-        Speculative raw-detail fields weaken both privacy and BI contracts.
-      self_assessment: >
-        If the source has no stated purpose or owner, pause publication.
+      explanation: |
+        GDPR's accountability and purpose-limitation
+        principles (Articles 5(1)(b), 5(2)) come down to three
+        things any reviewable BI surface needs: a stated
+        purpose, fields limited to that purpose, and a named
+        owner. None of them are abstract:
+
+        - **Purpose**: a future reviewer asking "why does
+          this dashboard exist?" should get a one-sentence
+          answer from the data source's documentation, not
+          from inferring it.
+        - **Scoped fields**: each field is justified against
+          the named purpose. The reviewer should be able to
+          remove a field by pointing at the purpose and
+          saying "this doesn't serve it".
+        - **Accountable owner**: not a team mailing list, not
+          "the BI team", but a specific identifier. When the
+          field list creeps over time, this is who decides.
+
+        The "speculative buffer" distractor is the classic
+        BI sin in slow motion. A `customer_id` left in "just
+        in case" trains the audience to expect access to it,
+        accumulates downstream copies, and quietly defeats
+        every minimisation argument upstream. The right
+        answer to "we might want it later" is "we'll add a
+        scoped purpose and a separate view when we want it".
+
+        The same evidence is what makes a BI surface durable
+        as engineers come and go. A view with no documented
+        purpose, no scoped fields, and no owner is essentially
+        unowned property; the next BI author has to decide
+        what it's for from the charts that read it, and they
+        often guess wrong.
+      self_assessment: |
+        For every shared data source: write the purpose in
+        one sentence, list the fields with their per-field
+        justification, name the owner role. If any one of
+        the three is missing, the data source isn't ready
+        to publish.
     - id: q-medium-weighted-average-ratio
       type: multiple_choice
-      estimated_seconds: 85
+      estimated_seconds: 100
       recommended_learner_tasks: [LT-DQ-006]
       source_facts:
         - FACT-BI-RATIO-SUM-COMPONENTS-FIRST
         - FACT-LOOKER-STUDIO-DEFAULT-AGGREGATION
-      prompt: >
-        A retail bank reports `Average account balance per active account`
-        on an executive dashboard. Two implementations are proposed:
-        formula A computes `SUM(account_balance) / SUM(active_account_count)`
-        from a daily branch-level serving view; formula B computes
-        `AVG(branch_average_balance)` from the same serving view. Which
-        gives the cert-correct weighted result under a chart filter that
-        drops the smallest branches?
+      prompt: |
+        The exec dashboard reports "Average balance per active
+        account" across branches. The daily branch-level
+        serving view has these rows for one currency:
+
+            branch         | total_balance | active_accounts
+            Bucuresti      | 43000         | 1
+            Iasi           | 19000         | 1
+            Timisoara      | 12300         | 1
+            UNMAPPED       |  5000         | 1
+            Brasov (EUR)   |  7100         | 1
+            Cluj (EUR)     |  9300         | 1
+            (totals)       |  95700        | 6
+
+        Two formulas are proposed:
+
+        - **A**: `SUM(total_balance) / SUM(active_accounts)`
+          = 95700 / 6 = **15,950.00**
+        - **B**: `AVG(total_balance_per_account)` where
+          `total_balance_per_account = total_balance /
+          active_accounts` is computed per branch first, then
+          averaged across branches = (43000 + 19000 + 12300 +
+          5000 + 7100 + 9300) / 6 = **15,950.00** (in this
+          row set, since each branch has exactly 1 account)
+
+        Yes, they agree here. Now a chart filter drops the
+        smallest two branches (UNMAPPED and Brasov). Which
+        formula gives the cert-correct weighted result under
+        the filter, and why?
       options:
         - id: formula_a_weighted
-          label: Formula A; the numerator and denominator re-aggregate at the filtered grain so each retained branch contributes in proportion to its account count.
+          label: |
+            **A**. With UNMAPPED and Brasov removed,
+            `SUM(total_balance) / SUM(active_accounts)` =
+            (95700 - 5000 - 7100) / (6 - 2) = 83,600 / 4 =
+            **20,900**. Each retained branch contributes in
+            proportion to its account count; this is the
+            correct weighted-average under any filter.
         - id: formula_b_average
-          label: Formula B; averaging an already-averaged column produces a stable cross-branch number that survives any filter.
+          label: |
+            **B**. `AVG(total_balance_per_account)` after the
+            filter = (43000 + 19000 + 12300 + 9300) / 4 =
+            **20,900**. Averaging the per-branch averages is
+            stable; it's the same number as A in this case
+            and is generally the cleaner formula.
         - id: either_match
-          label: Either; for a fixed serving view the two formulas mathematically agree.
+          label: |
+            **Either**. Since the underlying view's grain is
+            fixed (one row per branch per currency), both
+            formulas produce the same number under any chart
+            filter. The choice is stylistic.
         - id: a_only_if_unfiltered
-          label: Formula A only on the unfiltered total; under any filter, formula B is required to recompute.
+          label: |
+            **A only on the full unfiltered total**; under a
+            filter, **B** is needed because chart-side
+            re-aggregation invalidates the SUM-based
+            formula.
       answer: formula_a_weighted
-      explanation: >
-        Weighted ratios aggregate components first so they recompute
-        correctly at any filter context. Averaging branch averages
-        discards the branch weights and is an average-of-averages
-        antipattern.
-      self_assessment: >
-        If a chart filter changes the ratio's meaning, suspect an
-        average-of-averages formula and replace with `SUM(num) / SUM(den)`.
+      explanation: |
+        Both formulas give the same number when each branch
+        has the same number of accounts (1 each in this
+        sample). The trap appears when account counts differ
+        across branches.
+
+        Add a hypothetical row: a wholesale branch
+        `Wholesale-1` with `total_balance = 100,000` and
+        `active_accounts = 50` (small wholesale accounts).
+
+        - **A** (weighted): SUM all balances / SUM all
+          accounts. Per-account balance is correctly weighted
+          by how many accounts each branch represents.
+        - **B** (average of averages): The wholesale branch's
+          per-account average is 100,000 / 50 = 2,000, which
+          enters the across-branch average as a single 2,000
+          alongside Bucuresti's 43,000. The wholesale branch's
+          50 accounts contribute the same weight to the
+          result as Bucuresti's 1 account. The reported
+          number is wrong.
+
+        Under a chart filter that drops the smallest branches:
+
+        - **A** recomputes correctly: numerator and
+          denominator both shrink by the dropped branches'
+          contributions; the ratio re-aggregates at the
+          filtered grain.
+        - **B** loses the weighting forever - even if you
+          recompute, the per-row per-branch average is
+          already collapsed; there's no way to recover the
+          weights.
+
+        The cert-correct pattern is `SUM(numerator_component)
+        / SUM(denominator_component)`. Avoid Looker Studio's
+        "Default aggregation: Average" on a calculated field
+        like `balance_per_account` unless the field is
+        genuinely 1:1 with a single grain (which is rare).
+      self_assessment: |
+        Whenever a ratio is defined per group, do not average
+        it across groups. Re-aggregate the components and
+        divide. "Average of averages" is the named anti-
+        pattern; it survives a chart filter only when every
+        group has equal weight, which is almost never true.
     - id: q-medium-sum-count-distinct-trap
       type: multiple_choice
-      estimated_seconds: 85
+      estimated_seconds: 100
       recommended_learner_tasks: [LT-BI-002]
       source_facts:
         - FACT-BIGQUERY-COUNT-DISTINCT-GRAIN
         - FACT-BI-FANOUT-JOIN-RISK
-      prompt: >
-        A wealth-management dashboard groups account totals by
-        `relationship_manager` and by `service_tier`, then reports
-        `SUM(distinct_customer_count)` across the two groupings as
-        "unique customers served". One customer is served by two
-        relationship managers across two service tiers. How does the
-        reported number compare to the real distinct-customer count?
+      prompt: |
+        A wealth-management dashboard reports "unique customers
+        served". The serving view has one row per (relationship
+        manager × service tier) with a `distinct_customer_count`
+        already pre-aggregated. Sample:
+
+            rm        | service_tier | distinct_customer_count
+            Maria     | Silver       | 12
+            Maria     | Gold         | 5
+            Ion       | Silver       | 8
+            Ion       | Gold         | 3
+
+        The chart sums `distinct_customer_count` across the
+        four rows: **28**. You happen to know that:
+
+        - Customer `C5042` is served by both Maria (Silver)
+          and Ion (Silver) - he's in both rows.
+        - Customer `C5099` is served by Maria across both
+          tiers (Silver and Gold) - she's in both rows.
+
+        How does the reported `28` compare to the **true
+        distinct-customer count** (the number of unique
+        customers the firm actually serves)?
       options:
         - id: overstates
-          label: It overstates the true distinct-customer count because each customer is counted once per group they appear in.
+          label: |
+            **It overstates**. `COUNT(DISTINCT)` is not
+            additive across groups when the same entity
+            appears in multiple groups. The true count is at
+            most `28 - 2 = 26` (subtracting C5042 and C5099,
+            each double-counted once) and could be less if
+            other customers are also in multiple cells. The
+            cert-correct fix: compute `COUNT(DISTINCT
+            customer_id)` over the full window directly,
+            from the underlying detail table.
         - id: understates
-          label: It understates because BigQuery deduplicates across the SUM and skips the customer.
+          label: |
+            **It understates**. BigQuery's SUM operator
+            applies a deduplication pass across
+            `COUNT(DISTINCT)` columns, so customers in
+            multiple groups are counted once. The reported
+            28 is actually a lower bound on the true count.
         - id: matches
-          label: It matches the true distinct-customer count because `COUNT(DISTINCT)` is additive across non-overlapping groups.
+          label: |
+            **It matches**. `COUNT(DISTINCT)` is additive
+            across non-overlapping groups, and on a
+            well-modelled wealth dashboard the groups are
+            non-overlapping by definition (each customer has
+            one RM at one tier).
         - id: depends_on_join
-          label: It depends on whether the dashboard uses an `INNER JOIN` or `LEFT JOIN` between customers and accounts.
+          label: |
+            **It depends** on whether the dashboard uses an
+            `INNER JOIN` or `LEFT JOIN` between the customer
+            roster and the (RM × tier) assignments. LEFT JOIN
+            would inflate; INNER JOIN gives the true count.
       answer: overstates
-      explanation: >
-        `COUNT(DISTINCT)` is not additive across groups when the same
-        entity appears in multiple groups. Summing per-group distinct
-        counts double-counts shared entities. The cert-correct fix is to
-        compute `COUNT(DISTINCT customer_id)` over the same window
-        directly.
-      self_assessment: >
-        Whenever a grouped report sums distinct counts, ask whether the
-        entity can appear in multiple groups; if so, recompute on the
-        full window.
+      explanation: |
+        The classic `SUM(COUNT(DISTINCT ...))` trap:
+
+        - **In each cell**, `COUNT(DISTINCT customer_id)` is
+          exact. Maria-Silver = 12 means 12 unique customers
+          across Maria's Silver assignments.
+        - **Across cells**, SUM treats each cell's count as
+          independent. A customer in two cells contributes
+          twice.
+
+        For the sample: 12 + 5 + 8 + 3 = 28. C5042 is in
+        Maria-Silver and Ion-Silver (counted twice). C5099 is
+        in Maria-Silver and Maria-Gold (counted twice). True
+        distinct count: 28 - 2 (for the two doubly-counted
+        customers) = 26, *assuming* nobody else is double-
+        counted. In practice there are more, and the
+        reported 28 routinely overstates by 10-30%.
+
+        Why the distractors fail:
+
+        - **Understates**. SUM does no deduplication; it
+          just adds the cell totals. There is no BigQuery
+          feature that magically de-duplicates a sum of
+          distinct counts.
+        - **Matches** assumes non-overlapping groups, which
+          is almost never true in wealth management - a
+          customer is regularly served by multiple RMs over
+          time or across products.
+        - **Depends on join**. The fanout from a join is a
+          different problem (multiple rows for the same
+          customer in the detail table). The trap here is
+          structural to `SUM(COUNT(DISTINCT))` regardless of
+          join shape.
+
+        The cert-correct fix is to compute the distinct
+        count once, at the level of grain you actually want
+        to report:
+
+            -- correct: one count over the full window
+            SELECT COUNT(DISTINCT customer_id) AS unique_customers
+            FROM customer_assignments
+            WHERE reporting_month = '2026-03';
+
+            -- not: SUM of per-cell distinct counts
+            SELECT SUM(distinct_customer_count) AS unique_customers
+            FROM rm_tier_summary;
+
+        The pre-aggregated `distinct_customer_count` is fine
+        for *displaying per-cell* (the chart's body) but
+        cannot be summed for the total.
+      self_assessment: |
+        Distinct counts are not additive across groups. If a
+        chart needs the "total unique X" alongside per-cell
+        counts, compute the total from the detail rows
+        directly, not by summing the per-cell counts.
     - id: q-medium-psd2-sca-evidence
       type: select_all
-      estimated_seconds: 90
+      estimated_seconds: 100
       recommended_learner_tasks: [LT-DQ-005]
       source_facts:
         - FACT-PSD2-STRONG-CUSTOMER-AUTHENTICATION
         - FACT-GDPR-DATA-MINIMISATION
-      prompt: >
-        A payments BI dashboard tracks strong customer authentication
-        outcomes for electronic transactions. Which fields belong in the
-        governed serving view feeding the aggregate page?
+      prompt: |
+        A payments operations team is building a daily
+        dashboard to monitor Strong Customer Authentication
+        (SCA) outcomes for the bank's online card payments.
+        The audience is the operations leads; the question they
+        answer with it is "did anything unusual happen with
+        SCA today, and if so where?". The raw events table has:
+
+            transaction_id, customer_id, account_id,
+            transaction_timestamp, transaction_amount,
+            currency_code, sca_outcome (success / failure /
+            skipped), exemption_reason (low_value /
+            transaction_risk_analysis / corporate / none),
+            counterparty_type (merchant / p2p),
+            acceptance_channel (web / mobile_app / pos)
+
+        Which fields belong in the governed serving view that
+        feeds the aggregate dashboard page? (Select all that
+        apply.)
       options:
         - id: sca_outcome
-          label: SCA outcome (success / failure / skipped) per transaction reporting date.
+          label: |
+            **`sca_outcome`** (categorical), aggregated as
+            counts and percentages per
+            `transaction_date / acceptance_channel`. The
+            essential signal: is the SCA failure rate
+            spiking on a particular channel?
         - id: exemption_reason
-          label: The applied SCA exemption category (when an exemption was used).
+          label: |
+            **`exemption_reason`** (categorical), aggregated
+            as counts. PSD2 RTS exemptions are an important
+            sub-population to monitor; a sudden jump in
+            `transaction_risk_analysis` exemptions, for
+            example, often signals an upstream
+            configuration change.
         - id: counterparty_channel
-          label: Counterparty type and acceptance channel categories.
+          label: |
+            **`counterparty_type`** and **`acceptance_channel`**
+            (categorical dimensions). Useful for slicing
+            SCA outcomes by where transactions flowed.
         - id: raw_customer_id
-          label: The raw customer identifier on every row so support staff can drill into a specific cardholder from the aggregate.
+          label: |
+            **`customer_id`** on every row, so operations
+            leads can drill from an aggregate trend straight
+            into the specific cardholder's transactions
+            without leaving the dashboard.
       answer: [sca_outcome, exemption_reason, counterparty_channel]
-      explanation: >
-        Aggregate SCA dashboards need outcome, exemption, and channel
-        categories. Raw customer identifiers fail PSD2-aware data
-        minimisation when they sit on a broadly shared aggregate page;
-        per-customer investigation belongs on a separately governed
-        detail surface.
-      self_assessment: >
-        If aggregate authentication metrics rely on per-customer fields
-        being present, separate the aggregate page from the
-        access-controlled investigation page.
+      explanation: |
+        PSD2 (Directive 2015/2366) and its associated RTS on
+        SCA define the categorical outcomes and exemptions a
+        bank reports on for online card payments. An
+        operational dashboard's job is to surface category
+        trends - rates and counts over time, sliced by
+        channel and exemption - not to expose per-customer
+        records.
+
+        Why `customer_id` (or similar per-record identifiers)
+        does not belong:
+
+        - **Aggregate purpose**: the dashboard answers a
+          population-level question. Per-customer drill-in
+          is a different use case with a different audience
+          (fraud / incident response) and a different access
+          surface.
+        - **Data minimisation** (GDPR Article 5(1)(c)):
+          payment data is personal data; carrying
+          identifiers into a broadly-shared aggregate view
+          fails minimisation. The customer ID widens the
+          access blast radius for no aggregate-view benefit.
+        - **Risk amplification**: a "click into the
+          cardholder" affordance from an aggregate page
+          quietly trains the audience that drilling in is
+          part of the dashboard. The right pattern is a
+          *separately governed* investigation page with its
+          own audience, its own audit log, and its own
+          access controls.
+
+        Operational note for the BI author: the aggregate
+        view should also be at a coarse-enough time grain
+        (per minute, hour, or day, depending on volume) that
+        outliers can't be combined with other public data to
+        re-identify a specific cardholder. A single
+        ultra-low-volume transaction on a rare channel
+        appearing in the aggregate can be unique enough to
+        identify someone.
+      self_assessment: |
+        On any payments / authentication dashboard, the
+        aggregate page carries only categorical dimensions
+        and aggregate metrics. Per-customer drill-in lives
+        on a separate access-controlled surface with its own
+        audit log; the aggregate page never links directly
+        into it.
     - id: q-medium-aml-cft-alert-page
       type: multiple_choice
-      estimated_seconds: 85
+      estimated_seconds: 95
       recommended_learner_tasks: [LT-DQ-005]
       source_facts:
         - FACT-AML-CFT-SUSPICIOUS-ACTIVITY
         - FACT-GDPR-DATA-MINIMISATION
         - FACT-GDPR-SPECIAL-CATEGORIES
-      prompt: >
-        A bank's compliance team needs an internal dashboard summarising
-        AML alert volumes by reporting period. Which serving design fits
-        cert-track expectations for AML / CFT BI?
+      prompt: |
+        Compliance asks for an internal dashboard summarising
+        AML alert volumes and ageing for the bank's monthly
+        operations review. The team has a flat table:
+
+            alert_id, alert_opened_at, alert_type
+              (structuring / rapid_movement / unusual_geography),
+            ageing_days, status (open / under_review /
+              closed_no_action / escalated_to_sar),
+            customer_id, account_id, kyc_review_required,
+            investigator_narrative (free-text)
+
+        The dashboard audience is "compliance leadership"
+        (~15 people) plus "operations leads" (~40 people).
+        Which serving design fits the cert-track expectations
+        for AML / CFT BI?
       options:
         - id: aggregate_governed
-          label: A governed aggregate serving view with alert counts and ageing categories; per-alert narratives and KYC fields stay on a separately access-controlled detail page.
+          label: |
+            **A governed aggregate view** (alert counts,
+            ageing buckets, type and status distribution; no
+            `customer_id`, no `investigator_narrative`,
+            optionally no per-alert `alert_id`) for the
+            broad audience, plus a **separately access-
+            controlled detail page** for the alert-handlers
+            with the per-alert fields. The aggregate page
+            answers "what's our alert load" without ever
+            exposing per-alert sensitive data.
         - id: full_alert_export
-          label: A flat extract that joins every alert with the full KYC record and customer narrative, so compliance can analyse without leaving the report.
+          label: |
+            **A flat extract** that joins every alert with
+            the full KYC record and the investigator
+            narrative, exposed to the full compliance + ops
+            audience. Convenience: one report; if anyone
+            needs detail it's right there.
         - id: aggregate_with_customer_ids
-          label: An aggregate page that keeps customer IDs as a chart dimension so investigators can pivot from the totals.
+          label: |
+            **An aggregate page that keeps `customer_id` as
+            a chart dimension**, so operations leads can
+            pivot from totals to individuals when they spot
+            an anomaly. The narrative still stays off the
+            page; only the IDs cross over.
         - id: blend_kyc_to_marketing
-          label: A blend between AML alerts and the marketing dashboard so account managers can see alert flags in their own page.
+          label: |
+            **A blend between AML alerts and the marketing
+            dashboard**, so account managers can see alert
+            flags on customers in their portfolio. The alert
+            data sits behind the blend's access control.
       answer: aggregate_governed
-      explanation: >
-        AML records, KYC narratives, and per-customer suspicion
-        evidence are highly sensitive personal data with strict
-        access-control expectations; specific fields may also reveal
-        GDPR Article 9 special-category data (for example health,
-        political opinion, religious belief) when narrative text
-        captures it. The cert-correct pattern is an aggregate governed
-        view for the broad audience and a separately access-controlled
-        detail page for investigation. Carrying KYC narratives or
-        customer IDs into the aggregate page violates data minimisation
-        and the case-by-case access boundary the AML / CFT regime
-        expects.
-      self_assessment: >
-        If an AML aggregate page exposes investigation-level fields,
-        split the surface into a governed summary and a restricted
-        detail page.
+      explanation: |
+        AML data is among the most sensitive personal-data
+        categories a bank handles. Why:
+
+        - **Suspicious-activity records carry per-customer
+          suspicion evidence** that has strict access-control
+          expectations under the AML / CFT regime. Carrying
+          `customer_id` or `investigator_narrative` to a
+          ~55-person audience defeats those controls.
+        - **Narrative free text routinely captures GDPR
+          Article 9 special-category data** by accident -
+          health condition, political opinion, religious
+          belief, ethnic origin - because investigators
+          quote customer statements or contextual details.
+          Exposing those narratives via a dashboard is a
+          severe data-protection event.
+        - **Operational separation matters**. Alert-handling
+          is a different work surface from alert-load
+          monitoring. Conflating them in one dashboard
+          means the larger audience inadvertently gets the
+          smaller audience's tools.
+
+        Why the distractors fail:
+
+        - **Full export** is the worst design for AML / CFT.
+          It is also a textbook GDPR Article 32 failure
+          (inappropriate access) and an AML compliance
+          failure (loss of investigation-confidentiality).
+        - **Aggregate with `customer_id`** is the polite
+          version of the same failure. Customer IDs on the
+          aggregate page mean any viewer can re-issue the
+          underlying query against the same data source and
+          enumerate customers. The "narrative stays off"
+          claim doesn't survive a moment of pressure.
+        - **Blend to marketing** is structurally wrong: it
+          places AML alert flags on a surface whose audience
+          and access controls were designed for the
+          opposite case. Tipping-off risks under AML rules
+          aside, this is a known antipattern.
+
+        Right pattern: two surfaces, two audiences, two
+        access controls.
+      self_assessment: |
+        For AML / KYC / suspicious-activity data, the
+        default is two surfaces (aggregate vs. detail) with
+        separate access. Any "drill-in from aggregate to
+        per-customer detail" affordance is a design smell;
+        it usually means the wrong audience can reach detail
+        it shouldn't.
     - id: q-medium-corep-finrep-versioning
       type: multiple_choice
-      estimated_seconds: 90
+      estimated_seconds: 100
       recommended_learner_tasks: [LT-DQ-005]
       source_facts:
         - FACT-EBA-FRAMEWORK-VERSIONING
         - FACT-EBA-DPM-VALIDATION-RULES
         - FACT-CRR-CET1-RATIO
-      prompt: >
-        A bank prepares its COREP / FINREP submission for 2026-Q1. A
-        capital-monitoring dashboard already reports the same CET1
-        numerator and denominator using the prior framework version. The
-        reviewer asks the BI team to align the dashboard with the
-        version used for the submission. Which alignment evidence
-        belongs in the dashboard release record?
+      prompt: |
+        Your bank's COREP submission for 2026-Q1 uses the EBA
+        reporting framework version 3.4 and DPM validation
+        rule version 3.4.1.0. The capital-monitoring
+        dashboard you built last quarter has a CET1 ratio
+        trend chart that reads from the same underlying
+        figures, but its source query targets framework
+        version 3.3 (the prior period's framework). The
+        review board asks: "can we trust the dashboard's
+        period-over-period comparison?"
+
+        Which alignment evidence belongs in the dashboard
+        release record before you say yes?
       options:
         - id: framework_version_per_period
-          label: The reporting framework version, validation rule version, and reference date, recorded next to the CET1 value for each period shown.
+          label: |
+            **A per-period table recording the framework
+            version, the DPM validation rule version, and
+            the reference date** beside the CET1 numerator,
+            denominator, and ratio. The comparison is
+            trustworthy only when the framework version is
+            recorded next to each period's figure - so a
+            reviewer can see whether 2026-Q1 (v3.4) and
+            2025-Q4 (v3.3) used different rules, and judge
+            whether the year-on-year delta is real or a
+            framework artefact.
         - id: chart_only_alignment
-          label: Only that the chart appears next to the COREP submission link, since the data source is upstream and is implicitly aligned.
+          label: |
+            A reference link from the dashboard to the COREP
+            submission. The data source is upstream; if the
+            submission is correct, the dashboard is
+            implicitly aligned to the same framework.
         - id: relabel_to_match
-          label: A note that the dashboard label is renamed to match the COREP cell coordinate; that proves alignment.
+          label: |
+            Renaming the dashboard label so it matches the
+            COREP cell coordinate (e.g.
+            "C 03.00 - CET1 ratio"). The label match is
+            evidence the BI metric ties to the regulatory
+            template.
         - id: latest_version_only
-          label: Only the latest framework version, applied retroactively to all periods so the chart looks consistent.
+          label: |
+            Re-running the dashboard's historical figures
+            under the latest framework version (v3.4),
+            retroactively, so every period in the trend
+            uses one common version. The chart becomes
+            internally consistent and visually clean.
       answer: framework_version_per_period
-      explanation: >
-        Validation outcomes and capital ratios can change between
-        framework versions. Period comparisons need the rule and
-        framework version recorded per period before a regulatory-style
-        BI metric can be aligned to the submission template.
-      self_assessment: >
-        If a regulatory-flavoured dashboard does not record the
-        framework version per period, comparisons across periods are
-        not trustworthy.
+      explanation: |
+        Capital ratios under CRR are computed using a
+        specific reporting framework version's definitions,
+        templates, and validation rules. Frameworks evolve
+        over time - new validation rules, redefined
+        components, changes to the denominator (Risk Weighted
+        Exposure Amount), etc. Two consequences for BI work:
+
+        - **Period-over-period comparisons require
+          framework provenance**. A CET1 ratio computed under
+          v3.3 and one computed under v3.4 are not strictly
+          comparable; a delta might be real, or it might be
+          an artefact of a rule change. Without the framework
+          version next to each period's value, a reviewer
+          cannot tell.
+        - **Retroactive re-statement is a regulatory
+          decision, not a BI convenience**. Re-running
+          historical numbers under the latest framework is a
+          formal action that has its own governance. A BI
+          dashboard cannot quietly "harmonise" the trend by
+          retroactively applying the new version - the
+          dashboard's job is to *reflect* the published
+          submissions, not to re-state them.
+
+        Why the distractors fail:
+
+        - **Chart-only alignment** (link to the submission)
+          is an inheritance argument. It is necessary but
+          not sufficient: the link tells a reviewer where to
+          go, but not whether the dashboard's data is
+          aligned with what's at that link.
+        - **Relabel to match** confuses display labelling
+          with data alignment. The dashboard can use COREP
+          cell labels and still pull the wrong number from
+          the wrong framework version.
+        - **Retroactive harmonisation** does the opposite of
+          what BI should: it hides framework changes from
+          the reviewer, making period comparisons feel
+          consistent when they are not.
+
+        Right shape: every period's value on the dashboard
+        carries a small metadata row (framework version,
+        validation rule version, reference date) next to it.
+        For periods where the BI team's number does not match
+        the submission, the dashboard documents the
+        discrepancy and either flags it or re-runs under the
+        right version with the decision recorded.
+      self_assessment: |
+        Regulatory dashboards live and die by provenance.
+        Every reported value needs its framework version,
+        rule version, and reference date attached, recorded
+        per period - especially when frameworks change. Hide
+        the version and you hide the question.
   hard:
     - id: q-hard-semi-additive-exposure
       type: multiple_choice
