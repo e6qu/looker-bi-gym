@@ -31,46 +31,81 @@
 
 # 08 - Operate Dashboard Freshness, Cost, And Controls
 
-Synthetic-data boundary: use only synthetic source rows and deterministic
-operations examples. Do not copy production incident records, job logs, user
-emails, reconciliation breaks, report links, credentials, keys, screenshots of
-access settings, or customer data into evidence notes.
+## The Moment
 
-Prior knowledge expected:
+It's Monday 09:00. The branch operations team can't sign off on
+last week's reconciliation because the dashboard scorecard reads
+`RON 79,300` (last Friday's total). They expect Friday's _and_
+something fresher. You realise:
 
-- A governed serving view feeding an executive dashboard with named
-  control totals.
-- Awareness that report refresh time and source business reference date
-  are separate concepts.
-- Familiarity with BigQuery job metadata as a cost-evidence source.
+- The dashboard hasn't been touched since Friday afternoon.
+- Looker Studio is serving from cache (12-hour freshness).
+- The underlying ingest _did_ update overnight, but Looker Studio
+  hasn't re-queried.
+- The reconciliation control number isn't visible on the page
+  anywhere - so even when the dashboard does refresh, the operations
+  team can't tell whether the new total ties back to source.
 
-Required tools:
+Up to now, the dashboard has been treated as a one-off artefact -
+"build it, ship it". This lesson treats it as **an operational BI
+product** with the supporting evidence a banking-style operations
+team actually needs:
 
-- Browser-first path: browser SQL workbench for the synthetic datasets.
-- Optional applied path: browser UI access to BigQuery and Looker Studio.
+- A **dependency register**: source, owner, freshness setting,
+  control totals, evidence location.
+- A **freshness check**: report SLA vs underlying source vs cache
+  setting; explicit "stale" / "fresh" status per source.
+- **Cost evidence**: simulated bytes-processed per refresh, with the
+  before / after design choices visible.
+- **Reconciliation**: the dashboard's headline number tying back to
+  an independent source total, every reporting day.
+- **Incident triage**: what to do when one of the above fails -
+  named statuses (`hold_publish_investigate`, `publish_with_note`,
+  etc.), not free-text guesses.
+- **Validation evidence**: validation rule name + framework version
+  - reference date for regulatory-flavoured metrics, so period
+    comparisons are reproducible.
 
-Objective: operate the executive deposit dashboard as a BI product with named
-dependencies, owners, freshness evidence, cost evidence, reconciliation checks,
-incident triage, and validation/reference-date notes.
+This is the operations side of "is this dashboard a real product, or
+a one-shot artefact".
+
+## Prior Knowledge
+
+The serving view from lesson 01, the dashboard spec from lesson 03,
+and the cost-signal lab from lesson 06. You should be able to point
+at `business_date` and the `latest_total = 95,700` reconciliation
+number without consulting the earlier lessons.
+
+Objective: operate the executive deposit dashboard as a BI product
+with named dependencies, owners, freshness evidence, cost evidence,
+reconciliation checks, incident triage, and validation /
+reference-date notes that a banking-style operations team could
+review.
 
 After this tutorial, you will be able to:
 
-- Build a dependency register for a dashboard, serving source, raw tables, and
-  evidence controls.
+- Build a dependency register for a dashboard, serving source, raw
+  tables, and evidence controls.
 - Check source freshness against a report SLA.
-- Compare simulated BigQuery job bytes with report source choices.
-- Reconcile dashboard totals back to the source ledger total.
-- Classify operational events without copying private logs.
-- Tie validation evidence to a reference date, rule name, owner, and outcome.
+- Compare simulated BigQuery job bytes against report source
+  choices.
+- Reconcile dashboard totals back to the source ledger total per
+  reporting date.
+- Classify operational events with named statuses without copying
+  private logs.
+- Tie validation evidence to a reference date, rule name, owner,
+  and outcome.
 
 Produces:
 
-- Browser-first dependency, freshness, cost, reconciliation, incident, and
-  validation outputs.
+- Browser-first dependency, freshness, cost, reconciliation,
+  incident, and validation outputs.
 - A draft `serve.bi_dependency_register` design.
 - A draft `serve.bi_operations_daily` design.
-- Optional BigQuery job-metadata and Looker Studio freshness notes.
-- A short personal note (kept in whichever editor you prefer; the platform does not store it).
+- Optionally BigQuery job-metadata and Looker Studio freshness
+  notes for the live-environment path.
+- A short personal note (kept in your own editor) with the
+  Monday-morning workflow run-through.
 
 ## Goal
 
