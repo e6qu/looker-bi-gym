@@ -1,9 +1,26 @@
 # Bugs And Known Gaps
 
-Last updated: 2026-05-17 (Codex re-review punch list recorded; fixing
-on the same PR)
+Last updated: 2026-05-17 (Codex re-review and tight verdict run both
+remediated; last residual "Order is alphabetical" wording fixed)
 
 ## Open Issues
+
+- ID: CODEX-VERDICT-RUN-2026-05-17.
+  - Area: tutorials/learner-tasks/README ordering wording.
+  - Severity: low.
+  - Description: After `CODEX-RE-REVIEW-FINDINGS-2026-05-17` was
+    closed and the second-pass commit (`4e25c90`) was pushed, a
+    tight read-only codex verdict run on 2026-05-17
+    (`/tmp/codex-review-4.md`) returned PASS on every validator
+    (`validate:compartmentalization`, `validate:quiz-distractors`,
+    `test:facts-db`, `validate:datasets`, `test:fixtures`) plus
+    one residual defect: `tutorials/learner-tasks/README.md:38`
+    still said "Order is alphabetical by area", which counted as
+    an order claim under the compartmentalization rule.
+  - Fix: replaced the sentence with "The labs do not assume each
+    other; pick whichever area matches the BI habit you want to
+    strengthen next." The README no longer claims any order.
+  - Status: fixed on the same PR. Full local gate green.
 
 - ID: CODEX-RE-REVIEW-FINDINGS-2026-05-17.
   - Area: tutorials/learner-tasks/README, exam pack fixture
@@ -99,53 +116,48 @@ on the same PR)
     after fixes commit, push, and request another Codex read-only
     review.
   - Status: fully remediated on branch
-    `assessment-quality-and-expansion`. All 5 sub-issues closed:
-    - `tutorials/learner-tasks/README.md` rewritten as a topic-area
-      index (alphabetical by area, no LT-\* prefixes, no ordering
-      claim, no "browser-first sequence" framing). The
-      `tutorialAllowlist` is now empty in
-      `app/scripts/validate-assessment-compartmentalization.ts:28`,
-      so the validator actively covers the README.
-      `validate:compartmentalization` reports 130 files scanned and
-      0 hits.
-    - The five remaining design / prose exam cards
-      (`exam-card-ratio-null-contract`,
-      `exam-card-dashboard-refresh-ops`,
-      `exam-card-rls-cls-design`,
-      `exam-card-scd2-historical-reporting`,
-      `exam-card-bcbs-239-lineage-walkthrough`) all rewritten with
-      inline deterministic data (synthetic tables, named schemas,
-      concrete grant strings, named lineage chains) and numeric /
-      schema / field-list expected_outputs. The pack now has zero
-      cards whose expected outputs are bare prose. Rendering CSS
-      adjusted (`.examCardObjective` with `white-space: pre-wrap;
+    `assessment-quality-and-expansion`. All 5 sub-issues closed: - `tutorials/learner-tasks/README.md` rewritten as a topic-area
+    index (alphabetical by area, no LT-\* prefixes, no ordering
+    claim, no "browser-first sequence" framing). The
+    `tutorialAllowlist` is now empty in
+    `app/scripts/validate-assessment-compartmentalization.ts:28`,
+    so the validator actively covers the README.
+    `validate:compartmentalization` reports 130 files scanned and
+    0 hits. - The five remaining design / prose exam cards
+    (`exam-card-ratio-null-contract`,
+    `exam-card-dashboard-refresh-ops`,
+    `exam-card-rls-cls-design`,
+    `exam-card-scd2-historical-reporting`,
+    `exam-card-bcbs-239-lineage-walkthrough`) all rewritten with
+    inline deterministic data (synthetic tables, named schemas,
+    concrete grant strings, named lineage chains) and numeric /
+    schema / field-list expected_outputs. The pack now has zero
+    cards whose expected outputs are bare prose. Rendering CSS
+    adjusted (`.examCardObjective` with `white-space: pre-wrap;
 overflow-wrap: anywhere; overflow-x: auto`, plus `.examCard
 ul li` with `overflow-wrap: anywhere`) so the wider inline
-      tables and identifier names do not cause horizontal overflow
-      on mobile. Playwright rendered-UI suite passes 101/101.
-    - Source cards deepened:
-      `SRC-BIGQUERY-MATERIALIZED-VIEW-REFRESH` now quotes
-      `enable_refresh`, `refresh_interval_minutes`, `max_staleness`,
-      and the explicit best-effort line; URL updated to the
-      materialized-views-manage page with the create page as
-      companion. `SRC-LOOKER-STUDIO-FRESHNESS-INTERVALS` now quotes
-      the cache-staleness-threshold definition, the
-      query-frequency-and-cost link, and the connector-specific
-      minimum freshness; URL updated to the manage-data-freshness
-      page.
-    - `FACT-PSD2-STRONG-CUSTOMER-AUTHENTICATION` rephrased so it
-      matches what `SRC-PSD2-ELI-2015-2366` actually quotes
-      (Articles 4(30), 95, 96, 97): SCA application, framework with
-      mitigation measures and control mechanisms, evidence of those
-      measures, and incident reporting. The retention-for-
-      supervisory-inspection wording was removed.
-    - `DO_NEXT.md` refreshed: now points at PR #46 on
-      `assessment-quality-and-expansion`, references the Codex
-      review loop discipline, and records the final post-fix surface
-      tallies (78 quiz / 105 flashcards / 16 exam cards / 133 facts /
-      150 terminology entries).
-      Full local gate (`bun run check`) green. Codex re-review
-      queued for after commit + push.
+    tables and identifier names do not cause horizontal overflow
+    on mobile. Playwright rendered-UI suite passes 101/101. - Source cards deepened:
+    `SRC-BIGQUERY-MATERIALIZED-VIEW-REFRESH` now quotes
+    `enable_refresh`, `refresh_interval_minutes`, `max_staleness`,
+    and the explicit best-effort line; URL updated to the
+    materialized-views-manage page with the create page as
+    companion. `SRC-LOOKER-STUDIO-FRESHNESS-INTERVALS` now quotes
+    the cache-staleness-threshold definition, the
+    query-frequency-and-cost link, and the connector-specific
+    minimum freshness; URL updated to the manage-data-freshness
+    page. - `FACT-PSD2-STRONG-CUSTOMER-AUTHENTICATION` rephrased so it
+    matches what `SRC-PSD2-ELI-2015-2366` actually quotes
+    (Articles 4(30), 95, 96, 97): SCA application, framework with
+    mitigation measures and control mechanisms, evidence of those
+    measures, and incident reporting. The retention-for-
+    supervisory-inspection wording was removed. - `DO_NEXT.md` refreshed: now points at PR #46 on
+    `assessment-quality-and-expansion`, references the Codex
+    review loop discipline, and records the final post-fix surface
+    tallies (78 quiz / 105 flashcards / 16 exam cards / 133 facts /
+    150 terminology entries).
+    Full local gate (`bun run check`) green. Codex re-review
+    queued for after commit + push.
 
 - ID: CODEX-REVIEW-FINDINGS-2026-05-17.
   - Area: tutorials, learner-tasks, quizzes, exams, flashcards,

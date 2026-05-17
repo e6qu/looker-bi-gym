@@ -35,8 +35,8 @@ After this index, you will be able to:
 ## Areas
 
 Each link below opens a self-contained 15-20 minute lab against a
-synthetic banking dataset. Order is alphabetical by area; the labs do
-not assume each other.
+synthetic banking dataset. The labs do not assume each other; pick
+whichever area matches the BI habit you want to strengthen next.
 
 - BI fundamentals
   - [Profile Dataset Grain](lt-bi-001-profile-dataset-grain.md): declare
