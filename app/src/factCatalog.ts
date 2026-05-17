@@ -1,11 +1,17 @@
 import { generatedFactCatalog } from "./generated/contentCatalog";
 
+export type FactSource = {
+  readonly id: string;
+  readonly href: string;
+};
+
 export type FactRecord = {
   readonly id: string;
   readonly area: string;
   readonly fileName: string;
   readonly filePath: string;
   readonly statement: string;
+  readonly sources: readonly FactSource[];
   readonly sourceQuote: string;
   readonly derivedImplication: string;
   readonly relatedFacts: readonly string[];

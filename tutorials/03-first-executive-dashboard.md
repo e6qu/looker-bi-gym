@@ -19,8 +19,6 @@
 
 # 03 - Build A First Executive Dashboard Spec
 
-Area: C - Looker Studio Dashboards
-
 Synthetic-data boundary: dashboard pages must use synthetic serving results
 only. Do not paste real production screenshots, URLs, credentials, customer
 data, account data, or regulatory data into notes.
@@ -56,7 +54,7 @@ Produces:
 - Browser-first dashboard source result.
 - Executive dashboard chart specification.
 - Optional Looker Studio report page.
-- `notes/03-executive-dashboard-check.md`, if you keep external notes.
+- A short personal note (kept in whichever editor you prefer; the platform does not store it).
 
 ## Goal
 
@@ -322,7 +320,7 @@ answer.
 
 ## Deliverable
 
-Create `notes/03-executive-dashboard-check.md` with:
+Write a short personal note in your own editor with:
 
 - the six-row dashboard source result;
 - the executive KPI values;

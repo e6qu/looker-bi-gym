@@ -21,8 +21,6 @@
 
 # 01 - Prepare A Synthetic Serving View For Looker Studio
 
-Area: A - Orientation And Source Data
-
 Synthetic-data boundary: use only the predefined synthetic deposits dataset or
 the inline synthetic rows in this tutorial. Do not connect Looker Studio to real
 customer, account, transaction, employee, or regulatory data.
@@ -63,7 +61,28 @@ Produces:
 - Browser-first SQL result for `serving_deposit_dashboard`.
 - Optional BigQuery view named `serving_deposit_dashboard`.
 - Optional Looker Studio data source and report page.
-- `notes/01-serving-view-check.md`, if you keep external notes.
+- A short personal note (kept in whichever editor you prefer; the platform does not store it).
+
+## Tables You Will Use
+
+The synthetic deposits dataset exposes one source table for this
+lesson:
+
+| Column           | Type   | Meaning                                                                        |
+| ---------------- | ------ | ------------------------------------------------------------------------------ |
+| `business_date`  | DATE   | The reporting reference date for the row. Balances snapshot at end of day.     |
+| `account_id`     | STRING | Synthetic account identifier. Not a serving-output field; minimised out of BI. |
+| `ledger_balance` | INT    | Cleared-ledger balance for the account at `business_date`, in `currency_code`. |
+| `currency_code`  | STRING | ISO 4217 currency for the balance (`RON` or `EUR` in this synthetic dataset).  |
+
+Notes on grain and shape:
+
+- The grain is one row per account per `business_date`, so the table
+  is at account-day grain.
+- `ledger_balance` is a stock (a snapshot value), not a flow; do not
+  sum across `business_date` values without changing the grain.
+- The dataset has 6 synthetic accounts and 3 business dates, so the
+  raw table has 18 rows.
 
 ## Goal
 
@@ -295,7 +314,7 @@ answer.
 
 ## Deliverable
 
-Create `notes/01-serving-view-check.md` with:
+Write a short personal note in your own editor with:
 
 - the six-row browser SQL result;
 - the latest-day dashboard total;

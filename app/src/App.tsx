@@ -1314,6 +1314,18 @@ function FactsPage({
             <p className="eyebrow">{selectedFact.area}</p>
             <h2>Statement</h2>
             <p>{selectedFact.statement}</p>
+            <h2>Sources</h2>
+            {selectedFact.sources.length > 0 ? (
+              <ul>
+                {selectedFact.sources.map((source) => (
+                  <li key={source.id}>
+                    <a href={source.href}>{source.id}</a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No source card linked yet.</p>
+            )}
             <h2>Source Quote</h2>
             <p>{selectedFact.sourceQuote}</p>
             <h2>Derived Implication</h2>
@@ -3028,6 +3040,21 @@ function collectTermAnchors(section: ContentSection): readonly TermAnchor[] {
   return anchors;
 }
 
+function sectionEyebrowLabel(sectionId: ContentSectionId): string {
+  switch (sectionId) {
+    case "tutorials":
+      return "Lessons";
+    case "docs":
+      return "Reference notes";
+    case "regulations":
+      return "Regulatory briefs";
+    case "terminology":
+      return "Vocabulary";
+    default:
+      return "Pages";
+  }
+}
+
 function ContentPage({
   sectionId,
   fileName,
@@ -3081,7 +3108,7 @@ function ContentPage({
     <section className="contentPage" aria-labelledby={`${sectionId}-title`}>
       <aside className="documentNav" aria-label={`${section.label} documents`}>
         <div>
-          <p className="eyebrow">Lessons</p>
+          <p className="eyebrow">{sectionEyebrowLabel(sectionId)}</p>
           <h2 id={`${sectionId}-title`}>{section.label}</h2>
           <p>{section.description}</p>
         </div>

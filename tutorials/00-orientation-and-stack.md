@@ -22,8 +22,6 @@
 
 # 00 - Orientation And Stack
 
-Area: A - Orientation And Source Data
-
 Synthetic-data boundary: use synthetic training data only. Do not use real,
 masked, anonymized, or production-derived banking data.
 

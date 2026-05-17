@@ -29,8 +29,6 @@
 
 # 06 - Measure Dashboard Performance And Cost Signals
 
-Area: C - Looker Studio Dashboards
-
 Synthetic-data boundary: measure and simulate query behavior only with the
 synthetic deposits dataset. Do not inspect, export, paste, or screenshot private
 billing data, job metadata, user emails, customer data, credentials, tokens, or
@@ -74,7 +72,7 @@ Produces:
 - Browser-first source-profile and cost-signal outputs.
 - A draft `serve.bi_ops_cost_daily` design.
 - Optional BigQuery job metadata query notes.
-- `notes/06-performance-cost-findings.md`, if you keep external notes.
+- A short personal note (kept in whichever editor you prefer; the platform does not store it).
 
 ## Goal
 
@@ -615,7 +613,7 @@ answer.
 
 ## Deliverable
 
-Create `notes/06-performance-cost-findings.md` with:
+Write a short personal note in your own editor with:
 
 - the source-table profile output;
 - the safe serving profile output;

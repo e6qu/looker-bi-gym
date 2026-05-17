@@ -32,8 +32,6 @@
 
 # 09 - Assemble The Banking BI Capstone Package
 
-Area: E - Capstone
-
 Synthetic-data boundary: use only the predefined synthetic datasets and
 deterministic evidence in this lesson. Do not use real banking data,
 credentials, private report links, customer screenshots, production exports,
@@ -75,7 +73,7 @@ Produces:
 - Dashboard page specification.
 - Governance and operations evidence summary.
 - Rubric score and review workflow.
-- `notes/09-capstone-package.md`, if you keep external notes.
+- A short personal note (kept in whichever editor you prefer; the platform does not store it).
 
 ## Goal
 
@@ -735,7 +733,7 @@ before opening the expected evidence.
 
 ## Deliverable
 
-Create `notes/09-capstone-package.md`, if you keep external notes, with:
+Write a short personal note in your own editor with:
 
 - the artifact checklist;
 - the governed serving-source output;

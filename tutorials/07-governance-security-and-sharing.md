@@ -31,8 +31,6 @@
 
 # 07 - Govern Dashboard Access, Fields, And Sharing
 
-Area: D - Governance, Security, And Operations
-
 Synthetic-data boundary: use only the predefined synthetic deposits dataset.
 Do not use real customer fields, real account numbers, production IAM
 screenshots, report sharing links, credentials, tokens, keys, private emails, or
@@ -76,7 +74,7 @@ Produces:
   and Looker Studio
   <a class="termRef" href="#/terminology/looker-studio.md#viewer-credentials">credential-mode<sup>LS</sup></a>
   notes.
-- `notes/07-governance-sharing.md`, if you keep external notes.
+- A short personal note (kept in whichever editor you prefer; the platform does not store it).
 
 ## Goal
 
@@ -788,7 +786,7 @@ the values from your own outputs before opening the expected evidence.
 
 ## Deliverable
 
-Create `notes/07-governance-sharing.md`, if you keep external notes, with:
+Write a short personal note in your own editor with:
 
 - the field classification summary;
 - the governed source output and release control;

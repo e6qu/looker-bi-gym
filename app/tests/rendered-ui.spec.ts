@@ -213,9 +213,12 @@ test.describe("rendered UI", () => {
         page.getByRole("heading", { level: 1, name: "Looker BI Gym" }),
       ).toBeVisible();
       await expect(page.getByLabel("Synthetic dataset preview")).toBeVisible();
-      await expect(page.getByLabel("Platform constraints")).toContainText(
-        "Synthetic banking datasets only",
-      );
+      await expect(
+        page.getByRole("link", { name: "Start the first lesson" }),
+      ).toBeVisible();
+      await expect(
+        page.getByLabel("Site surfaces with usage guidance"),
+      ).toContainText("Tutorials");
       await expect(page.getByRole("contentinfo")).toContainText("App v0.1.0");
 
       await expectNoHorizontalOverflow(page);

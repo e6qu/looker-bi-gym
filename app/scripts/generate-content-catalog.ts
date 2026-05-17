@@ -58,12 +58,18 @@ type GeneratedContentDocument = {
   readonly metadata?: Frontmatter;
 };
 
+type GeneratedFactSource = {
+  readonly id: string;
+  readonly href: string;
+};
+
 type GeneratedFactRecord = {
   readonly id: string;
   readonly area: string;
   readonly fileName: string;
   readonly filePath: string;
   readonly statement: string;
+  readonly sources: readonly GeneratedFactSource[];
   readonly sourceQuote: string;
   readonly derivedImplication: string;
   readonly relatedFacts: readonly string[];
@@ -294,6 +300,37 @@ function extractField(body: string, label: string): string {
   }
 
   return values.filter((value) => value.length > 0).join(" ");
+}
+
+function extractSources(body: string): readonly GeneratedFactSource[] {
+  const fieldPrefix = "- Source:";
+  const lines = body.split(/\r?\n/u);
+  const fieldIndex = lines.findIndex((line) => line.startsWith(fieldPrefix));
+
+  if (fieldIndex < 0) {
+    return [];
+  }
+
+  const collectedLines = [lines[fieldIndex]?.slice(fieldPrefix.length) ?? ""];
+  for (const line of lines.slice(fieldIndex + 1)) {
+    if (line.startsWith("- ")) break;
+    if (line.startsWith("  ")) collectedLines.push(line);
+  }
+  const joined = collectedLines.join(" ");
+
+  const sources: GeneratedFactSource[] = [];
+  const sourcePattern = /\[`(SRC-[A-Z0-9-]+)`\]\((\.\.\/sources\/[^)]+)\)/gu;
+  for (const match of joined.matchAll(sourcePattern)) {
+    const id = match[1];
+    const repoPath = match[2];
+    if (id === undefined || repoPath === undefined) continue;
+    // Convert `../sources/platforms/bigquery.md#anchor` to
+    // `#/sources/platforms/bigquery.md#anchor`. Sources are also a
+    // routed content section.
+    const normalisedPath = repoPath.replace(/^\.\.\//u, "");
+    sources.push({ id, href: `#/${normalisedPath}` });
+  }
+  return sources;
 }
 
 function extractRelatedFacts(body: string, factId: string): readonly string[] {
@@ -785,6 +822,7 @@ function parseFactFile(source: MarkdownSource): readonly GeneratedFactRecord[] {
       fileName,
       filePath: source.repoPath,
       statement: extractField(body, "Statement"),
+      sources: extractSources(body),
       sourceQuote: extractField(body, "Source quote"),
       derivedImplication: extractField(body, "Derived implication"),
       relatedFacts: extractRelatedFacts(body, currentFactId),
