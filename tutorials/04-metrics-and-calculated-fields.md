@@ -27,10 +27,13 @@ reports, credentials, or production regulatory outputs.
 
 Prior knowledge expected:
 
-- A dimensional model with declared grain and a governed serving layer.
-- A working executive dashboard spec or equivalent KPI definition.
-- Weighted-average reasoning: why `SUM(a) / SUM(b)` differs from
-  `AVG(row_ratio)`.
+- `SUM`, `GROUP BY`, and basic `JOIN` SQL.
+- The vocabulary of grain (one row per X) and a serving result that
+  exposes only the fields a dashboard needs.
+
+The weighted-average distinction (why `SUM(a) / SUM(b)` differs from
+`AVG(row_ratio)`) is the central thing this lesson teaches; it is not
+prior knowledge.
 
 Required tools:
 

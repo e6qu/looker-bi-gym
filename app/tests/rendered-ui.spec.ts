@@ -407,7 +407,7 @@ test.describe("rendered UI", () => {
       page.getByText("A branch dashboard scorecard", { exact: false }),
     ).toBeVisible();
     await page.getByLabel("One row per account and business date.").check();
-    await page.getByRole("button", { name: "Check Quiz" }).click();
+    await page.getByRole("button", { name: "Show all answers" }).click();
     await expect(page.getByText("Recommended learner tasks")).not.toBeVisible();
     await expect(page.getByText("Source evidence")).not.toBeVisible();
 

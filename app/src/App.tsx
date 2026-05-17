@@ -984,17 +984,22 @@ function QuizQuestionCard({
   answer,
   showResult,
   onAnswer,
+  onCheck,
 }: {
   readonly question: QuizBankQuestion;
   readonly questionIndex: number;
   readonly answer: QuizResponse | undefined;
   readonly showResult: boolean;
   readonly onAnswer: (questionId: string, answer: QuizResponse) => void;
+  readonly onCheck?: (questionId: string) => void;
 }): JSX.Element {
   const isCorrect = answerMatchesQuestion(question, answer);
   const selectedAnswers =
     answer !== undefined && typeof answer !== "string" ? answer : [];
   const numericInputId = `quiz-bank-${question.id}-numeric`;
+  const hasAnswer =
+    answer !== undefined &&
+    (typeof answer === "string" ? answer.trim().length > 0 : answer.length > 0);
 
   return (
     <fieldset className="quizQuestion learningQuestion">
@@ -1080,6 +1085,21 @@ function QuizQuestionCard({
           {isCorrect ? "Correct." : "Review the answer."} Answer:{" "}
           {formatQuizBankAnswer(question.answer)}. {question.explanation}
         </div>
+      ) : onCheck !== undefined ? (
+        <div className="quizPerQuestionActions">
+          <button
+            type="button"
+            disabled={!hasAnswer}
+            onClick={() => onCheck(question.id)}
+          >
+            Check this question
+          </button>
+          {!hasAnswer ? (
+            <span className="quizPerQuestionHint">
+              Answer the question first.
+            </span>
+          ) : null}
+        </div>
       ) : null}
 
       <details className="selfAssessmentDetails">
@@ -1096,12 +1116,20 @@ function QuizBankCard({
   readonly quizBank: QuizBank;
 }): JSX.Element {
   const [answers, setAnswers] = useState<QuizAnswerState>({});
-  const [showResults, setShowResults] = useState<boolean>(false);
+  const [revealedAll, setRevealedAll] = useState<boolean>(false);
+  const [revealedIds, setRevealedIds] = useState<ReadonlySet<string>>(
+    () => new Set<string>(),
+  );
   const allQuestions = (["easy", "medium", "hard"] as const).flatMap(
     (difficulty) => quizBank.questions[difficulty],
   );
-  const correctCount = allQuestions.filter((question) =>
-    answerMatchesQuestion(question, answers[question.id]),
+  const checkedCount = allQuestions.filter(
+    (question) => revealedAll || revealedIds.has(question.id),
+  ).length;
+  const correctCount = allQuestions.filter(
+    (question) =>
+      (revealedAll || revealedIds.has(question.id)) &&
+      answerMatchesQuestion(question, answers[question.id]),
   ).length;
 
   function setAnswer(questionId: string, answer: QuizResponse): void {
@@ -1111,6 +1139,15 @@ function QuizBankCard({
     }));
   }
 
+  function revealOne(questionId: string): void {
+    setRevealedIds((current) => {
+      if (current.has(questionId)) return current;
+      const next = new Set(current);
+      next.add(questionId);
+      return next;
+    });
+  }
+
   return (
     <section className="learningPanel" aria-labelledby={`${quizBank.id}-title`}>
       <div className="learningPanelHeader">
@@ -1118,6 +1155,11 @@ function QuizBankCard({
           <p className="eyebrow">Mixed quiz</p>
           <h2 id={`${quizBank.id}-title`}>{quizBank.title}</h2>
           <p>{quizBank.description}</p>
+          <p className="quizPerQuestionHint">
+            Answer one question at a time, then press &ldquo;Check this
+            question&rdquo; for feedback on just that one. Use &ldquo;Show all
+            answers&rdquo; only at the end.
+          </p>
         </div>
         <dl className="learningMeta">
           <div>
@@ -1131,9 +1173,9 @@ function QuizBankCard({
           <div>
             <dt>Score</dt>
             <dd>
-              {showResults
-                ? `${correctCount}/${allQuestions.length}`
-                : "Not checked"}
+              {checkedCount === 0
+                ? "Not checked"
+                : `${correctCount}/${checkedCount} checked`}
             </dd>
           </div>
         </dl>
@@ -1147,23 +1189,25 @@ function QuizBankCard({
               answer={answers[question.id]}
               key={question.id}
               onAnswer={setAnswer}
+              onCheck={revealOne}
               question={question}
               questionIndex={questionIndex}
-              showResult={showResults}
+              showResult={revealedAll || revealedIds.has(question.id)}
             />
           ))}
         </section>
       ))}
 
       <div className="quizActions">
-        <button type="button" onClick={() => setShowResults(true)}>
-          Check Quiz
+        <button type="button" onClick={() => setRevealedAll(true)}>
+          Show all answers
         </button>
         <button
           type="button"
           onClick={() => {
             setAnswers({});
-            setShowResults(false);
+            setRevealedAll(false);
+            setRevealedIds(new Set<string>());
           }}
         >
           Reset Quiz
