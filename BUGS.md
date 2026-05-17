@@ -176,11 +176,100 @@ layer`, `Sensitive fields`, `Banking grain`) in their own notes
     exposed to the learner in tutorial setup lines. Internal
     versioning leaking into learner copy.
 
-  - Fix plan: open one PR per track. Track A and Track B carry the
-    bulk of the user impact; ship them first. Tracks C and D extend
-    validator scope. Tracks E and F are polish; can ship together as
-    a small PR.
-  - Status: open. Codex external review of this audit queued.
+  ### Track G - Runtime / result fidelity (added by Codex re-review)
+  - G1 `block` Workbench result formatting can break the
+    tutorial-output match. `formatSqlCellValue` at
+    `app/src/App.tsx:349` does plain `String(value)` for primitives.
+    `runSqlPreview` at `app/src/sqlRuntime.ts:241` returns whatever
+    DuckDB's `.toJSON()` produces. In Node DuckDB (where Codex ran
+    the tutorial 01 query against `deposits-seed/v0.1.0`),
+    `business_date` came back as epoch milliseconds and
+    `ledger_total` came back as a quoted string. If DuckDB-WASM
+    behaves the same on the live site, a correct learner query
+    against the tutorial 01 example renders as
+    `1769644800000` instead of `2026-03-29` and as `"16450"`
+    instead of `16450`, so the tutorial's "exactly matches the
+    six-row table in the goal section" claim at
+    `tutorials/01-connect-public-data.md:101` is impossible to
+    satisfy from the workbench output. Fix: detect Arrow-typed
+    values in `formatSqlCellValue` and format dates / timestamps /
+    decimal / bigint into their tutorial-shaped strings; the
+    rendered-UI Playwright suite needs an assertion that
+    `2026-03-29` appears verbatim in the workbench result for a
+    plain `SELECT business_date` (no `CAST AS VARCHAR`). The
+    existing rendered-UI test at
+    `app/tests/rendered-ui.spec.ts:165` hides the bug because it
+    explicitly casts `business_date` to VARCHAR.
+
+  ### Track H - Renderer omissions (added by Codex re-review)
+  - H1 `high` Fact detail pages drop the `Source:` citation /
+    link. The renderer at `app/src/App.tsx:1184` shows statement,
+    source quote, derived implication, and related facts but not
+    the actual SRC card link. The `factCatalog` type at
+    `app/src/factCatalog.ts:3` does not carry the source URL
+    through. Learners cannot trace a claim back to its source from
+    `/#/facts/<fact>` even though the Markdown source has it (e.g.
+    `facts/bi-modeling-banking.md:24`).
+  - H2 `high` Exam cards render expected outputs but omit the
+    `recommended_learner_tasks` and `source_facts` metadata that
+    exists in the YAML pack. Renderer at `app/src/App.tsx:1060`;
+    metadata at `exams/bi-foundations/bi-foundations-exam.md:13`.
+    Effect: the exam pack reads as the sum of expected outputs
+    only, with no anchor to terminology or learner-task practice.
+  - H3 `medium` Challenge inputs that name `path:` references are
+    dropped by the renderer. Example: orientation quiz points to
+    `docs/README.md` at
+    `challenges/manifests/orientation-quiz.yaml:16`, but the
+    challenge renderer at `app/src/App.tsx:601` shows
+    description / grain / tables / sensitive fields only.
+    Learners cannot navigate to the referenced material from the
+    challenge page.
+  - H4 `medium` Metric-contract challenge passes when `grain` is
+    semantically wrong. `challenges/manifests/deposit-metric-contract.yaml:42,56`
+    requires the field to exist; the validator at
+    `app/src/configEvidence.ts:252` enforces only
+    `source_table` / `measure` / `aggregation` / `date_role`
+    field values. So a learner can fill in any grain string and
+    still pass the central grain-teaching challenge.
+  - H5 `medium` Quiz page reveals answer and explanation for
+    every question in the bank at once after a single submit.
+    Renderer at `app/src/App.tsx:942,1027`. There is no
+    "answer-this-one, see-feedback" loop; the page becomes an
+    answer-key dump as soon as the learner submits any question.
+  - H6 `high` Tutorial content sidebar eyebrow on tutorial routes
+    reads "Layered tutorial sketches and contracts" at
+    `app/src/content.ts:75`. This undercuts the promise that
+    tutorials are finished lessons; "sketches and contracts" is
+    authoring-phase language.
+  - H7 `low` Markdown-backed content sections render the sidebar
+    eyebrow as "Lessons" for Docs, Regulations, and Terminology
+    too (`app/src/App.tsx:2877`). Mislabels reference surfaces as
+    lessons.
+
+  ### Codex review notes
+
+  Codex re-reviewed this audit on 2026-05-17 with both static
+  source-reading and a Node DuckDB execution path. Codex could
+  not drive the deployed site live (Chromium launch failed with a
+  macOS Mach-port permission denial in its sandbox; `curl`
+  against the deployed URL failed DNS resolution in its sandbox).
+  Codex's full output is at `/tmp/codex-learner-review.md`.
+
+  Codex agreed with the original audit rows A1, A2, A4, A5, B1,
+  B3, B4, B6, B7, C1, C2, D2, E2, F1, F2, F3 and added the new
+  Track G (G1) and Track H (H1-H7) findings above.
+
+  Notable: Codex did NOT corroborate audit rows D1 and D3 from
+  its scope, so those remain authored-only observations until a
+  separate review pass with live click-through can confirm.
+  - Fix plan: open one PR per track. Order by learner impact:
+    Track G (G1) first because broken workbench output rendering
+    invalidates every SQL-tutorial verification. Track A and
+    Track B next; both are high-value learner-experience fixes.
+    Track H next, because metadata-renderer omissions are
+    surgical code changes with clear scope. Tracks C, D, E, F
+    last; mostly authoring-side and policy.
+  - Status: open. Each track ships as its own PR.
 
 - ID: CODEX-VERDICT-RUN-2026-05-17.
   - Area: tutorials/learner-tasks/README ordering wording.

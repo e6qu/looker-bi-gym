@@ -704,6 +704,52 @@ its own PR; deliver in order of learner impact.
   into a separate "dataset reference" footer where the version label
   is informational, not instructional.
 
+### Phase 13.G - Runtime / result fidelity
+
+This track has the highest learner impact because it can make a
+correct SQL query appear wrong in the workbench output. Carries
+`BUGS.md :: LEARNER-PERSPECTIVE-AUDIT-2026-05-17` row G1.
+
+- Detect Arrow-typed cell values in `formatSqlCellValue`
+  (`app/src/App.tsx`) and format dates, timestamps, decimals, and
+  bigints into tutorial-shaped strings (`2026-03-29` not
+  `1769644800000`; `16450` not `"16450"`).
+- Extend `runSqlPreview` (`app/src/sqlRuntime.ts`) to return typed
+  cells, or expose Arrow column types so the formatter can branch
+  on type.
+- Add a rendered-UI Playwright assertion that a plain
+  `SELECT business_date, currency_code, SUM(ledger_balance) ...`
+  query against `deposits-seed/v0.1.0` displays `2026-03-29` and
+  numeric `16450` exactly (no CAST AS VARCHAR shortcut).
+- Sweep all tutorial SQL examples to confirm the workbench output
+  matches the tutorial's expected-table text after the formatter
+  fix.
+
+### Phase 13.H - Renderer omissions
+
+Carries rows H1 through H7. Each is a surgical code change in
+`app/src/`.
+
+- H1: surface the source link on `#/facts/<fact>`. Extend the
+  `factCatalog` shape to carry the SRC card URL and the SRC card
+  slug, and render a "Source" row on the fact detail page.
+- H2: render `recommended_learner_tasks` and `source_facts` on the
+  exam card view at `app/src/App.tsx:1060` (or explicitly hide
+  them and document the choice in the renderer comment).
+- H3: render `input.path` references on challenge pages so the
+  learner can open the named material.
+- H4: extend the `browser-config` challenge validator to allow
+  value matching on `grain`, and add a fixture asserting that
+  a wrong-grain answer fails.
+- H5: convert quiz feedback to per-question reveal after that
+  question's answer is submitted; remove the global "show every
+  answer at once" behaviour.
+- H6: change the tutorial sidebar eyebrow at
+  `app/src/content.ts:75` from "Layered tutorial sketches and
+  contracts" to learner-finished phrasing.
+- H7: replace the generic "Lessons" eyebrow on Docs, Regulations,
+  and Terminology with per-section labels.
+
 ## Split Plans
 
 - [PLAN_BI_TUTORIAL_APP.md](PLAN_BI_TUTORIAL_APP.md): app skeleton, runtime,
