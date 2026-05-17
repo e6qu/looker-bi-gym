@@ -1511,319 +1511,1090 @@ questions:
   medium:
     - id: q-medium-fanout-delta
       type: numeric
-      estimated_seconds: 70
+      estimated_seconds: 90
       recommended_learner_tasks: [LT-BI-002]
       source_facts:
         - FACT-BI-FANOUT-JOIN-RISK
         - FACT-DEPOSITS-FANOUT-CONTROL-TOTALS
-      prompt: >
-        The correct latest account-grain balance total is 95700. The naive
-        owner-joined total is 164800. What is the overstatement delta?
+      prompt: |
+        A "deposits by owner" report on the latest day reads
+        `RON+EUR equivalent 164,800`. The reconciliation against the
+        source's latest account-grain `SUM(ledger_balance)` reads
+        `95,700`. The owner table has 9 rows for 6 accounts - three
+        accounts are jointly owned. The serving SQL is:
+
+            SELECT
+              o.customer_id,
+              SUM(b.ledger_balance) AS total_balance
+            FROM account_daily_balances b
+            INNER JOIN account_owners o USING (account_id)
+            WHERE b.business_date = '2026-03-31'
+            GROUP BY o.customer_id;
+
+        How much money is the report claiming exists that the source
+        does not actually back? (Enter the absolute overstatement in
+        the dataset's reporting unit.)
       answer: 69100
-      explanation: >
-        The owner join duplicates balance facts. The overstatement is 164800
-        minus 95700, which equals 69100.
-      self_assessment: >
-        If the duplicated measure is not obvious, isolate the join before adding
-        dashboard fields.
+      explanation: |
+        The `INNER JOIN account_owners` is many-to-many on the account
+        side (some accounts have two owners). Each account row is
+        replicated once per owner before the `SUM`. The dataset's
+        9-vs-6 ratio means 3 accounts contribute their balance twice
+        in the joined intermediate, inflating the total by exactly
+        those three accounts' worth of phantom money.
+
+        Source latest total = 95,700. Report total = 164,800. The
+        overstatement is `164,800 - 95,700 = 69,100`. That is not a
+        rounding error or an FX drift; it is real-shaped money the
+        report is conjuring out of duplicated rows.
+
+        The fix is one of two shapes:
+
+        - Reduce the owner side to one share per account first
+          (e.g. allocate by `1 / owner_count`), then join.
+        - Compute the per-account total first (which the source
+          already gives you), then join an owner roster *for
+          display* only, without re-aggregating balances.
+
+        If the report stays as-is, every published number it shows
+        is high by ~72% on this day.
+      self_assessment: |
+        Any time a balance metric joins to ownership / membership /
+        membership-history, write the reconciliation total side by
+        side. A 70%+ delta means the join changed the grain; it
+        will not be fixable on the chart side.
     - id: q-medium-reduce-before-join
       type: multiple_choice
-      estimated_seconds: 80
+      estimated_seconds: 90
       recommended_learner_tasks: [LT-BI-002]
       source_facts:
         - FACT-BIGQUERY-REDUCE-BEFORE-JOIN
         - FACT-BI-FANOUT-JOIN-RISK
-      prompt: >
-        A query joins daily balances to owners before aggregating. Which rewrite
-        best reduces fanout and unnecessary join work?
+      prompt: |
+        Code review: a colleague's query for "deposits by owner"
+        looks like this:
+
+            SELECT
+              o.customer_id,
+              b.business_date,
+              SUM(b.ledger_balance) AS total_balance
+            FROM account_daily_balances b
+            INNER JOIN account_owners o USING (account_id)
+            WHERE b.business_date = '2026-03-31'
+            GROUP BY o.customer_id, b.business_date;
+
+        The `account_owners` table has 9 rows for 6 accounts (three
+        joint accounts). The reconciliation total against the source
+        is `95,700` but this query returns `164,800` in total - a
+        ~72% overstatement. Which rewrite fixes the fanout without
+        changing the business meaning?
       options:
         - id: aggregate_first
-          label: Aggregate balances to the required account/date grain in a CTE before joining owners.
+          label: |
+            Aggregate balances to one row per `(account_id,
+            business_date)` in a CTE first, then join to owners
+            (allocating by `1 / owner_count` if the metric should
+            be split, or keeping account-grain balance separate
+            from owner display):
+
+                WITH per_account AS (
+                  SELECT account_id, business_date,
+                         SUM(ledger_balance) AS account_balance
+                  FROM account_daily_balances
+                  WHERE business_date = '2026-03-31'
+                  GROUP BY account_id, business_date
+                ),
+                shares AS (
+                  SELECT account_id,
+                         1.0 / COUNT(*) OVER (PARTITION BY account_id)
+                           AS share
+                  FROM account_owners
+                )
+                SELECT o.customer_id,
+                       SUM(p.account_balance * s.share) AS total_balance
+                FROM per_account p
+                JOIN account_owners o USING (account_id)
+                JOIN shares s USING (account_id)
+                GROUP BY o.customer_id;
         - id: distinct_at_end
-          label: Keep the raw owner join and add `SELECT DISTINCT` at the end to remove duplicates.
+          label: |
+            Keep the raw owner join and add `SELECT DISTINCT
+            customer_id, business_date, total_balance ...` at the
+            end. Duplicates are removed after the SUM so the chart
+            shows only one row per customer-day.
         - id: group_by_owner_account
-          label: Keep the raw owner join and `GROUP BY account_id, customer_id` to collapse it.
+          label: |
+            Keep the raw owner join and add `account_id` to the
+            `GROUP BY`. That keeps the SUM at account grain so the
+            inflation goes away.
       answer: aggregate_first
-      explanation: >
-        Reducing data before a join limits both cost and grain risk. Joining raw
-        many-to-many rows first can multiply measures.
-      self_assessment: >
-        If the join changes the number of measure rows unexpectedly, reduce to
-        the required grain first.
+      explanation: |
+        The fanout happens between the `INNER JOIN` and the `SUM`:
+        each account row appears once per owner *before* the
+        balance is summed, so the SUM operates on duplicated
+        balance values.
+
+        Why the other rewrites do not work:
+
+        - **`SELECT DISTINCT`**. The duplicates are inside the
+          aggregate; the `SUM` already saw the duplicated rows and
+          produced the inflated number. Adding DISTINCT to the
+          *output* deduplicates rows that already carry the wrong
+          total. The chart shows one row per customer-day with the
+          wrong total.
+        - **`GROUP BY account_id`**. This produces per-account rows
+          and stops the fanout - but it also drops the customer
+          grain you were trying to report on. The chart no longer
+          answers "deposits per customer"; it answers "deposits
+          per account", which is the original source.
+
+        The right pattern is **reduce, then join**:
+        1. Reduce balances to one row per account at the report's
+           reference date (CTE 1).
+        2. Compute owner shares per account (CTE 2, optional).
+        3. Join the two and aggregate to the customer grain you
+           actually want.
+
+        This pattern is so common in BI that it has a name -
+        "aggregate before join" - and is the cert-correct response
+        any time a fact joins to a many-to-many ownership table.
+      self_assessment: |
+        If a query joins a balance / amount / measure to a
+        membership / ownership table, the safe shape is to reduce
+        one side before joining. `DISTINCT` and chart-side filters
+        cannot undo a join-changed grain.
     - id: q-medium-qualify-latest-row
       type: multiple_choice
-      estimated_seconds: 80
+      estimated_seconds: 90
       recommended_learner_tasks: [LT-SQL-003]
       source_facts:
         - FACT-BIGQUERY-QUALIFY-WINDOW-FILTER
         - FACT-BIGQUERY-WINDOW-PRESERVES-ROWS
-      prompt: >
-        A BigQuery query ranks snapshots inside each account and needs only the
-        latest row per account. Which pattern fits?
+      prompt: |
+        The latest-day scorecard reads from a per-account snapshot
+        table with multiple `business_date` rows per account, and
+        you want one row per account showing the most recent
+        snapshot's balance. Sample:
+
+            account_id | business_date | ledger_balance
+            A1001      | 2026-03-29    | 42800
+            A1001      | 2026-03-30    | 43120
+            A1001      | 2026-03-31    | 43000
+            A1003      | 2026-03-29    | 18640
+            A1003      | 2026-03-31    | 19000
+
+        Three candidate SQL shapes:
+
+            -- (A) QUALIFY with ROW_NUMBER
+            SELECT account_id, business_date, ledger_balance
+            FROM snapshots
+            QUALIFY ROW_NUMBER() OVER (
+              PARTITION BY account_id
+              ORDER BY business_date DESC
+            ) = 1;
+
+            -- (B) MAX in SELECT
+            SELECT account_id, MAX(business_date) AS business_date,
+                   ledger_balance
+            FROM snapshots
+            GROUP BY account_id;
+
+            -- (C) ORDER BY + LIMIT, filter on chart side
+            SELECT account_id, business_date, ledger_balance
+            FROM snapshots
+            ORDER BY business_date DESC
+            LIMIT 1;
+
+        Which one is correct?
       options:
         - id: qualify_rank
-          label: "`ROW_NUMBER() OVER (PARTITION BY account_id ORDER BY snapshot_date DESC)` with `QUALIFY rn = 1`."
+          label: |
+            (A). `ROW_NUMBER() OVER (PARTITION BY account_id
+            ORDER BY business_date DESC) = 1` ranks each account's
+            snapshots latest-first; `QUALIFY` keeps only rank 1.
+            Output: one row per account, with the `ledger_balance`
+            that belongs to the latest `business_date` for that
+            account.
         - id: max_in_select
-          label: "`SELECT account_id, MAX(snapshot_date), balance ...` so the row with the latest date wins per account."
+          label: |
+            (B). `SELECT account_id, MAX(business_date), ledger_balance
+            ... GROUP BY account_id`. The `MAX` returns the latest
+            date per account; the `ledger_balance` in the SELECT
+            list is grouped alongside it, so the row is consistent.
         - id: order_limit
-          label: "`SELECT * FROM snapshots ORDER BY snapshot_date DESC LIMIT 1`, scoped by account through the chart filter."
+          label: |
+            (C). `ORDER BY business_date DESC LIMIT 1` returns the
+            single most-recent row. Scope it per account via a
+            chart-side filter that re-runs the query for each
+            account.
       answer: qualify_rank
-      explanation: >
-        QUALIFY filters window-function results after ranking, which is a clear
-        latest-row selection pattern.
-      self_assessment: >
-        If latest-row logic depends on chart sorting, move the selection into
-        SQL.
+      explanation: |
+        Only (A) returns one row per account with the matching
+        balance.
+
+        (B) is wrong in a subtle way: `MAX(business_date)` is fine,
+        but `ledger_balance` in the SELECT list is not in `GROUP
+        BY` and is not aggregated. BigQuery and most engines will
+        reject this with an "expression not aggregated and not in
+        group by" error. Even if a permissive engine ran it, the
+        returned `ledger_balance` would be from an arbitrary row in
+        the group, not necessarily the row matching the MAX date.
+
+        (C) is wrong because `LIMIT 1` returns one row from the
+        entire table, not one per account. You would get the most
+        recent row across all accounts. Pushing the
+        "per account" logic into a chart-side filter does not
+        work either: the query has already returned 1 row before
+        the chart filters it.
+
+        Production tip: when the per-group latest pattern is hot,
+        consider materialising a `latest_per_account` view or a
+        partitioned table; the `QUALIFY` query is small but it
+        scans the whole snapshot history on every refresh unless
+        the table is pruned.
+      self_assessment: |
+        For "latest row per group" patterns, the safe shape is
+        `ROW_NUMBER() OVER (PARTITION BY ... ORDER BY ... DESC)
+        = 1`, then `QUALIFY` (or wrap in a CTE and `WHERE rn = 1`).
+        `MAX` alone does not pick a row; it picks a value.
     - id: q-medium-month-end-date-check
       type: multiple_choice
-      estimated_seconds: 75
+      estimated_seconds: 80
       recommended_learner_tasks: [LT-SQL-003]
       source_facts:
         - FACT-BIGQUERY-LAST-DAY-MONTH-END
         - FACT-BIGQUERY-DATE-TRUNC-GRANULARITY
         - FACT-BI-REFERENCE-DATE-SEPARATION
-      prompt: >
-        A monthly exposure query must keep only true month-end `as_of_date`
-        values. Which check belongs in SQL?
+      prompt: |
+        The lending exposure mart claims one row per loan per
+        **month-end** `as_of_date`. While profiling the data you
+        find an extra row dated `2026-03-15` (mid-month), inserted
+        by an off-cycle reconciliation job. The dashboard's monthly
+        trend should ignore that row. Which `WHERE` predicate
+        belongs in the serving SQL?
+
+        Sample dates in the table:
+
+            2026-01-31     (real month-end - keep)
+            2026-02-28     (real month-end - keep, Feb has 28 days in 2026)
+            2026-03-15     (off-cycle - drop)
+            2026-03-31     (real month-end - keep)
       options:
         - id: last_day_check
-          label: "`WHERE as_of_date = LAST_DAY(as_of_date)` to keep only true month-end snapshots."
+          label: |
+            `WHERE as_of_date = LAST_DAY(as_of_date)`. The
+            `LAST_DAY` function computes the actual last day of the
+            month each date falls in (28 for Feb 2026, 31 for
+            March 2026, etc.), so the predicate keeps only rows
+            whose `as_of_date` already is that month's last day.
         - id: day_28_or_later
-          label: "`WHERE EXTRACT(DAY FROM as_of_date) >= 28` to keep rows on or after the 28th of any month."
+          label: |
+            `WHERE EXTRACT(DAY FROM as_of_date) >= 28`. Drop any
+            row before the 28th. Catches the 2026-03-15 outlier
+            and is simple to read; works for every month because
+            month-end is always >= 28.
         - id: month_diff
-          label: "`WHERE DATE_TRUNC(as_of_date, MONTH) = as_of_date` to keep rows whose date is the first day of the month."
+          label: |
+            `WHERE DATE_TRUNC(as_of_date, MONTH) = as_of_date`.
+            `DATE_TRUNC` returns the **first** day of the month;
+            comparing to the date keeps only rows that fall on
+            the first of the month, which is what "month-end" means
+            in dimensional-modelling speak.
       answer: last_day_check
-      explanation: >
-        Month-end logic should use date functions and source reference dates,
-        not string appearance or report refresh time.
-      self_assessment: >
-        If the month-end filter is not reproducible from the date value, rewrite
-        it.
+      explanation: |
+        `LAST_DAY(d)` returns the actual last day of `d`'s month -
+        2026-01-31, 2026-02-28, 2026-03-31, etc. - so the predicate
+        `as_of_date = LAST_DAY(as_of_date)` is the exact filter for
+        "month-end snapshots only".
+
+        Why the other two fail:
+
+        - `EXTRACT(DAY FROM as_of_date) >= 28` is approximately
+          right and wrong in a way that bites later. It keeps every
+          row on the 28th, 29th, 30th, or 31st of any month - so
+          a 2026-02-28 row (real month-end) is kept, but so is a
+          2026-03-28 mid-week reconciliation snapshot if one
+          existed. The predicate doesn't actually test "is
+          month-end"; it tests "is near month-end". Off-cycle
+          jobs that happen to land on the 30th would slip
+          through.
+        - `DATE_TRUNC(as_of_date, MONTH)` returns the *first* day
+          of the month, not the last. Comparing it to `as_of_date`
+          keeps rows that fall on the 1st (2026-03-01,
+          2026-04-01, ...), which is the opposite of what you
+          want.
+
+        Production tip: in DuckDB the function is `last_day(d)`
+        (lowercase); same semantics. In Postgres, use
+        `(DATE_TRUNC('month', d) + INTERVAL '1 month' - INTERVAL
+        '1 day')::date`.
+      self_assessment: |
+        When you need "true month-end", use the engine's
+        `LAST_DAY` (or equivalent). Day-number heuristics or
+        truncation comparisons answer a slightly different
+        question and let off-cycle rows leak in.
     - id: q-medium-safe-cast-control
       type: multiple_choice
-      estimated_seconds: 80
+      estimated_seconds: 90
       recommended_learner_tasks: [LT-DQ-006]
       source_facts:
         - FACT-BIGQUERY-SAFE-CAST-DQ-NULL
         - FACT-GDPR-ACCURACY
-      prompt: >
-        A source field should parse as a number, but some rows contain invalid
-        text. After SAFE_CAST-style parsing, what should the control output
-        include?
+      prompt: |
+        Your team is importing daily transactions from a partner
+        feed. The `submitted_amount` column is supposed to be
+        numeric but ~0.4% of rows arrive as text like `"N/A"`,
+        `"unknown"`, or empty string. A teammate proposes wrapping
+        the cast in `SAFE_CAST` so the pipeline doesn't fail:
+
+            SELECT
+              transaction_id,
+              SAFE_CAST(submitted_amount AS NUMERIC) AS submitted_amount,
+              ...
+            FROM raw.transactions;
+
+        Now invalid values come through as `NULL`. What else does
+        the reconciliation control need to surface before this
+        feeds a downstream metric?
       options:
         - id: failed_parse_count
-          label: A count of rows where parsing failed and produced NULL.
+          label: |
+            A separate `failed_parse_count` column that counts the
+            rows where `submitted_amount IS NULL AND raw_submitted_amount
+            IS NOT NULL` (parse failed; the source had a value, it
+            just wasn't numeric). This count flows into the
+            reconciliation dashboard so a spike from 0.4% to 3%
+            triggers an investigation.
         - id: silent_drop
-          label: No count, because failed casts should disappear silently.
+          label: |
+            No additional control. `SAFE_CAST` returning NULL is
+            the correct behaviour - downstream SUMs ignore NULL,
+            so failed parses just don't contribute to totals.
+            Counting them adds noise.
         - id: accuracy_proven
-          label: A statement that parsing proves the source is accurate.
+          label: |
+            A `accuracy_verified = TRUE` flag on the serving view,
+            confirming that all rows now have well-typed values.
+            Downstream reports can rely on `submitted_amount` as
+            an accurate numeric field.
       answer: failed_parse_count
-      explanation: >
-        SAFE_CAST-style parsing can produce NULL for bad inputs. Those NULLs are
-        quality evidence and should be counted or reconciled.
-      self_assessment: >
-        If failed parses vanish before reconciliation, the control is hiding
-        source quality evidence.
+      explanation: |
+        `SAFE_CAST` returns `NULL` instead of raising on invalid
+        input. That keeps the pipeline running but **silently
+        loses quality signal** - the row is still there but its
+        numeric value is now indistinguishable from a row that
+        genuinely had no submitted amount.
+
+        Two consequences if you don't count the failures:
+
+        - **Downstream totals understate**. `SUM(submitted_amount)`
+          treats failed parses as zero contribution. A
+          legitimate-looking total can hide that 3% of the input
+          is unparseable.
+        - **Quality regressions are invisible**. The partner feed
+          might change format and increase the failure rate; nobody
+          notices until a stakeholder questions the totals.
+
+        The right shape:
+
+            SELECT
+              ...,
+              SAFE_CAST(submitted_amount AS NUMERIC) AS submitted_amount,
+              CASE
+                WHEN submitted_amount IS NOT NULL
+                 AND SAFE_CAST(submitted_amount AS NUMERIC) IS NULL
+                THEN 1 ELSE 0
+              END AS submitted_amount_parse_failed
+            FROM raw.transactions;
+
+        And then surface `SUM(submitted_amount_parse_failed)` as a
+        reconciliation metric next to the main total. A NULL from
+        a real missing value (source sent nothing) is distinct
+        from a NULL from a parse failure (source sent something
+        unparseable), and both are distinct from a real zero.
+
+        GDPR's accuracy principle (Article 5(1)(d)) also expects
+        personal-data accuracy to be maintained - silently
+        replacing invalid values with NULL without recording the
+        failure makes accuracy regressions invisible to the
+        accountable owner.
+      self_assessment: |
+        Whenever a cast can fail, the failure count is a
+        first-class control metric. SAFE_CAST without a parse-
+        failure counter is a pipeline that lies quietly when the
+        source format drifts.
     - id: q-medium-looker-aggregation-context
       type: multiple_choice
-      estimated_seconds: 80
+      estimated_seconds: 90
       recommended_learner_tasks: [LT-LOOKER-004]
       source_facts:
         - FACT-LOOKER-STUDIO-DIMENSION-CONTEXT
         - FACT-LOOKER-STUDIO-DEFAULT-AGGREGATION
-      prompt: >
-        A Looker Studio table first groups a measure by currency, then by
-        currency and branch. What should be checked before comparing the two
-        totals?
+      prompt: |
+        On the deposits dashboard you have two tables that read
+        from the same data source:
+
+        - **Table A**: Dimensions `currency_code`; Metric
+          `SUM(ledger_total)`. Shows two rows:
+          `RON 79,300` and `EUR 16,400`.
+        - **Table B**: Dimensions `currency_code, branch_city`;
+          Metric `SUM(ledger_total)`. Shows seven rows summing to
+          the same `95,700`.
+
+        A stakeholder asks: "Why does Table A show RON = 79,300
+        but Table B's RON rows sum to 79,300 *only* when I include
+        the UNMAPPED_BRANCH row?". What does the BI author need
+        to check before answering?
       options:
         - id: dimension_context
-          label: The chart dimensions and default aggregation used by the measure.
+          label: |
+            The chart's **dimension context** and the metric's
+            **default aggregation**. Table A groups by
+            `currency_code` only, so all RON rows in the source
+            collapse into one. Table B groups by `currency_code
+            AND branch_city`, so each branch's RON contribution
+            shows separately; the same 79,300 is just distributed
+            across rows. The "RON without UNMAPPED" undercount is
+            the user filtering out the UNMAPPED_BRANCH row in
+            Table B by accident; the metric itself is consistent.
         - id: chart_filter_only
-          label: Only the chart-level filter, since adding a dimension cannot change a SUM total.
+          label: |
+            The chart-level filter on each table. Adding a
+            dimension cannot change a `SUM` total; the only thing
+            that can is a filter. Some chart-level filter on
+            Table B is silently dropping the UNMAPPED_BRANCH row.
         - id: data_freshness
-          label: Only the data freshness setting, since the underlying source rows are the same.
+          label: |
+            The data freshness setting. The two tables are likely
+            reading from different cached snapshots; flush the
+            data source cache and the discrepancy will resolve.
       answer: dimension_context
-      explanation: >
-        Looker Studio aggregates metrics in the context of chart dimensions.
-        Changing dimensions can change what the displayed total means.
-      self_assessment: >
-        If a measure changes meaning when a dimension is added, check
-        aggregation and grain.
+      explanation: |
+        Aggregates in Looker Studio (and SQL in general) are
+        relative to the **grain of the grouping dimensions**.
+        Adding a dimension splits each existing row into
+        sub-rows - the *sum across all rows* stays the same, but
+        the rows look different.
+
+        Walking through the numbers from the deposits seed:
+
+        Table A (one dimension, `currency_code`):
+
+            currency_code | ledger_total
+            RON           | 79300
+            EUR           | 16400
+            (sum across rows: 95700)
+
+        Table B (two dimensions, `currency_code, branch_city`):
+
+            currency_code | branch_city     | ledger_total
+            RON           | Bucuresti       | 43000
+            RON           | Iasi            | 19000
+            RON           | Timisoara       | 12300
+            RON           | UNMAPPED_BRANCH |  5000
+            EUR           | Brasov          |  7100
+            EUR           | Cluj-Napoca     |  9300
+            (sum across rows: 95700)
+
+        The RON rows in Table B sum to 79,300 only if you include
+        UNMAPPED_BRANCH. The stakeholder was probably hiding it
+        and seeing 74,300, then asked the question. The metric is
+        not wrong; the **filter** the user implicitly applied is.
+
+        The freshness distractor is the kind of explanation that
+        sounds reasonable when you're under pressure. It is rarely
+        the right answer in practice; before reaching for it,
+        check whether the two charts even claim to show the same
+        thing.
+      self_assessment: |
+        Whenever two charts on the same data source disagree,
+        first list each chart's dimensions and metrics side by
+        side. The disagreement is almost always grain (different
+        dimensions) or filter (different `WHERE`), not freshness
+        or caching.
     - id: q-medium-blend-field-scope
       type: select_all
-      estimated_seconds: 90
+      estimated_seconds: 100
       recommended_learner_tasks: [LT-BI-002, LT-LOOKER-004]
       source_facts:
         - FACT-LOOKER-STUDIO-BLEND-MORE-ROWS
         - FACT-LOOKER-STUDIO-BLEND-FIELD-SUBSET
         - FACT-BI-FANOUT-JOIN-RISK
-      prompt: >
-        A Looker Studio blend joins balances to a branch mapping. Which checks
-        reduce the chance of wrong totals?
+      prompt: |
+        Looker Studio blend draft: left source is the deposits
+        balance serving view (one row per account-day with
+        `business_date, account_id, ledger_balance, currency_code,
+        branch_id`); right source is a "branch enrichment" sheet
+        someone uploaded (one row per branch with `branch_id,
+        branch_name, region, comments_field, signoff_date,
+        last_inspection`). Join key is `branch_id`.
+
+        The blend's `SUM(ledger_balance)` reads `RON 87,500` on
+        2026-03-31, but the upstream warehouse control total reads
+        `RON 79,300`. Which checks belong in the review before
+        publishing? (Select all that apply.)
       options:
         - id: join_key_grain
-          label: State the join key and expected grain before trusting the total.
+          label: |
+            Confirm the join is **1:N (not N:M)** by counting the
+            right source's rows per `branch_id`. If the enrichment
+            sheet has duplicate rows for a `branch_id` (someone
+            edited the row twice and didn't delete the original),
+            the blend duplicates balance rows.
         - id: needed_fields_only
-          label: Include only the fields required for the chart.
+          label: |
+            Restrict the blend to the fields the chart actually
+            renders. Don't include `comments_field, signoff_date,
+            last_inspection` if the chart only needs
+            `branch_name` and `region` - extra fields widen the
+            data-source surface and can drag personal data into
+            the blend.
         - id: compare_control_total
-          label: Compare the blended total to a known upstream control total.
+          label: |
+            Reconcile the blended `SUM(ledger_balance)` against
+            the warehouse control total before publishing. A
+            difference like `87,500 - 79,300 = 8,200` is
+            evidence the join changed the grain; the right
+            answer is upstream, not in the blend.
         - id: add_all_fields
-          label: Add every available field so the blend is more complete.
+          label: |
+            Include every field from both sources in the blend so
+            the dashboard has options to add later without
+            re-doing the blend.
       answer: [join_key_grain, needed_fields_only, compare_control_total]
-      explanation: >
-        Blends can create extra rows when join conditions match multiple
-        records. Narrow fields, stated join grain, and upstream controls make
-        that risk visible.
-      self_assessment: >
-        If a blend total lacks an upstream control total, reproduce the metric
-        upstream before release.
+      explanation: |
+        Looker Studio blends are SQL-style joins under the hood,
+        and they suffer the same fanout failure mode as any join.
+        The three useful checks before publishing:
+
+        - **State the join shape**. Count rows per join key on
+          the right source. If `account_owners`-style 1:N becomes
+          N:M (the right source has duplicate branch IDs), the
+          left side fans out. The `87,500 - 79,300 = 8,200`
+          overstatement is roughly one branch's worth of balance
+          appearing twice.
+        - **Narrow the field set**. Each extra column on the
+          blend widens the access surface. `comments_field` on a
+          branch enrichment sheet is the kind of column that
+          carries free-text notes nobody intended to publish.
+          Drop fields the chart doesn't need.
+        - **Reconcile against an upstream control total**.
+          Compute the same metric in the warehouse and compare.
+          If the blend disagrees, the blend is wrong (or the
+          warehouse is, but the warehouse has more eyes on it).
+
+        The "add all fields" distractor is the most common
+        mistake. It feels like flexibility ("we might want
+        signoff_date later") but every added field is another
+        place a stale, mis-typed, or sensitive value can leak
+        through into a published surface.
+      self_assessment: |
+        Before publishing any blend, write down the join key, the
+        row-count check, the field list, and the upstream control
+        total. If any of those four is missing, the blend isn't
+        ready.
     - id: q-medium-owner-viewer-credentials
       type: multiple_choice
-      estimated_seconds: 80
+      estimated_seconds: 90
       recommended_learner_tasks: [LT-LOOKER-004]
       source_facts:
         - FACT-LOOKER-STUDIO-OWNER-CREDENTIALS-RISK
         - FACT-LOOKER-STUDIO-VIEWER-CREDENTIALS
-      prompt: >
-        A Looker Studio report can run with owner credentials or viewer
-        credentials. What is the practical access-control question?
+      prompt: |
+        The compliance dashboard contains EUR-equivalent
+        depositor-bank coverage estimates. The report has three
+        named viewer groups (`compliance-leads@`, `risk-team@`,
+        `internal-audit@`) and is set to refresh once an hour. A
+        teammate proposes "set the data source credentials to
+        **Owner credentials**, that way nobody has to be granted
+        BigQuery access; the report just works for everyone we
+        share it with". What's the underlying access-control
+        question the team is actually answering by picking owner
+        vs viewer credentials?
       options:
         - id: whose_access
-          label: Whether the BigQuery query runs as the owner's identity or as each viewer's identity.
+          label: |
+            Whether each BigQuery query the report fires runs **as
+            the owner's IAM identity** (so any viewer can see
+            anything the owner can see, with no BigQuery grant of
+            their own) or **as each viewer's IAM identity** (so
+            BigQuery enforces row-/column-level controls per
+            viewer based on what *they* are allowed to see). The
+            decision pins where the access boundary actually
+            lives - in the report's share list, or in BigQuery
+            grants.
         - id: refresh_interval_only
-          label: Whether the data freshness interval is shorter or longer than 1 hour.
+          label: |
+            Whether the data freshness interval is shorter or
+            longer than 1 hour. Owner credentials are required
+            for shorter freshness; viewer credentials force a
+            minimum of 1 hour.
         - id: data_source_type
-          label: Whether the data source is embedded in the report or reusable across reports.
+          label: |
+            Whether the data source is **embedded** in this one
+            report or **reusable** across reports. Owner credentials
+            are only available on embedded data sources; reusable
+            ones must use viewer credentials.
       answer: whose_access
-      explanation: >
-        Credential mode affects whose access is used when the report reads data.
-        That decision should match the intended sharing boundary.
-      self_assessment: >
-        If report viewers can see data without the intended access path, revisit
-        credentials and serving views.
+      explanation: |
+        Looker Studio data sources have a `Credentials` setting
+        with two values:
+
+        - **Owner credentials**: every query the report issues to
+          BigQuery runs as the data-source owner's IAM identity.
+          A viewer who can open the report can see all the data
+          the owner can see; no per-viewer BigQuery grants are
+          needed. This is convenient for broad sharing of
+          aggregate dashboards where the owner has narrowed the
+          view to safe fields.
+        - **Viewer credentials**: each query runs as the viewer's
+          own IAM identity. BigQuery's row-access policies,
+          policy-tagged columns, and dataset-level grants are
+          enforced per viewer. This is needed when the underlying
+          table has per-identity restrictions.
+
+        The risk of **owner credentials** is exactly what makes
+        them convenient: the data boundary becomes the report's
+        share-list (which is in Looker Studio, not BigQuery).
+        Adding `compliance-leads@` as a viewer effectively gives
+        them whatever the owner can see; if the owner is a
+        privileged BigQuery user, the report quietly amplifies
+        that access.
+
+        For sensitive coverage data, the safer choice is usually
+        viewer credentials *plus* an authorized view that exposes
+        only safe aggregate fields - so the viewer's identity is
+        what BigQuery checks, but the view's projection already
+        narrows what is reachable.
+      self_assessment: |
+        Before publishing, write down: who is the credential
+        identity, what BigQuery objects can it reach, and what
+        share list governs that identity? If the chain ends in
+        "the owner can see everything", the report has bypassed
+        BigQuery's IAM model.
     - id: q-medium-dry-run-publication-check
       type: multiple_choice
-      estimated_seconds: 75
+      estimated_seconds: 85
       recommended_learner_tasks: [LT-LOOKER-007]
       source_facts:
         - FACT-BIGQUERY-QUERY-VALIDATOR-BYTES
         - FACT-BIGQUERY-DRY-RUN-BYTES
         - FACT-LOOKER-STUDIO-BIGQUERY-REFRESH-COST
-      prompt: >
-        A BigQuery-backed report query will refresh repeatedly. What should be
-        checked before publication?
+      prompt: |
+        A new Looker Studio report fires this query against
+        BigQuery to populate a scorecard - it will run on every
+        page open, every minute on the open-tab refresh, and on
+        each viewer's session:
+
+            SELECT currency_code, SUM(ledger_balance) AS ledger_total
+            FROM `proj.dataset.fct_account_daily_balances`
+            WHERE branch_id IN ('BR-B-01', 'BR-IS-01')
+            GROUP BY currency_code;
+
+        Before publishing, what should the BI author check?
       options:
         - id: byte_estimate
-          label: A query validator or dry-run byte estimate for the serving query.
+          label: |
+            Run a **dry-run** (or open the BigQuery UI query
+            validator) on the literal SQL. The dry-run reports
+            `Total bytes processed` without running the query.
+            On a partitioned 18-month table without a partition
+            filter, that estimate is often 100x-1000x what the
+            author guessed; the right design choice (add
+            `business_date = MAX(...)` predicate, or materialise)
+            depends on knowing the number.
         - id: cache_hit_only
-          label: Only that the first run returned `cache_hit = TRUE`, so future refreshes will not bill.
+          label: |
+            Run the query once and confirm `cache_hit = TRUE` on
+            the second run. BigQuery's results cache means the
+            query is billed only once; subsequent Looker Studio
+            refreshes hit the cache for free.
         - id: row_count_proxy
-          label: Only the chart's displayed row count, since bytes processed and rows displayed are equivalent.
+          label: |
+            Use the **rendered row count** in Looker Studio as
+            the cost proxy. A scorecard returning two rows
+            (one per currency) is small; the warehouse scan is
+            proportional to the displayed result.
       answer: byte_estimate
-      explanation: >
-        Looker Studio refreshes can trigger BigQuery query costs. Pre-run byte
-        estimates help judge whether the serving query is acceptable.
-      self_assessment: >
-        If a report query has no cost estimate, check it before repeated
-        refreshes.
+      explanation: |
+        BigQuery bills on **bytes processed**, not rows displayed.
+        A scorecard that renders two rows can scan a terabyte
+        upstream if the SQL doesn't prune partitions. The
+        dry-run / query validator gives you that number without
+        running the query:
+
+            -- BigQuery SQL UI: "$<bytes> will be processed"
+            -- under the editor before clicking Run.
+
+            -- API: jobs.insert with dryRun=true returns
+            -- statistics.query.totalBytesProcessed.
+
+        Why the other answers fail:
+
+        - **Results cache**. BigQuery's results cache is invalidated
+          when the underlying table data changes. For a daily fact
+          table, every overnight load invalidates the cache; the
+          next morning's first refresh is a full scan, and Looker
+          Studio repeats that every hour all day. Cache hit on
+          run 2 says nothing about run 24.
+        - **Row count proxy**. The displayed row count is
+          downstream of the warehouse scan. A `SUM(...) GROUP BY
+          currency_code` returns 2 rows whether the scan touches
+          1 MB or 1 TB.
+
+        Production tip: combine the dry-run check with the
+        partition-pruning check from the easy section. A
+        `WHERE business_date = (SELECT MAX(business_date) ...)`
+        predicate reduces the scan to one partition; the dry-run
+        then shows a small number; the report is cheap to refresh.
+      self_assessment: |
+        For every BigQuery-backed dashboard, the byte-estimate is
+        the only honest cost signal before publish. Cache hits,
+        row counts, and "it ran fast for me" are not substitutes.
     - id: q-medium-control-parameter-predicate
       type: multiple_choice
-      estimated_seconds: 80
+      estimated_seconds: 85
       recommended_learner_tasks: [LT-LOOKER-007]
       source_facts:
         - FACT-BIGQUERY-PARAMETERIZED-QUERY-USER-INPUT
         - FACT-BIGQUERY-PARAMETER-NOT-IDENTIFIER
         - FACT-LOOKER-STUDIO-CONTROL-PARAMETER-INPUT
-      prompt: >
-        A Looker Studio control supplies a selected currency to a BigQuery-backed
-        source. Which SQL predicate is the safe pattern?
+      prompt: |
+        The deposits dashboard has a `Currency` Looker Studio
+        control. The data source binds it to a BigQuery
+        parameter `@selected_currency`. Three candidate
+        binding shapes in the data source's custom SQL:
+
+            -- (A) Value predicate
+            SELECT business_date, currency_code, SUM(ledger_balance)
+            FROM `proj.dataset.account_daily_balances`
+            WHERE currency_code = @selected_currency
+            GROUP BY 1, 2;
+
+            -- (B) Table-name binding
+            SELECT business_date, currency_code, SUM(ledger_balance)
+            FROM @selected_table
+            GROUP BY 1, 2;
+
+            -- (C) Raw WHERE clause binding
+            SELECT business_date, currency_code, SUM(ledger_balance)
+            FROM `proj.dataset.account_daily_balances`
+            WHERE @raw_filter_clause
+            GROUP BY 1, 2;
+
+        Which one is the safe and supported pattern?
       options:
         - id: named_parameter_predicate
-          label: "`currency_code = @selected_currency`."
+          label: |
+            (A). `WHERE currency_code = @selected_currency` binds
+            the user-selected value into a comparison. BigQuery
+            parses the query with the parameter as a bound value;
+            the query plan and access surface are fixed; the
+            user's choice cannot change the SQL structure.
         - id: table_name_parameter
-          label: "`FROM @selected_table`."
+          label: |
+            (B). `FROM @selected_table` lets the dashboard target
+            different tables (deposits, lending, cards) by
+            switching the control. BigQuery resolves the
+            parameter as an identifier, and the rest of the SQL
+            adapts.
         - id: raw_sql_parameter
-          label: "`WHERE @raw_filter_clause`."
+          label: |
+            (C). `WHERE @raw_filter_clause` is the most flexible -
+            controls can express ranges, IN lists, and AND/OR
+            logic by passing a SQL fragment. The data source
+            evaluates the fragment as part of the query.
       answer: named_parameter_predicate
-      explanation: >
-        The selected currency is a value, so it fits a named parameter
-        predicate. SQL object names and query structure should remain fixed.
-      self_assessment: >
-        If a control changes query structure instead of a value, redesign the
-        handoff.
+      explanation: |
+        Same boundary as the easy question, harder context:
+        Looker Studio controls + BigQuery parameters work for
+        **values** only.
+
+        Why (B) and (C) fail:
+
+        - **Table-name binding**. BigQuery query parameters
+          cannot stand in for identifiers (table, dataset,
+          column, alias). The query won't parse - and even if
+          it did via string interpolation, the user would be
+          choosing which table to scan, which bypasses any IAM
+          grant scoped to specific tables.
+        - **Raw WHERE clause binding**. BigQuery parameters are
+          typed values, not SQL fragments. A column called
+          `@raw_filter_clause` that gets concatenated into the
+          query text is SQL injection (or near enough) -
+          `1=1 OR 1=1` widens the scan; a malformed fragment
+          breaks the report; nothing about the user input is
+          validated against the warehouse schema.
+
+        The right shape (A) keeps the query *shape* fixed in
+        the data source SQL and lets only the value slide in.
+        The BigQuery dry-run validates the SQL once with a
+        sample value; from then on the cost / scan / permissions
+        are predictable.
+      self_assessment: |
+        Parameters carry values. Anything that *changes the
+        shape* of the query (which table, which columns, which
+        operator) belongs in a separate governed query, not in
+        a parameter binding.
     - id: q-medium-approx-count-distinct-use
       type: multiple_choice
-      estimated_seconds: 75
+      estimated_seconds: 85
       recommended_learner_tasks: [LT-BI-002]
       source_facts:
         - FACT-BIGQUERY-APPROX-COUNT-DISTINCT
         - FACT-BIGQUERY-COUNT-DISTINCT-GRAIN
-      prompt: >
-        A dashboard owner wants a fast exploratory estimate of unique accounts,
-        then an exact count for a reconciliation signoff. Which pairing fits?
+      prompt: |
+        A 6 TB customer-events table needs two related metrics:
+        (a) a "monthly active customers" tile on a marketing
+        dashboard that refreshes every 15 minutes during the
+        day, accuracy within ~1% is fine; (b) a
+        regulatory-signoff number "depositors served per
+        quarter" that goes into the quarterly compliance report.
+
+        BigQuery offers `COUNT(DISTINCT customer_id)` (exact, can
+        be expensive for large groups) and
+        `APPROX_COUNT_DISTINCT(customer_id)` (HyperLogLog++ -
+        cheaper, ~1-2% error). Which pairing fits?
       options:
         - id: approximate_then_exact
-          label: Use approximate distinct counts for exploration and exact distinct counts for signoff.
+          label: |
+            **`APPROX_COUNT_DISTINCT` for the marketing tile**
+            (cheap, near-exact, sufficient for trend reading);
+            **`COUNT(DISTINCT customer_id)` for the regulatory
+            signoff** (exact, defensible to a reviewer who asks
+            "what is this number?"). The two metrics carry
+            different operational commitments and should use
+            different aggregates.
         - id: approximate_signoff
-          label: Use approximate distinct counts as final reconciliation evidence.
+          label: |
+            **`APPROX_COUNT_DISTINCT` for both**. The HyperLogLog
+            ~1% error is well within reporting tolerance for
+            both audiences and saves significant compute; the
+            regulator gets a number with a clearly stated
+            precision.
         - id: row_count_signoff
-          label: Use raw joined row counts for both purposes.
+          label: |
+            **Raw `COUNT(*)` after a customer join for both**.
+            Joining `customer_id` first and then counting rows
+            is simpler than reasoning about distinct counts;
+            the two reports share the same source.
       answer: approximate_then_exact
-      explanation: >
-        Approximate distinct counts are estimates. Reconciliation and coverage
-        checks should use exact grain-aware counts.
-      self_assessment: >
-        If the result will be used as a control total, avoid approximate counts.
+      explanation: |
+        `APPROX_COUNT_DISTINCT` uses HyperLogLog++; expected
+        error is ~1-2% for default precision. That is great for:
+
+        - exploratory queries,
+        - frequently-refreshed dashboards where trend matters
+          more than exact value,
+        - cost-conscious slicing across many dimensions at
+          once.
+
+        It is wrong for:
+
+        - reconciliation signoff ("the regulator's number must
+          tie back exactly"),
+        - SLA-bounded counts (no commitment without exact),
+        - any number a user might later ask "is this exactly
+          right?".
+
+        `COUNT(DISTINCT)` is exact in BigQuery for small groups
+        and uses sub-shuffle behaviour for large ones (still
+        exact, just more expensive). For ~10 million customers
+        it's slower than APPROX but not pathologically so.
+
+        Why **raw `COUNT(*)` after a join** is wrong: if the
+        join is many-to-many (one customer holds multiple
+        accounts; one account has multiple owners), `COUNT(*)`
+        counts row-multiplications, not customers. This is the
+        same fanout shape from earlier - the right answer is
+        always `COUNT(DISTINCT ...)` or pre-aggregation, never
+        post-join `COUNT(*)`.
+      self_assessment: |
+        Match the aggregate to the audience's tolerance for
+        approximation. A dashboard tile and a regulatory number
+        are two different artefacts; they don't have to share a
+        SQL function.
     - id: q-medium-last-value-frame
       type: multiple_choice
-      estimated_seconds: 80
+      estimated_seconds: 90
       recommended_learner_tasks: [LT-SQL-003]
       source_facts:
         - FACT-BIGQUERY-LAST-VALUE-FRAME
         - FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT
-      prompt: >
-        A query uses `LAST_VALUE(ledger_balance)` to get an account's latest
-        balance. What must be specified carefully for the result to mean
-        "latest"?
+      prompt: |
+        A colleague writes this to get each account's latest
+        balance alongside every snapshot:
+
+            SELECT
+              account_id,
+              business_date,
+              ledger_balance,
+              LAST_VALUE(ledger_balance) OVER (
+                PARTITION BY account_id
+                ORDER BY business_date
+              ) AS latest_balance
+            FROM account_daily_balances;
+
+        She is surprised that `latest_balance` equals
+        `ledger_balance` on every row - the "latest" column
+        always matches the current row's balance, not the
+        actual most-recent value. What does she need to specify
+        for the window to mean "latest across all snapshots for
+        this account"?
       options:
         - id: order_and_frame
-          label: "The `ORDER BY` column and the explicit window frame (`ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING`)."
+          label: |
+            Add an **explicit window frame** that spans every row
+            in the partition:
+
+                LAST_VALUE(ledger_balance) OVER (
+                  PARTITION BY account_id
+                  ORDER BY business_date
+                  ROWS BETWEEN UNBOUNDED PRECEDING
+                           AND UNBOUNDED FOLLOWING
+                ) AS latest_balance
+
+            Without an explicit frame, `ORDER BY` defaults to
+            `RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`,
+            so `LAST_VALUE` returns the current row's value.
         - id: partition_only
-          label: "Only the `PARTITION BY` clause; default frame and ordering are enough for `LAST_VALUE`."
+          label: |
+            Drop the `ORDER BY` and keep only `PARTITION BY
+            account_id`. With no ordering, the window is treated
+            as the whole partition and `LAST_VALUE` returns the
+            most recent value across it.
         - id: outer_order_by
-          label: "Only the query's outer `ORDER BY`, since window order is inherited from it."
+          label: |
+            Add an outer `ORDER BY business_date DESC` on the
+            whole `SELECT`. The window inherits the outer
+            ordering, so `LAST_VALUE` re-evaluates per
+            row using the outer sort.
       answer: order_and_frame
-      explanation: >
-        LAST_VALUE depends on the current window frame. Latest-balance logic
-        needs explicit ordering and frame behavior.
-      self_assessment: >
-        If navigation-window results look wrong, inspect the window frame before
-        changing the chart.
+      explanation: |
+        SQL window functions have three parts: PARTITION BY
+        (which group), ORDER BY (which order within the group),
+        and the **frame** (which rows inside the partition the
+        function actually sees).
+
+        The frame defaults bite here:
+
+        - If you specify `ORDER BY` but no frame, the default is
+          `RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`.
+          That makes `LAST_VALUE(...)` look back to the current
+          row only - so it returns the *current row's* value.
+        - If you specify neither ORDER BY nor frame, the default
+          is `ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED
+          FOLLOWING`. `LAST_VALUE` then returns the last row in
+          the partition... but "last" is undefined without an
+          order, so the engine picks one of the rows arbitrarily
+          (depends on shuffle order). That's why "drop the
+          ORDER BY" is also wrong.
+        - The outer `SELECT`'s `ORDER BY` does not affect window
+          evaluation; windows are computed before the outer
+          sort.
+
+        The fix is the explicit `ROWS BETWEEN UNBOUNDED
+        PRECEDING AND UNBOUNDED FOLLOWING` frame. The window
+        now sees all rows in the partition and `LAST_VALUE`
+        returns the row with the highest `business_date`.
+
+        A simpler alternative for this specific case:
+        `FIRST_VALUE` with `ORDER BY business_date DESC` and the
+        default frame, which evaluates to "first row in the
+        descending-ordered partition", i.e. the latest.
+      self_assessment: |
+        Whenever you write `LAST_VALUE` or `FIRST_VALUE`, write
+        the frame explicitly. The default frame is the source
+        of most "this window function returned the wrong row"
+        bugs.
     - id: q-medium-partition-by-window
       type: multiple_choice
-      estimated_seconds: 75
+      estimated_seconds: 85
       recommended_learner_tasks: [LT-SQL-003]
       source_facts:
         - FACT-BIGQUERY-PARTITION-BY-WINDOW
         - FACT-BIGQUERY-WINDOW-PRESERVES-ROWS
-      prompt: >
-        A running balance diagnostic should restart separately for each account.
-        Which window-clause element creates those independent account groups?
+      prompt: |
+        A balance-trend diagnostic should show a running total
+        of net change for each account, restarting at zero on
+        the first `business_date` per account. Three candidate
+        window clauses:
+
+            -- (A)
+            SUM(net_change) OVER (
+              PARTITION BY account_id
+              ORDER BY business_date
+              ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+            ) AS running_balance
+
+            -- (B)
+            SUM(net_change) OVER (
+              ORDER BY business_date
+              ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+            ) AS running_balance
+
+            -- (C)
+            SUM(net_change) AS running_balance  -- chart-side
+            -- (computed in Looker Studio with "running total"
+            -- enabled on the chart, grouped by account_id)
+
+        Which one restarts at zero on each account's first
+        `business_date`?
       options:
         - id: partition_by_account
-          label: "`PARTITION BY account_id`."
+          label: |
+            (A). `PARTITION BY account_id` carves the window
+            into independent slices per account. The running
+            sum begins at zero (well, at the first row's
+            `net_change`) on each account's earliest
+            `business_date` and accumulates only that account's
+            subsequent rows.
         - id: order_only
-          label: Only `ORDER BY business_date` with no partition.
+          label: |
+            (B). `ORDER BY business_date` alone is enough -
+            BigQuery's default window scope is per row, and
+            ordering by date automatically restarts on a new
+            account because the dates change.
         - id: group_by_chart
-          label: A Looker Studio chart grouping after the SQL runs.
+          label: |
+            (C). Compute a plain `SUM(net_change)` in SQL and
+            let Looker Studio's "running total" chart option
+            partition by account on the chart side. That keeps
+            the SQL simple and offloads the running-total math
+            to the chart.
       answer: partition_by_account
-      explanation: >
-        PARTITION BY divides the input rows into independent window partitions.
-        Without it, rows from different accounts can share the same calculation
-        context.
-      self_assessment: >
-        If a window result crosses entity boundaries, add the correct
-        partitioning key.
+      explanation: |
+        Window-function scope is controlled by `PARTITION BY`,
+        not by the order of input rows. Without
+        `PARTITION BY account_id`, the running sum accumulates
+        across all accounts in `business_date` order - so
+        account A1003's first day's running total is
+        A1001 + A1003, not just A1003. The chart axis labelled
+        "running balance" would be measuring a different
+        quantity entirely.
+
+        The "chart-side running total" distractor (option C)
+        looks attractive because Looker Studio does offer a
+        running-total option on time-series charts, but:
+
+        - It works on the **chart's displayed rows**, not on
+          the underlying warehouse rows. If the chart shows
+          aggregates by date, it can compute a running total
+          across dates; it cannot recompute account-level
+          windows.
+        - Pushing math to the chart hides the logic in the
+          report config rather than the SQL, where it could
+          be reviewed.
+
+        Always do account-grain windows in SQL with
+        `PARTITION BY account_id`. The chart can format and
+        label the result; it shouldn't be doing the
+        mathematics.
+      self_assessment: |
+        Any window function that should "restart per entity"
+        needs `PARTITION BY <entity>`. Without it, the window
+        accumulates across entities in whatever order the
+        engine happens to use.
     - id: q-medium-select-list-vs-star
       type: select_all
       estimated_seconds: 80
