@@ -434,341 +434,1080 @@ questions:
         dashboard, the ratio contract isn't finished.
     - id: q-easy-refresh-reference-date
       type: multiple_choice
-      estimated_seconds: 55
+      estimated_seconds: 80
       recommended_learner_tasks: [LT-LOOKER-004]
       source_facts:
         - FACT-LOOKER-STUDIO-DATA-FRESHNESS-TRADEOFF
         - FACT-BI-REFERENCE-DATE-SEPARATION
-      prompt: >
-        A report refreshed at 08:05, but the metric rows are for business date
-        2026-03-31. What should the handoff keep separate?
+      prompt: |
+        The deposits dashboard footer says "Data refreshed 2026-04-01
+        08:05 UTC". The scorecards above it show `RON 79,300` and are
+        labelled "Latest day". A regional manager messages the team
+        Slack:
+
+        > Wait, is this number Tuesday's or Monday's? The refresh
+        > stamp says Tuesday morning but our books say the close is
+        > always Monday end-of-day...
+
+        She is half-right and half-confused. Two distinct dates are in
+        play here. Which two does the dashboard need to keep visibly
+        separate?
       options:
         - id: refresh_vs_business_date
-          label: Report refresh time and source business reference date.
+          label: |
+            **Refresh time** (when Looker Studio last queried or cached
+            data; `2026-04-01 08:05 UTC` in the footer) and the
+            **source business reference date** (the date the rows in
+            the scorecard refer to; `business_date = 2026-03-31`).
+            The scorecard should label `2026-03-31` as its "as of"
+            date next to the number, not the refresh time.
         - id: same_control
-          label: Nothing, because Looker Studio always overwrites business_date with the report's refresh time.
+          label: |
+            They are the same number under the hood - Looker Studio
+            overwrites `business_date` with the report's refresh
+            timestamp during query execution, so there is nothing to
+            keep separate. The footer's refresh time is the dashboard's
+            single source of truth for "what day are we looking at".
         - id: chart_axis_label
-          label: Only the chart axis label, since the source business_date is decorative.
+          label: |
+            Only the chart axis label needs to be tightened; the
+            underlying `business_date` is decorative and can stay
+            whatever the warehouse last wrote. Rename the axis from
+            "business_date" to "Latest day" and the confusion goes
+            away.
       answer: refresh_vs_business_date
-      explanation: >
-        Freshness tells when a report may query or cache data. It does not
-        replace the source business date used by the metric.
-      self_assessment: >
-        If a timestamp is used as a business date, separate the two fields.
+      explanation: |
+        Two timestamps with two different meanings:
+
+        - **Refresh time** is a *Looker Studio* concept: when the
+          report last pulled data from the source (or when its cache
+          would next expire). It says nothing about the business
+          period the rows describe.
+        - **Business reference date** (`business_date`, `as_of_date`,
+          `reporting_date`, etc.) is a *source* concept: which day
+          the row's balance is a snapshot of.
+
+        These can disagree in obvious and non-obvious ways. Obvious:
+        a 5am refresh on Tuesday still reports on Monday's
+        end-of-day balances. Non-obvious: a freshness setting
+        configured to 60 minutes keeps serving Monday's numbers all
+        through Tuesday morning, while the refresh stamp moves
+        forward each minute.
+
+        Fix: surface `business_date` next to the number ("As of
+        2026-03-31"). Surface refresh time only in the footer or a
+        small "last queried" indicator. Never collapse the two into
+        a single timestamp.
+      self_assessment: |
+        Every dashboard page that shows a stock metric (balance,
+        position, exposure) needs an explicit "as of" date pinned
+        from the source. Refresh time is operational metadata about
+        the report, not a business reference.
     - id: q-easy-control-contract
       type: multiple_choice
-      estimated_seconds: 60
+      estimated_seconds: 80
       recommended_learner_tasks: [LT-LOOKER-007]
       source_facts:
         - FACT-LOOKER-STUDIO-CONTROLS-FILTER-DATA
         - FACT-LOOKER-STUDIO-CONTROL-FIELD-ID
-      prompt: >
-        A Currency list control filters a deposits dashboard. What should its
-        control contract name?
+      prompt: |
+        You're adding a Currency selector to the deposits dashboard so
+        users can switch between RON and EUR views. A teammate ships
+        a first draft of the control that "just works" - she dragged
+        a Drop-down control onto the page and the charts already
+        respond. In code-review the design lead asks for a
+        documented control contract before publish. What does that
+        contract have to name?
       options:
         - id: field_values_default_charts
-          label: The bound field, allowed values, default value, and affected charts.
+          label: |
+            (1) the **bound field** (`currency_code` from the
+            serving data source) and the field ID Looker Studio
+            uses to thread the filter through;
+            (2) the **allowed values** the control accepts (`RON`,
+            `EUR`; no NULL, no "All currencies" unless intentional);
+            (3) the **default value** that loads with the report
+            (e.g. `RON` for the Romanian audience);
+            (4) the **affected charts** - which tiles on the page
+            obey this control vs which are pinned (e.g. the FX
+            reference rate chart stays on its own currency).
         - id: bound_to_natural_label
-          label: The displayed branch name string; renaming the label is enough to keep the control aligned with the underlying field.
+          label: |
+            The currency's display label string (e.g. "Romanian Leu",
+            "Euro"). Looker Studio matches the visible label to the
+            chart pill, so getting the label right is the contract;
+            renaming the label keeps the control aligned with the
+            underlying field automatically.
         - id: bound_to_calculated_field
-          label: A chart-level calculated field expression, with the control rewriting the expression at runtime.
+          label: |
+            A chart-level calculated field expression
+            (`CASE WHEN @selected_currency = 'RON' THEN ...`) that
+            the control rewrites at runtime. The control's contract
+            is just the formula and the parameter name.
       answer: field_values_default_charts
-      explanation: >
-        Controls should be tied to stable data-source fields and to explicit
-        value/default/chart behavior.
-      self_assessment: >
-        If a control cannot be traced to a field, do not use it to explain a
-        metric change.
+      explanation: |
+        Controls in Looker Studio filter charts by matching values on
+        a **field ID** in the data source, not by display label. The
+        contract for any control has to pin that link explicitly:
+        which field, which allowed values, what loads by default,
+        and which charts on the page actually obey it. Without that,
+        three things go wrong over time: a field rename in the data
+        source silently breaks the filter; a "RON " (trailing space)
+        value sneaks into the allowed list and matches nothing; a
+        new chart on the page is silently unfiltered because nobody
+        noticed.
+
+        The "display label" distractor is the most tempting because
+        a label is what the user sees. But Looker Studio matches on
+        field ID + value, not on the rendered label. Renaming a
+        label changes nothing about the filter.
+
+        The "chart-level calculated field" distractor confuses
+        Looker Studio controls with BigQuery parameters. A control
+        does not generally rewrite the chart's SQL; it sets a filter
+        expression that charts already declare they obey.
+      self_assessment: |
+        For every control on a published dashboard you should be
+        able to point at a row in a small table: control name,
+        bound field, allowed values, default, affected charts. If
+        you can't, the control is operating on vibes and the next
+        author will break it.
     - id: q-easy-parameter-value-boundary
       type: multiple_choice
-      estimated_seconds: 60
+      estimated_seconds: 80
       recommended_learner_tasks: [LT-LOOKER-007]
       source_facts:
         - FACT-BIGQUERY-PARAMETERIZED-QUERY-USER-INPUT
         - FACT-BIGQUERY-PARAMETER-NOT-IDENTIFIER
-      prompt: >
-        A report passes a selected currency into BigQuery. Which value belongs
-        in a query parameter?
+      prompt: |
+        The deposits dashboard passes the viewer's selected currency
+        from a Looker Studio control into the BigQuery serving query.
+        Your colleague writes a draft of the BigQuery side. Which of
+        these three shapes is the right boundary between
+        user-controlled input and governed SQL?
+
+            -- (A) Value parameter
+            DECLARE selected_currency STRING DEFAULT 'RON';
+            SELECT business_date, currency_code, SUM(ledger_balance)
+            FROM `proj.dataset.account_daily_balances`
+            WHERE currency_code = @selected_currency
+            GROUP BY 1, 2;
+
+            -- (B) Table-name parameter
+            DECLARE selected_table STRING DEFAULT 'account_daily_balances';
+            SELECT ...
+            FROM CONCAT('`proj.dataset.', @selected_table, '`');
+
+            -- (C) Pasted WHERE clause
+            DECLARE selected_where STRING DEFAULT 'currency_code = ''RON''';
+            EXECUTE IMMEDIATE
+              CONCAT('SELECT ... WHERE ', @selected_where);
+
+        Which shape belongs in published BigQuery SQL?
       options:
         - id: currency_value
-          label: "`RON` as the value for `@selected_currency`."
+          label: |
+            (A). Parameters carry **values** that the SQL compares
+            against - dates, currencies, branch IDs, thresholds.
+            `@selected_currency = 'RON'` is the right boundary;
+            the SQL structure stays governed and the user input
+            cannot rewrite the query.
         - id: table_name
-          label: The table name chosen by the report viewer.
+          label: |
+            (B). Letting the report viewer pick the table by name
+            keeps the SQL flexible: a single query template can
+            point at any of the deposits, lending, or cards fact
+            tables depending on the page.
         - id: where_fragment
-          label: A pasted SQL fragment for the WHERE clause.
+          label: |
+            (C). Passing a SQL fragment is the most flexible -
+            controls can express arbitrary `WHERE` clauses without
+            redeploying the warehouse view, including `IN` lists,
+            ranges, and AND/OR combinations.
       answer: currency_value
-      explanation: >
-        Parameters are for values such as dates and currencies. Table names,
-        column names, and SQL fragments stay in governed SQL.
-      self_assessment: >
-        If a selection changes SQL structure, redesign the serving query.
+      explanation: |
+        BigQuery parameters bind **values** into a prepared SQL
+        statement, the way bound parameters work in any sane
+        database client. The query plan is fixed at the warehouse;
+        the user's choice slides into the `WHERE` predicate as a
+        value comparison.
+
+        Why the other two shapes are wrong:
+
+        - **Table-name parameter**. BigQuery parameters cannot stand
+          in for identifiers (table names, column names, dataset
+          names). To switch tables the SQL would have to be
+          re-generated, which means you're back to building a query
+          string from user input. That is the start of injection
+          risk and bypasses any governance you placed on the
+          original table.
+        - **Pasted WHERE fragment**. Same problem, worse. A
+          user-supplied SQL fragment is unrestricted: `1=1 OR
+          1=1`, `1=1; DROP TABLE ...`, or just an accidental
+          OR-clause that silently widens the scan. `EXECUTE
+          IMMEDIATE` on user input is the BigQuery equivalent of
+          string-built SQL.
+
+        The rule of thumb: parameters carry *what to compare
+        against*; the SQL author controls *the shape of the
+        comparison*. If the choice the user makes changes the
+        shape (which tables, which columns, which operators), it
+        is not a parameter - it is a different governed query.
+      self_assessment: |
+        Anywhere a control or parameter feeds into BigQuery, you
+        should be able to point at the literal SQL the value lands
+        in (`= @x`, `IN UNNEST(@xs)`, `BETWEEN @from AND @to`). If
+        the value is being concatenated into the SQL text, that is
+        a design smell, not a feature.
     - id: q-easy-deposit-guarantee-ceiling
       type: multiple_choice
-      estimated_seconds: 55
+      estimated_seconds: 80
       recommended_learner_tasks: [LT-BI-002]
       source_facts:
         - FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK
         - FACT-DGSD-100K-EU
-      prompt: >
-        A Romanian/EU deposit guarantee note needs the standard ceiling amount
-        in EUR. What amount should it use?
+      prompt: |
+        The compliance team asks for a footnote on the deposit
+        dashboard explaining the standard deposit-guarantee ceiling.
+        Your draft note has to state the amount, the currency, and
+        the grain ("per what"). Picking from the synthetic dataset
+        for context: depositor `C5001` holds two accounts at the
+        same bank, `A1001` (RON 43,000) and `A1004` (RON 12,300),
+        for a combined balance of RON 55,300 on 2026-03-31.
+
+        Which footnote is correct for the EU harmonised regime
+        (DGSD / Romania's FGDB)?
       options:
         - id: eur_100k
-          label: "EUR 100,000 per depositor per bank."
+          label: |
+            "Covered up to **EUR 100,000 per depositor per credit
+            institution**. A depositor holding multiple accounts at
+            the same bank is covered once up to the ceiling on the
+            sum of those accounts." For `C5001` at this bank, that
+            means EUR 100,000 of cover on the combined RON 55,300
+            equivalent, not separate cover per account.
         - id: ron_100k
-          label: "RON 100,000 per account."
+          label: |
+            "Covered up to **RON 100,000 per account**." Each of the
+            depositor's accounts gets its own RON 100,000 of cover,
+            so `C5001` is effectively covered up to RON 200,000 at
+            this bank.
         - id: no_ceiling
-          label: "No standard ceiling."
+          label: |
+            "No standard ceiling - banks set their own coverage."
+            The deposit-guarantee regime is bank-specific in
+            practice, so the dashboard should defer to the bank's
+            own published policy and not state a fixed number.
       answer: eur_100k
-      explanation: >
-        The standard ceiling used here is EUR 100,000 per depositor per bank.
-        Coverage analysis still needs the correct depositor-bank grain.
-      self_assessment: >
-        If the amount is known but the grain is wrong, the coverage metric is
-        still wrong.
+      explanation: |
+        The EU Deposit Guarantee Schemes Directive (DGSD, Directive
+        2014/49/EU) sets a harmonised ceiling of **EUR 100,000 per
+        depositor per credit institution**. Romania implements this
+        via the Fondul de Garantare a Depozitelor Bancare (FGDB) at
+        the same level (RON-denominated cover is paid out at the
+        EUR-100,000-equivalent).
+
+        Two things commonly get wrong here:
+
+        - **Currency**: the ceiling is fixed in EUR. RON-denominated
+          balances are converted at the relevant date's exchange
+          rate when payout is determined. A dashboard footnote that
+          says "RON 100,000" is wrong for the EU regime.
+        - **Grain**: the ceiling is per *depositor* per *credit
+          institution*, not per *account*. A depositor with three
+          accounts at the same bank holding EUR 60k each (EUR 180k
+          combined) is covered for EUR 100k total at that bank, not
+          EUR 300k. This is the depositor-bank grain that the
+          orientation lesson called out.
+
+        For BI work this matters because any "estimated covered
+        deposits" metric has to be computed at depositor-bank grain
+        (sum across the depositor's accounts at the bank, then cap
+        at EUR 100,000), not at account grain. Most beginner
+        spreadsheets sum coverage at account grain and overstate by
+        a multiple.
+      self_assessment: |
+        Anywhere a metric says "deposit guarantee coverage", you
+        must be able to name the grain (depositor × bank) and the
+        ceiling currency (EUR). If either is missing or off, the
+        coverage number is wrong even when the SQL is correct.
     - id: q-easy-count-distinct-customers
       type: multiple_choice
-      estimated_seconds: 55
+      estimated_seconds: 80
       recommended_learner_tasks: [LT-BI-002]
       source_facts:
         - FACT-BIGQUERY-COUNT-DISTINCT-GRAIN
         - FACT-BI-FANOUT-JOIN-RISK
-      prompt: >
-        A joined table has one customer appearing on several account rows. Which
-        aggregate best counts customers once inside each reporting group?
+      prompt: |
+        A "branch loyalty" report wants to count "active customers
+        per branch this month". The serving query joins
+        `account_daily_balances` (one row per account per business
+        date) to `accounts` (one row per account) to
+        `account_owners` (one row per (account, owner) - some
+        accounts have two owners).
+
+        Sample for branch `BR-B-01` (Bucuresti) on 2026-03-31:
+
+            account_id | owner_customer_id
+            A1001      | C5001
+            A1001      | C5099       (joint holder)
+            A1004      | C5001       (same customer, second account)
+
+        Three rows. How many unique customers should the branch
+        loyalty count show for `BR-B-01` on this day?
       options:
         - id: distinct_customer
-          label: "`COUNT(DISTINCT customer_id)` at the intended reporting grain."
+          label: |
+            **Two**. Use `COUNT(DISTINCT owner_customer_id)` grouped
+            by `branch_id, business_date`. `C5001` appears on
+            multiple rows (joint with `C5099` on `A1001`, sole on
+            `A1004`) but is one customer. `COUNT(DISTINCT)` is the
+            grain-correcting aggregate when rows can repeat.
         - id: count_rows
-          label: "`COUNT(*)` after the join."
+          label: |
+            **Three**. `COUNT(*)` after the join is the simplest
+            and most consistent way to count customers; the join
+            already includes the customer on each row, so each row
+            is one customer-mention.
         - id: sum_balances
-          label: "`SUM(ledger_balance)` with no customer count."
+          label: |
+            **Skip the count**. Don't count customers at all -
+            `SUM(ledger_balance)` already implicitly tells you how
+            many customers are involved through the total amount.
       answer: distinct_customer
-      explanation: >
-        DISTINCT counts each customer value once within the grouped result.
-        Row counts after a join can reflect account or owner rows instead of
-        customer entities.
-      self_assessment: >
-        If the entity being counted can repeat after a join, use a distinct
-        count or restore the entity grain first.
+      explanation: |
+        Many-to-many joins between facts and ownership are the
+        single most common source of "the customer count is wrong"
+        bugs in banking BI. The shape:
+
+        - 1 account-day row on the fact side,
+        - times 1..N owner rows on the ownership side,
+        - = N account-day-owner rows after the join.
+
+        `COUNT(*)` after that join gives you account-day-owner
+        rows, which is neither customers nor accounts nor days. In
+        the example, three rows for branch BR-B-01 on 2026-03-31
+        because A1001 has two owners and A1004 has one owner whose
+        ID matches one of A1001's owners.
+
+        `COUNT(DISTINCT owner_customer_id)` collapses the
+        duplicates: `C5001` appears three times across the rows but
+        contributes once to the count. The branch loyalty report
+        wants **2** unique customers, not 3 rows.
+
+        The "skip the count" distractor is the gateway to a
+        different wrong answer: when stakeholders ask "how many
+        customers", silence is not safer than the wrong number -
+        someone will infer one from the total balance.
+
+        Production note: `COUNT(DISTINCT ...)` is exact in
+        BigQuery for small groups but uses `HyperLogLog++` (an
+        approximation) above a default threshold. For exact counts
+        on large groups, `APPROX_COUNT_DISTINCT` is the explicit
+        approximate, and `COUNT(DISTINCT ...) WITHIN GROUP (...)`
+        and pre-aggregation patterns are the exact ones.
+      self_assessment: |
+        Any time a query joins to an ownership / membership table
+        and then counts an entity, the counting aggregate is almost
+        always `COUNT(DISTINCT ...)`, not `COUNT(*)`. Reverse the
+        rule of thumb: if the count uses `*`, the join probably
+        wasn't many-to-many - prove that before publishing.
     - id: q-easy-sum-null-control
       type: multiple_choice
-      estimated_seconds: 55
+      estimated_seconds: 75
       recommended_learner_tasks: [LT-DQ-006]
       source_facts:
         - FACT-BIGQUERY-SUM-NULLS
         - FACT-BI-RECONCILIATION-WINDOWS
-      prompt: >
-        A branch balance group contains only missing balance values. What
-        should the reconciliation output make visible before replacing the
-        result with zero?
+      prompt: |
+        The branch-balances tile shows `RON 0` for branch `BR-IS-01`
+        on 2026-03-31. You drill in and find no rows came through for
+        that branch today - the ingest job dropped them. The
+        reconciliation control runs
+
+            SELECT branch_id, SUM(ledger_balance) AS ledger_total
+            FROM serving_deposit_branch_daily
+            WHERE business_date = DATE '2026-03-31'
+            GROUP BY branch_id;
+
+        and the result for `BR-IS-01` is one row with
+        `ledger_total = NULL`, which the chart renders as `0`. What
+        does the reconciliation contract need to say about this case
+        before publish?
       options:
         - id: null_group
-          label: That the group has no non-NULL balance values.
+          label: |
+            That a NULL total is a distinct state ("no rows in group")
+            and must not be rendered as `0`. The control output adds
+            a separate `null_total_branches` count so a
+            zero-row-ingest day is visible as an operations event,
+            not buried as "this branch had no money".
         - id: silent_zero
-          label: That the missing group is automatically a true zero balance.
+          label: |
+            That an all-NULL or empty group is automatically a real
+            zero balance, because nobody held money at that branch
+            today. The chart can keep showing `RON 0` with no extra
+            handling.
         - id: hide_branch
-          label: That the branch should be hidden from all controls.
+          label: |
+            That the branch should be hidden from all controls and
+            charts until the ingest job is rerun. The dashboard
+            should suppress any group whose `ledger_total` is NULL.
       answer: null_group
-      explanation: >
-        BigQuery SUM returns non-NULL totals when values exist, but an all-NULL
-        or empty group can produce NULL. Reconciliation should distinguish
-        missing evidence from a real zero.
-      self_assessment: >
-        If a NULL total is displayed as zero, note the rule and count the
-        affected groups.
+      explanation: |
+        `SUM` over an empty group (or a group whose only values are
+        NULL) returns NULL in BigQuery and DuckDB, not zero. That
+        NULL means "no observations" - which is operationally very
+        different from "we observed zero":
+
+        - **Real zero**: ingest succeeded, the branch genuinely had
+          no balances today.
+        - **Null total**: ingest failed, the dashboard is missing
+          rows that should have been there.
+
+        Quietly converting NULL to `0` collapses these two states
+        into one. The right reconciliation surfaces both: the
+        per-branch total (NULL where there is no data) and a
+        separate count of branches in that state, so an oncall
+        engineer sees the second metric tick from 0 to 1 when an
+        ingest fails.
+
+        Hiding the branch entirely is worse than rendering `0` - it
+        removes the symptom that something is wrong.
+      self_assessment: |
+        Wherever you display an aggregate, the chart needs a
+        distinct treatment for "no data" vs "zero data". If both
+        render the same, the dashboard is hiding ingest failures.
     - id: q-easy-partition-date-filter
       type: multiple_choice
-      estimated_seconds: 55
+      estimated_seconds: 75
       recommended_learner_tasks: [LT-LOOKER-007]
       source_facts:
         - FACT-BIGQUERY-PARTITION-FILTERS
         - FACT-BI-REFERENCE-DATE-SEPARATION
-      prompt: >
-        A large daily fact table is partitioned by business date. Which filter
-        helps BigQuery avoid scanning irrelevant date partitions?
+      prompt: |
+        `fct_account_daily_balances` in production has 18 months of
+        data and is partitioned by `business_date`. The new
+        latest-day scorecard fires this query every minute:
+
+            SELECT currency_code, SUM(ledger_balance) AS ledger_total
+            FROM `proj.dataset.fct_account_daily_balances`
+            WHERE branch_id IN ('BR-B-01', 'BR-IS-01')
+            GROUP BY currency_code;
+
+        The BigQuery dry-run estimate says it will scan ~1.8 TB per
+        run. Your colleague says "but the chart axis is fixed to
+        the latest day, so the partition is pruned automatically -
+        the dry-run is wrong". Which fix actually reduces the scan?
       options:
         - id: date_range_filter
-          label: A predicate on the business-date partition field.
+          label: |
+            Add a `WHERE business_date = (SELECT MAX(business_date)
+            FROM <same table>)` (or a more direct `business_date >=
+            CURRENT_DATE() - 1`) predicate to the SQL. Partition
+            pruning only happens when the filter is on the
+            partition field, at the SQL level, before BigQuery
+            picks blocks to scan. The chart-level axis selection is
+            cosmetic.
         - id: chart_date_filter
-          label: A chart-level date filter applied after the serving query runs.
+          label: |
+            Move the date constraint to a Looker Studio chart filter
+            ("Latest day only"). The chart filter runs after the
+            warehouse query returns, so the scan is identical to
+            today but the displayed data is smaller and the
+            scorecard renders cleanly.
         - id: no_filter
-          label: No predicate at all, because the date partition is automatically pruned when the chart axis is a date.
+          label: |
+            Leave the query as is. BigQuery automatically prunes
+            partitions when the chart's date axis or date control
+            is bound to the partition column. The dry-run estimate
+            is over-conservative.
       answer: date_range_filter
-      explanation: >
-        Partition pruning depends on filters that reference the partition field.
-        A chart label does not reduce the warehouse scan.
-      self_assessment: >
-        If a report has a date range, make sure the serving SQL can use it to
-        constrain the scanned partitions.
+      explanation: |
+        Partition pruning in BigQuery happens at the **SQL planning
+        stage**: the optimizer inspects the SQL text and only reads
+        partitions that the `WHERE` predicate can possibly include.
+        Predicates on non-partition columns (`branch_id` in this
+        query) do not prune partitions; they just filter rows after
+        the scan.
+
+        The chart-level distractor is genuinely tempting because the
+        rendered chart only shows the latest day - but Looker Studio
+        filters apply *after* the SQL has run. The full-table scan
+        already happened; the filter just hides 17 months of rows
+        in the browser. Cost is unchanged.
+
+        The "automatic pruning from the chart axis" distractor is
+        the most common production mistake in this family. BigQuery
+        does **not** look at Looker Studio chart definitions when
+        choosing which partitions to scan. If the partition column
+        is not in the SQL's `WHERE` clause, all partitions are
+        scanned.
+
+        Fix shape:
+
+            WHERE business_date = (
+              SELECT MAX(business_date)
+              FROM `proj.dataset.fct_account_daily_balances`
+            )
+            AND branch_id IN ('BR-B-01', 'BR-IS-01')
+
+        That reduces the scan to one day's partition (a few MB) and
+        the dry-run estimate drops accordingly.
+      self_assessment: |
+        Partition pruning is determined by what's in the SQL's
+        `WHERE` clause, not by what the dashboard shows. If a query
+        is reading more than you expected, the first check is
+        "what predicates does this SQL have on the partition
+        column?" - not the chart.
     - id: q-easy-date-trunc-period-label
       type: multiple_choice
-      estimated_seconds: 55
+      estimated_seconds: 75
       recommended_learner_tasks: [LT-SQL-003]
       source_facts:
         - FACT-BIGQUERY-DATE-TRUNC-GRANULARITY
         - FACT-BI-REFERENCE-DATE-SEPARATION
-      prompt: >
-        A monthly trend should group daily transactions into calendar months.
-        Which BigQuery-style transformation belongs in the serving query?
+      prompt: |
+        A monthly trend chart must group daily transactions by
+        calendar month - "January 2026" rows should sum together,
+        "February 2026" rows separately. Sample data:
+
+            transaction_date | amount
+            2025-12-15       | 100
+            2026-01-03       | 200
+            2026-01-29       | 150
+            2026-02-10       |  90
+
+        Which transformation in the serving query produces a
+        grouping key that gives monthly totals correctly?
       options:
         - id: truncate_month
-          label: "`DATE_TRUNC(transaction_date, MONTH)` to align rows to the first day of each month."
+          label: |
+            `DATE_TRUNC(transaction_date, MONTH) AS period_start`.
+            Returns `2025-12-01`, `2026-01-01`, `2026-01-01`,
+            `2026-02-01` for the four rows above. Grouping by it
+            sums the two January rows together and keeps January
+            2026 separate from January 2025.
         - id: format_string_label
-          label: "`FORMAT_DATE('%B', transaction_date)` to use the month name as the grouping key."
+          label: |
+            `FORMAT_DATE('%B', transaction_date) AS period_label`.
+            Returns `'December'`, `'January'`, `'January'`,
+            `'February'`. Grouping by it sums January 2025 and
+            January 2026 together because both produce
+            `'January'` - one row in the result instead of two.
         - id: extract_month_number
-          label: "`EXTRACT(MONTH FROM transaction_date)` alone, so all transactions in March across years group together."
+          label: |
+            `EXTRACT(MONTH FROM transaction_date) AS period_month`.
+            Returns `12`, `1`, `1`, `2`. Grouping by it puts every
+            January of every year in the same bucket and drops the
+            year entirely.
       answer: truncate_month
-      explanation: >
-        Period grouping should be derived from the source date at the intended
-        granularity. Refresh timing is separate from the business date.
-      self_assessment: >
-        If the period label cannot be reproduced from source dates, move the
-        transformation into SQL.
+      explanation: |
+        `DATE_TRUNC` aligns a date to a coarser granularity while
+        preserving the year - that's what makes "January 2026" and
+        "January 2025" distinct grouping keys. The result is also
+        a `DATE`, so charts can sort it correctly and label it with
+        the report's date formatting.
+
+        The other two distractors are textbook mistakes:
+
+        - `FORMAT_DATE('%B', ...)` produces a month name without
+          the year. Every January in the history collapses into
+          one row. The chart looks fine until you notice the
+          January total is the sum of all years, not "this
+          January".
+        - `EXTRACT(MONTH FROM ...)` produces an integer 1..12,
+          same problem. Useful for "average across months of the
+          year" analyses, never for a monthly trend.
+
+        Production tip: when you need both the truncated date and
+        a display label, compute the date once and format on the
+        chart side:
+
+            SELECT
+              DATE_TRUNC(transaction_date, MONTH) AS period_start,
+              SUM(amount) AS amount_total
+            FROM ...
+            GROUP BY period_start
+            ORDER BY period_start;
+
+        The chart formats `period_start` as "Jan 2026" in display
+        only - the underlying value is a real date for sorting.
+      self_assessment: |
+        Any time a grouping key is "the month" / "the quarter" /
+        "the week", reach for `DATE_TRUNC` first. String month
+        names lose the year; integer month numbers do too.
     - id: q-easy-window-row-preservation
       type: multiple_choice
-      estimated_seconds: 60
+      estimated_seconds: 75
       recommended_learner_tasks: [LT-SQL-003]
       source_facts:
         - FACT-BIGQUERY-WINDOW-PRESERVES-ROWS
         - FACT-BIGQUERY-QUALIFY-WINDOW-FILTER
-      prompt: >
-        A query adds `ROW_NUMBER()` to rank balances inside each account. What
-        happens before a QUALIFY or WHERE-style filter is applied?
+      prompt: |
+        Each account has multiple `business_date` snapshots and you
+        want one row per account showing the latest snapshot. A
+        teammate writes:
+
+            SELECT
+              account_id,
+              business_date,
+              ledger_balance,
+              ROW_NUMBER() OVER (
+                PARTITION BY account_id
+                ORDER BY business_date DESC
+              ) AS rn
+            FROM account_daily_balances;
+
+        She runs it and is surprised the result has 18 rows (not
+        6) - one row per snapshot, just with a `rn` column added.
+        What's happening before the QUALIFY / WHERE filter that
+        would reduce it to "latest per account"?
       options:
         - id: row_added_each_input
-          label: Each input row remains and receives a window result.
+          label: |
+            `ROW_NUMBER()` is a window function. Window functions
+            **preserve rows**: each input row stays in the output,
+            with the window value computed alongside it. The
+            18-row result is correct for this stage; reducing to
+            6 needs an explicit filter, e.g. `QUALIFY rn = 1` (or
+            a wrapping `SELECT ... WHERE rn = 1`).
         - id: rows_collapsed
-          label: The account is automatically reduced to one row.
+          label: |
+            The PARTITION BY clause should already have collapsed
+            the result to one row per `account_id`. Seeing 18 rows
+            means BigQuery isn't honouring the partition; rewrite
+            using `GROUP BY account_id` instead.
         - id: charts_filtered
-          label: Looker Studio automatically removes historical rows.
+          label: |
+            BigQuery emits all 18 rows but Looker Studio
+            automatically filters historical rows on a chart with
+            `rn = 1`. The SQL doesn't need a `WHERE` or `QUALIFY`;
+            the chart side handles it.
       answer: row_added_each_input
-      explanation: >
-        Window functions compute over a row set but return a value for each row.
-        A later filter is needed to keep only the latest ranked row.
-      self_assessment: >
-        If a ranking column appears without a filter, check whether historical
-        rows are still present.
+      explanation: |
+        Window functions and aggregate functions look similar but
+        behave differently:
+
+        - `SUM(x) ... GROUP BY g` collapses rows: the output has
+          one row per group.
+        - `SUM(x) OVER (PARTITION BY g)` does **not** collapse:
+          the output has one row per input row, each carrying the
+          group's sum.
+
+        `ROW_NUMBER() OVER (PARTITION BY ... ORDER BY ...)` is the
+        same: every input row stays and gets a rank within its
+        partition. To keep only "row 1 per account", you filter
+        on `rn`:
+
+            -- BigQuery syntax with QUALIFY:
+            SELECT ...
+            FROM account_daily_balances
+            QUALIFY ROW_NUMBER() OVER (
+              PARTITION BY account_id
+              ORDER BY business_date DESC
+            ) = 1;
+
+            -- Or wrap in a subquery / CTE:
+            WITH ranked AS (
+              SELECT *, ROW_NUMBER() OVER (...) AS rn FROM ...
+            )
+            SELECT * FROM ranked WHERE rn = 1;
+
+        The "PARTITION BY collapses" distractor is the most
+        tempting because the SQL keyword reads as "split into
+        groups, one result per group". It does split into groups,
+        but it does not collapse - that is what `GROUP BY` does.
+      self_assessment: |
+        Whenever you see a window function (`ROW_NUMBER()`,
+        `RANK()`, `LAG()`, `SUM() OVER (...)`), expect one row out
+        per row in. To collapse, either filter on the window
+        result, or use a real aggregate (`GROUP BY`).
     - id: q-easy-pseudonymized-customer-id
       type: multiple_choice
-      estimated_seconds: 55
+      estimated_seconds: 75
       recommended_learner_tasks: [LT-LOOKER-004]
       source_facts:
         - FACT-GDPR-PSEUDONYMIZED-STILL-PERSONAL
         - FACT-GDPR-PERSONAL-DATA
-      prompt: >
-        A dashboard field contains hashed customer identifiers. What is the
-        cautious privacy interpretation when re-identification remains possible?
+      prompt: |
+        A team built a "monthly customer churn" dashboard. Each
+        row carries `customer_hash`, computed as
+        `SHA256(customer_id || 'salt-2026')`. Marketing wants the
+        dashboard widely shared because "it's just a hash - no
+        real customer data is visible". You also know the team
+        keeps the hash mapping (`customer_id → customer_hash`) in
+        a separate `analytics.id_mapping` table for joining the
+        churn output back to the CRM.
+
+        What is the cautious GDPR interpretation of
+        `customer_hash`?
       options:
         - id: still_personal
-          label: Treat the field as personal data.
+          label: |
+            Still **personal data**. GDPR Article 4(5) and Recital
+            26 are explicit: pseudonymisation reduces risk but
+            does not anonymise. Because the mapping table exists
+            and a person could be re-identified from
+            `customer_hash` + mapping table, the field is still
+            personal data and needs the same lawful basis,
+            minimisation, and access controls as `customer_id`.
         - id: automatically_anonymous
-          label: Treat the field as anonymous in every context.
+          label: |
+            **Anonymous** in every context. Once a value is
+            hashed, it is irreversible by design and outside the
+            scope of GDPR. The dashboard can be shared without
+            restriction; the original `customer_id` never leaves
+            the warehouse.
         - id: no_access_review
-          label: Remove all access review because the values are hashed.
+          label: |
+            Personal data on the warehouse side, **anonymous on
+            the dashboard side**. Because Looker Studio viewers
+            cannot see the mapping table, the hash on the
+            dashboard is anonymous to them; no access review is
+            needed for the dashboard share.
       answer: still_personal
-      explanation: >
-        Pseudonymised or encrypted data can still be personal data when a person
-        can be re-identified with additional information.
-      self_assessment: >
-        If an identifier can be linked back to a person, keep it out of broad
-        aggregate outputs unless it is necessary.
+      explanation: |
+        Pseudonymisation is a privacy-friendly technique - it
+        reduces the surface area for accidental disclosure - but
+        it is not anonymisation. GDPR Recital 26 says data is
+        anonymous only when re-identification is no longer
+        possible by any *reasonably likely* means. A hash plus a
+        mapping table held by the same organisation is the
+        textbook case of *not* anonymous: anyone with access to
+        the mapping can reverse the hash.
+
+        That has practical consequences:
+
+        - The dashboard's lawful basis still has to cover
+          processing of `customer_hash` (typically the same basis
+          as for the underlying `customer_id`).
+        - Data-minimisation still applies: the dashboard should
+          carry `customer_hash` only if the named purpose
+          requires per-customer granularity. For monthly churn at
+          an aggregate level, the customer dimension can usually
+          be dropped entirely.
+        - Access controls have to extend to the mapping table:
+          if a viewer can reach the mapping (directly, or via
+          another query, or because the mapping table is in a
+          shared dataset), the dashboard's "just a hash" framing
+          is fictional.
+
+        Even when the mapping is not in the same database,
+        re-identification is often possible via auxiliary data
+        (account IDs, transaction patterns, branch + currency +
+        date combinations). The cautious default is to treat
+        pseudonymous identifiers as personal data unless an
+        explicit anonymisation review says otherwise.
+      self_assessment: |
+        Hash isn't a privacy boundary; a missing mapping is. If
+        anyone in the organisation can reverse the
+        pseudonymisation, treat the field as personal data and
+        minimise it.
     - id: q-easy-purpose-limited-output
       type: multiple_choice
-      estimated_seconds: 55
+      estimated_seconds: 75
       recommended_learner_tasks: [LT-LOOKER-004]
       source_facts:
         - FACT-GDPR-PURPOSE-LIMITATION
         - FACT-GDPR-DATA-MINIMISATION
-      prompt: >
-        A report purpose is monthly branch liquidity monitoring. Which design
-        choice best matches that purpose?
+      prompt: |
+        The product team has approved a Looker Studio report for a
+        narrow purpose: "monthly branch liquidity monitoring".
+        Audience is operations; the question they answer with it is
+        "do we have enough cash buffer per branch per currency at
+        month-end?". A senior engineer suggests adding
+        `customer_id`, `account_id`, and `transaction_description`
+        to the underlying serving view "because some day someone
+        will want to drill in".
+
+        Which output design matches the approved purpose?
       options:
         - id: aggregate_needed_fields
-          label: Publish aggregate branch, date, currency, and balance fields needed for the metric.
+          label: |
+            Publish only: `business_date` (month-end),
+            `branch_id`, `currency_code`,
+            `SUM(ledger_balance) AS ledger_total`,
+            `COUNT(DISTINCT account_id) AS account_count` (no raw
+            `account_id` exposed). Add a separate approved
+            "drill-in" purpose and a separate view if and when
+            someone actually needs per-account or per-customer
+            detail.
         - id: raw_customer_export
-          label: Include raw customer identifiers because they might be useful later.
+          label: |
+            Publish the approved aggregate columns **plus**
+            `customer_id` and `account_id` "just in case". The
+            extra columns sit in the view but are not used by the
+            charts today; if the data-source schema hides them,
+            no harm done.
         - id: unrelated_usage
-          label: Add unrelated fields for future dashboard ideas.
+          label: |
+            Publish the aggregate columns plus a small set of
+            forward-looking dimensions
+            (`marketing_campaign_id`, `app_install_source`) so
+            the same view can power a future "growth" dashboard
+            without needing a new view.
       answer: aggregate_needed_fields
-      explanation: >
-        Purpose limitation and minimisation push the output toward fields needed
-        for the stated BI purpose, not speculative raw-detail reuse.
-      self_assessment: >
-        If a field is present only because it might help someday, remove it or
-        define a separate approved purpose.
+      explanation: |
+        Two GDPR principles point at the same answer:
+
+        - **Purpose limitation** (Article 5(1)(b)) - personal
+          data shall be "collected for specified, explicit and
+          legitimate purposes and not further processed in a
+          manner that is incompatible with those purposes". A
+          view authorised for "monthly branch liquidity
+          monitoring" cannot quietly accumulate fields for a
+          later, undefined drill-in.
+        - **Data minimisation** (Article 5(1)(c)) - personal
+          data shall be "adequate, relevant and limited to what
+          is necessary in relation to the purposes". `customer_id`
+          and `transaction_description` are not necessary for a
+          branch-level liquidity number.
+
+        Practical consequences for the BI author:
+
+        - Each serving view has one named purpose. If a new
+          purpose comes up (drill-in for an exception
+          investigation, growth monitoring, etc.), it gets its
+          own view with its own field list and its own audience.
+        - "Just in case" columns are a smell. They train the
+          audience to expect the data, and the data accumulates
+          access surface area you have to defend.
+        - If the operations team genuinely needs to drill into a
+          specific anomaly, that's a different request and a
+          different audit trail than "the dashboard".
+
+        The "add forward-looking dimensions" distractor is the
+        purpose-limitation violation in its most polite form:
+        same view, multiple purposes, no obvious harm. It is
+        still the wrong design.
+      self_assessment: |
+        For each column in a serving view, name the chart-side
+        purpose it serves and the audience that needs it. "Future
+        use" is not a purpose; it's a way of widening access
+        without writing it down.
     - id: q-easy-fgdb-payment-currency
       type: multiple_choice
-      estimated_seconds: 50
+      estimated_seconds: 70
       recommended_learner_tasks: [LT-BI-002]
       source_facts:
         - FACT-FGDB-PAYS-RON
         - FACT-BI-REFERENCE-DATE-SEPARATION
-      prompt: >
-        A Romanian deposit-guarantee dashboard shows deposits in EUR and RON.
-        Which currency detail is needed for compensation reporting context?
+      prompt: |
+        A Romanian deposit-guarantee compensation dashboard shows
+        balances in EUR and RON. A note next to the
+        "covered amount" tile reads:
+
+        > Compensation is paid out in RON at the BNR reference
+        > exchange rate for the relevant date.
+
+        A reviewer pushes back: "we already converted everything
+        to EUR up top, so the note can just say 'EUR 100,000'".
+        Is the existing note doing real work?
       options:
         - id: ron_payment_rate_date
-          label: Compensation is paid in RON using the relevant BNR exchange-rate date.
+          label: |
+            Yes. Romanian FGDB compensation is paid in RON, with
+            EUR-denominated coverage converted at the BNR reference
+            rate for a specific reference date (typically the
+            date the bank is declared unable to repay deposits).
+            The dashboard needs both: the EUR ceiling for the
+            harmonised regime and the RON payment currency +
+            rate-date for what depositors actually receive.
         - id: original_currency_only
-          label: Compensation is always paid only in the original account currency.
+          label: |
+            Yes, but the note is incomplete - FGDB pays in the
+            depositor's original account currency (RON for RON
+            accounts, EUR for EUR accounts), so the note should
+            drop "in RON" and say "in the account's denomination
+            currency".
         - id: no_currency_date
-          label: Currency conversion dates are irrelevant to compensation context.
+          label: |
+            No. Currency conversion dates are irrelevant to
+            compensation - the EUR ceiling is fixed by the EU
+            directive and the same number of euros is paid out
+            regardless of when the bank failed. Drop the note.
       answer: ron_payment_rate_date
-      explanation: >
-        FGDB compensation context uses RON payment and a specific exchange-rate
-        date, so the dashboard should keep currency and reference dates clear.
-      self_assessment: >
-        If a guarantee note mixes ledger currency and payment currency, add the
-        conversion rule and date.
+      explanation: |
+        Two truths that have to coexist in any deposit-guarantee
+        reporting:
+
+        - The **coverage ceiling** is denominated in EUR
+          (`EUR 100,000` under the harmonised DGSD regime).
+        - The **payment to depositors** in Romania is made in RON,
+          converted from EUR at the BNR reference rate for a
+          specific reference date.
+
+        That is why the rate-date matters operationally: if the
+        bank is declared unable to repay deposits on 2026-03-15
+        and the FGDB pays out two weeks later, the conversion uses
+        the 2026-03-15 BNR rate, not the rate on the payout date.
+        Two depositors with identical EUR-equivalent balances on
+        the failure date can receive identical RON payments even
+        if the exchange rate moved in between.
+
+        The "original currency" distractor is the most common
+        misreading: yes, the depositor's account is in RON or
+        EUR, but the FGDB compensation regime explicitly settles
+        in RON regardless of the original account denomination.
+
+        For BI work this matters because:
+
+        - A "covered amount" metric has two natural units (EUR
+          for the ceiling, RON for the actual payment) and they
+          should be shown side by side, not collapsed.
+        - The reference date for currency conversion is a
+          third date alongside `business_date` and `refresh_time`
+          - keep it labelled explicitly when shown.
+      self_assessment: |
+        Banking dashboards routinely have three dates in play
+        (business date, refresh time, currency-conversion
+        reference date) and three units (account currency, payout
+        currency, EUR ceiling). Conflating any of them is the
+        normal way a "covered amount" tile goes wrong.
     - id: q-easy-looker-dimension-metric
       type: multiple_choice
-      estimated_seconds: 55
+      estimated_seconds: 75
       recommended_learner_tasks: [LT-LOOKER-004]
       source_facts:
         - FACT-LOOKER-STUDIO-DIMENSIONS-METRICS
         - FACT-LOOKER-STUDIO-DIMENSION-CONTEXT
-      prompt: >
-        In a branch balance table, `branch_region` groups rows and
-        `ledger_balance` is summed. Which pairing describes their chart roles?
+      prompt: |
+        On a Looker Studio bar chart, you drop `branch_region` into
+        the chart's Dimension shelf and `ledger_balance` into the
+        Metric shelf. The chart's default aggregation for
+        `ledger_balance` is `Sum`. A teammate, mid-design-review,
+        says "both fields are metrics anyway because they both
+        appear on the chart's measurement spec." Which framing is
+        correct?
       options:
         - id: dimension_metric
-          label: "`branch_region` is a dimension; `ledger_balance` is a metric."
+          label: |
+            `branch_region` is a **dimension** - it carves the
+            rows into groups (one bar per region). `ledger_balance`
+            is a **metric** - it is the value aggregated within
+            each group (the bar height; `SUM(ledger_balance) GROUP
+            BY branch_region`). Changing which dimensions are on
+            the chart changes what the metric *means* (per region
+            vs per region+currency, etc.).
         - id: both_metrics
-          label: Both fields are metrics, because both appear in the chart's metrics shelf.
+          label: |
+            Both fields are metrics. The dimension shelf in
+            Looker Studio is a UI label; under the hood, every
+            field on a chart is summed or counted. `branch_region`
+            is just summed-as-string.
         - id: parameter_dimension
-          label: "`branch_region` is a parameter-driven control; `ledger_balance` is a dimension."
+          label: |
+            `branch_region` is a parameter-driven control (it
+            switches which slice the chart shows) and
+            `ledger_balance` is the dimension whose values the
+            chart renders. Aggregation happens implicitly in the
+            warehouse before Looker Studio reads it.
       answer: dimension_metric
-      explanation: >
-        Dimensions group or describe data, while metrics are aggregated. The
-        selected dimensions affect the meaning of the displayed metric.
-      self_assessment: >
-        If a chart total changes when a grouping field is added, check the
-        dimension and metric roles.
+      explanation: |
+        Dimension and metric are the two basic chart-field roles
+        in Looker Studio (and in dimensional modelling in
+        general):
+
+        - **Dimensions** group or describe rows. Adding a
+          dimension to the chart is equivalent to adding a column
+          to `GROUP BY` in the underlying SQL.
+        - **Metrics** are aggregated values per group. A metric
+          has a default aggregation function (Sum, Count, Avg,
+          ...) chosen on the data source.
+
+        That distinction matters because the *same data* can
+        carry very different meanings depending on which
+        dimensions are on the chart. `SUM(ledger_balance) GROUP
+        BY branch_region` is "total balance per region";
+        `SUM(ledger_balance) GROUP BY branch_region,
+        currency_code` is "total balance per region per
+        currency"; the first is just an unsafe rollup of the
+        second across currencies (mixing RON and EUR).
+
+        The "both are metrics" distractor confuses the chart
+        shelf labels with how Looker Studio computes the chart.
+        The "parameter-driven control" distractor mixes up
+        dimensions with controls (controls filter rows; they
+        don't define the grouping).
+      self_assessment: |
+        Whenever you add or remove a dimension on a chart, the
+        meaning of every metric on that chart changes. If you
+        cannot say what `SUM(...) GROUP BY <current
+        dimensions>` produces, the chart is not ready to
+        publish.
     - id: q-easy-reusable-data-source
       type: multiple_choice
-      estimated_seconds: 55
+      estimated_seconds: 75
       recommended_learner_tasks: [LT-LOOKER-004]
       source_facts:
         - FACT-LOOKER-STUDIO-EMBEDDED-REUSABLE-DATA-SOURCES
         - FACT-LOOKER-STUDIO-DATA-SOURCE
-      prompt: >
-        Two reports need the same governed balance fields and field types. Which
-        Looker Studio choice supports reuse across reports?
+      prompt: |
+        The deposits team owns three Looker Studio reports backed
+        by `serving_deposit_branch_daily`: an executive scorecard,
+        a per-branch detail page, and a quarterly export for
+        compliance. All three need the same field names, types,
+        default aggregations, and a calculated field for
+        `ledger_total_eur` (RON converted to EUR at the latest
+        published rate). Which Looker Studio choice makes that
+        sustainable across the three reports?
       options:
         - id: reusable_data_source
-          label: Use a reusable data source with the governed field schema.
+          label: |
+            Create a single **reusable data source** named
+            `Deposits Branch Daily (governed)` against the
+            warehouse view, define field types and the
+            `ledger_total_eur` calculated field once on it, and
+            attach all three reports to that one data source.
+            Changes to a field type or formula propagate to all
+            three reports automatically.
         - id: duplicate_each_chart
-          label: Recreate field definitions separately inside every chart.
+          label: |
+            Duplicate the field definitions and the
+            `ledger_total_eur` formula inside each chart of each
+            report. Set a calendar reminder to keep them in sync
+            quarterly.
         - id: hide_schema
-          label: Avoid inspecting the data-source schema.
+          label: |
+            Do not inspect the data-source schema at all - let
+            each report pick fields as needed. If two reports
+            disagree, fix them at the chart level later.
       answer: reusable_data_source
-      explanation: >
-        Reusable data sources let reports share a connection and field schema.
-        That is safer than copying metric definitions chart by chart.
-      self_assessment: >
-        If two reports need the same field contract, prefer a shared data-source
-        boundary.
+      explanation: |
+        Looker Studio has two flavours of data source:
+
+        - **Embedded** - created in-line when you make a new
+          report. Lives inside that one report. Field schema and
+          calculated fields are not shared with other reports.
+        - **Reusable** - a standalone data source object that
+          multiple reports can attach to. Field schema,
+          calculated fields, type overrides, default
+          aggregations, and access settings are defined once.
+
+        For multi-report governed BI, reusable is the only
+        sustainable choice. Three reports × N fields × the
+        `ledger_total_eur` formula is already 3N+3 places to keep
+        in sync the wrong way; with a reusable source, it is
+        N+1, and changes propagate.
+
+        The "duplicate each chart" distractor is what gets
+        chosen in practice when nobody is thinking about the
+        future - and is the start of metric drift across
+        reports. The "hide schema" distractor is rarely picked
+        deliberately, but it is what *happens* when authors do
+        not know about the reusable-data-source option.
+
+        How to create one: in Looker Studio, `Resource > Manage
+        added data sources > Add a data source > <connector> >
+        Connect`, then click **"Make Reusable"** on the data
+        source detail header. Reports then reference it by name.
+      self_assessment: |
+        For any field, formula, or aggregation that more than
+        one report needs, the right home is the data source -
+        and the right kind of data source is reusable. If you
+        find yourself copying a calculated field from chart to
+        chart, you've already lost.
   medium:
     - id: q-medium-fanout-delta
       type: numeric
