@@ -4,10 +4,19 @@ Last updated: 2026-05-17
 
 ## Current Branch And PR
 
-- Current branch: `assessment-quality-and-expansion`, based on verified
-  `main` at `4e26667`.
-- Current PR: #46,
-  `https://github.com/e6qu/looker-bi-gym/pull/46`.
+- PR #46 (`assessment-quality-and-expansion`) merged at `92d3999` on
+  2026-05-17. Main CI (run 25982998170), Pages deployment (run
+  25982998172), live HTTP 200 against
+  https://e6qu.github.io/looker-bi-gym/, and
+  `bun run verify:deployed-surface` all green after merge.
+- Current branch: `verify-deployed-surface-post-merge`. Small
+  follow-on fix for one stale assertion in
+  `app/scripts/verify-deployed-learning-surface.ts` (the
+  "zero-denominator behavior is documented" prose assertion was
+  replaced after the ratio-null exam card was fixture-backed in
+  PR #46 - the verifier still pointed at the old prose). The fix
+  switches the assertion to the new deterministic
+  `aggregate_denominator_sum = 37` output. No new PR opened yet.
 
 ## Active Task
 

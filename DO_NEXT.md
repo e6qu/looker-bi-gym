@@ -11,12 +11,14 @@
    gh pr list --state open --limit 10
    ```
 
-3. Continue PR #46 on branch `assessment-quality-and-expansion`:
-   `https://github.com/e6qu/looker-bi-gym/pull/46`. PR #45 merged at
-   `4e26667` on 2026-05-16. The current PR carries Task 062 (Assessment
-   Quality And Expansion) plus the Codex CLI second-opinion remediation
-   (recorded as `CODEX-REVIEW-FINDINGS-2026-05-17` and
-   `CODEX-RE-REVIEW-FINDINGS-2026-05-17` in `BUGS.md`).
+3. PR #46 merged at `92d3999` on 2026-05-17. Main CI, Pages
+   deployment, live HTTP 200, and `bun run verify:deployed-surface`
+   were green after merge (the verifier needed one stale-assertion
+   update on a new branch `verify-deployed-surface-post-merge` because
+   the exam-card prose it asserted against was replaced with
+   deterministic numeric expected outputs in PR #46; either commit and
+   push that fix as a small follow-on PR, or fold it into the next
+   feature PR).
 4. If the current branch is clean and all fixes from the BUGS.md codex
    entries are closed, request another `codex exec` read-only review
    (see `BUGS.md` for the review-loop discipline). Any new finding is
