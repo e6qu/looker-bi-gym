@@ -213,9 +213,12 @@ test.describe("rendered UI", () => {
         page.getByRole("heading", { level: 1, name: "Looker BI Gym" }),
       ).toBeVisible();
       await expect(page.getByLabel("Synthetic dataset preview")).toBeVisible();
-      await expect(page.getByLabel("Platform constraints")).toContainText(
-        "Synthetic banking datasets only",
-      );
+      await expect(
+        page.getByRole("link", { name: "Start the first lesson" }),
+      ).toBeVisible();
+      await expect(
+        page.getByLabel("Site surfaces with usage guidance"),
+      ).toContainText("Tutorials");
       await expect(page.getByRole("contentinfo")).toContainText("App v0.1.0");
 
       await expectNoHorizontalOverflow(page);
@@ -328,34 +331,36 @@ test.describe("rendered UI", () => {
     ).toBeVisible();
   });
 
-  test("orientation tutorial keeps the verification quiz separate and linked", async ({
+  test("orientation tutorial is an executable lesson with a profile query", async ({
     page,
   }) => {
     await page.goto("/#/tutorials/00-orientation-and-stack.md", {
       waitUntil: "domcontentloaded",
     });
 
+    // The orientation lesson now teaches by running SQL against the
+    // synthetic deposits seed, not by routing the learner to a
+    // separate quiz challenge.
     await expect(
-      page.getByRole("heading", { level: 2, name: "Separate Verification" }),
+      page.getByRole("heading", {
+        level: 1,
+        name: "00 - Orient Yourself With The Deposits Dataset",
+      }),
     ).toBeVisible();
-    await expect(page.getByRole("main")).not.toContainText(
-      "Open #/challenges/orientation-quiz",
+    await expect(page.getByRole("main")).toContainText(
+      "SELECT\n     business_date",
     );
     await expect(page.getByRole("main")).not.toContainText(
-      "Complete the browser quiz",
+      "#/challenges/orientation-quiz",
     );
 
-    const quizLink = page.getByRole("link", {
-      name: "Start the separate orientation quiz",
+    const workbenchLink = page.getByRole("link", {
+      name: "deposits seed workbench",
     });
-
-    await expect(quizLink).toHaveAttribute(
+    await expect(workbenchLink).toHaveAttribute(
       "href",
-      /#\/challenges\/orientation-quiz$/u,
+      /#\/workbench\/deposits-seed\/v0\.1\.0$/u,
     );
-    await expect(
-      page.locator("code").filter({ hasText: "#/challenges/orientation-quiz" }),
-    ).toHaveCount(0);
   });
 
   for (const route of tutorialContentRoutes) {
@@ -402,7 +407,7 @@ test.describe("rendered UI", () => {
       page.getByText("A branch dashboard scorecard", { exact: false }),
     ).toBeVisible();
     await page.getByLabel("One row per account and business date.").check();
-    await page.getByRole("button", { name: "Check Quiz" }).click();
+    await page.getByRole("button", { name: "Show all answers" }).click();
     await expect(page.getByText("Recommended learner tasks")).not.toBeVisible();
     await expect(page.getByText("Source evidence")).not.toBeVisible();
 

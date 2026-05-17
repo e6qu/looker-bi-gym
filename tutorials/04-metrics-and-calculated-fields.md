@@ -21,41 +21,37 @@
 
 # 04 - Define Governed Metrics And Calculated Fields
 
-Area: B - Warehouse Modeling And Metrics
-
 Synthetic-data boundary: use only the predefined synthetic deposits dataset.
 Do not use real balances, real customer attributes, screenshots from private
 reports, credentials, or production regulatory outputs.
 
 Prior knowledge expected:
 
-- A dimensional model with declared grain and a governed serving layer.
-- A working executive dashboard spec or equivalent KPI definition.
-- Weighted-average reasoning: why `SUM(a) / SUM(b)` differs from
-  `AVG(row_ratio)`.
+- `SUM`, `GROUP BY`, and basic `JOIN` SQL.
+- The vocabulary of grain (one row per X) and a serving result that
+  exposes only the fields a dashboard needs.
+
+The weighted-average distinction (why `SUM(a) / SUM(b)` differs from
+`AVG(row_ratio)`) is the central thing this lesson teaches; it is not
+prior knowledge.
 
 Required tools:
 
 - Browser-first path: browser SQL workbench for the synthetic datasets.
 - Optional applied path: browser UI access to BigQuery and Looker Studio.
-- Do not use Google Cloud CLI, BigQuery CLI, service account keys, Python, or
-  Docker.
 
 Objective: decide which
 <a class="termRef" href="#/terminology/bi.md#metric">metric<sup>BI</sup></a>
 logic belongs upstream, which reusable
 <a class="termRef" href="#/terminology/looker-studio.md#looker-studio-calculated-field">calculated fields<sup>LS</sup></a>
-belong in a
-<a class="termRef" href="#/terminology/looker-studio.md#looker-studio-data-source">Looker Studio data source<sup>LS</sup></a>,
-and which calculations are only chart formatting.
+belong in a Looker Studio data source, and which calculations are
+only chart formatting.
 
 After this tutorial, you will be able to:
 
 - Write a
   <a class="termRef" href="#/terminology/bi.md#metric-contract">metric contract<sup>BI</sup></a>
-  with owner,
-  <a class="termRef" href="#/terminology/bi.md#grain">grain<sup>BI</sup></a>,
-  formula, allowed dimensions, and expected values.
+  with owner, grain, formula, allowed dimensions, and expected values.
 - Use weighted formulas for ratio metrics instead of averaging displayed
   averages.
 - Configure reusable Looker Studio calculated fields with explicit aggregation
@@ -68,7 +64,7 @@ Produces:
 - Browser-first metric-source result.
 - Reusable calculated-field specification for Looker Studio.
 - Chart settings and expected values for a metric QA page.
-- `notes/04-metric-contracts-and-fields.md`, if you keep external notes.
+- A short personal note (kept in whichever editor you prefer; the platform does not store it).
 
 ## Goal
 
@@ -452,7 +448,7 @@ answer.
 
 ## Deliverable
 
-Create `notes/04-metric-contracts-and-fields.md` with:
+Write a short personal note in your own editor with:
 
 - the metric-source six-row output;
 - the metric contract table;

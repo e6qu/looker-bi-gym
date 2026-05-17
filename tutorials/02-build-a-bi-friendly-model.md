@@ -20,8 +20,6 @@
 
 # 02 - Build A BI-Friendly Deposit Model
 
-Area: B - Warehouse Modeling And Metrics
-
 Synthetic-data boundary: use only the predefined synthetic deposits dataset. Do
 not use real, masked production, customer, account, transaction, employee, or
 regulatory data.
@@ -36,8 +34,6 @@ Prior knowledge expected:
 Required tools:
 
 - Browser-first path: browser SQL workbench for the synthetic datasets.
-- Do not use Google Cloud CLI, BigQuery CLI, service account keys, Python, or
-  Docker.
 
 Objective: turn raw-shaped synthetic deposits tables into a BI-friendly model
 contract without changing metric grain or exposing unnecessary identifiers.
@@ -59,7 +55,7 @@ Produces:
 
 - Grain contract for the deposits model.
 - Browser-first SQL result for a safe latest-day branch/currency serving output.
-- `notes/02-grain-and-model-contract.md`, if you keep external notes.
+- A short personal note (kept in whichever editor you prefer; the platform does not store it).
 
 ## Goal
 
@@ -264,7 +260,7 @@ answer.
 
 ## Deliverable
 
-Create `notes/02-grain-and-model-contract.md` with:
+Write a short personal note in your own editor with:
 
 - the source-grain profile output;
 - the model contract table;

@@ -31,8 +31,6 @@
 
 # 08 - Operate Dashboard Freshness, Cost, And Controls
 
-Area: D - Governance, Security, And Operations
-
 Synthetic-data boundary: use only synthetic source rows and deterministic
 operations examples. Do not copy production incident records, job logs, user
 emails, reconciliation breaks, report links, credentials, keys, screenshots of
@@ -50,8 +48,6 @@ Required tools:
 
 - Browser-first path: browser SQL workbench for the synthetic datasets.
 - Optional applied path: browser UI access to BigQuery and Looker Studio.
-- Do not use Google Cloud CLI, BigQuery CLI, service account keys, Python, or
-  Docker.
 
 Objective: operate the executive deposit dashboard as a BI product with named
 dependencies, owners, freshness evidence, cost evidence, reconciliation checks,
@@ -74,7 +70,7 @@ Produces:
 - A draft `serve.bi_dependency_register` design.
 - A draft `serve.bi_operations_daily` design.
 - Optional BigQuery job-metadata and Looker Studio freshness notes.
-- `notes/08-bi-operations.md`, if you keep external notes.
+- A short personal note (kept in whichever editor you prefer; the platform does not store it).
 
 ## Goal
 
@@ -742,7 +738,7 @@ expected evidence.
 
 ## Deliverable
 
-Create `notes/08-bi-operations.md`, if you keep external notes, with:
+Write a short personal note in your own editor with:
 
 - the dependency register summary;
 - the freshness control output;

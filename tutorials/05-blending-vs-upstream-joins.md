@@ -24,8 +24,6 @@
 
 # 05 - Compare Blends With Upstream Joins
 
-Area: B - Warehouse Modeling And Metrics
-
 Synthetic-data boundary: use only the predefined synthetic deposits dataset.
 Do not use real account-owner tables, production customer attributes, private
 Looker Studio reports, screenshots with private account details, credentials,
@@ -42,8 +40,6 @@ Required tools:
 
 - Browser-first path: browser SQL workbench for the synthetic datasets.
 - Optional applied path: browser UI access to BigQuery and Looker Studio.
-- Do not use Google Cloud CLI, BigQuery CLI, service account keys, Python, or
-  Docker.
 
 Objective: prove a many-to-many fanout with exact numbers, then decide which
 logic belongs upstream before a dashboard or blend can repeat the mistake.
@@ -67,7 +63,7 @@ Produces:
 - Safe upstream serving outputs for current-balance and owner-allocation use
   cases.
 - Optional Looker Studio blend comparison notes.
-- `notes/05-blend-and-upstream-join-check.md`, if you keep external notes.
+- A short personal note (kept in whichever editor you prefer; the platform does not store it).
 
 ## Goal
 
@@ -431,7 +427,7 @@ answer.
 
 ## Deliverable
 
-Create `notes/05-blend-and-upstream-join-check.md` with:
+Write a short personal note in your own editor with:
 
 - the correct latest account-grain output;
 - the unsafe owner-join proof output;

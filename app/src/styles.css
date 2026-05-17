@@ -327,20 +327,106 @@ h3 {
   font-weight: 800;
 }
 
-.principles {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+.homeSurfaceMap {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
 }
 
-.principles span {
-  padding: 8px 11px;
+.homeSurfaceMap h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.homeSurfaceMap > p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.homeSurfaceMap ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.homeSurfaceMap li {
+  margin: 0;
+}
+
+.homeSurfaceMap li a {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
   border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--surface);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.homeSurfaceMap li a:hover,
+.homeSurfaceMap li a:focus-visible {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.homeSurfaceMap li strong {
+  font-size: 0.98rem;
   color: var(--accent-strong);
-  font-size: 0.9rem;
+}
+
+.homeSurfaceMap li span {
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.quizPerQuestionActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.quizPerQuestionActions button {
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  font-size: 0.88rem;
   font-weight: 700;
+}
+
+.quizPerQuestionActions button[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.quizPerQuestionHint {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.homeBoundary {
+  padding: 14px 18px;
+  border-left: 4px solid var(--accent);
+  border-radius: 4px;
+  background: var(--surface);
+}
+
+.homeBoundary h2 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+
+.homeBoundary p {
+  margin: 0;
+  color: var(--muted);
 }
 
 .contentOverview {

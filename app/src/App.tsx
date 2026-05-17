@@ -1,10 +1,5 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
-import {
-  contentSections,
-  getDefaultDocument,
-  getDocument,
-  getSection,
-} from "./content";
+import { getDefaultDocument, getDocument, getSection } from "./content";
 import {
   evaluateCloudEvidenceChecks,
   isCloudEvidenceCheckSupported,
@@ -147,15 +142,6 @@ const contentRouteIds: ReadonlySet<RouteId> = new Set<RouteId>([
   "terminology",
   "tutorials",
 ]);
-
-const principles: readonly string[] = [
-  "Static GitHub Pages app",
-  "No backend or credentials",
-  "Browser-local storage and cookie state",
-  "Synthetic banking datasets only",
-  "Default learner path runs in the browser",
-  "Optional tools are listed per tutorial",
-];
 
 const workbenchDatasetRefs: readonly RuntimeDatasetRef[] = [
   defaultDatasetRef,
@@ -998,17 +984,22 @@ function QuizQuestionCard({
   answer,
   showResult,
   onAnswer,
+  onCheck,
 }: {
   readonly question: QuizBankQuestion;
   readonly questionIndex: number;
   readonly answer: QuizResponse | undefined;
   readonly showResult: boolean;
   readonly onAnswer: (questionId: string, answer: QuizResponse) => void;
+  readonly onCheck?: (questionId: string) => void;
 }): JSX.Element {
   const isCorrect = answerMatchesQuestion(question, answer);
   const selectedAnswers =
     answer !== undefined && typeof answer !== "string" ? answer : [];
   const numericInputId = `quiz-bank-${question.id}-numeric`;
+  const hasAnswer =
+    answer !== undefined &&
+    (typeof answer === "string" ? answer.trim().length > 0 : answer.length > 0);
 
   return (
     <fieldset className="quizQuestion learningQuestion">
@@ -1094,6 +1085,21 @@ function QuizQuestionCard({
           {isCorrect ? "Correct." : "Review the answer."} Answer:{" "}
           {formatQuizBankAnswer(question.answer)}. {question.explanation}
         </div>
+      ) : onCheck !== undefined ? (
+        <div className="quizPerQuestionActions">
+          <button
+            type="button"
+            disabled={!hasAnswer}
+            onClick={() => onCheck(question.id)}
+          >
+            Check this question
+          </button>
+          {!hasAnswer ? (
+            <span className="quizPerQuestionHint">
+              Answer the question first.
+            </span>
+          ) : null}
+        </div>
       ) : null}
 
       <details className="selfAssessmentDetails">
@@ -1110,12 +1116,20 @@ function QuizBankCard({
   readonly quizBank: QuizBank;
 }): JSX.Element {
   const [answers, setAnswers] = useState<QuizAnswerState>({});
-  const [showResults, setShowResults] = useState<boolean>(false);
+  const [revealedAll, setRevealedAll] = useState<boolean>(false);
+  const [revealedIds, setRevealedIds] = useState<ReadonlySet<string>>(
+    () => new Set<string>(),
+  );
   const allQuestions = (["easy", "medium", "hard"] as const).flatMap(
     (difficulty) => quizBank.questions[difficulty],
   );
-  const correctCount = allQuestions.filter((question) =>
-    answerMatchesQuestion(question, answers[question.id]),
+  const checkedCount = allQuestions.filter(
+    (question) => revealedAll || revealedIds.has(question.id),
+  ).length;
+  const correctCount = allQuestions.filter(
+    (question) =>
+      (revealedAll || revealedIds.has(question.id)) &&
+      answerMatchesQuestion(question, answers[question.id]),
   ).length;
 
   function setAnswer(questionId: string, answer: QuizResponse): void {
@@ -1125,6 +1139,15 @@ function QuizBankCard({
     }));
   }
 
+  function revealOne(questionId: string): void {
+    setRevealedIds((current) => {
+      if (current.has(questionId)) return current;
+      const next = new Set(current);
+      next.add(questionId);
+      return next;
+    });
+  }
+
   return (
     <section className="learningPanel" aria-labelledby={`${quizBank.id}-title`}>
       <div className="learningPanelHeader">
@@ -1132,6 +1155,11 @@ function QuizBankCard({
           <p className="eyebrow">Mixed quiz</p>
           <h2 id={`${quizBank.id}-title`}>{quizBank.title}</h2>
           <p>{quizBank.description}</p>
+          <p className="quizPerQuestionHint">
+            Answer one question at a time, then press &ldquo;Check this
+            question&rdquo; for feedback on just that one. Use &ldquo;Show all
+            answers&rdquo; only at the end.
+          </p>
         </div>
         <dl className="learningMeta">
           <div>
@@ -1145,9 +1173,9 @@ function QuizBankCard({
           <div>
             <dt>Score</dt>
             <dd>
-              {showResults
-                ? `${correctCount}/${allQuestions.length}`
-                : "Not checked"}
+              {checkedCount === 0
+                ? "Not checked"
+                : `${correctCount}/${checkedCount} checked`}
             </dd>
           </div>
         </dl>
@@ -1161,23 +1189,25 @@ function QuizBankCard({
               answer={answers[question.id]}
               key={question.id}
               onAnswer={setAnswer}
+              onCheck={revealOne}
               question={question}
               questionIndex={questionIndex}
-              showResult={showResults}
+              showResult={revealedAll || revealedIds.has(question.id)}
             />
           ))}
         </section>
       ))}
 
       <div className="quizActions">
-        <button type="button" onClick={() => setShowResults(true)}>
-          Check Quiz
+        <button type="button" onClick={() => setRevealedAll(true)}>
+          Show all answers
         </button>
         <button
           type="button"
           onClick={() => {
             setAnswers({});
-            setShowResults(false);
+            setRevealedAll(false);
+            setRevealedIds(new Set<string>());
           }}
         >
           Reset Quiz
@@ -1289,11 +1319,13 @@ function FactsPage({
     <section className="contentPage factsPage" aria-labelledby="facts-title">
       <aside className="documentNav" aria-label="Fact database index">
         <div>
-          <p className="eyebrow">Live fact graph</p>
+          <p className="eyebrow">Source-backed claims</p>
           <h2 id="facts-title">Facts</h2>
           <p>
-            Source-backed fact nodes loaded from local Markdown and verified by
-            the SQLite facts database tests.
+            Use this surface to trace where a claim in a lesson, quiz, or exam
+            card actually comes from. Each fact has a one-line statement, the
+            source quote it is grounded in, and a link to the original source
+            card.
           </p>
         </div>
         <nav>
@@ -1328,6 +1360,18 @@ function FactsPage({
             <p className="eyebrow">{selectedFact.area}</p>
             <h2>Statement</h2>
             <p>{selectedFact.statement}</p>
+            <h2>Sources</h2>
+            {selectedFact.sources.length > 0 ? (
+              <ul>
+                {selectedFact.sources.map((source) => (
+                  <li key={source.id}>
+                    <a href={source.href}>{source.id}</a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No source card linked yet.</p>
+            )}
             <h2>Source Quote</h2>
             <p>{selectedFact.sourceQuote}</p>
             <h2>Derived Implication</h2>
@@ -2861,21 +2905,97 @@ function WorkbenchRuntimePage({
   );
 }
 
+type HomeSurfaceGuide = {
+  readonly label: string;
+  readonly href: string;
+  readonly description: string;
+};
+
+const homeSurfaceGuides: readonly HomeSurfaceGuide[] = [
+  {
+    label: "Tutorials",
+    href: "#/tutorials/README.md",
+    description:
+      "Step-by-step lessons. Each lesson builds one BI habit against a synthetic banking dataset.",
+  },
+  {
+    label: "Workbench",
+    href: "#/workbench/deposits-seed/v0.1.0",
+    description:
+      "Run SQL directly against the synthetic datasets. Use this whenever a tutorial asks you to run a query.",
+  },
+  {
+    label: "Flashcards",
+    href: "#/flashcards",
+    description:
+      "Spaced-repetition recall on the core BI, BigQuery, Looker Studio, and banking-regulation concepts.",
+  },
+  {
+    label: "Quiz",
+    href: "#/quiz",
+    description:
+      "Scenario-driven multiple-choice practice on banking BI fundamentals.",
+  },
+  {
+    label: "Exam",
+    href: "#/exam",
+    description:
+      "Longer practical cards with deterministic expected outputs you self-assess against.",
+  },
+  {
+    label: "Terminology",
+    href: "#/terminology/README.md",
+    description:
+      "Definitions for every BI / BigQuery / Looker Studio / banking term used elsewhere on the site.",
+  },
+  {
+    label: "Facts",
+    href: "#/facts",
+    description:
+      "Source-backed claims. Use this to trace where a tutorial assertion comes from.",
+  },
+  {
+    label: "Regulations",
+    href: "#/regulations/README.md",
+    description:
+      "Compact regulatory briefs (GDPR, DGSD, DORA, CRR, IFRS 9, BCBS 239, PSD2, AML/CFT).",
+  },
+  {
+    label: "Docs (background)",
+    href: "#/docs/README.md",
+    description:
+      "Optional research and synthesis notes. Skip on a first pass; come back for deeper context.",
+  },
+];
+
 function HomePage(): JSX.Element {
   return (
     <section className="page homePage" aria-labelledby="home-title">
       <div className="heroPanel">
         <div>
-          <p className="eyebrow">Browser-hosted banking BI tutorial platform</p>
+          <p className="eyebrow">Banking BI training in your browser</p>
           <h1 id="home-title">Looker BI Gym</h1>
           <p className="lead">
-            A static React app for technical BI practice with Romanian banking
-            flavor, deterministic browser checks, Markdown content, and local
-            learner progress.
+            Practice business intelligence the way a banking BI analyst actually
+            works: declare the grain, write the SQL, model the metric, govern
+            the dashboard. Synthetic banking datasets, deterministic checks,
+            your progress stays local.
+          </p>
+          <p className="lead">
+            After this course you will be able to: profile a dataset grain,
+            repair fanout, build a governed serving result, design a metric
+            contract, choose Looker Studio mechanics with cost in mind, and
+            reason about BI governance under EU banking regulation.
           </p>
           <div className="heroActions" aria-label="Start points">
-            <a href="#/docs/README.md">Read Docs</a>
-            <a href="#/tutorials/README.md">Browse Tutorials</a>
+            <a
+              className="primaryCta"
+              href="#/tutorials/00-orientation-and-stack.md"
+            >
+              Start the first lesson
+            </a>
+            <a href="#/tutorials/README.md">See all lessons</a>
+            <a href="#/workbench/deposits-seed/v0.1.0">Open the workbench</a>
           </div>
         </div>
         <div className="dataPreview" aria-label="Synthetic dataset preview">
@@ -2900,40 +3020,35 @@ function HomePage(): JSX.Element {
         </div>
       </div>
 
-      <div className="principles" aria-label="Platform constraints">
-        {principles.map((principle) => (
-          <span key={principle}>{principle}</span>
-        ))}
-      </div>
+      <section aria-labelledby="home-surface-map" className="homeSurfaceMap">
+        <h2 id="home-surface-map">Where to go</h2>
+        <p>
+          The lessons are the spine. Everything else is optional support you can
+          dip into when it helps. There is no order between flashcards, quiz,
+          exam, and terminology - use them when a lesson sends you there or when
+          you want to test a specific skill.
+        </p>
+        <ul aria-label="Site surfaces with usage guidance">
+          {homeSurfaceGuides.map((guide) => (
+            <li key={guide.href}>
+              <a href={guide.href}>
+                <strong>{guide.label}</strong>
+                <span>{guide.description}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
 
-      <div className="contentOverview" aria-label="Content sections">
-        {contentSections.map((section) => (
-          <a href={`#/${section.id}/README.md`} key={section.id}>
-            <strong>{section.label}</strong>
-            <span>{section.documents.length} Markdown files</span>
-          </a>
-        ))}
-      </div>
-
-      <div className="splitLayout">
-        <section aria-labelledby="current-track">
-          <h2 id="current-track">Learning Path</h2>
-          <p>
-            Start with the browser-only tutorials and challenges, then use the
-            optional Looker Studio recipe when you want to apply the same metric
-            and evidence patterns in a reporting tool. Your progress and flags
-            stay in this browser.
-          </p>
-        </section>
-        <section aria-labelledby="safety-note">
-          <h2 id="safety-note">Training Boundary</h2>
-          <p>
-            This is technical training material. It is not legal, regulatory,
-            accounting, privacy, compliance, or model-risk advice. Validate
-            production banking work with the appropriate institutional teams.
-          </p>
-        </section>
-      </div>
+      <section aria-labelledby="safety-note" className="homeBoundary">
+        <h2 id="safety-note">Training boundary</h2>
+        <p>
+          Every dataset is synthetic. The content is technical training material
+          - not legal, regulatory, accounting, privacy, compliance, or
+          model-risk advice. Validate production banking work with the
+          appropriate institutional teams.
+        </p>
+      </section>
     </section>
   );
 }
@@ -2969,6 +3084,21 @@ function collectTermAnchors(section: ContentSection): readonly TermAnchor[] {
   }
 
   return anchors;
+}
+
+function sectionEyebrowLabel(sectionId: ContentSectionId): string {
+  switch (sectionId) {
+    case "tutorials":
+      return "Lessons";
+    case "docs":
+      return "Reference notes";
+    case "regulations":
+      return "Regulatory briefs";
+    case "terminology":
+      return "Vocabulary";
+    default:
+      return "Pages";
+  }
 }
 
 function ContentPage({
@@ -3024,7 +3154,7 @@ function ContentPage({
     <section className="contentPage" aria-labelledby={`${sectionId}-title`}>
       <aside className="documentNav" aria-label={`${section.label} documents`}>
         <div>
-          <p className="eyebrow">Lessons</p>
+          <p className="eyebrow">{sectionEyebrowLabel(sectionId)}</p>
           <h2 id={`${sectionId}-title`}>{section.label}</h2>
           <p>{section.description}</p>
         </div>
@@ -3229,7 +3359,7 @@ function ChallengesPage({
     <section className="page" aria-labelledby="challenges-title">
       <PageTitle
         title="Challenges"
-        description="Practice modes run from offline challenge definitions. No backend calls or hidden server checks are required."
+        description="Short, deterministic exercises that check one mechanic each. Pick a challenge when you want a tightly-scoped drill outside the lesson flow; the lessons themselves do not require any challenge to be completed."
         id="challenges-title"
       />
       <ChallengeList

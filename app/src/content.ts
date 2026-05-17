@@ -54,28 +54,28 @@ export const contentSections: readonly ContentSection[] = [
     id: "docs",
     label: "Docs",
     description:
-      "Source notes and technical references for BI foundations, banking context, and tooling decisions.",
+      "Background research and synthesis notes - optional reading, not part of the lesson path.",
     documents: toDocuments("docs"),
   },
   {
     id: "regulations",
     label: "Regulations",
     description:
-      "EU and Romanian regulatory context labels for synthetic banking BI scenarios.",
+      "Reference briefs on the EU and Romanian regulations that shape banking BI work.",
     documents: toDocuments("regulations"),
   },
   {
     id: "terminology",
     label: "Terminology",
     description:
-      "BI, SQL, BigQuery, Looker Studio, banking, regulatory, and DuckDB/browser-runtime vocabulary.",
+      "Definitions for the BI, SQL, BigQuery, Looker Studio, banking, and regulatory terms used elsewhere.",
     documents: toDocuments("terminology"),
   },
   {
     id: "tutorials",
-    label: "Tutorials",
+    label: "Lessons",
     description:
-      "Layered tutorial sketches and contracts for browser-first technical BI practice.",
+      "Step-by-step banking BI lessons. Each one ends in a concrete SQL result or governed artefact.",
     documents: toDocuments("tutorials"),
   },
 ];
