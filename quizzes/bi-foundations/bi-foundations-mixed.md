@@ -11,56 +11,95 @@ questions:
   easy:
     - id: q-easy-balance-row-grain
       type: multiple_choice
-      estimated_seconds: 75
+      estimated_seconds: 90
       recommended_learner_tasks: [LT-BI-001]
       source_facts:
         - FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION
         - FACT-DEPOSITS-ACCOUNT-DAILY-BALANCES-GRAIN
       prompt: |
         Your team's deposits dashboard scorecard reads `RON 237,170` for
-        2026-03-31 - more than twice what the branch finance lead
-        expected. You open the source and find one row per account per
-        `business_date`:
+        2026-03-31. The branch finance lead expected something near
+        `RON 79,000` - the dashboard is over by a factor of three. You
+        open the source and find one row per account per
+        `business_date`. There are 18 rows total (6 RON-or-EUR accounts
+        across 3 business dates):
 
             business_date | account_id | currency_code | ledger_balance
             2026-03-29    | A1001      | RON           | 42800
+            2026-03-29    | A1003      | RON           | 18640
+            2026-03-29    | A1004      | RON           | 12200
+            2026-03-29    | A1006      | RON           |  5100
             2026-03-30    | A1001      | RON           | 43120
+            2026-03-30    | A1003      | RON           | 18810
+            2026-03-30    | A1004      | RON           | 12150
+            2026-03-30    | A1006      | RON           |  5050
             2026-03-31    | A1001      | RON           | 43000
-            ...  (six accounts, three business_dates, 18 rows total)
+            2026-03-31    | A1003      | RON           | 19000
+            2026-03-31    | A1004      | RON           | 12300
+            2026-03-31    | A1006      | RON           |  5000
+            (plus six EUR rows across the same three dates)
 
         The scorecard formula is
-        `SUM(ledger_balance) WHERE currency_code = 'RON'`. Why is the
-        number too big?
+        `SUM(ledger_balance) WHERE currency_code = 'RON'`, with no
+        `business_date` filter. Why is the number too big?
       options:
         - id: snapshot_summed_across_dates
           label: |
-            The SUM ran across all three `business_date` values, so each
-            RON account was counted three times. Filter to one
-            `business_date` (latest = `2026-03-31`); the RON total is
-            then `79,300`.
+            The SUM ran across all three `business_date` values, so
+            each RON account was counted three times. The correct
+            shape is `SUM(ledger_balance) WHERE currency_code = 'RON'
+            AND business_date = (SELECT MAX(business_date) FROM
+            account_daily_balances)`. The RON row for 2026-03-31 sums
+            to 43000 + 19000 + 12300 + 5000 = `79,300`, which matches
+            what the finance lead expected.
         - id: missing_currency_filter
           label: |
             The currency filter is matching EUR rows that were stored
-            with an unexpected code; the SUM is picking them up.
+            with the wrong code (e.g. `'EU'` instead of `'EUR'`). The
+            SUM is picking those rows up; tighten the filter to
+            `currency_code = 'RON'` with a `TRIM`.
         - id: aggregation_off
           label: |
-            The Looker Studio data source has aggregation disabled, so
-            the scorecard shows a row count instead of a sum.
+            The Looker Studio data source has aggregation disabled for
+            `ledger_balance`, so the scorecard shows a sum of the row
+            count (3 dates × 4 RON accounts × an aggregation expression
+            applied per-row instead of across rows). Re-enable
+            "Default aggregation = Sum" on the data source field.
       answer: snapshot_summed_across_dates
       explanation: |
-        A balance is a stock, not a flow. Summing it across snapshot
-        dates double-counts every account on every date - the
-        2026-03-29 snapshot of A1001 is the same money as the
-        2026-03-30 snapshot. The fix is either a
-        `WHERE business_date = (SELECT MAX(business_date) ...)` filter,
-        or a date control that defaults to the latest day.
+        A balance is a stock, not a flow. Summing the same account's
+        balance across three snapshot dates triple-counts every RON
+        account because the 2026-03-29 snapshot of A1001 (42800), the
+        2026-03-30 snapshot (43120), and the 2026-03-31 snapshot
+        (43000) are *the same money* observed at three reporting
+        instants. The aggregate of all three (42800 + 43120 + 43000 =
+        128920 for A1001 alone) is not a real number anyone can use.
+        Adding the other three RON accounts the same way gets you
+        close to the `237,170` the dashboard is showing.
+
+        Fix the formula to filter to one `business_date`, ideally
+        always the latest. Two practical shapes:
+
+            -- in the warehouse view that the dashboard reads:
+            WHERE business_date = (
+              SELECT MAX(business_date) FROM account_daily_balances
+            )
+
+            -- in Looker Studio, a date-range control bound to
+            -- business_date with default value = latest_date.
+
+        If you publish the un-filtered version, the finance lead will
+        budget against phantom money; a stock metric without a
+        reference date is not a metric.
       self_assessment: |
-        Whenever you see `SUM(...)` on a `balance`, `outstanding`, or
-        `exposure` column, your first question is "summed across which
-        business_date(s)?".
+        Whenever you see `SUM(...)` on a column whose name contains
+        "balance", "outstanding", "exposure", "position", or
+        "deposit", your first question to the author is "summed
+        across which `business_date`(s)?". If the answer is "all of
+        them", it is wrong.
     - id: q-easy-dashboard-field-minimisation
       type: select_all
-      estimated_seconds: 75
+      estimated_seconds: 90
       recommended_learner_tasks: [LT-BI-001, LT-LOOKER-004]
       source_facts:
         - FACT-GDPR-DATA-MINIMISATION
@@ -68,15 +107,22 @@ questions:
         - FACT-BIGQUERY-SELECT-LIST-NARROWING
       prompt: |
         You are preparing a "deposits by currency" page for a
-        branch-management audience that has no role-based need to see
-        individual depositors. The raw source has these columns:
+        branch-management audience. Their role description does not
+        include investigating individual depositors - they look at
+        aggregates and decide whether to ask the operations team for
+        a deeper drill-down. The raw source has these columns:
 
-            business_date, account_id, customer_id, synthetic_iban,
-            ledger_balance, currency_code
+            business_date     DATE
+            account_id        STRING   -- e.g. 'A1001'
+            customer_id       STRING   -- e.g. 'C5001'
+            synthetic_iban    STRING   -- e.g. 'RO49AAAA1B31007593840000'
+            ledger_balance    INT64
+            currency_code     STRING
 
         The chart needs `business_date`, `currency_code`, and a sum of
-        `ledger_balance`. Which columns must NOT ride along into the
-        serving view that feeds the chart?
+        `ledger_balance` per currency for the latest day. Which
+        columns must NOT ride along into the serving view that feeds
+        the chart? (Select all that apply.)
       options:
         - id: account_id
           label: account_id
@@ -88,100 +134,210 @@ questions:
           label: currency_code
       answer: [account_id, customer_id, synthetic_iban]
       explanation: |
-        `currency_code` is part of the aggregation - it stays. The
-        three identifier columns would let any viewer re-identify a
-        depositor and add nothing to the per-currency aggregate.
-        GDPR data-minimisation is the rule of thumb: collect / expose
-        only what the named purpose requires. Aggregate first; surface
-        the aggregate fields only.
+        `currency_code` is part of the aggregation grouping and the
+        chart's currency axis - it stays. The three identifier columns
+        are personal-data-shaped (`account_id`, `customer_id`,
+        `synthetic_iban`); leaving them in the serving view does two
+        bad things at once. First, it lets any viewer who can
+        re-issue the underlying query re-identify the depositor set,
+        even though the chart only renders aggregates. Second, it
+        widens the audit blast radius - any data leak or shared
+        screenshot now contains identifiers.
+
+        GDPR's data-minimisation principle (Article 5(1)(c)) says
+        personal data shall be "adequate, relevant and limited to
+        what is necessary in relation to the purposes for which they
+        are processed". The "purpose" here is per-currency
+        aggregate reporting; per-depositor identifiers are not
+        necessary for that purpose. The shape that satisfies it:
+
+            CREATE OR REPLACE VIEW serving_deposit_dashboard AS
+            SELECT
+              business_date,
+              currency_code,
+              SUM(ledger_balance) AS ledger_total
+            FROM account_daily_balances
+            GROUP BY business_date, currency_code;
+
+        Anything beyond that goes in a separately access-controlled
+        investigation view, not the dashboard's serving view.
       self_assessment: |
-        If an identifier column is in a serving view but not in the
-        chart, ask "what specific approved purpose needs it?". If you
-        can't name one, drop it.
+        For every column in a serving view, write one sentence naming
+        the chart-side purpose it serves. If you cannot name one for
+        a column, the column should not be in the view - even when
+        the data is synthetic. Training the habit on synthetic data
+        is the only reason you will have it on production data.
     - id: q-easy-looker-data-source-role
       type: multiple_choice
-      estimated_seconds: 60
+      estimated_seconds: 80
       recommended_learner_tasks: [LT-LOOKER-004]
       source_facts:
         - FACT-LOOKER-STUDIO-DATA-SOURCE
         - FACT-LOOKER-STUDIO-FIELD-TYPES
       prompt: |
-        You open a Looker Studio report and the daily-deposits chart
-        is misbehaving: a column you wrote SQL for as `INT64` is
-        being rendered as a date. Before touching the chart, where
-        do you check first?
+        You open a Looker Studio report at 09:00 Monday and the
+        latest-day deposits scorecard is rendering `ledger_total` as
+        `1970-01-02` instead of a money amount. You wrote the
+        underlying BigQuery view yourself last week and the SQL is
+        unchanged - `SUM(ledger_balance) AS ledger_total` against an
+        `INT64` column.
+
+        A teammate already restarted the report. The format is the
+        same. Before touching the chart, where do you check first?
       options:
         - id: data_source
           label: |
-            The data source. Looker Studio reads field type from the
-            data source schema, and the data source can override the
-            warehouse type per field (Number / Date / Text).
+            The data source. Open `Resource > Manage added data sources
+            > <your data source> > Edit`. Each field row shows a Type
+            dropdown (Number, Date, Text, Boolean, ...). Looker
+            Studio reads field type from the data source, and the
+            data source can override what BigQuery says per field
+            (someone may have flipped `ledger_total` to Date by
+            mistake).
         - id: chart_layer
           label: |
-            The chart. A chart-level calculated field can rename a
-            field, and renaming is what causes type drift.
+            The chart. Open the chart, find the metric pill for
+            `ledger_total`, and check whether a chart-level
+            calculated field has renamed the underlying field -
+            renames are what cause type drift across charts.
         - id: blend_definition
           label: |
-            The blend. A blend always wins over the underlying data
-            source schema, so the chart's type is coming from there.
+            The blend. Looker Studio blends override the underlying
+            data-source type for every field they touch, so the
+            chart's apparent type is being set by the blend
+            definition.
         - id: bigquery_information_schema
           label: |
-            `INFORMATION_SCHEMA.COLUMNS` in BigQuery. Looker Studio
-            inherits the warehouse data type directly, so the chart
-            is showing what BigQuery declares.
+            BigQuery. Run `SELECT data_type FROM
+            <project>.<dataset>.INFORMATION_SCHEMA.COLUMNS WHERE
+            table_name = 'serving_deposit_dashboard' AND column_name
+            = 'ledger_total'`. Looker Studio inherits the warehouse
+            type directly with no override layer.
       answer: data_source
       explanation: |
-        Field type lives on the data source (Looker Studio data
-        sources can override the warehouse type). Chart-level
-        calculated fields can rename a field but cannot change its
-        underlying field type; blends do not override data-source
-        types in this way; themes only affect display formatting.
-        Edit the data source field and set the type back to Number.
+        Looker Studio has a real data-source layer between BigQuery
+        and the chart. When the data source is added, Looker Studio
+        introspects the BigQuery schema and proposes a Type per
+        field, but the human author can then override it (e.g.,
+        forcing a "year" column from Number to Date so the chart
+        groups by year). That override lives in the data source, not
+        in the warehouse and not in the chart.
+
+        Why the other options miss:
+
+        - Chart-level calculated fields can compute new columns and
+          can rename a field on the chart, but they do not retype an
+          existing field. Setting the chart's pill to a different
+          field does not change the underlying type.
+        - Blends do not generally override the source-side type of
+          existing fields; new fields a blend creates can be retyped
+          on the blend, but a plain `SUM` from a single source comes
+          through with the source-side type.
+        - `INFORMATION_SCHEMA.COLUMNS` will confirm BigQuery is still
+          returning `INT64`, but it cannot show you the Looker Studio
+          override that is causing the chart's behaviour. The
+          shortest path is: data source > field row > Type.
+
+        The fix is one click: change the Type back to Number and
+        save the data source. The chart re-renders correctly without
+        any chart-level change.
       self_assessment: |
-        Field surprises (type, default aggregation, missing values)
-        belong to the data source layer until proven otherwise.
+        Whenever a Looker Studio chart "lies" about a column
+        (wrong type, wrong default aggregation, NULL where you
+        expected zero), check the data source layer before the chart
+        layer. Type and default aggregation are data-source
+        properties; chart-level changes can only mask them.
     - id: q-easy-reusable-calculated-field
       type: multiple_choice
-      estimated_seconds: 65
+      estimated_seconds: 80
       recommended_learner_tasks: [LT-LOOKER-004]
       source_facts:
         - FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE
         - FACT-LOOKER-STUDIO-DATA-SOURCE
       prompt: |
-        A colleague defined `ledger_total = SUM(ledger_balance)` as a
-        chart-level calculated field on the latest-day scorecard.
-        Three more charts now need the same `ledger_total`. They ask
-        you to copy the formula onto each of those charts so they all
-        match. What do you do instead?
+        Last week a colleague defined `ledger_total = SUM(ledger_balance)`
+        as a chart-level calculated field on the latest-day scorecard
+        for the deposits dashboard. Today, three more charts (a
+        currency-mix donut, a 30-day trend line, and a per-branch bar)
+        need the same `ledger_total`, and the team plans to add a
+        Slack-shared summary report on the same data source next
+        sprint.
+
+        Your teammate suggests copying the chart-level formula onto
+        each of the four charts so they all match, and then "we'll be
+        careful to update all four if the definition ever changes".
+        What do you do instead?
       options:
         - id: reusable_layer
           label: |
-            Move the formula one layer up - into the upstream serving
-            SQL (a `serving_deposit_dashboard` view) or into a
-            data-source-level field. Then every chart, blend, and
-            future report uses the same definition.
+            Move the formula one layer up. Best: define
+            `ledger_total` in the upstream serving SQL the dashboard
+            reads from, e.g.
+
+                CREATE OR REPLACE VIEW serving_deposit_dashboard AS
+                SELECT
+                  business_date,
+                  currency_code,
+                  SUM(ledger_balance) AS ledger_total
+                FROM account_daily_balances
+                GROUP BY business_date, currency_code;
+
+            Next best: define a data-source-level calculated field
+            in Looker Studio (`Resource > Manage added data sources
+            > Add a field`) with formula `SUM(ledger_balance)` and
+            default aggregation `Auto`. After either fix, every
+            chart, the new blend, and the next-sprint summary report
+            pick the same definition up automatically.
         - id: each_chart
           label: |
-            Copy the chart-level formula to each of the four charts so
-            they stay in sync. If the formula changes, edit it four
-            times.
+            Copy the chart-level formula to each of the four charts
+            so they stay in sync. Schedule a quarterly review to
+            check that all four are still identical, and warn the
+            team that any change to the metric is a four-place edit.
         - id: report_filter
           label: |
-            Add `ledger_total = SUM(ledger_balance)` as a report-level
-            filter expression so every chart inherits it.
+            Add `ledger_total = SUM(ledger_balance)` as a
+            report-level filter expression so every chart on this
+            report inherits it. Report filters apply across every
+            chart in the report, so this is the same effect with
+            less typing.
       answer: reusable_layer
       explanation: |
-        Chart-level calculated fields live only in that chart - they
-        don't show up in other charts, in blends, or in future reports
-        on the same data source. The fix is to push the formula
-        upstream: into the warehouse view (best) or into a
-        data-source-level calculated field (next best). Copying it
-        across charts looks like consistency until someone changes one
-        copy.
+        Chart-level calculated fields are scoped to the chart they
+        live in. They are invisible to other charts on the same
+        report, to blends that use the same data source, and to any
+        future report that connects to the same data source.
+        Multiplying the formula across four chart edits is the
+        beginning of metric drift: the moment someone "fixes" one
+        copy without finding the others, two charts will quietly
+        disagree on the same name.
+
+        The right escalation has two stops:
+
+        - **Upstream view (best)**. Define the metric where the
+          data lives. Every BI surface that reads the view -
+          dashboards now, blends later, an ad-hoc CSV pull next
+          quarter - sees the same `ledger_total`. The metric has
+          one owner: the view's DDL.
+        - **Data-source-level calculated field (next best)**. If
+          you can't change the warehouse view, define the field
+          once on the Looker Studio data source. Every chart on
+          every report that uses that data source picks it up.
+          Chart-level scope is for genuinely chart-specific
+          formatting (a chart-only label, a chart-only filter
+          expression), not for the metric definition itself.
+
+        The "report filter" distractor is genuinely tempting because
+        it does propagate across all charts on the same report -
+        but a filter selects rows, it doesn't define a metric. And
+        it would still not be visible to the next report on the same
+        data source.
       self_assessment: |
-        If the same metric exists in two charts, it belongs upstream
-        of both. Chart-level scope is for genuinely chart-specific
-        formatting only.
+        If the same metric is going to appear in more than one
+        chart, it belongs in the layer that all those charts share -
+        usually the warehouse view, sometimes the data-source field
+        list, never the chart. The exception is a true one-off ratio
+        for one specific chart's annotation.
     - id: q-easy-logical-view-contract
       type: multiple_choice
       estimated_seconds: 65

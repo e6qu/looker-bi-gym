@@ -75,8 +75,12 @@ Produces:
 
 ### Step 1 - Profile The Source Tables Before You Touch The Join
 
-Open the [deposits seed workbench](#/workbench/deposits-seed/v0.1.0)
-and run this:
+Open the [deposits seed workbench](#/workbench/deposits-seed/v0.1.0).
+Three tables matter for this lesson; profile each before you touch
+the join.
+
+**`account_daily_balances` (fact-shaped, one row per account per
+`business_date`)**
 
 ```sql
 SELECT
@@ -94,11 +98,64 @@ Expected:
 | -----------: | ------------: | -------------: | ------------------- | -------------------- |
 |           18 |             6 |              2 | 2026-03-29          | 2026-03-31           |
 
-Read this as: 18 rows / 6 accounts = 3 dates per account, which is
-exactly what "one row per account per `business_date`" should look
-like for three reporting dates. If the ratio were not clean, the
-grain claim would be a lie and the rest of the lesson would compound
-the problem.
+Read this: 18 rows / 6 accounts = 3 dates per account exactly, which
+is the shape "one row per account per `business_date`" should
+produce for three reporting dates. If the ratio were not clean (say
+17 rows, or 6.3 dates per account on average), the "one row per
+account per business date" claim would already be a lie and the
+rest of the lesson would compound the problem.
+
+**`accounts` (dimension-shaped, one row per account)**
+
+```sql
+SELECT
+  COUNT(*)                          AS account_rows,
+  COUNT(DISTINCT account_id)        AS distinct_account_ids,
+  COUNT(DISTINCT branch_id)         AS distinct_branch_ids_referenced,
+  SUM(CASE WHEN synthetic_iban IS NULL THEN 1 ELSE 0 END)
+                                    AS missing_iban_rows
+FROM accounts;
+```
+
+Expected:
+
+| account_rows | distinct_account_ids | distinct_branch_ids_referenced | missing_iban_rows |
+| -----------: | -------------------: | -----------------------------: | ----------------: |
+|            6 |                    6 |                              5 |                 0 |
+
+`account_rows = distinct_account_ids = 6` confirms that `account_id`
+is unique on `accounts` - the dimension does what you would expect.
+`distinct_branch_ids_referenced = 5` is the first hint of trouble:
+the accounts reference 5 different `branch_id` values, but how many
+of those exist in the `branches` table?
+
+**`branches` (dimension-shaped, one row per branch)**
+
+```sql
+SELECT
+  branch_id,
+  city,
+  county
+FROM branches
+ORDER BY branch_id;
+```
+
+Expected:
+
+| branch_id | city        | county    |
+| --------- | ----------- | --------- |
+| BR-BC-01  | Bacau       | Bacau     |
+| BR-BV-01  | Brasov      | Brasov    |
+| BR-B-01   | Bucuresti   | Bucuresti |
+| BR-CJ-01  | Cluj-Napoca | Cluj      |
+| BR-IS-01  | Iasi        | Iasi      |
+| BR-TM-01  | Timisoara   | Timis     |
+
+Six rows. So `accounts` reference 5 distinct branches but `branches`
+has 6 listed - which would matter if the question were "which branch
+has no accounts?", but the BI-failure question is the other way
+around: are there accounts whose `branch_id` is not present in
+`branches`?
 
 ### Step 2 - Check The Branch Mapping Before You Inner-Join
 
@@ -244,8 +301,46 @@ Expected:
 |                      95700 |                           6 |
 
 If your serving result's total matches this number, the join did not
-change the grain. If it doesn't match, work back through the joins -
-the most likely culprit is a many-to-many you didn't notice.
+change the grain. If it doesn't match, work back through the joins.
+
+**Debug recipe when the total is wrong.** Pick the most likely
+culprit first based on what number you actually see:
+
+- **Total = 90,700** (off by exactly 5,000). The unmapped account
+  (the one whose `branch_id` does not exist in `branches`) was
+  silently dropped by an `INNER JOIN`. Switch to `LEFT JOIN dim_branch`
+  and rerun.
+- **Total = 95,700 × 3 = 287,100** or similar multiples. You forgot
+  the `WHERE business_date = DATE '2026-03-31'` filter and are
+  summing all three snapshot dates. Add the filter.
+- **Total = 164,800**. You joined the `account_owners` table to the
+  balance fact before reducing one side. See "The Fanout Trap"
+  below.
+- **Total = 95,700.0 but the chart shows zero rows for one
+  currency**. The `GROUP BY` includes a column that has NULLs the
+  serving result is silently dropping; check the
+  `COALESCE(branch_city, 'UNMAPPED_BRANCH')` is present and the
+  `INNER` vs `LEFT` choice on every join.
+
+The general rule: when a number is wrong, ask "did the join change
+the row count?" before you ask anything else. A control SQL that
+counts rows at each CTE stage is cheap and answers it directly:
+
+```sql
+WITH stage_a AS (SELECT * FROM account_daily_balances
+                 WHERE business_date = DATE '2026-03-31'),
+     stage_b AS (SELECT a.account_id, a.business_date, a.ledger_balance,
+                        a.currency_code, b.branch_id
+                 FROM stage_a a
+                 INNER JOIN accounts b ON a.account_id = b.account_id)
+SELECT
+  (SELECT COUNT(*) FROM stage_a) AS stage_a_rows,
+  (SELECT COUNT(*) FROM stage_b) AS stage_b_rows;
+```
+
+If `stage_b_rows > stage_a_rows`, a join multiplied rows. If
+`stage_b_rows < stage_a_rows`, a join dropped rows. Either way,
+fix the join before changing the aggregation.
 
 ### The Fanout Trap (Why The Ownership Table Is Not In This Query)
 
@@ -289,7 +384,27 @@ You can answer all of these without rerunning the SQL:
 
 ## What You Have Now
 
-A serving result for the latest `business_date`, six rows, no
-sensitive fields, with a control total that ties back to the source.
-This shape is what lesson 03 plugs into the first Looker Studio
-dashboard.
+A serving result for the latest `business_date` - six rows, no
+sensitive fields, control total `95,700` that ties back to the
+source. The fields you can publish are `business_date`,
+`currency_code`, `branch_city`, `ledger_total`, `account_count`,
+`source_cutoff_timestamp`. The fields you have intentionally not
+published are `account_id`, `customer_id`, `synthetic_iban`,
+`account_status`, `regulatory_context_tag`.
+
+Lesson 03 takes this exact serving shape and wires it into the
+first Looker Studio dashboard: a latest-day scorecard, a per-
+currency table, and a per-branch bar chart, all reading from a
+single governed data source. None of those charts has to recompute
+anything; they read named columns.
+
+Lesson 05 returns to the fanout trap and shows the correct two-step
+shape for ownership questions (first reduce ownership to a single
+share per account, then join to balances). If you ever need to
+answer "total deposits per depositor", that's where you go - not
+back into this serving result.
+
+Lesson 07 returns to the excluded-fields list and shows how to
+enforce it on the warehouse side (authorized views, column-level
+policy tags), so the choice you just made by hand becomes a policy
+the platform enforces against any future ad-hoc query.
