@@ -1275,11 +1275,13 @@ function FactsPage({
     <section className="contentPage factsPage" aria-labelledby="facts-title">
       <aside className="documentNav" aria-label="Fact database index">
         <div>
-          <p className="eyebrow">Live fact graph</p>
+          <p className="eyebrow">Source-backed claims</p>
           <h2 id="facts-title">Facts</h2>
           <p>
-            Source-backed fact nodes loaded from local Markdown and verified by
-            the SQLite facts database tests.
+            Use this surface to trace where a claim in a lesson, quiz, or exam
+            card actually comes from. Each fact has a one-line statement, the
+            source quote it is grounded in, and a link to the original source
+            card.
           </p>
         </div>
         <nav>
@@ -3313,7 +3315,7 @@ function ChallengesPage({
     <section className="page" aria-labelledby="challenges-title">
       <PageTitle
         title="Challenges"
-        description="Practice modes run from offline challenge definitions. No backend calls or hidden server checks are required."
+        description="Short, deterministic exercises that check one mechanic each. Pick a challenge when you want a tightly-scoped drill outside the lesson flow; the lessons themselves do not require any challenge to be completed."
         id="challenges-title"
       />
       <ChallengeList

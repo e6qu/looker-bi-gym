@@ -37,8 +37,6 @@ Required tools:
 
 - Browser-first path: browser SQL workbench for the synthetic datasets.
 - Optional applied path: browser UI access to BigQuery and Looker Studio.
-- Do not use Google Cloud CLI, BigQuery CLI, service account keys, Python, or
-  Docker.
 
 Objective: create and verify a narrow synthetic serving result before any
 Looker Studio chart is built.

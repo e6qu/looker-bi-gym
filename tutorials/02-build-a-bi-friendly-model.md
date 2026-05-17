@@ -34,8 +34,6 @@ Prior knowledge expected:
 Required tools:
 
 - Browser-first path: browser SQL workbench for the synthetic datasets.
-- Do not use Google Cloud CLI, BigQuery CLI, service account keys, Python, or
-  Docker.
 
 Objective: turn raw-shaped synthetic deposits tables into a BI-friendly model
 contract without changing metric grain or exposing unnecessary identifiers.

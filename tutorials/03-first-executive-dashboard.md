@@ -34,8 +34,6 @@ Required tools:
 
 - Browser-first path: browser SQL workbench for the synthetic datasets.
 - Optional applied path: browser UI access to BigQuery and Looker Studio.
-- Do not use Google Cloud CLI, BigQuery CLI, service account keys, Python, or
-  Docker.
 
 Objective: build an executive-dashboard specification from a curated synthetic
 serving result, with exact KPI values, chart fields, freshness text, and

@@ -47,8 +47,6 @@ Required tools:
 
 - Browser-first path: browser SQL workbench for the synthetic datasets.
 - Optional applied path: browser UI access to BigQuery and Looker Studio.
-- Do not use Google Cloud CLI, BigQuery CLI, service account keys, Python, or
-  Docker.
 
 Objective: connect dashboard design choices to observable query work, then
 produce a cost/freshness control record that can be reviewed without exposing
