@@ -452,6 +452,28 @@ FROM account_daily_balances;`);
       page.getByRole("table", { name: "SQL query result" }),
     ).toContainText("2026-03-31");
 
+    // Tutorial 01 SQL uses raw DATE and SUM(integer); without column-
+    // type-aware formatting, DuckDB-WASM surfaces those as epoch ms
+    // and Uint32Array. Pin the formatted output here.
+    await page.goto("/#/workbench/deposits-seed/v0.1.0");
+    await page.getByLabel("SQL query", { exact: true }).fill(`SELECT
+  business_date,
+  currency_code,
+  SUM(ledger_balance) AS ledger_total
+FROM account_daily_balances
+GROUP BY business_date, currency_code
+ORDER BY business_date, currency_code
+LIMIT 1;`);
+    await page.getByRole("button", { name: "Run Query" }).click();
+    const tutorialOneResultTable = page.getByRole("table", {
+      name: "SQL query result",
+    });
+    await expect(tutorialOneResultTable).toContainText("2026-03-29");
+    await expect(tutorialOneResultTable).toContainText("EUR");
+    await expect(tutorialOneResultTable).toContainText("16450");
+    await expect(tutorialOneResultTable).not.toContainText("Uint32Array");
+    await expect(tutorialOneResultTable).not.toContainText("[object");
+
     await page.goto("/#/workbench/lending-month-end/v0.1.0");
     await expect(page.getByText("lending-month-end/v0.1.0")).toBeVisible();
     await expect(

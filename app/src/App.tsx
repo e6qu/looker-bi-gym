@@ -91,7 +91,11 @@ import type {
   QuizBankQuestion,
 } from "./learningContent";
 import type { QuizAnswerState, QuizResponse } from "./quiz";
-import type { SqlQueryResult, SqlTableSchema } from "./sqlRuntime";
+import type {
+  SqlColumnMetadata,
+  SqlQueryResult,
+  SqlTableSchema,
+} from "./sqlRuntime";
 import type { ValidationEvaluation } from "./validators";
 
 type RouteId =
@@ -346,9 +350,131 @@ function getArrayAnswer(
   return answer !== undefined && typeof answer !== "string" ? answer : [];
 }
 
-function formatSqlCellValue(value: unknown): string {
+function isTypedIntArray(
+  value: unknown,
+): value is Uint32Array | Int32Array | BigInt64Array | BigUint64Array {
+  return (
+    value instanceof Uint32Array ||
+    value instanceof Int32Array ||
+    value instanceof BigInt64Array ||
+    value instanceof BigUint64Array
+  );
+}
+
+function typedIntArrayToBigInt(
+  value: Uint32Array | Int32Array | BigInt64Array | BigUint64Array,
+  signed = true,
+): bigint | undefined {
+  // BigInt-typed arrays of length 1 are already a single 64-bit value.
+  if (value instanceof BigInt64Array || value instanceof BigUint64Array) {
+    return value.length === 1 ? value[0] : undefined;
+  }
+  // Uint32Array / Int32Array carry 32-bit words. Arrow surfaces 64-bit
+  // ints as length-2 (lo, hi) and Decimal128 as length-4.
+  if (value.length === 2) {
+    const lo = BigInt(value[0] ?? 0) & 0xffffffffn;
+    const hi = BigInt((value[1] ?? 0) >>> 0);
+    let result = (hi << 32n) | lo;
+    if (signed && result >= 1n << 63n) {
+      result -= 1n << 64n;
+    }
+    return result;
+  }
+  if (value.length === 4) {
+    let result = 0n;
+    for (let index = 0; index < 4; index += 1) {
+      const word = BigInt((value[index] ?? 0) >>> 0);
+      result |= word << BigInt(index * 32);
+    }
+    if (signed && result >= 1n << 127n) {
+      result -= 1n << 128n;
+    }
+    return result;
+  }
+  return undefined;
+}
+
+function formatDecimalBigInt(value: bigint, scale: number): string {
+  if (!Number.isFinite(scale) || scale <= 0) {
+    return value.toString();
+  }
+  const negative = value < 0n;
+  const abs = negative ? -value : value;
+  const divisor = 10n ** BigInt(scale);
+  const intPart = abs / divisor;
+  const fracPart = (abs % divisor).toString().padStart(scale, "0");
+  const trimmedFrac = fracPart.replace(/0+$/u, "");
+  const sign = negative ? "-" : "";
+  return trimmedFrac.length === 0
+    ? `${sign}${intPart}`
+    : `${sign}${intPart}.${trimmedFrac}`;
+}
+
+function formatEpochMillisAsDate(epochMs: number): string {
+  if (!Number.isFinite(epochMs)) {
+    return String(epochMs);
+  }
+  const date = new Date(epochMs);
+  if (Number.isNaN(date.getTime())) {
+    return String(epochMs);
+  }
+  const year = String(date.getUTCFullYear()).padStart(4, "0");
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function formatEpochMillisAsTimestamp(epochMs: number): string {
+  if (!Number.isFinite(epochMs)) {
+    return String(epochMs);
+  }
+  const date = new Date(epochMs);
+  if (Number.isNaN(date.getTime())) {
+    return String(epochMs);
+  }
+  return date.toISOString().replace(".000Z", "Z");
+}
+
+function formatSqlCellValue(
+  value: unknown,
+  metadata: SqlColumnMetadata = { type: "other" },
+): string {
   if (value === null || value === undefined) {
     return "NULL";
+  }
+
+  const columnType = metadata.type;
+  const isSigned = metadata.isSigned ?? true;
+
+  if (columnType === "date") {
+    if (typeof value === "number") return formatEpochMillisAsDate(value);
+    if (typeof value === "bigint")
+      return formatEpochMillisAsDate(Number(value));
+    if (value instanceof Date) return formatEpochMillisAsDate(value.getTime());
+  }
+
+  if (columnType === "timestamp") {
+    if (typeof value === "number") return formatEpochMillisAsTimestamp(value);
+    if (typeof value === "bigint")
+      return formatEpochMillisAsTimestamp(Number(value));
+    if (value instanceof Date) {
+      return formatEpochMillisAsTimestamp(value.getTime());
+    }
+  }
+
+  if (columnType === "decimal" && isTypedIntArray(value)) {
+    const asBigInt = typedIntArrayToBigInt(value, isSigned);
+    if (asBigInt !== undefined) {
+      return formatDecimalBigInt(asBigInt, metadata.scale ?? 0);
+    }
+  }
+
+  if (
+    (columnType === "bigint" || columnType === "int") &&
+    isTypedIntArray(value)
+  ) {
+    const asBigInt = typedIntArrayToBigInt(value, isSigned);
+    if (asBigInt !== undefined) return asBigInt.toString();
   }
 
   if (
@@ -358,6 +484,11 @@ function formatSqlCellValue(value: unknown): string {
     typeof value === "boolean"
   ) {
     return String(value);
+  }
+
+  if (isTypedIntArray(value)) {
+    const asBigInt = typedIntArrayToBigInt(value, isSigned);
+    if (asBigInt !== undefined) return asBigInt.toString();
   }
 
   return Object.prototype.toString.call(value);
@@ -387,6 +518,14 @@ function asFiniteSqlNumber(value: unknown): number | undefined {
   if (typeof value === "string" && value.trim().length > 0) {
     const numericValue = Number(value);
     return Number.isFinite(numericValue) ? numericValue : undefined;
+  }
+
+  if (isTypedIntArray(value)) {
+    const asBigInt = typedIntArrayToBigInt(value);
+    if (asBigInt !== undefined) {
+      const asNumber = Number(asBigInt);
+      return Number.isFinite(asNumber) ? asNumber : undefined;
+    }
   }
 
   return undefined;
@@ -434,9 +573,15 @@ function buildSqlResultVisualization(
       }
 
       return {
-        label: formatSqlCellValue(row[dimensionColumn]),
+        label: formatSqlCellValue(
+          row[dimensionColumn],
+          result.columnMetadata[dimensionColumn],
+        ),
         value,
-        formattedValue: formatSqlCellValue(row[metricColumn]),
+        formattedValue: formatSqlCellValue(
+          row[metricColumn],
+          result.columnMetadata[metricColumn],
+        ),
       };
     })
     .filter((point): point is SqlVisualizationPoint => point !== undefined)
@@ -1548,7 +1693,10 @@ function SqlResultTable({
               {result.columns.map((column) => {
                 return (
                   <div key={`${rowIndex}:${column}`} role="cell">
-                    {formatSqlCellValue(row[column])}
+                    {formatSqlCellValue(
+                      row[column],
+                      result.columnMetadata[column],
+                    )}
                   </div>
                 );
               })}
