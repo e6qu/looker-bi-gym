@@ -1,10 +1,5 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
-import {
-  contentSections,
-  getDefaultDocument,
-  getDocument,
-  getSection,
-} from "./content";
+import { getDefaultDocument, getDocument, getSection } from "./content";
 import {
   evaluateCloudEvidenceChecks,
   isCloudEvidenceCheckSupported,
@@ -147,15 +142,6 @@ const contentRouteIds: ReadonlySet<RouteId> = new Set<RouteId>([
   "terminology",
   "tutorials",
 ]);
-
-const principles: readonly string[] = [
-  "Static GitHub Pages app",
-  "No backend or credentials",
-  "Browser-local storage and cookie state",
-  "Synthetic banking datasets only",
-  "Default learner path runs in the browser",
-  "Optional tools are listed per tutorial",
-];
 
 const workbenchDatasetRefs: readonly RuntimeDatasetRef[] = [
   defaultDatasetRef,
@@ -2861,21 +2847,97 @@ function WorkbenchRuntimePage({
   );
 }
 
+type HomeSurfaceGuide = {
+  readonly label: string;
+  readonly href: string;
+  readonly description: string;
+};
+
+const homeSurfaceGuides: readonly HomeSurfaceGuide[] = [
+  {
+    label: "Tutorials",
+    href: "#/tutorials/README.md",
+    description:
+      "Step-by-step lessons. Each lesson builds one BI habit against a synthetic banking dataset.",
+  },
+  {
+    label: "Workbench",
+    href: "#/workbench/deposits-seed/v0.1.0",
+    description:
+      "Run SQL directly against the synthetic datasets. Use this whenever a tutorial asks you to run a query.",
+  },
+  {
+    label: "Flashcards",
+    href: "#/flashcards",
+    description:
+      "Spaced-repetition recall on the core BI, BigQuery, Looker Studio, and banking-regulation concepts.",
+  },
+  {
+    label: "Quiz",
+    href: "#/quiz",
+    description:
+      "Scenario-driven multiple-choice practice on banking BI fundamentals.",
+  },
+  {
+    label: "Exam",
+    href: "#/exam",
+    description:
+      "Longer practical cards with deterministic expected outputs you self-assess against.",
+  },
+  {
+    label: "Terminology",
+    href: "#/terminology/README.md",
+    description:
+      "Definitions for every BI / BigQuery / Looker Studio / banking term used elsewhere on the site.",
+  },
+  {
+    label: "Facts",
+    href: "#/facts",
+    description:
+      "Source-backed claims. Use this to trace where a tutorial assertion comes from.",
+  },
+  {
+    label: "Regulations",
+    href: "#/regulations/README.md",
+    description:
+      "Compact regulatory briefs (GDPR, DGSD, DORA, CRR, IFRS 9, BCBS 239, PSD2, AML/CFT).",
+  },
+  {
+    label: "Docs (background)",
+    href: "#/docs/README.md",
+    description:
+      "Optional research and synthesis notes. Skip on a first pass; come back for deeper context.",
+  },
+];
+
 function HomePage(): JSX.Element {
   return (
     <section className="page homePage" aria-labelledby="home-title">
       <div className="heroPanel">
         <div>
-          <p className="eyebrow">Browser-hosted banking BI tutorial platform</p>
+          <p className="eyebrow">Banking BI training in your browser</p>
           <h1 id="home-title">Looker BI Gym</h1>
           <p className="lead">
-            A static React app for technical BI practice with Romanian banking
-            flavor, deterministic browser checks, Markdown content, and local
-            learner progress.
+            Practice business intelligence the way a banking BI analyst actually
+            works: declare the grain, write the SQL, model the metric, govern
+            the dashboard. Synthetic banking datasets, deterministic checks,
+            your progress stays local.
+          </p>
+          <p className="lead">
+            After this course you will be able to: profile a dataset grain,
+            repair fanout, build a governed serving result, design a metric
+            contract, choose Looker Studio mechanics with cost in mind, and
+            reason about BI governance under EU banking regulation.
           </p>
           <div className="heroActions" aria-label="Start points">
-            <a href="#/docs/README.md">Read Docs</a>
-            <a href="#/tutorials/README.md">Browse Tutorials</a>
+            <a
+              className="primaryCta"
+              href="#/tutorials/00-orientation-and-stack.md"
+            >
+              Start the first lesson
+            </a>
+            <a href="#/tutorials/README.md">See all lessons</a>
+            <a href="#/workbench/deposits-seed/v0.1.0">Open the workbench</a>
           </div>
         </div>
         <div className="dataPreview" aria-label="Synthetic dataset preview">
@@ -2900,40 +2962,35 @@ function HomePage(): JSX.Element {
         </div>
       </div>
 
-      <div className="principles" aria-label="Platform constraints">
-        {principles.map((principle) => (
-          <span key={principle}>{principle}</span>
-        ))}
-      </div>
+      <section aria-labelledby="home-surface-map" className="homeSurfaceMap">
+        <h2 id="home-surface-map">Where to go</h2>
+        <p>
+          The lessons are the spine. Everything else is optional support you can
+          dip into when it helps. There is no order between flashcards, quiz,
+          exam, and terminology - use them when a lesson sends you there or when
+          you want to test a specific skill.
+        </p>
+        <ul aria-label="Site surfaces with usage guidance">
+          {homeSurfaceGuides.map((guide) => (
+            <li key={guide.href}>
+              <a href={guide.href}>
+                <strong>{guide.label}</strong>
+                <span>{guide.description}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
 
-      <div className="contentOverview" aria-label="Content sections">
-        {contentSections.map((section) => (
-          <a href={`#/${section.id}/README.md`} key={section.id}>
-            <strong>{section.label}</strong>
-            <span>{section.documents.length} Markdown files</span>
-          </a>
-        ))}
-      </div>
-
-      <div className="splitLayout">
-        <section aria-labelledby="current-track">
-          <h2 id="current-track">Learning Path</h2>
-          <p>
-            Start with the browser-only tutorials and challenges, then use the
-            optional Looker Studio recipe when you want to apply the same metric
-            and evidence patterns in a reporting tool. Your progress and flags
-            stay in this browser.
-          </p>
-        </section>
-        <section aria-labelledby="safety-note">
-          <h2 id="safety-note">Training Boundary</h2>
-          <p>
-            This is technical training material. It is not legal, regulatory,
-            accounting, privacy, compliance, or model-risk advice. Validate
-            production banking work with the appropriate institutional teams.
-          </p>
-        </section>
-      </div>
+      <section aria-labelledby="safety-note" className="homeBoundary">
+        <h2 id="safety-note">Training boundary</h2>
+        <p>
+          Every dataset is synthetic. The content is technical training material
+          - not legal, regulatory, accounting, privacy, compliance, or
+          model-risk advice. Validate production banking work with the
+          appropriate institutional teams.
+        </p>
+      </section>
     </section>
   );
 }
