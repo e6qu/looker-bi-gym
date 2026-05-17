@@ -1,6 +1,6 @@
 # Bugs And Known Gaps
 
-Last updated: 2026-05-17
+Last updated: 2026-05-17 (post-Codex review remediation, full sweep)
 
 ## Open Issues
 
@@ -131,29 +131,53 @@ Last updated: 2026-05-17
     Refit `coverage:cert-track` to count unique authored items rather
     than whole-file regex hits. Soften the IFRS 9 / AML exam cards or
     annotate them as design-evidence cards. Refresh the audit tallies.
-  - Status: fixed on branch `assessment-quality-and-expansion`.
-    All 10 sub-issues addressed: compartmentalization validator
-    extended to `tutorials/` (now scans 130 files clean); LS freshness
-    rewrote as cache-staleness threshold; MV refresh wording softened
-    to best-effort across quiz / exam / flashcard / fact; pseudo-SQL
-    `SESSION_USER_BRANCH(...)` replaced with real BigQuery
-    `ROW ACCESS POLICY ... FILTER USING (branch_id = ...)`; AML / KYC
-    privacy wording tightened so "special category" appears only where
-    narrative content actually reveals Article 9 data; PSD2, CRR,
-    IFRS 9, BCBS 239 source cards expanded with article / section
-    quotes; `coverage:cert-track` refit to count unique authored items
-    (parses frontmatter, iterates questions / cards / flashcards /
-    terminology entries); `validate:quiz-distractors` extended with
-    invented-SQL-identifier and semantic-anti-pattern rule sets, plus
-    a scope-and-limits comment block; AML and IFRS 9 exam cards
-    annotated as design exercises with non-numeric expected outputs;
-    `_development/assessment-audit.md` tally lines updated to record
-    pre- and post-fix counts. Tutorial wrapper pages
-    (`tutorials/quiz-bank.md`, `tutorials/exam-mode.md`) reshaped
-    into self-contained topic / review maps. Learner-task H1 and
-    frontmatter `title` fields stripped of LT-ID prefix (the ID lives
-    only in frontmatter `id` and in `recommended_learner_tasks`
-    references). Full local gate green.
+  - Status: fully remediated on branch
+    `assessment-quality-and-expansion`. All 10 sub-issues and the
+    minor / low items closed:
+    - Compartmentalization validator extended to `tutorials/` and
+      `learner-tasks/` (130 files scanned, 0 hits).
+    - LS freshness rewritten as cache-staleness threshold; MV
+      refresh wording softened to best-effort across quiz / exam /
+      flashcard / fact; pseudo-SQL `SESSION_USER_BRANCH(...)`
+      replaced with real BigQuery
+      `ROW ACCESS POLICY ... FILTER USING (branch_id = ...)`;
+      AML / KYC special-category language reserved for actual
+      GDPR Article 9 reveals.
+    - PSD2, CRR, IFRS 9, BCBS 239 source cards expanded with
+      article / section quotes that support the FACT claims.
+    - `coverage:cert-track` refit to count unique authored items
+      (parses frontmatter, iterates questions / cards / flashcards /
+      terminology entries).
+    - `validate:quiz-distractors` extended with
+      invented-SQL-identifier (`SESSION_USER_BRANCH(...)` family)
+      and semantic-anti-pattern (freshness-as-auto-refresh,
+      MV-refresh-hard-SLA) rules, plus a scope-and-limits comment
+      block.
+    - IFRS 9 and AML exam cards are now fixture-backed (not design
+      exercises): IFRS 9 uses the existing lending dataset with
+      L2002's 2026-02-28 row flipped from stage 2 / DPD 35 to
+      stage 1 / DPD 12 so the loan transitions 1->2 by 2026-03-31;
+      expected outputs are deterministic transition counts plus the
+      stage-2 and stage-3 outstanding-principal totals at the new
+      stage. AML uses an inline synthetic 8-row alert table embedded
+      in the card body; expected outputs are deterministic counts by
+      type, ageing bucket, status, and KYC-review flag, plus the
+      named field-exclusion list for the aggregate page.
+    - `tutorials/quiz-bank.md` rewritten as a generic banking BI
+      self-assessment lens (competency families + the three
+      diagnostic questions). `tutorials/exam-mode.md` rewritten as
+      a generic banking BI practical review lens (reviewable result
+      definition + the four-step loop). Neither file names a
+      specific quiz question, exam card, or assessment surface.
+    - Learner-task H1 and frontmatter `title` fields stripped of
+      LT-ID prefix; the ID lives only in frontmatter `id` and in
+      `recommended_learner_tasks` cross-references.
+    - Tallies refreshed: `STATUS.md`,
+      `_development/assessment-audit.md`, and
+      `_development/tasks/062-assessment-quality-and-expansion.md`
+      all record the final post-fix counts (78 quiz / 105 flashcards /
+      16 exam cards / 133 facts / 150 terminology entries).
+    - Full local gate (`bun run check`) green.
 
 - ID: ASSESSMENT-AUDIT-DEFECTS-2026-05-16.
   - Area: quizzes, flashcards, exams, terminology depth.

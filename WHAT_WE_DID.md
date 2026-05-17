@@ -1,5 +1,90 @@
 # What We Did
 
+## 2026-05-17 - Task 062 Codex CLI second-opinion remediation (full sweep)
+
+Codex CLI was invoked for a fresh read-only review of PR #46 on
+2026-05-17. The review produced a 10-item punch list (`/tmp/codex-review.md`,
+recorded in `BUGS.md` as `CODEX-REVIEW-FINDINGS-2026-05-17`). All 10
+items plus the low-severity "stale tallies" item are closed in this PR.
+
+Compartmentalization scope
+- Extended `validate:compartmentalization` to also scan `tutorials/`
+  and `tutorials/learner-tasks/` (130 files, 0 hits).
+- Stripped `LT-XYZ-NNN` prefix from learner-task H1 lines and the
+  `title` frontmatter field; the canonical ID lives only in
+  frontmatter `id` and in `recommended_learner_tasks` cross-references.
+- Fixed tutorial-N cross-references in tutorials 03/04/05/06/08 and
+  the recipe `r-looker-001`; reworded `tutorials/data-sources.md`
+  "This project ..." to "These exercises ...".
+- Rewrote `tutorials/quiz-bank.md` as a generic banking BI
+  self-assessment lens (no enumeration of specific quiz questions).
+- Rewrote `tutorials/exam-mode.md` as a generic banking BI practical
+  review lens (no enumeration of specific exam cards).
+
+Product-mechanics fixes
+- Looker Studio data freshness rewritten as a cache-staleness
+  threshold across the affected quiz question, exam card, fact, and
+  flashcard. Report auto-refresh is documented as a separate setting.
+- BigQuery materialized view refresh softened to a best-effort target
+  (`max_staleness` / `refresh_interval_minutes`), not a hard SLA, in
+  the same surfaces.
+- Row-access-policy distractor replaced the invented pseudo-SQL
+  `SESSION_USER_BRANCH(...)` with the real BigQuery shape:
+  `CREATE ROW ACCESS POLICY ... GRANT TO ('group:branch-NN-managers@...')
+  FILTER USING (branch_id = 'BNN')`.
+- AML / KYC "special category" language tightened to reserve GDPR
+  Article 9 framing for narratives that actually reveal Article 9
+  data; the broader confidentiality / minimisation framing carries
+  the AML / CFT context.
+
+Source-card depth
+- Expanded `SRC-PSD2-ELI-2015-2366` with article-specific quotes
+  (4(30), 95, 96, 97), `SRC-CRR-ELI-2013-575` with 92(1)(a),
+  92(2)(a), 92(3), and 26, `SRC-IFRS9-STANDARD` with sections 5.5 /
+  5.5.3 / 5.5.5 / 5.5.13, `SRC-BCBS-239-PRINCIPLES` with sections
+  II-V and the 14 named principles.
+
+Validator + coverage refit
+- `coverage:cert-track` now parses frontmatter, iterates authored
+  items (quiz questions, flashcard files, exam cards, terminology
+  entries), and counts the number of unique items per topic. The
+  prior whole-file regex approach inflated counts via frontmatter,
+  source_facts lists, and identifier echoes.
+- `validate:quiz-distractors` extended with an invented-SQL-identifier
+  rule set and a semantic-anti-pattern rule set; the scope and
+  limits of the validator are now documented in a leading comment
+  block.
+
+Fixture-backed exam cards
+- `exam-card-ifrs9-stage-transition` rewritten. The lending dataset
+  (`datasets/lending-month-end/v0.1.0/loan_monthly_snapshots.csv`)
+  was changed at one cell: L2002 on 2026-02-28 moves from stage 2 /
+  DPD 35 to stage 1 / DPD 12, so the loan now records a real
+  stage 1 -> stage 2 transition between the two committed
+  month-ends. The change does not affect any committed control
+  total or known-trap check (`validate:datasets` and `test:fixtures`
+  pass). The exam card now produces deterministic transition counts
+  and outstanding-principal totals.
+- `exam-card-aml-alert-dashboard-governance` rewritten with an
+  inline synthetic AML alert table (eight rows; pseudonymous customer
+  and account hashes). Expected outputs are deterministic counts by
+  type, ageing bucket, status, and KYC-review flag, plus the named
+  field-exclusion list for the aggregate page and the named
+  access-mechanic (authorized view + IAM grant) for the investigation
+  page.
+
+Stale tallies
+- `STATUS.md`, `_development/assessment-audit.md`, and
+  `_development/tasks/062-assessment-quality-and-expansion.md` all
+  refreshed to the post-fix counts (78 quiz / 105 flashcards /
+  16 exam cards / 133 facts / 150 terminology entries).
+
+Verification
+- `bun run check` green (format, content QA, validators, lint,
+  typecheck, datasets, all unit suites, Playwright rendered UI
+  suite, vite build, static-link sweep).
+- Codex re-review queued for after the commit + push.
+
 ## 2026-05-16 - Task 062 Phase 12 follow-through + compartmentalization
 
 User direction added on the open PR #46: surfaces must not assume each

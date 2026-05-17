@@ -1,133 +1,91 @@
 ---
 {
   "id": "tutorial-tutorials-quiz-bank",
-  "title": "BI Foundations Self-Assessment Topics",
+  "title": "Banking BI Self-Assessment Lens",
   "content_type": "tutorial",
   "status": "published",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "topic": "core",
   "tags": ["tutorial", "synthetic-data"],
 }
 ---
 
-# BI Foundations Self-Assessment Topics
+# Banking BI Self-Assessment Lens
 
-This page summarises the BI Foundations topics a banking BI learner is
-expected to recall and apply without reference material. It is a study
-map, not a worked example. Use it to plan focused review or to check
-which areas feel weak before moving on.
+This page is a generic study lens for a banking BI learner: how to read
+your own knowledge gaps, how to map a banking scenario back to the
+underlying mechanic, and how to decide what to revisit next. It does
+not enumerate or describe any specific question or card.
 
-Objective: be able to name each topic area, state the one-sentence rule
-or definition, and recognise the typical pitfall.
+Objective: develop a consistent way of asking "do I really know this?"
+about a banking BI scenario.
 
 After this quiz, you will be able to:
 
-- Recognise which competency area a banking BI scenario sits in.
-- Translate "I am unsure about X" into the underlying concept rather
-  than the surface phrasing.
-- Decide which terminology entry to revisit before retrying.
+- Identify which competency family a banking BI scenario sits in.
+- Translate "I am unsure about X" into the underlying mechanic rather
+  than the surface phrasing of the scenario.
+- Choose the right reference (terminology, BI mechanic note, regulator
+  source) to revisit before retrying.
 
-Training boundary: use synthetic training data only. The topics here are
-technical learning material, not legal, regulatory, accounting, privacy,
-compliance, or model-risk advice.
+Training boundary: use synthetic training data only. This lens is
+technical learning material, not legal, regulatory, accounting,
+privacy, compliance, or model-risk advice.
 
-## Topic Map
+## Competency Families
 
-Each bullet names a topic and the typical pitfall a beginner makes when
-they have not internalised it.
+A banking BI scenario almost always sits in one of these families.
+Naming the family is the first step of any self-assessment.
 
-### BI Modeling
+- BI modeling: grain, fanout, additive vs semi-additive measures,
+  count semantics, dimension change history, key strategy.
+- BigQuery SQL and cost: view shapes, partition and clustering, cache
+  semantics, dry-run vs real run, job metadata, parameterized queries,
+  null-safe operators, period boundary functions.
+- BigQuery security: authorized views, row-level security, column-level
+  security via policy tags.
+- Looker Studio mechanics: data sources, calculated-field scope, blend
+  semantics, controls and parameters, cache-staleness thresholds,
+  credential modes.
+- Privacy and regulatory context: GDPR principles and special-category
+  data; the deposit-guarantee, ICT-risk, capital-ratio, credit-risk,
+  payment-services, and AML / CFT regimes; risk-data aggregation
+  principles; supervisory reporting frameworks.
 
-- Grain (declare before aggregation): if you cannot state "one row per
-  X", the metric is unsafe.
-- Fanout (raw owner-join multiplies measures): joining a parent table to
-  a child without aggregating first inflates totals.
-- Weighted average vs average of averages: averaging averages drops the
-  weight and gives a different (wrong) number.
-- COUNT(\*) vs COUNT(column): COUNT(column) ignores NULL; the two
-  counts diverge when the column is nullable.
-- SUM(COUNT(DISTINCT)): distinct counts are not additive across groups.
-- Semi-additive measures: balance snapshots cannot be summed across
-  dates; pick a reference date.
-- Slowly Changing Dimensions: SCD types 1, 2, 3 describe how a
-  dimension records change history.
-- Conformed dimensions: shared dimension keys across fact tables let
-  metrics compose; non-conformed keys silently double-count.
-- Surrogate vs natural key: surrogate keys decouple analytics from
-  source-system identifier changes.
+## The Three Questions
 
-### BigQuery SQL And Cost
+For any scenario you are unsure about, ask three questions in order:
 
-- Logical view vs materialized view: a logical view re-runs its query;
-  a materialized view caches results with a best-effort refresh target.
-- Partition filters / partition pruning: the partition predicate must
-  appear in the query for pruning to engage.
-- Clustering: orders data within a partition so range / equality
-  predicates read fewer bytes.
-- Query results cache: identical-text queries hit cache; non-determinism
-  (e.g., `CURRENT_TIMESTAMP()`) disables it.
-- Dry run / query validator: estimates bytes processed before billing.
-- `INFORMATION_SCHEMA.JOBS`: source of job metadata
-  (`total_bytes_processed`, `total_bytes_billed`).
-- Parameterized queries: pass user input as a named parameter
-  (`@selected_date`); never interpolate into SQL text.
-- `SAFE_CAST` / `SAFE_DIVIDE`: NULL on failure / division by zero.
-- `QUALIFY`: filter the result of a window function.
-- `DATE_TRUNC` / `LAST_DAY`: month-end and period boundaries.
+1. **Which competency family is this?** If you cannot name the family
+   in one phrase, the scenario is reading you as confused at the
+   conceptual layer; do not start from the SQL.
+2. **What is the one-sentence rule that governs this family?** If you
+   cannot state the rule, the gap is at the mechanic layer; revisit the
+   terminology entry or BI mechanic note before retrying.
+3. **What is the one-sentence pitfall most beginners hit here?** If you
+   cannot name the pitfall, the gap is at the application layer; look
+   for a worked example that contrasts the right and wrong shape and
+   work through it before retrying.
 
-### BigQuery Security
+Three "no" answers mean the scenario is currently outside your
+applied-knowledge boundary. Three "yes" answers mean you should be able
+to write the SQL or design step that prevents the pitfall on a
+synthetic banking scenario without reference material.
 
-- Authorized view: grants downstream access without granting underlying
-  table access.
-- Row-level security (`CREATE ROW ACCESS POLICY`): row visibility per
-  grantee group.
-- Column-level security (policy tags): masks or restricts specific
-  columns by policy tag and grantee role.
+## How To Use This Lens
 
-### Looker Studio Mechanics
+Apply the lens to any banking BI scenario you encounter, regardless of
+where you encountered it. The lens is not specific to any one practice
+surface; it is the meta-skill a cert-track learner is building.
 
-- Data source: connection plus field schema; the field type can be
-  edited without touching the warehouse.
-- Calculated field scope: data-source-level vs chart-level scope; chart
-  scope hides the field from other charts.
-- Blends: row-level join across data sources; the leftmost source is
-  authoritative for rows; only the join key plus selected fields cross
-  the boundary.
-- Controls and parameters: a control filters charts on a shared field
-  ID; a parameter passes a value back to the data source.
-- Data freshness: a cache-staleness threshold (how stale a cached
-  result may be before the source is re-read), not an automatic
-  refresh interval.
-- Credentials: owner, viewer, or service account credentials change
-  whose access governs query execution.
+Keep a short note per scenario:
 
-### Privacy And Regulatory Context
+- the family it belongs to,
+- the rule and the pitfall in one sentence each,
+- the reference (terminology, BI mechanic, regulator source) you used
+  to close the gap,
+- whether you would re-derive the same answer one week from now without
+  reference material.
 
-- GDPR personal data and special-category data: special category
-  (Article 9) is a narrower bar than "sensitive"; it covers things like
-  health, biometric, or political data.
-- GDPR principles: data minimisation, purpose limitation, storage
-  limitation, accountability.
-- Deposit guarantee (DGSD / FGDB): the grain is depositor by bank, not
-  account by branch.
-- DORA: ICT risk, incident reporting, third-party register.
-- CRR: CET1 capital ratio and the 4.5% Article 92 minimum.
-- IFRS 9: stages 1 / 2 / 3 with 12-month vs lifetime ECL.
-- BCBS 239: 14 RDARR principles across governance, aggregation,
-  reporting, and supervisory review.
-- PSD2: strong customer authentication elements and incident
-  reporting.
-- AML / CFT: suspicious activity, KYC sensitivity, output minimisation
-  on alert dashboards.
-
-## Self-Assessment Pattern
-
-For each topic, ask three questions:
-
-1. Can I state the rule or definition in one sentence?
-2. Can I describe the typical pitfall in one sentence?
-3. Could I write the SQL or design step that prevents the pitfall on
-   a synthetic banking scenario?
-
-If the answer to any question is "no", revisit the relevant terminology
-entry or BI mechanic before relying on the topic in applied work.
+When a family accumulates more than two unclosed gaps, schedule a
+focused review of that family before moving on.

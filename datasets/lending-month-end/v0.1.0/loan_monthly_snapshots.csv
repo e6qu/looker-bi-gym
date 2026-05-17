@@ -1,6 +1,6 @@
 as_of_date,loan_id,currency_code,outstanding_principal,dpd_days,ifrs9_stage,arrears_amount,interest_accrued,non_performing_flag
 2026-02-28,L2001,RON,250000,0,1,0,850,false
-2026-02-28,L2002,RON,120000,35,2,1500,710,false
+2026-02-28,L2002,RON,120000,12,1,0,710,false
 2026-02-28,L2003,EUR,42000,0,1,0,125,false
 2026-02-28,L2004,RON,30000,95,3,8000,240,true
 2026-02-28,L2005,EUR,15000,5,1,120,60,false

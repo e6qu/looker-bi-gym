@@ -321,7 +321,7 @@
       },
       {
         "id": "exam-card-ifrs9-stage-transition",
-        "title": "IFRS 9 Stage-Transition Reporting (design exercise)",
+        "title": "IFRS 9 Stage-Transition Reporting",
         "recommended_learner_tasks": ["LT-SQL-003"],
         "source_facts":
           [
@@ -329,18 +329,21 @@
             "FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT",
             "FACT-BI-REFERENCE-DATE-SEPARATION",
           ],
-        "objective": "Design (but do not implement against committed fixture data) a credit-risk dashboard page that would explain a month-over-month ECL movement in terms of IFRS 9 stage transitions rather than as a single ECL total. Treat the synthetic lending tables as a starting shape; ECL amounts and a stage-transition fixture are not committed, so the design record names the inputs you would expect rather than a numeric output.\n",
+        "objective": "Build a stage-transition pivot for the synthetic lending portfolio between 2026-02-28 and 2026-03-31 (the two committed month-end reference dates in the `loan_monthly_snapshots` table). Use a self-join on `loan_id` to align each loan's stage at the two month-ends. Filter out the intra-month non-month-end snapshot (2026-03-15) before joining. The pivot must be expressed in stage-transition counts plus the outstanding principal at the new stage, not as a single aggregate ECL line.\n",
         "verification":
           {
             "expected_outputs":
               [
-                "the design names the per-stage ECL split (stage 1 / stage 2 / stage 3) and the reporting reference date used for each total",
-                "the design names a stage-transition matrix between two reporting dates and the SQL shape that would produce it (e.g. self-join on loan_id with stage_prev vs stage_current)",
-                "the design names a stage-aware monthly trend chart instead of a single aggregate ECL line",
-                "the design records that ECL movement is decomposed into stage movements rather than smoothed by a rolling average",
-                "the design lists the inputs a credit-risk pipeline would need to provide beyond the synthetic lending dataset (per-loan ECL amount, stage_at_reporting_date) before the page could be populated",
+                "loans_in_both_periods = 5",
+                "stage_1_to_1_count = 3",
+                "stage_1_to_2_count = 1",
+                "stage_3_to_3_count = 1",
+                "no_other_transition_count = 0",
+                "loan_id with stage_1_to_2 transition = L2002",
+                "stage_2_outstanding_principal_at_2026-03-31 = 118000",
+                "stage_3_outstanding_principal_at_2026-03-31 = 29500",
               ],
-            "self_assessment": "Explain why a single ECL total hides credit-risk signal; explain why semi-additive exposure cannot be summed across reporting dates; name what fixture data would need to be added before the design could be evaluated against deterministic numbers.\n",
+            "self_assessment": "Explain why the intra-month 2026-03-15 snapshot must be filtered before the self-join (so the comparison uses comparable reference dates); explain why a single ECL total would have hidden the L2002 stage-1-to-stage-2 transition.\n",
           },
       },
       {
@@ -368,7 +371,7 @@
       },
       {
         "id": "exam-card-aml-alert-dashboard-governance",
-        "title": "AML Alert Dashboard Governance (design exercise)",
+        "title": "AML Alert Dashboard Governance",
         "recommended_learner_tasks": ["LT-LOOKER-004"],
         "source_facts":
           [
@@ -376,17 +379,24 @@
             "FACT-GDPR-DATA-MINIMISATION",
             "FACT-GDPR-SPECIAL-CATEGORIES",
           ],
-        "objective": "Design (but do not implement against committed fixture data) two dashboard surfaces for a bank's compliance audience: a governed aggregate AML alert page for the broad team, and a separately access-controlled investigation page for the alert handlers. The synthetic corpus does not commit an AML alert fixture; the design record names inputs and access mechanics, not a deterministic numeric output.\n",
+        "objective": "Given the synthetic AML alerts table below (eight rows covering the 2026-03 reporting month only; pseudonymous customer / account hashes), build a governed aggregate page and document which fields belong on the investigation page instead. Compute the deterministic counts that the aggregate page exposes. Synthetic AML alerts table:\n\n```\nalert_id  alert_date   alert_type          ageing_days  status            customer_id_hash  account_id_hash  kyc_review_required\nALR1001   2026-03-15   structuring         16           open              CUH001            ACH001           true\nALR1002   2026-03-20   rapid_movement      11           open              CUH002            ACH002           false\nALR1003   2026-03-22   structuring         9            closed_no_action  CUH001            ACH001           false\nALR1004   2026-03-25   unusual_geography   6            open              CUH003            ACH003           true\nALR1005   2026-03-28   structuring         3            under_review      CUH004            ACH004           true\nALR1006   2026-03-30   rapid_movement      1            open              CUH005            ACH005           true\nALR1007   2026-03-30   unusual_geography   1            open              CUH006            ACH006           false\nALR1008   2026-03-29   structuring         2            closed_no_action  CUH002            ACH002           false\n```\n",
         "verification":
           {
             "expected_outputs":
               [
-                "aggregate page exposes alert counts, ageing categories, type / channel breakdown only",
-                "aggregate page excludes customer_id, KYC narrative, account-level identifiers",
-                "investigation page sits on a separate authorized view with viewer credentials matching the handler role",
-                "no blend between aggregate AML page and any marketing or account-management report",
+                "alert_count_total = 8",
+                "open_alert_count = 5",
+                "structuring_alert_count = 4",
+                "rapid_movement_alert_count = 2",
+                "unusual_geography_alert_count = 2",
+                "ageing_bucket_0_to_7_days_count = 5",
+                "ageing_bucket_8_to_14_days_count = 2",
+                "ageing_bucket_15_plus_days_count = 1",
+                "kyc_review_required_count = 4",
+                "fields excluded from the aggregate page: customer_id_hash, account_id_hash, alert_id, alert_date, kyc_review_required, status (per-alert), narrative",
+                "investigation page is a separate authorized view granted only to the alert-handling role and exposes per-alert customer_id_hash, account_id_hash, status, alert_date, and any narrative columns",
               ],
-            "self_assessment": "Explain why combining aggregate and investigation evidence on one page violates minimisation; explain which BigQuery access mechanic guards the investigation page.\n",
+            "self_assessment": "Explain why per-alert customer / account / kyc-review fields must not appear on the aggregate page even when pseudonymised; explain which BigQuery access mechanic (authorized view + IAM grant on the handler group) guards the investigation page and how that differs from row-level security.\n",
           },
       },
     ],

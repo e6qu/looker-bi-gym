@@ -1,6 +1,8 @@
 # 062 - Assessment Quality And Expansion
 
-Status: in progress on branch `assessment-quality-and-expansion`.
+Status: in progress on branch `assessment-quality-and-expansion`,
+including all Codex CLI second-opinion remediation
+(`CODEX-REVIEW-FINDINGS-2026-05-17` in `BUGS.md`).
 
 ## Goal
 
@@ -17,8 +19,32 @@ expansion toward the Phase 9 minima (500 flashcards / 200 quiz questions /
   plausible-but-wrong options that test real cert-track misconceptions.
 - Reconcile divergent exam surfaces (E-1): move the 4 cards that lived
   only in `tutorials/exam-mode.md` into the canonical
-  `exams/bi-foundations/bi-foundations-exam.md`; trim the Markdown doc to
-  a study guide that points at the interactive surface.
+  `exams/bi-foundations/bi-foundations-exam.md`. The Markdown doc was
+  later rewritten as a generic banking BI practical review lens (no
+  enumeration of specific exam cards) after Codex review.
+- Codex CLI second-opinion review remediation
+  (`BUGS.md` :: `CODEX-REVIEW-FINDINGS-2026-05-17`):
+  - Extended `validate:compartmentalization` to scan tutorials/ and
+    learner-tasks/.
+  - Rewrote LS freshness wording as cache-staleness threshold.
+  - Softened MV refresh wording to best-effort target.
+  - Replaced invented `SESSION_USER_BRANCH(...)` with real BigQuery
+    RLS shape.
+  - Tightened AML / KYC privacy wording to reserve GDPR Article 9 for
+    actual special-category reveals.
+  - Expanded PSD2 / CRR / IFRS 9 / BCBS 239 source cards with
+    article / section quotes.
+  - Refit `coverage:cert-track` to count unique authored items.
+  - Extended `validate:quiz-distractors` with invented-SQL and
+    semantic-anti-pattern rules.
+  - Fixture-backed both design-exercise exam cards (IFRS 9 stage
+    transition uses the existing lending dataset with L2002 stage
+    flipped to create a real 1->2 transition; AML alert governance
+    uses an inline synthetic alert table in the card body).
+  - Rewrote `tutorials/quiz-bank.md` and `tutorials/exam-mode.md` as
+    generic banking BI study lenses.
+  - Updated stale tallies in `STATUS.md`,
+    `_development/assessment-audit.md`, and this task file.
 
 ### Expansion: facts and sources
 
@@ -36,15 +62,19 @@ expansion toward the Phase 9 minima (500 flashcards / 200 quiz questions /
 
 ### Expansion: quiz, flashcards, exam
 
-- 14 new hard quiz questions on the cert-track gap topics above; quiz
-  bank moves from 60 to 74 questions.
-- 18 new flashcards across four under-served decks (privacy-security,
-  banking-context, bi-fundamentals, controls-governance), each going
-  from 4 to 10 cards. Total flashcards: 64 to 82.
-- 4 new exam cards (Weighted Ratio Metric Contract, Governance Release
-  Decision, BigQuery Cost Triage, DORA Operations Evidence) folded into
-  the canonical YAML pack so exam count is 9 (was 5 in YAML, 6 in MD,
-  with only 2 overlapping).
+- 18 new hard quiz questions on the cert-track gap topics above; quiz
+  bank final state is **78 questions** (was 60).
+- New flashcards across the formerly under-served decks; final state
+  is **105 cards** across 10 decks (was 64). All decks except
+  real-estate-collateral are at >= 6 cards; the under-served four
+  (banking-context, bi-fundamentals, privacy-security,
+  controls-governance) are each >= 10.
+- Unified exam pack final state is **16 fixture-backed cards** (was
+  5 in YAML, 6 in MD, with only 2 overlapping). Every card now
+  produces deterministic numeric, schema, or field-list expected
+  outputs.
+- Facts final state: **133 `FACT-*` entries** (was 117).
+- Terminology final state: **150 entries** (was 148).
 
 ## Verification
 
