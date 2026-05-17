@@ -11,42 +11,72 @@ questions:
   easy:
     - id: q-easy-balance-row-grain
       type: multiple_choice
-      estimated_seconds: 50
+      estimated_seconds: 75
       recommended_learner_tasks: [LT-BI-001]
       source_facts:
         - FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION
         - FACT-DEPOSITS-ACCOUNT-DAILY-BALANCES-GRAIN
-      prompt: >
-        A branch dashboard scorecard shows total deposit balance by currency
-        for 2026-03-31. The balance source stores one snapshot per account per
-        business date. At what grain does a single balance row exist before it
-        is aggregated?
+      prompt: |
+        Your team's deposits dashboard scorecard reads `RON 237,170` for
+        2026-03-31 - more than twice what the branch finance lead
+        expected. You open the source and find one row per account per
+        `business_date`:
+
+            business_date | account_id | currency_code | ledger_balance
+            2026-03-29    | A1001      | RON           | 42800
+            2026-03-30    | A1001      | RON           | 43120
+            2026-03-31    | A1001      | RON           | 43000
+            ...  (six accounts, three business_dates, 18 rows total)
+
+        The scorecard formula is
+        `SUM(ledger_balance) WHERE currency_code = 'RON'`. Why is the
+        number too big?
       options:
-        - id: account_business_date
-          label: One row per account and business date.
-        - id: branch_only
-          label: One row per branch, regardless of account or date.
-        - id: product_only
-          label: One row per product family.
-      answer: account_business_date
-      explanation: >
-        The source row is an account-day balance snapshot. Dashboard totals can
-        be interpreted only after that account-and-business-date grain is clear.
-      self_assessment: >
-        If the grain is unclear, profile rows and keys before interpreting a
-        total.
+        - id: snapshot_summed_across_dates
+          label: |
+            The SUM ran across all three `business_date` values, so each
+            RON account was counted three times. Filter to one
+            `business_date` (latest = `2026-03-31`); the RON total is
+            then `79,300`.
+        - id: missing_currency_filter
+          label: |
+            The currency filter is matching EUR rows that were stored
+            with an unexpected code; the SUM is picking them up.
+        - id: aggregation_off
+          label: |
+            The Looker Studio data source has aggregation disabled, so
+            the scorecard shows a row count instead of a sum.
+      answer: snapshot_summed_across_dates
+      explanation: |
+        A balance is a stock, not a flow. Summing it across snapshot
+        dates double-counts every account on every date - the
+        2026-03-29 snapshot of A1001 is the same money as the
+        2026-03-30 snapshot. The fix is either a
+        `WHERE business_date = (SELECT MAX(business_date) ...)` filter,
+        or a date control that defaults to the latest day.
+      self_assessment: |
+        Whenever you see `SUM(...)` on a `balance`, `outstanding`, or
+        `exposure` column, your first question is "summed across which
+        business_date(s)?".
     - id: q-easy-dashboard-field-minimisation
       type: select_all
-      estimated_seconds: 60
+      estimated_seconds: 75
       recommended_learner_tasks: [LT-BI-001, LT-LOOKER-004]
       source_facts:
         - FACT-GDPR-DATA-MINIMISATION
         - FACT-GDPR-PERSONAL-DATA
         - FACT-BIGQUERY-SELECT-LIST-NARROWING
-      prompt: >
-        A currency-level balance source needs `business_date`, `currency_code`,
-        and aggregated balance. Which fields should be excluded unless a
-        separate approved purpose exists?
+      prompt: |
+        You are preparing a "deposits by currency" page for a
+        branch-management audience that has no role-based need to see
+        individual depositors. The raw source has these columns:
+
+            business_date, account_id, customer_id, synthetic_iban,
+            ledger_balance, currency_code
+
+        The chart needs `business_date`, `currency_code`, and a sum of
+        `ledger_balance`. Which columns must NOT ride along into the
+        serving view that feeds the chart?
       options:
         - id: account_id
           label: account_id
@@ -57,108 +87,195 @@ questions:
         - id: currency_code
           label: currency_code
       answer: [account_id, customer_id, synthetic_iban]
-      explanation: >
-        Currency is part of the aggregate. Account, customer, and IBAN-shaped
-        identifiers are unnecessary for this output and should not ride along.
-      self_assessment: >
-        If a row identifier appears in an aggregate source, name the specific
-        reporting purpose or remove it.
+      explanation: |
+        `currency_code` is part of the aggregation - it stays. The
+        three identifier columns would let any viewer re-identify a
+        depositor and add nothing to the per-currency aggregate.
+        GDPR data-minimisation is the rule of thumb: collect / expose
+        only what the named purpose requires. Aggregate first; surface
+        the aggregate fields only.
+      self_assessment: |
+        If an identifier column is in a serving view but not in the
+        chart, ask "what specific approved purpose needs it?". If you
+        can't name one, drop it.
     - id: q-easy-looker-data-source-role
       type: multiple_choice
-      estimated_seconds: 50
+      estimated_seconds: 60
       recommended_learner_tasks: [LT-LOOKER-004]
       source_facts:
         - FACT-LOOKER-STUDIO-DATA-SOURCE
         - FACT-LOOKER-STUDIO-FIELD-TYPES
-      prompt: >
-        Before building Looker Studio charts, which layer should be inspected
-        for field names, field types, and connection settings?
+      prompt: |
+        You open a Looker Studio report and the daily-deposits chart
+        is misbehaving: a column you wrote SQL for as `INT64` is
+        being rendered as a date. Before touching the chart, where
+        do you check first?
       options:
         - id: data_source
-          label: The data source that connects data and exposes the field schema.
+          label: |
+            The data source. Looker Studio reads field type from the
+            data source schema, and the data source can override the
+            warehouse type per field (Number / Date / Text).
         - id: chart_layer
-          label: The chart layer, because chart-level calculated fields can rename underlying fields.
+          label: |
+            The chart. A chart-level calculated field can rename a
+            field, and renaming is what causes type drift.
         - id: blend_definition
-          label: The blend definition, because a blend takes precedence over the underlying data-source schema.
+          label: |
+            The blend. A blend always wins over the underlying data
+            source schema, so the chart's type is coming from there.
+        - id: bigquery_information_schema
+          label: |
+            `INFORMATION_SCHEMA.COLUMNS` in BigQuery. Looker Studio
+            inherits the warehouse data type directly, so the chart
+            is showing what BigQuery declares.
       answer: data_source
-      explanation: >
-        Looker Studio charts and controls use fields exposed by the data source.
-        Checking the source layer prevents chart work from hiding schema or
-        access issues.
-      self_assessment: >
-        If a chart field is surprising, inspect the data source before changing
-        chart formatting.
+      explanation: |
+        Field type lives on the data source (Looker Studio data
+        sources can override the warehouse type). Chart-level
+        calculated fields can rename a field but cannot change its
+        underlying field type; blends do not override data-source
+        types in this way; themes only affect display formatting.
+        Edit the data source field and set the type back to Number.
+      self_assessment: |
+        Field surprises (type, default aggregation, missing values)
+        belong to the data source layer until proven otherwise.
     - id: q-easy-reusable-calculated-field
       type: multiple_choice
-      estimated_seconds: 55
+      estimated_seconds: 65
       recommended_learner_tasks: [LT-LOOKER-004]
       source_facts:
         - FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE
         - FACT-LOOKER-STUDIO-DATA-SOURCE
-      prompt: >
-        A `ledger_total` formula will be reused by several charts. Where is it
-        safer to define it than inside one chart?
+      prompt: |
+        A colleague defined `ledger_total = SUM(ledger_balance)` as a
+        chart-level calculated field on the latest-day scorecard.
+        Three more charts now need the same `ledger_total`. They ask
+        you to copy the formula onto each of those charts so they all
+        match. What do you do instead?
       options:
         - id: reusable_layer
-          label: In upstream serving SQL or a reusable data-source field.
+          label: |
+            Move the formula one layer up - into the upstream serving
+            SQL (a `serving_deposit_dashboard` view) or into a
+            data-source-level field. Then every chart, blend, and
+            future report uses the same definition.
         - id: each_chart
-          label: As a chart-level calculated field on each chart that needs it, copied separately.
+          label: |
+            Copy the chart-level formula to each of the four charts so
+            they stay in sync. If the formula changes, edit it four
+            times.
         - id: report_filter
-          label: As a report-level filter expression so every chart inherits the formula.
+          label: |
+            Add `ledger_total = SUM(ledger_balance)` as a report-level
+            filter expression so every chart inherits it.
       answer: reusable_layer
-      explanation: >
-        Chart-specific fields exist only in that chart. Reused metric logic
-        belongs in a shared serving or data-source layer.
-      self_assessment: >
-        If two charts need the same metric, avoid copying a one-chart formula.
+      explanation: |
+        Chart-level calculated fields live only in that chart - they
+        don't show up in other charts, in blends, or in future reports
+        on the same data source. The fix is to push the formula
+        upstream: into the warehouse view (best) or into a
+        data-source-level calculated field (next best). Copying it
+        across charts looks like consistency until someone changes one
+        copy.
+      self_assessment: |
+        If the same metric exists in two charts, it belongs upstream
+        of both. Chart-level scope is for genuinely chart-specific
+        formatting only.
     - id: q-easy-logical-view-contract
       type: multiple_choice
-      estimated_seconds: 55
+      estimated_seconds: 65
       recommended_learner_tasks: [LT-LOOKER-004]
       source_facts:
         - FACT-BIGQUERY-LOGICAL-VIEW
         - FACT-BIGQUERY-VIEW-QUERY-RUNS-EACH-TIME
-      prompt: >
-        A BigQuery object should expose tested SQL to a dashboard without
-        storing a new table. Which description fits a logical view?
+      prompt: |
+        Your team is about to expose `serving_deposit_dashboard` to a
+        dashboard with twelve viewers who refresh once an hour. The
+        underlying SQL is a `SELECT business_date, currency_code,
+        SUM(ledger_balance) ... GROUP BY ...` against a 100 MB
+        partitioned table. A new engineer suggests making
+        `serving_deposit_dashboard` a logical view "because logical
+        views cache the result, so the SQL only runs once". What is
+        wrong with that statement?
       options:
-        - id: sql_virtual_table
-          label: A virtual table defined by SQL whose query runs each time the view is queried.
-        - id: materialized_cache
-          label: A cached precomputed result that does not re-run its SQL on read.
-        - id: external_table
-          label: A reference to a file in Cloud Storage whose schema is inferred at read time.
-      answer: sql_virtual_table
-      explanation: >
-        A logical view is a SQL-defined virtual table. It gives a reusable query
-        contract, but its defining query still runs when the view is queried.
-      self_assessment: >
-        If a view is treated like stored results, revisit its query and cost
-        behavior.
+        - id: logical_view_reruns_query
+          label: |
+            A logical view is a SQL-defined virtual table; its query
+            runs every time the view is queried. The 12 viewers ×
+            hourly refresh would re-scan the partition 12 times an
+            hour. If caching matters, use a materialized view
+            instead.
+        - id: logical_views_cannot_be_queried
+          label: |
+            Logical views are not directly queryable - they only show
+            up in the BigQuery UI. The team will need a CTE or
+            temp table instead.
+        - id: external_table_alternative
+          label: |
+            Logical views can only reference Cloud Storage URIs, so
+            this design will not work with a partitioned BigQuery
+            table at all.
+      answer: logical_view_reruns_query
+      explanation: |
+        Logical view: a stored SQL definition. Every time someone
+        queries the view, the defining SQL runs. There is no per-view
+        result cache (the per-query results cache is a separate
+        mechanism and is text- and identity-sensitive). For caching
+        across multiple queries, you reach for a materialized view -
+        which caches its result and refreshes on a best-effort
+        target.
+      self_assessment: |
+        "Logical view" and "materialized view" sound similar; the
+        word you actually want depends on whether the result needs
+        to be stored or recomputed each time.
     - id: q-easy-ratio-zero-denominator
       type: multiple_choice
-      estimated_seconds: 60
+      estimated_seconds: 75
       recommended_learner_tasks: [LT-DQ-006]
       source_facts:
         - FACT-BIGQUERY-SAFE-DIVIDE-RATIO-GUARD
         - FACT-BI-RATIO-SUM-COMPONENTS-FIRST
-      prompt: >
-        A dashboard ratio can encounter a zero denominator. What must the
-        metric contract state before release?
+      prompt: |
+        The "approval rate" tile on a credit-decision dashboard reads
+        `0%` for the 2026-03 reporting month. You look at the
+        underlying serving result and see this row for the month:
+
+            period   | approved_count | submitted_count | approval_rate
+            2026-03  | 0              | 0               | NULL
+
+        Submitted is 0 because the upstream ingest job failed - no
+        applications were loaded. The chart converted the NULL ratio
+        to `0%` for display. What is the smallest correct fix to the
+        metric contract?
       options:
-        - id: null_policy
-          label: How NULL or zero-denominator results are displayed, counted, and reconciled.
+        - id: null_distinct_from_zero
+          label: |
+            Display NULL as a distinct state ("n/a" or a dash), not as
+            `0%`. The contract names the three input failure modes
+            (zero numerator + non-zero denominator, NULL inputs, zero
+            denominator) and a separate display rule for each.
         - id: always_zero
-          label: That every zero-denominator case should display as zero.
+          label: |
+            Display every zero-denominator case as `0%` and add a
+            note in the chart caption. Operations will know to check
+            the ingest job when they see `0%`.
         - id: skip_components
-          label: That numerator and denominator definitions are unnecessary.
-      answer: null_policy
-      explanation: >
-        Safe division protects query execution, not the dashboard meaning. The
-        contract still needs component and display rules.
-      self_assessment: >
-        If NULL, zero, and blank all mean the same thing, the ratio contract is
-        not ready.
+          label: |
+            Show only the ratio in the data source; drop the
+            numerator and denominator columns so the dashboard
+            doesn't expose the zero counts at all.
+      answer: null_distinct_from_zero
+      explanation: |
+        `SAFE_DIVIDE` (or DuckDB's `NULLIF` trick) prevents the SQL
+        from raising on a zero denominator, but it doesn't tell the
+        dashboard what to draw. `0%` and "no data" are different
+        states: one is a bad approval rate, the other is a broken
+        pipeline. The contract has to distinguish them, or the
+        oncall will quietly stop trusting the tile.
+      self_assessment: |
+        If `NULL`, `0`, and "blank" all render the same on the
+        dashboard, the ratio contract isn't finished.
     - id: q-easy-refresh-reference-date
       type: multiple_choice
       estimated_seconds: 55
