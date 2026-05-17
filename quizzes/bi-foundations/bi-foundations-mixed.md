@@ -4250,391 +4250,1125 @@ questions:
         serving layer and credential mode.
     - id: q-hard-materialized-view-decision
       type: select_all
-      estimated_seconds: 95
+      estimated_seconds: 110
       recommended_learner_tasks: [LT-LOOKER-004, LT-LOOKER-007]
       source_facts:
         - FACT-BIGQUERY-VIEW-QUERY-RUNS-EACH-TIME
         - FACT-BIGQUERY-MATERIALIZED-VIEW-CACHE
         - FACT-BIGQUERY-MATERIALIZED-VIEW-LIMITATIONS
-      prompt: >
-        A dashboard query is reused often and the logical view is expensive.
-        What should be checked before replacing it with a materialized view?
+      prompt: |
+        The exec scorecard reads from a logical view that
+        re-aggregates 800 GB of fact rows on every dashboard
+        refresh. Cost has been creeping up. A colleague says
+        "make it a materialized view - just change `VIEW` to
+        `MATERIALIZED VIEW` and the rest works the same". Before
+        you do that, what checks belong on the design-review
+        ticket? (Select all that apply.)
       options:
         - id: query_pattern
-          label: Whether the repeated query pattern benefits from cached results.
+          label: |
+            **Confirm the query pattern is cache-friendly**:
+            same underlying SQL, predictable refresh cadence,
+            many viewers hitting it. A materialized view stores
+            the result and serves it back without re-running
+            the aggregation; that pays off when the same
+            aggregation is queried much more often than the
+            source changes.
         - id: sql_restrictions
-          label: Whether the SQL fits materialized-view restrictions.
+          label: |
+            **Verify the SQL fits materialized-view
+            restrictions**. MVs have real constraints: no
+            outer joins (only INNER and CROSS), no analytic /
+            window functions, no UDFs, no `SELECT *` against
+            wildcard tables, and a constrained list of allowed
+            aggregations (SUM, COUNT, AVG, MIN, MAX, plus a
+            few others). If the underlying view uses any of
+            these, the MV won't accept it.
         - id: freshness_fit
-          label: Whether cached refresh behavior fits the dashboard need.
+          label: |
+            **Decide on refresh behaviour**:
+            `refresh_interval_minutes` (default 30, best-
+            effort) and `max_staleness` (how stale BigQuery is
+            allowed to serve before reading the base table
+            instead). For a daily ingest, 60 min is usually
+            fine; for an hourly ingest, the MV cadence has to
+            be tighter or queries fall through to the base
+            table.
         - id: any_sql_allowed
-          label: That any logical-view SQL can be materialized without restrictions.
+          label: |
+            **Assume any logical-view SQL can be materialized**
+            by syntax change alone. `CREATE MATERIALIZED VIEW`
+            accepts any `SELECT` that `CREATE VIEW` accepts,
+            with no restrictions; if the original view ran,
+            the MV will run.
       answer: [query_pattern, sql_restrictions, freshness_fit]
-      explanation: >
-        Logical views run when queried. Materialized views can help compatible
-        repeated patterns, but SQL shape and refresh behavior must fit their
-        constraints.
-      self_assessment: >
-        If the decision is based only on speed, check SQL compatibility and
-        freshness first.
+      explanation: |
+        Materialized views in BigQuery are not a drop-in
+        replacement. Three real checks before going through
+        with the change:
+
+        - **Query pattern**: MVs cost time and money to
+          refresh. They are worth it when the same shape of
+          query lands frequently and the data underneath
+          doesn't change much between refreshes. If the
+          aggregation runs once a day, a plain logical view
+          + scheduled query may be cheaper.
+        - **SQL restrictions**: the constraints are real
+          and not always obvious. Outer joins, window
+          functions, UDFs, and certain DISTINCT shapes are
+          rejected. Always run `CREATE OR REPLACE
+          MATERIALIZED VIEW ... AS <SQL>` against a test
+          dataset to catch the rejection early.
+        - **Refresh fit**: the MV's `refresh_interval_minutes`
+          and `max_staleness` settings govern what the
+          dashboard reads. BigQuery's automatic refresh is
+          best-effort, not a hard SLA - so the
+          `max_staleness` is the meaningful floor.
+
+        Wrong distractor: the "any SQL allowed" claim is the
+        classic over-optimism that leads to a half-day
+        debugging session when the MV refuses to compile.
+      self_assessment: |
+        Before replacing a logical view with a materialized
+        view: prove the pattern is cache-friendly, prove the
+        SQL parses as a MV, decide on
+        `refresh_interval_minutes` / `max_staleness`. None
+        of the three is optional.
     - id: q-hard-job-evidence-privacy
       type: select_all
-      estimated_seconds: 95
+      estimated_seconds: 100
       recommended_learner_tasks: [LT-DQ-005, LT-LOOKER-004]
       source_facts:
         - FACT-BIGQUERY-JOBS-USER-EMAIL
         - FACT-BIGQUERY-JOBS-BYTES
         - FACT-GDPR-PERSONAL-DATA
-      prompt: >
-        A cost review uses BigQuery job metadata. Which handling choices are
-        appropriate before sharing the evidence widely?
+      prompt: |
+        The cost-review pack will be shared with ~40 people
+        across finance and engineering. The underlying data
+        from `INFORMATION_SCHEMA.JOBS_BY_PROJECT` includes
+        `user_email`, `query` text (sometimes containing
+        literal values), `creation_time`, `total_bytes_processed`,
+        and `total_bytes_billed`. Which choices fit the
+        intended cost-review purpose? (Select all that apply.)
       options:
         - id: keep_bytes
-          label: Keep bytes processed and billing fields needed for cost review.
+          label: |
+            **Keep bytes processed / bytes billed / creation
+            time** - they are what the review is for. Strip
+            `query` text unless the review specifically needs
+            to surface SQL patterns (it might contain literal
+            customer IDs or other PII).
         - id: aggregate_users
-          label: Aggregate or redact user-level identifiers when they are not needed.
+          label: |
+            **Aggregate or redact `user_email`** to role
+            level (e.g. "dashboard-service-account",
+            "ad-hoc-analyst-pool") when the review's purpose
+            is "what is this dataset costing us?". The
+            individual identity isn't needed and exposes
+            who is doing what kind of querying to a
+            40-person audience.
         - id: time_window
-          label: State the job observation window.
+          label: |
+            **Name the observation window** ("jobs between
+            2026-03-01 and 2026-03-31 inclusive") so the
+            cost numbers are interpretable. Open-ended job
+            extracts grow over time and conflate different
+            cost periods.
         - id: publish_emails
-          label: Publish every user email because it appears in job metadata.
+          label: |
+            **Publish every `user_email` verbatim** because
+            they appear in the underlying metadata. The data
+            is operational, not personal; sharing it across
+            a 40-person audience is fine.
       answer: [keep_bytes, aggregate_users, time_window]
-      explanation: >
-        Job metadata can support cost review, but user-level fields can be
-        personal data. Keep the cost evidence and minimise unnecessary identity
-        exposure.
-      self_assessment: >
-        If job evidence includes identities, state why they are needed or remove
-        them.
+      explanation: |
+        Cost evidence pulled from `INFORMATION_SCHEMA.JOBS`
+        carries two distinct categories of data:
+
+        - **Operational**: bytes processed, bytes billed,
+          job creation time, job duration. These are exactly
+          what the review needs.
+        - **Personal data**: `user_email` is a personal-data
+          identifier under GDPR (even though it's a corporate
+          email - it identifies a natural person at work).
+          The `query` text field can carry literal customer
+          IDs, account numbers, or other personal data if
+          someone wrote a non-parameterised query.
+
+        For a cost review's stated purpose ("how much is
+        this dataset costing"), individual user identities
+        rarely add value. Aggregating to role / service-
+        account level keeps the cost insight while
+        minimising personal data. If individual identity is
+        genuinely needed (e.g. "this one ad-hoc analyst is
+        scanning TB at 3am"), name that as a different
+        purpose with a smaller audience.
+
+        Wrong distractor: "publish every user_email
+        verbatim" is the friction-free path that quietly
+        creates a GDPR breach by re-purposing operational
+        metadata as a who's-doing-what report.
+      self_assessment: |
+        Operational evidence + personal data live in the
+        same row of `INFORMATION_SCHEMA.JOBS`. Splitting
+        them at extract time (operational stays, personal
+        gets aggregated or redacted) is the cheapest
+        compliance step.
     - id: q-hard-depositor-bank-grain
       type: multiple_choice
-      estimated_seconds: 95
+      estimated_seconds: 100
       recommended_learner_tasks: [LT-BI-002]
       source_facts:
         - FACT-FGDB-JOINT-ACCOUNT-HOLDERS
         - FACT-DGSD-AGGREGATE-PER-DEPOSITOR
         - FACT-BI-FANOUT-JOIN-RISK
-      prompt: >
-        A deposit-guarantee analysis includes joint accounts and several
-        accounts per customer. Which grain is needed before comparing balances
-        to the guarantee ceiling?
+      prompt: |
+        You're building a "covered deposits estimate". Sample:
+
+            account_id | owner_customer_id | ownership_share | balance_eur
+            A1001      | C5001             | 0.5             | 80000
+            A1001      | C5099             | 0.5             | 80000   (joint)
+            A1002      | C5001             | 1.0             | 60000
+            A1003      | C5042             | 1.0             | 70000
+
+        C5001 holds two accounts (one joint with C5099). What
+        grain should the analysis aggregate to before applying
+        the EUR 100,000 ceiling?
       options:
         - id: depositor_bank
-          label: Depositor-bank grain, with joint-account ownership handled explicitly.
+          label: |
+            **Depositor-bank grain**, with joint-account
+            ownership handled explicitly via `ownership_share`.
+            C5001's covered total at this bank is (80000 × 0.5)
+            + (60000 × 1.0) = 100,000; C5099 is (80000 × 0.5)
+            = 40,000; C5042 is 70,000. Each depositor's
+            covered amount is capped at EUR 100,000 per bank.
         - id: account_only
-          label: Account grain only, because account balances already equal depositor coverage.
+          label: |
+            **Account grain**. Each account is independently
+            covered up to EUR 100,000. A1001 is covered at
+            80,000, A1002 at 60,000, A1003 at 70,000 - all
+            below the ceiling, so coverage is 210,000.
         - id: branch_only
-          label: Branch grain only, because branch totals determine coverage.
+          label: |
+            **Branch grain**. Branch-level totals approximate
+            depositor-bank coverage when account-level
+            ownership data is incomplete. Aggregate balances
+            per branch and apply the ceiling at branch grain.
       answer: depositor_bank
-      explanation: >
-        Deposit-guarantee coverage aggregates per depositor per bank. Account
-        ownership and joint-account rules make account-only totals insufficient.
-      self_assessment: >
-        If the analysis stops at account totals, it is not a coverage-grain
-        result.
+      explanation: |
+        DGSD / FGDB coverage is per depositor per credit
+        institution. Joint accounts share coverage in proportion
+        to each holder's documented ownership share - in the
+        sample, A1001's 80,000 balance is split 50/50 between
+        C5001 and C5099, so each contributes 40,000 to their
+        own per-depositor total.
+
+        The account-grain answer overstates because it does
+        not aggregate the same depositor's balances at the
+        same bank. C5001 holds 100,000 in covered balance at
+        this bank (40,000 from the joint share + 60,000 from
+        A1002) - exactly at the ceiling, with no headroom; the
+        account-grain answer claimed 210,000 cover across
+        three accounts.
+
+        The branch-grain answer answers a different question
+        entirely (concentration risk at branch level). Branch
+        is not a coverage grain because the same depositor
+        can hold accounts at multiple branches of the same
+        bank.
+
+        Practical query shape:
+
+            SELECT owner_customer_id,
+                   SUM(balance_eur * ownership_share) AS covered_balance,
+                   LEAST(SUM(balance_eur * ownership_share),
+                         100000) AS capped_covered_balance
+            FROM accounts a
+            JOIN account_owners o USING (account_id)
+            WHERE bank_id = @selected_bank
+            GROUP BY owner_customer_id;
+      self_assessment: |
+        Any coverage metric ends in `GROUP BY
+        owner_customer_id, bank_id` followed by a cap at
+        EUR 100,000. Account-grain and branch-grain are
+        different questions.
     - id: q-hard-operations-dependency-register
       type: select_all
-      estimated_seconds: 95
+      estimated_seconds: 100
       recommended_learner_tasks: [LT-DQ-005, LT-LOOKER-004]
       source_facts:
         - FACT-DORA-ICT-IDENTIFICATION
         - FACT-DORA-THIRD-PARTY-REGISTER
         - FACT-BIGQUERY-JOBS-BYTES
-      prompt: >
-        A dashboard supports an internal operations control. Which items belong
-        in its dependency register?
+      prompt: |
+        Your "Branch Reconciliation Daily" dashboard is used as
+        an operational control - the operations team checks it
+        every morning before declaring the previous day's books
+        closed. DORA review asks for the dashboard's dependency
+        register. Which entries belong on it? (Select all that
+        apply.)
       options:
         - id: source_and_owner
-          label: The report source, owner, and control purpose.
+          label: |
+            **Source, owner, control purpose**: dataset and
+            view names the dashboard reads from
+            (`proj.dataset.serving_branch_daily`,
+            `serving_account_owner_share`), the named owner
+            role accountable for it, and a one-sentence
+            statement of the control the dashboard supports.
         - id: external_dependency
-          label: External or platform dependencies that affect the report.
+          label: |
+            **External dependencies**: BigQuery (the
+            warehouse), Looker Studio (the report tool),
+            the ingest job's upstream source, plus any
+            referenced third-party data feeds. Each entry
+            includes a criticality rating.
         - id: job_evidence
-          label: Warehouse job evidence used to monitor query cost or activity.
+          label: |
+            **Warehouse job evidence**: where the cost /
+            activity / freshness evidence lives
+            (`INFORMATION_SCHEMA.JOBS_BY_PROJECT` filtered
+            to the service account that runs the dashboard
+            queries), the retention period, and who can
+            read it.
         - id: viewer_count_only
-          label: Only the count of report viewers in the last 24 hours.
+          label: |
+            **Viewer count in the last 24 hours**. The
+            register's job is to show that the dashboard
+            has active operational use; viewer-count
+            satisfies the DORA "important ICT asset"
+            evidence requirement.
       answer: [source_and_owner, external_dependency, job_evidence]
-      explanation: >
-        Operational BI needs an inventory of important ICT assets and
-        dependencies. For BigQuery-backed reports, job evidence can support cost
-        and activity monitoring.
-      self_assessment: >
-        If a control dashboard has no owner or dependency record, its
-        operational evidence is incomplete.
+      explanation: |
+        A DORA-aligned dependency register treats
+        operationally-critical BI as an ICT asset and asks
+        three questions of every entry: what does it depend
+        on, who owns it, and where is the evidence that it's
+        working. The right entries map onto those three:
+
+        - Source + owner + purpose answer "what is this".
+        - External dependencies answer "what would break it".
+        - Warehouse job evidence answers "is it working".
+
+        Viewer count (the wrong distractor) is a usage
+        metric, not an asset register. Useful for engagement
+        analytics; not what DORA's ICT-asset identification
+        is about.
+
+        Practical addition: tag each register entry with the
+        control's *recovery time objective* (how long the
+        operations team can wait before alternative
+        evidence is needed). For a daily reconciliation
+        control, ~4 hours is typical; for an intraday
+        liquidity dashboard, it can be 15-30 minutes. That
+        RTO drives the dependency register's criticality
+        ratings.
+      self_assessment: |
+        Dependency registers are about asset identification
+        and evidence, not about engagement. Write one row
+        for each thing that, if it broke, would stop the
+        control - and name where the evidence lives.
     - id: q-hard-temporary-high-balance
       type: select_all
-      estimated_seconds: 95
+      estimated_seconds: 100
       recommended_learner_tasks: [LT-BI-002, LT-DQ-005]
       source_facts:
         - FACT-DGSD-TEMPORARY-HIGH-BALANCES
         - FACT-FGDB-PAYS-RON
         - FACT-BI-REFERENCE-DATE-SEPARATION
-      prompt: >
-        A depositor has a balance above the standard guarantee ceiling because
-        of a recent protected event. Which fields are needed before modelling
-        temporary high-balance treatment?
+      prompt: |
+        A depositor's combined balance at the bank reads
+        EUR 240,000. DGSD allows temporary high-balance
+        protection above the EUR 100,000 ceiling for specific
+        life events (sale of primary residence,
+        insurance / pension payouts, etc.) within a defined
+        window. To model the protection on the coverage
+        dashboard, which fields does the underlying serving
+        view need? (Select all that apply.)
       options:
         - id: event_type
-          label: The event type supporting temporary high-balance treatment.
+          label: |
+            **Event type** (categorical: `RESIDENCE_SALE`,
+            `INSURANCE_PAYOUT`, `INHERITANCE`, ...).
+            DGSD lists the eligible event categories; only
+            balances tagged with one are eligible for the
+            extra protection.
         - id: event_and_protected_dates
-          label: Event date, protected-until date, and unavailability date.
+          label: |
+            **Event date, protected-until date, and
+            unavailability date**. Temporary protection is
+            time-bounded (typically 3 / 6 / 12 months from
+            event date depending on the member state). The
+            "unavailability date" (date the bank is declared
+            unable to pay) is what determines whether the
+            protection window is still active when coverage
+            is triggered.
         - id: currency_conversion_context
-          label: Currency and exchange-rate-date context for compensation reporting.
+          label: |
+            **Currency code + BNR reference-rate date**.
+            Romanian compensation pays out in RON; the
+            EUR-denominated ceiling and protection cap
+            convert at the BNR rate on the unavailability
+            date, not on the event date.
         - id: depositor_geo_only
-          label: Only the depositor's residence country, since high-balance protection is residence-based.
+          label: |
+            **Only the depositor's residence country**, since
+            temporary high-balance protection is residence-
+            based. If the depositor lives in Romania, the
+            balance is protected up to the FGDB-defined
+            higher cap regardless of event evidence.
       answer:
         [event_type, event_and_protected_dates, currency_conversion_context]
-      explanation: >
-        Temporary high-balance treatment depends on event evidence and dates,
-        while Romanian compensation context also needs currency conversion
-        context.
-      self_assessment: >
-        If a balance simply exceeds the ceiling with no event evidence, do not
-        model it as temporarily protected.
+      explanation: |
+        Temporary high-balance protection is one of DGSD's
+        most operationally tricky areas because it
+        intersects three different things at once: event
+        eligibility, time windows, and currency conversion.
+
+        - **Event type** is the eligibility key. Without an
+          eligible event tagged on the deposit, there is no
+          temporary protection; the standard EUR 100,000
+          ceiling applies.
+        - **Date trio** is what determines whether the
+          protection is active at the coverage-event date.
+          A residence-sale proceed that became a deposit
+          two years before the bank's failure is past its
+          protected window; one that became a deposit a
+          month before is inside it.
+        - **Currency + rate-date** is needed because the
+          ceiling is in EUR but compensation in Romania is
+          paid in RON. The conversion rate is the BNR rate
+          on a specific reference date (typically the
+          unavailability date).
+
+        Residence country alone (the wrong distractor) is
+        irrelevant to temporary-high-balance protection -
+        it's an event-and-time-bounded protection, not a
+        residence-bounded one.
+      self_assessment: |
+        Temporary high-balance protection needs three pieces
+        on every deposit: event evidence, time evidence,
+        currency evidence. Missing any one means the
+        protection cannot be modelled; the dashboard should
+        fall back to the standard ceiling.
     - id: q-hard-dora-incident-evidence
       type: select_all
-      estimated_seconds: 95
+      estimated_seconds: 100
       recommended_learner_tasks: [LT-DQ-005, LT-LOOKER-004]
       source_facts:
         - FACT-DORA-INCIDENTS
         - FACT-DORA-BACKUP-RESTORE
         - FACT-DORA-DATA-CONFIDENTIALITY-INTEGRITY
-      prompt: >
-        A banking BI dashboard supports an operational incident review. Which
-        evidence should be captured for the report dependency?
+      prompt: |
+        On 2026-04-02 between 09:14 and 11:47 UTC the
+        upstream ingest pipeline for `account_daily_balances`
+        failed silently - reports kept rendering, but stayed
+        on stale 2026-04-01 data. The operations team is
+        writing the DORA-flavoured incident review for that
+        window. Which evidence belongs on the report's
+        incident record? (Select all that apply.)
       options:
         - id: incident_window
-          label: The incident or observation window affecting the dashboard.
+          label: |
+            **The incident window** (09:14-11:47 UTC,
+            2026-04-02) and the affected dashboard +
+            scorecards. Without a specific window, the rest
+            of the review cannot be scoped.
         - id: backup_restore_dependency
-          label: Backup or restore dependency notes for the data pipeline.
+          label: |
+            **Backup / restore dependency notes**: where
+            the source data was recovered from after the
+            ingest failure (re-ran the daily job vs
+            replayed from a snapshot), how long the
+            restore took, and what the dashboard rendered
+            during vs after the restore.
         - id: integrity_confidentiality
-          label: Data integrity and confidentiality controls relevant to the report.
+          label: |
+            **Data integrity and confidentiality controls
+            relevant to the dashboard**: was data exposed
+            during the stale period; did anyone see /
+            export numbers that were known to be wrong;
+            were any compensating controls (e.g. a "data
+            as of" banner) in effect during the window.
         - id: viewer_email_list
-          label: The list of viewer emails who opened the report during the incident window.
+          label: |
+            **The full list of viewer emails who opened the
+            report during the incident window**, so the
+            operations team can notify each individually
+            of the affected period.
       answer:
         [incident_window, backup_restore_dependency, integrity_confidentiality]
-      explanation: >
-        Operational resilience review is about ICT incidents, restore
-        dependencies, and data protection qualities, not visual decoration.
-      self_assessment: >
-        If a dashboard is used in an incident review, record the dependency and
-        evidence window.
+      explanation: |
+        DORA's incident review framework asks three
+        questions: what happened (and when), how was it
+        recovered, and what about the data integrity /
+        confidentiality during the event. The three correct
+        rows map directly to those questions for a BI
+        report context.
+
+        Why "viewer email list" is the wrong row, despite
+        sounding helpful:
+
+        - It conflates incident management with personal-
+          data processing. A list of who opened a report
+          is `user_email` data with the same GDPR
+          minimisation considerations as the cost-review
+          question earlier.
+        - Notifying each viewer individually is usually
+          done via a different channel (broadcast Slack /
+          email to the role audience, a "data as of" alert
+          appended to the dashboard for the period).
+        - If individual notification is genuinely needed,
+          that's a separate purpose with its own audience
+          and access controls - not a default field on the
+          incident record.
+
+        Operational note: tag the report itself in the
+        incident record with a snapshot of what it looked
+        like at the time of the incident (a Looker Studio
+        report screenshot or a SQL `SELECT * FROM view AS
+        OF SYSTEM TIME ...` if BigQuery time travel is
+        within retention). The "what did people see" is
+        what makes the incident review trustworthy later.
+      self_assessment: |
+        Incident records are about what / when / how
+        recovered / data implications. "Who looked at it"
+        is a separate notification process with its own
+        privacy considerations.
     - id: q-hard-eba-validation-change
       type: select_all
-      estimated_seconds: 95
+      estimated_seconds: 100
       recommended_learner_tasks: [LT-DQ-005]
       source_facts:
         - FACT-EBA-DPM-VALIDATION-RULES
         - FACT-EBA-VALIDATION-RULES-CHANGE
         - FACT-EBA-FRAMEWORK-VERSIONING
-      prompt: >
-        A regulatory-style BI pack has validation rules that changed between
-        framework versions. What should a reviewer check before comparing two
-        submitted periods?
+      prompt: |
+        The COREP submission for 2026-Q1 fails one validation
+        check that 2025-Q4's submission passed. The data
+        pipeline hasn't changed. A reviewer asks the BI team
+        to confirm whether the data is wrong or the rule
+        change is the cause. Which evidence answers the
+        question? (Select all that apply.)
       options:
         - id: rule_version
-          label: The validation rule version used for each period.
+          label: |
+            **DPM validation rule version per period**:
+            2025-Q4 used `v3.3.0.1`, 2026-Q1 uses `v3.4.1.0`.
+            If the failing rule's definition changed between
+            those two versions, the cause is the rule
+            change, not the data.
         - id: framework_version
-          label: The reporting framework version and reference date.
+          label: |
+            **Framework version + reference date per
+            period**: 2025-Q4 = framework v3.3, reference
+            date 2025-12-31; 2026-Q1 = framework v3.4,
+            reference date 2026-03-31. Some validation
+            outcomes change with framework version even
+            when the rule text is unchanged because the
+            template structure changed.
         - id: changed_rule_effect
-          label: Whether changed rules explain differences in validation results.
+          label: |
+            **The specific changed-rule diff** for the
+            failing rule: side-by-side text of the v3.3 and
+            v3.4 rule, and a small reconciliation showing
+            whether the same data passes v3.3 and fails v3.4
+            (rule change is the cause) or fails both (data
+            issue) or passes v3.4 alone (data improved).
         - id: only_failing_rows
-          label: Only the count of failing rows, without naming the rule version that produced the count.
+          label: |
+            **The row count of rows failing the validation**,
+            without naming the rule version that produced the
+            count. The number alone tells the reviewer the
+            scale of the problem.
       answer: [rule_version, framework_version, changed_rule_effect]
-      explanation: >
-        Validation outcomes can change when framework or rule versions change.
-        Period comparisons need the version context before drawing BI
-        conclusions.
-      self_assessment: >
-        If a validation break appears after a framework update, check rule
-        changes before assuming the data changed.
+      explanation: |
+        EBA's DPM validation framework changes between
+        reporting periods. The right answer to "is this a
+        data problem or a rule-change problem" is a small
+        reconciliation table:
+
+            period   | framework | rule version | rule_pass_under_v3.3 | rule_pass_under_v3.4
+            2025-Q4  | v3.3      | v3.3.0.1     | yes                  | n/a (rule not applied)
+            2026-Q1  | v3.4      | v3.4.1.0     | yes                  | no
+
+        Reading down the table: if 2026-Q1 data passes the
+        v3.3 version of the rule but fails the v3.4 version,
+        the rule change is the explanation. If 2026-Q1
+        fails both, the data is the explanation. Either way
+        the reviewer can decide what action to take
+        (clarification request, data fix, version-aware
+        comparison).
+
+        Wrong distractor: a bare row count without naming
+        the rule version is the start of an argument, not
+        the end of one. The reviewer's next question is
+        always "compared to what?".
+      self_assessment: |
+        Validation breaks after a framework update need a
+        rule-version diff and a same-data-different-rule
+        reconciliation. Numbers alone, even row counts,
+        are not enough to decide whether the data or the
+        rule changed.
     - id: q-hard-region-aware-serving-layer
       type: select_all
-      estimated_seconds: 95
+      estimated_seconds: 100
       recommended_learner_tasks: [LT-LOOKER-004, LT-LOOKER-007]
       source_facts:
         - FACT-BIGQUERY-VIEW-SAME-REGION
         - FACT-BIGQUERY-VIEW-SQL-VERSIONING
         - FACT-BIGQUERY-AUTHORIZED-VIEW-ACCESS-CONTROL
-      prompt: >
-        A governed serving layer will expose aggregate EU-region warehouse data
-        to Looker Studio. Which design checks belong before publishing the view?
+      prompt: |
+        The compliance team's new "EU deposits exposure"
+        dashboard will read from a governed serving view.
+        Source datasets are in the BigQuery `EU` multi-region;
+        the Looker Studio connection uses a viewer-credentials
+        data source. Before the warehouse team ships the view,
+        which design checks belong on the review ticket?
+        (Select all that apply.)
       options:
         - id: location_check
-          label: Confirm referenced tables and the view are in a compatible location.
+          label: |
+            **Confirm referenced tables and the view are in
+            compatible locations**. The serving view sits in
+            `eu-proj.deposits_eu` (EU multi-region) and reads
+            only tables in the same EU multi-region. A
+            cross-region reference would fail at first query
+            with "Cannot read in location" - quietly OK at
+            DDL time, broken at runtime.
         - id: sql_contract_review
-          label: Review and version the SQL defining the virtual table contract.
+          label: |
+            **Review the SQL contract in version control**
+            and pin a release tag on it. A logical view is
+            its SQL; future changes need a diff-and-review
+            process so downstream consumers can be notified
+            of changes that affect their numbers.
         - id: access_boundary
-          label: Use a curated or authorized view boundary for selected fields.
+          label: |
+            **Use an authorized view or curated serving
+            view** that exposes only the aggregate fields
+            the dashboard needs. The authorized view sits
+            between the dashboard service account and the
+            raw tables; viewers can read the view without
+            being granted access to the underlying tables.
         - id: viewer_table_choice
-          label: Let report viewers choose arbitrary raw table names at runtime.
+          label: |
+            **Let report viewers pick the raw table at
+            runtime** through a Looker Studio parameter, so
+            the same dashboard can target different
+            warehouse tables for different audiences.
       answer: [location_check, sql_contract_review, access_boundary]
-      explanation: >
-        The serving layer needs region compatibility, governed SQL, and a clear
-        access boundary. Runtime raw-table selection is not an appropriate BI
-        contract.
-      self_assessment: >
-        If the view location, SQL version, or access boundary is unknown, do not
-        publish it as a stable dashboard source.
+      explanation: |
+        Governance for a serving layer comes down to three
+        boundary checks: where the data physically lives,
+        who owns the SQL contract, and what audience the
+        view exposes which fields to.
+
+        - **Location**: BigQuery views can reference tables
+          only in the same location. Get this wrong at
+          create time and the view fails at first query.
+        - **SQL contract**: the view's defining SQL is its
+          contract. Without version control + a review
+          process, "what does this view return?" becomes
+          unknowable across team turnover.
+        - **Access boundary**: authorized views are
+          BigQuery's primary mechanism for "let this
+          audience read these aggregates without granting
+          raw table access". Grant the dashboard service
+          account access to the view (which is in an
+          authorised dataset); BigQuery treats the view's
+          access as a delegated read of the underlying
+          tables.
+
+        Wrong distractor (viewer-picks-table-at-runtime)
+        is the same parameter-shape antipattern from the
+        easy / medium sections. Letting users choose
+        identifiers bypasses every access control and
+        every cost projection.
+      self_assessment: |
+        Governed serving layers need three boundaries
+        nailed down before publishing: same-location, SQL
+        in version control with a release tag, and an
+        authorized view between the dashboard and the
+        underlying tables.
     - id: q-hard-query-cost-triage
       type: select_all
-      estimated_seconds: 95
+      estimated_seconds: 100
       recommended_learner_tasks: [LT-LOOKER-007, LT-DQ-005]
       source_facts:
         - FACT-BIGQUERY-PARTITION-FILTERS
         - FACT-BIGQUERY-SELECT-LIST-NARROWING
         - FACT-BIGQUERY-JOBS-BYTES
         - FACT-LOOKER-STUDIO-BIGQUERY-REFRESH-COST
-      prompt: >
-        BigQuery job evidence shows a dashboard query scanning far more bytes
-        after a new date control was added. Which fixes should be investigated?
+      prompt: |
+        Last week the deposits dashboard's BigQuery jobs
+        averaged ~150 MB / refresh. Since 2026-04-15
+        (when a new "Date range" Looker Studio control was
+        added) they average ~6 GB / refresh - 40x. Bytes
+        processed per
+        `INFORMATION_SCHEMA.JOBS_BY_PROJECT`. Which fixes
+        does the cost triage investigate? (Select all that
+        apply.)
       options:
         - id: partition_predicate
-          label: Push the selected date range into a partition-field predicate.
+          label: |
+            **Push the date-range control's value into a
+            partition predicate** in the SQL:
+            `WHERE business_date BETWEEN @date_from AND
+            @date_to`. Looker Studio's chart-side date
+            range does not prune partitions on its own; the
+            SQL has to translate the control into a
+            partition-column filter or the query scans the
+            full table.
         - id: narrow_columns
-          label: Remove unused columns from the serving SELECT list.
+          label: |
+            **Remove unused columns from the SELECT list**.
+            The new control might have come with a "let's
+            also show some extra context" widening of the
+            view; each extra column adds to bytes scanned
+            on a partitioned table.
         - id: refresh_behavior
-          label: Review how report refreshes trigger the query.
+          label: |
+            **Check how the control changed report refresh
+            behaviour**. Some control configurations
+            trigger an additional warehouse query per
+            control interaction; a "date range" control
+            that re-queries on every drag of the slider
+            multiplies cost.
         - id: switch_to_legacy_sql
-          label: Switch the serving query to legacy SQL because GoogleSQL scans more data.
+          label: |
+            **Switch the serving query to legacy SQL**.
+            GoogleSQL's optimiser is known to be more
+            conservative than legacy SQL; reverting to
+            legacy frequently restores the previous
+            efficiency.
       answer: [partition_predicate, narrow_columns, refresh_behavior]
-      explanation: >
-        Partition filters, narrowed input, and refresh behavior all affect
-        BigQuery-backed report cost. Styling does not reduce bytes processed.
-      self_assessment: >
-        If bytes processed spike after a control change, inspect predicates,
-        selected columns, and refresh settings.
+      explanation: |
+        A 40x jump after a control was added points at a
+        single dominant cause: the control's value isn't
+        making it into a partition filter. Triage in order:
+
+        - **Partition predicate**: read the underlying SQL.
+          If `business_date` (or whichever column the table
+          is partitioned on) doesn't appear in the `WHERE`
+          clause, the scan is unbounded. Looker Studio's
+          control sends the selected range to the chart as
+          a filter; the SQL has to translate it into a
+          partition predicate explicitly.
+        - **Narrow columns**: a `SELECT *` view widens the
+          scan multiplicatively with column count. A view
+          that selects only the fields the chart reads is
+          ~5x cheaper on a typical fact table.
+        - **Refresh behaviour**: some control interactions
+          retrigger the underlying query. A date-range
+          slider that re-queries on every drag will
+          generate dozens of jobs from one user session.
+
+        Legacy SQL (the wrong distractor) is not a cost-
+        triage option. BigQuery's GoogleSQL optimiser is
+        the default and is generally as good as or better
+        than legacy SQL for cost. Switching dialects
+        doesn't help; the partition predicate does.
+      self_assessment: |
+        A sudden bytes-processed jump after a control was
+        added almost always means the control's value
+        isn't reaching a partition predicate. Read the
+        SQL first, the control config second.
     - id: q-hard-stale-dashboard-root-cause
       type: select_all
-      estimated_seconds: 95
+      estimated_seconds: 100
       recommended_learner_tasks: [LT-DQ-005, LT-LOOKER-004]
       source_facts:
         - FACT-LOOKER-STUDIO-FRESHNESS-MEMORY
         - FACT-LOOKER-STUDIO-BLEND-FRESHNESS-MINIMUM
         - FACT-BI-REFERENCE-DATE-SEPARATION
-      prompt: >
-        A blended executive report shows yesterday's values for one source and
-        current values for another. Which root-cause checks are relevant?
+      prompt: |
+        The executive blended deposits report shows
+        "Deposits as of 2026-03-31" (yesterday) on the left
+        scorecard and "Net change as of 2026-04-01" (today)
+        on the right scorecard. The team didn't intend the
+        mismatch. Which root-cause checks are relevant?
+        (Select all that apply.)
       options:
         - id: source_business_dates
-          label: Compare each source's business reference date.
+          label: |
+            **Compare each source's business reference date**.
+            One source might already be returning today's
+            rows while the other is still snapshot to
+            yesterday. The mismatch is in the *data*, not
+            the *cache* - the BI author needs to align which
+            `business_date` each side filters to.
         - id: source_freshness
-          label: Compare freshness settings across all blended sources.
+          label: |
+            **Compare freshness settings across all blended
+            sources**. If source A has a 15-minute window
+            and source B has a 12-hour window, source B can
+            be serving from cache while source A has
+            already refreshed against the new day's data.
         - id: memory_serving
-          label: Check whether report data may still be served from memory.
+          label: |
+            **Check whether either source is being served
+            from memory**. Looker Studio's data-source
+            freshness can keep one side cached on yesterday's
+            result even after the warehouse has refreshed;
+            the report's "Refresh data" button forces a fetch.
         - id: lower_freshness_for_all
-          label: Lower freshness on every source to 1 minute so the blend cannot be stale.
+          label: |
+            **Lower freshness on every source to 1 minute**
+            so the blend cannot be stale.
       answer: [source_business_dates, source_freshness, memory_serving]
-      explanation: >
-        Staleness can come from source reference dates, blend freshness
-        settings, or report serving behavior. Visual styling cannot diagnose the
-        data timing.
-      self_assessment: >
-        If sources disagree on date context, resolve that before explaining the
-        metric.
+      explanation: |
+        Three independent things can cause a blended report
+        to show inconsistent business reference dates
+        between sides:
+
+        - **Source data is at different reference dates**.
+          The underlying SQL on the left may filter to
+          `business_date = MAX(business_date)` from one
+          table while the right filters from another -
+          and the two tables might be at different points
+          in their daily ingest schedule.
+        - **Freshness windows mismatch**. Even when both
+          warehouse tables update on the same schedule,
+          if the data-source freshness windows are
+          different, one side may be served from cache.
+        - **In-memory serving**. Looker Studio caches
+          query results within the freshness window. The
+          chart's apparent "today vs yesterday" can be a
+          freshness-window artifact, not a real data
+          inconsistency.
+
+        Wrong distractor: "lower freshness to 1 minute on
+        every source" is a brute-force response that
+        usually trades cost for marginal date alignment. A
+        15-minute freshness against a daily ingest is fine
+        for most operational dashboards; the symptom here
+        isn't a freshness-window problem if the underlying
+        sources are actually at different reference dates.
+      self_assessment: |
+        Date mismatches across blended sources have three
+        possible root causes: underlying data, freshness
+        window, in-memory cache. Walk all three before
+        deciding whether to tighten freshness.
     - id: q-hard-null-balance-reconciliation
       type: select_all
-      estimated_seconds: 95
+      estimated_seconds: 100
       recommended_learner_tasks: [LT-DQ-006, LT-DQ-005]
       source_facts:
         - FACT-BIGQUERY-SUM-NULLS
         - FACT-GDPR-ACCURACY
         - FACT-BI-RECONCILIATION-WINDOWS
-      prompt: >
-        A month-end branch report contains NULL balances for several branches.
-        Which reconciliation actions are appropriate before publishing totals?
+      prompt: |
+        The month-end branch totals report has been published.
+        Reviewing the underlying view, you find that 3 of 24
+        branches (12.5%) returned `SUM(ledger_balance) = NULL`
+        for 2026-03-31. The chart renders them as `0`. Before
+        anything goes out to stakeholders, which reconciliation
+        actions belong on the publish checklist? (Select all
+        that apply.)
       options:
         - id: count_null_groups
-          label: Count groups with missing or all-NULL balance inputs.
+          label: |
+            **Count groups with missing or all-NULL balance
+            inputs**: 3 of 24 branches in this case. Surface
+            that count as a control number next to the
+            headline total ("`Branches with no data today:
+            3`") so a reader can see the missing scope.
         - id: define_display_rule
-          label: Define whether NULL displays as blank, zero, or a flagged issue.
+          label: |
+            **Define a display rule** for the NULL state.
+            Two safe choices: render NULL as a distinct
+            visual state ("no data", a dash, or a flagged
+            colour); or omit the row from the chart and
+            list it in a separate "missing" sidebar. Either
+            is acceptable as long as the rule is documented
+            and the count is visible.
         - id: investigate_source
-          label: Investigate whether the missing values affect accuracy.
+          label: |
+            **Investigate the source pipeline** for the
+            three missing branches. Did the ingest job fail
+            for them? Were they decommissioned? Is the
+            branch dimension out of sync with the
+            transaction stream? Until that question is
+            answered, the dashboard cannot be trusted.
         - id: silently_zero
-          label: Replace every NULL with zero without a note.
+          label: |
+            **Replace every NULL with zero without a note**.
+            From the chart's perspective `0` and "no data"
+            look the same; the publish can proceed and the
+            ingest problem can be investigated separately
+            after stakeholders have the report.
       answer: [count_null_groups, define_display_rule, investigate_source]
-      explanation: >
-        NULL handling affects both metric meaning and data quality evidence.
-        Silent replacement hides whether the source has missing values.
-      self_assessment: >
-        If a total depends on NULL replacement, document the rule and the count
-        of affected rows or groups.
+      explanation: |
+        NULL handling is two distinct decisions: what to
+        do *in the data* and what to do *in the
+        presentation*. Both are required.
+
+        - **In the data**: a NULL is evidence of a
+          missing input, not a real value. Counting
+          NULL groups exposes the shape of the missing
+          data; investigating their source is what makes
+          the dashboard trustworthy.
+        - **In the presentation**: a chart that renders
+          NULL as `0` is making a silent claim that "no
+          data" and "real zero" are the same. They aren't.
+          A reader looking at a `0` deposits balance for
+          a branch will assume the branch had no money,
+          not that ingest failed.
+
+        Silent NULL-to-zero replacement is GDPR Article
+        5(1)(d) ("accuracy") territory - the dashboard is
+        not accurate about what it knows and what it
+        doesn't. The fix isn't difficult; it requires
+        treating "no data" as a first-class state.
+      self_assessment: |
+        Any aggregate over a NULL-able column needs both a
+        per-group missing count and an explicit display
+        rule. "Just render NULL as zero" is silent
+        accuracy degradation.
     - id: q-hard-approx-count-coverage-risk
       type: multiple_choice
-      estimated_seconds: 90
+      estimated_seconds: 100
       recommended_learner_tasks: [LT-BI-002]
       source_facts:
         - FACT-BIGQUERY-APPROX-COUNT-DISTINCT
         - FACT-DGSD-AGGREGATE-PER-DEPOSITOR
         - FACT-FGDB-GUARANTEE-CEILING
-      prompt: >
-        A deposit-guarantee dashboard estimates covered depositors with
-        `APPROX_COUNT_DISTINCT(depositor_id)`. Why is that unsuitable as final
-        coverage evidence?
+      prompt: |
+        A "covered depositors estimate" scorecard on the
+        compliance dashboard reads `APPROX_COUNT_DISTINCT
+        (depositor_id) WHERE covered_amount > 0`. The
+        scorecard reads `156,200` for 2026-Q1; the
+        regulatory submission for the same quarter reads
+        `156,194`. The compliance lead asks: "are we OK to
+        report the dashboard number to the FGDB?"
       options:
         - id: estimate_not_exact
-          label: Coverage needs exact depositor-bank grouping before applying the ceiling.
+          label: |
+            **No**. Coverage reporting needs exact
+            depositor-bank grouping before applying the
+            EUR 100,000 ceiling. `APPROX_COUNT_DISTINCT`
+            is a HyperLogLog++ estimate with ~1-2% error;
+            its 6-row gap from the exact submission is
+            inside that error band, but the regulator
+            expects an exact, reconcilable number, not "an
+            estimate that happens to be close". Reach for
+            `COUNT(DISTINCT depositor_id)` (exact) or a
+            pre-aggregated depositor-bank table.
         - id: approximate_required
-          label: Guarantee rules require approximate counts.
+          label: |
+            **Yes**. Guarantee-coverage rules expect counts
+            within a stated tolerance; HyperLogLog++ falls
+            comfortably inside the directive's
+            "approximation acceptable" provision and is
+            cheaper to compute at scale.
         - id: account_level_enough
-          label: Account-level estimates are always enough for coverage.
+          label: |
+            **Yes**. The dashboard's account-level
+            estimates are sufficient for coverage; the
+            small gap reflects the difference between
+            account grain and depositor grain, which is a
+            modelling choice, not an exactness issue.
       answer: estimate_not_exact
-      explanation: >
-        Approximate distinct count is an estimate. Coverage calculations depend
-        on exact depositor aggregation and the per-depositor ceiling.
-      self_assessment: >
-        If an estimate drives a guarantee number, replace it with exact
-        depositor-bank logic.
+      explanation: |
+        Three things matter for a regulatory coverage
+        number:
+
+        - **Exact, not approximate**: regulators require
+          reconcilable totals. "Close enough" via
+          `APPROX_COUNT_DISTINCT` is fine for an
+          exploratory tile (you can see at a glance
+          whether the order of magnitude is right) but
+          must be exchanged for an exact count when the
+          number is reported externally.
+        - **Right grain**: depositor-bank, with joint-
+          account ownership shares correctly applied,
+          before the EUR 100,000 cap. Account-level
+          estimates are a different question.
+        - **Tied to a reference date**: the EUR ceiling
+          converts at the BNR rate on a specific date for
+          Romanian compensation; the dashboard's
+          coverage number is meaningless without that
+          date attached.
+
+        Regulators also expect the BI team to be able to
+        explain why the submission and the dashboard
+        differ. "HyperLogLog++ estimate" is the kind of
+        answer that turns into a follow-up audit.
+      self_assessment: |
+        Approximate counts have their place. Regulatory
+        reporting is not it. If a number is going to be
+        reconciled by a third party, compute it exactly,
+        at the right grain, with the reference date
+        attached.
     - id: q-hard-special-category-dashboard-risk
       type: select_all
-      estimated_seconds: 95
+      estimated_seconds: 100
       recommended_learner_tasks: [LT-LOOKER-004]
       source_facts:
         - FACT-GDPR-SPECIAL-CATEGORIES
         - FACT-GDPR-DATA-MINIMISATION
         - FACT-GDPR-SECURITY-PROCESSING
-      prompt: >
-        A proposed dashboard field could reveal special-category personal data
-        and is not needed for the BI metric. Which publication decisions fit?
+      prompt: |
+        A proposed monthly compliance dashboard shows
+        "loan repayment difficulty by region". A field in
+        the source view, `customer_health_status`, would
+        reveal special-category data (health information
+        under GDPR Article 9). The dashboard's stated
+        purpose is regional repayment monitoring and the
+        chart does not need per-customer health detail.
+        Which publication decisions fit? (Select all that
+        apply.)
       options:
         - id: exclude_field
-          label: Exclude the field from the dashboard source.
+          label: |
+            **Exclude `customer_health_status` from the
+            dashboard's serving view**. The aggregated
+            repayment-difficulty signal can be computed
+            without per-row health flags
+            (`SUM(amount_overdue), GROUP BY region`).
+            Minimisation requires it; Article 9 protection
+            requires it.
         - id: review_security
-          label: Escalate access and security review if a valid purpose is later defined.
+          label: |
+            **Add an explicit security and access review
+            requirement** for any future purpose that
+            does need health-data fields. Article 9
+            processing requires a specific lawful basis
+            and additional safeguards; opening that path
+            should be a deliberate, reviewed decision.
         - id: document_minimisation
-          label: Document that the metric can be produced without the field.
+          label: |
+            **Document in the data source's metadata** that
+            the regional repayment metric is producible
+            without health data, and link to the alternative
+            aggregate query that does not touch the
+            Article 9 column. Future engineers see the
+            decision and the reasoning, not just the
+            artefact.
         - id: publish_anyway
-          label: Publish the field because the chart currently hides it.
+          label: |
+            **Publish the field and let chart-level
+            filtering hide it**. Looker Studio chart
+            configuration can omit the column from
+            rendering, so the audience never sees it in
+            practice. Restrictions can be added if a
+            problem is ever found.
       answer: [exclude_field, review_security, document_minimisation]
-      explanation: >
-        Special-category personal data needs careful handling, and minimisation
-        still applies when the field is unnecessary for the metric.
-      self_assessment: >
-        If a sensitive field is not needed for the stated metric, remove it from
-        the serving source.
+      explanation: |
+        Special-category data (health, ethnicity, political
+        opinion, religious belief, etc.) is treated as a
+        higher-protection class by GDPR Article 9. The
+        practical implications for BI:
+
+        - **Lawful basis is narrower**. Article 6 lawful
+          bases are not sufficient on their own; Article
+          9 requires one of a smaller set of specific
+          grounds (explicit consent, statutory obligation
+          in employment / health contexts, etc.).
+        - **Default position is exclusion**. If the metric
+          can be computed without the special-category
+          field, the field shouldn't be in the serving
+          view. Aggregating repayment-difficulty by region
+          is one of those cases - the regional signal
+          doesn't need per-customer health detail.
+        - **Future purposes have to be reviewed
+          separately**. "We might want it later" is not
+          a basis for keeping Article 9 data in a
+          dashboard's serving view.
+
+        Wrong distractor (publish-and-hide-on-chart): a
+        chart-level filter is a presentation choice. The
+        column is still in the data source, still
+        accessible to anyone who can re-query the source,
+        still in any export, still in any blend that
+        references it. Hide-on-chart is not minimisation.
+      self_assessment: |
+        Article 9 special-category data should be excluded
+        from BI serving views by default. Any inclusion
+        needs an explicit purpose, a specific lawful
+        basis, and a security review. Chart-level hiding
+        does not satisfy any of those.
     - id: q-hard-blend-vs-upstream-model
       type: multiple_choice
-      estimated_seconds: 90
+      estimated_seconds: 100
       recommended_learner_tasks: [LT-BI-002, LT-LOOKER-004]
       source_facts:
         - FACT-LOOKER-STUDIO-BLEND-MORE-ROWS
         - FACT-BIGQUERY-REDUCE-BEFORE-JOIN
         - FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE
-      prompt: >
-        A Looker Studio blend repeatedly overstates balances when branch mapping
-        has duplicate keys. Which durable fix best protects all dashboard pages?
+      prompt: |
+        A Looker Studio blend joins
+        `serving_deposit_branch_daily` (one row per branch
+        per day) with `branch_enrichment` (a manually-edited
+        Google Sheet). Recently, two rows in the Sheet for
+        branch `BR-CJ-01` (somebody edited a row, didn't
+        delete the duplicate) caused the blended balance
+        total to overstate by 9,300 EUR for one day. The
+        team noticed, fixed the Sheet, but the same shape
+        of problem keeps surfacing. Which durable fix
+        protects the dashboard against future duplicate
+        keys?
       options:
         - id: upstream_model_fix
-          label: Deduplicate or aggregate to the intended grain upstream and expose a reusable metric.
+          label: |
+            **Move the branch enrichment data into the
+            warehouse** (a BigQuery table maintained by the
+            same governance as the rest of the serving
+            layer) and dedupe on the way in
+            (`SELECT DISTINCT branch_id, region` or an
+            explicit `ROW_NUMBER() = 1` per `branch_id`).
+            The serving view joins the cleaned enrichment
+            to balances; Looker Studio queries the joined
+            view directly with no blend. Every duplicate-
+            row possibility is removed upstream once.
         - id: hide_one_chart_total
-          label: Hide the total on the one chart where the issue was first noticed.
+          label: |
+            **Hide the affected chart's total** on the page
+            so a duplicate Sheet row can't visibly inflate
+            the headline. The chart still renders its bars
+            and lines; only the top-of-page total is
+            suppressed. Reviewers can drill into the
+            chart's row-level data to confirm.
         - id: add_duplicate_fields
-          label: Add more duplicate mapping fields to the blend.
+          label: |
+            **Add more enrichment fields** to the blend
+            (region, manager_email, last_inspection_date)
+            so the join key becomes a wider composite, less
+            likely to fan out by accident on a single
+            duplicate.
       answer: upstream_model_fix
-      explanation: >
-        Blend row multiplication is a grain problem. A durable fix belongs in
-        upstream modelling or reusable metric logic, not in a single chart's
-        presentation.
-      self_assessment: >
-        If duplicate keys can change a metric, repair the data shape before
-        styling the report.
+      explanation: |
+        Blends amplify mistakes in the data they read; they
+        do not introduce new defences against them. A
+        Sheet with duplicate rows is a data-quality problem
+        that has to be solved at the data layer, not the
+        presentation layer.
+
+        - **Move enrichment upstream**: a warehouse table
+          can carry constraints (`PRIMARY KEY` annotations
+          for documentation, `ASSERT` checks in the load,
+          deduplication in the load step). The serving
+          view consumes a cleaned input; the blend
+          dissolves entirely.
+        - **Hide-the-total** does not fix anything - the
+          underlying overstatement is still in the data;
+          it's just less visible. The next chart that
+          uses the same blend re-encounters it.
+        - **Wider composite key** doesn't help when the
+          duplication is on the exact key. If both Sheet
+          rows have the same `branch_id`, adding region /
+          manager / inspection doesn't change the fact
+          that the blend matches both.
+
+        The general rule for "blend keeps overstating":
+        the blend is a symptom; the cause is on one of the
+        input sides and has to be repaired there.
+      self_assessment: |
+        Every recurring data-quality bug in a blend has a
+        permanent fix one layer upstream. The blend itself
+        is the wrong place to defend against bad input.
     - id: q-hard-count-star-vs-column
       type: multiple_choice
       estimated_seconds: 90
