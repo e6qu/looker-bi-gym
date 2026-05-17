@@ -39,7 +39,6 @@ const tutorialContentRoutes = [
   "/#/tutorials/08-observability-and-operations.md",
   "/#/tutorials/09-technical-bi-capstone.md",
   "/#/tutorials/README.md",
-  "/#/tutorials/curriculum.md",
   "/#/tutorials/data-sources.md",
   "/#/tutorials/exam-mode.md",
   "/#/tutorials/learner-tasks/README.md",
@@ -542,7 +541,7 @@ FROM account_daily_balances;`);
     await expect(
       page.getByRole("heading", {
         level: 1,
-        name: "LT-BI-001 - Profile Dataset Grain",
+        name: "Profile Dataset Grain",
       }),
     ).toBeVisible();
     await expect(

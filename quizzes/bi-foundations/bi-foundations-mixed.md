@@ -76,10 +76,10 @@ questions:
       options:
         - id: data_source
           label: The data source that connects data and exposes the field schema.
-        - id: chart_title
-          label: The chart title, because it defines field types.
-        - id: viewer_activity
-          label: Viewer activity, because clicks become report fields.
+        - id: chart_layer
+          label: The chart layer, because chart-level calculated fields can rename underlying fields.
+        - id: blend_definition
+          label: The blend definition, because a blend takes precedence over the underlying data-source schema.
       answer: data_source
       explanation: >
         Looker Studio charts and controls use fields exposed by the data source.
@@ -101,10 +101,10 @@ questions:
       options:
         - id: reusable_layer
           label: In upstream serving SQL or a reusable data-source field.
-        - id: one_chart
-          label: In the first scorecard only.
-        - id: report_title
-          label: In the report title.
+        - id: each_chart
+          label: As a chart-level calculated field on each chart that needs it, copied separately.
+        - id: report_filter
+          label: As a report-level filter expression so every chart inherits the formula.
       answer: reusable_layer
       explanation: >
         Chart-specific fields exist only in that chart. Reused metric logic
@@ -123,11 +123,11 @@ questions:
         storing a new table. Which description fits a logical view?
       options:
         - id: sql_virtual_table
-          label: A virtual table defined by SQL whose query runs when queried.
-        - id: editable_dashboard_table
-          label: A table edited directly by report viewers.
-        - id: spreadsheet_copy
-          label: A spreadsheet copy of the dashboard result.
+          label: A virtual table defined by SQL whose query runs each time the view is queried.
+        - id: materialized_cache
+          label: A cached precomputed result that does not re-run its SQL on read.
+        - id: external_table
+          label: A reference to a file in Cloud Storage whose schema is inferred at read time.
       answer: sql_virtual_table
       explanation: >
         A logical view is a SQL-defined virtual table. It gives a reusable query
@@ -173,9 +173,9 @@ questions:
         - id: refresh_vs_business_date
           label: Report refresh time and source business reference date.
         - id: same_control
-          label: Nothing; refresh time and business date are always the same.
-        - id: chart_position
-          label: Only the chart position.
+          label: Nothing, because Looker Studio always overwrites business_date with the report's refresh time.
+        - id: chart_axis_label
+          label: Only the chart axis label, since the source business_date is decorative.
       answer: refresh_vs_business_date
       explanation: >
         Freshness tells when a report may query or cache data. It does not
@@ -195,10 +195,10 @@ questions:
       options:
         - id: field_values_default_charts
           label: The bound field, allowed values, default value, and affected charts.
-        - id: color_position_only
-          label: Only the control color and screen position.
-        - id: private_identifier
-          label: A private customer identifier for precise filtering.
+        - id: bound_to_natural_label
+          label: The displayed branch name string; renaming the label is enough to keep the control aligned with the underlying field.
+        - id: bound_to_calculated_field
+          label: A chart-level calculated field expression, with the control rewriting the expression at runtime.
       answer: field_values_default_charts
       explanation: >
         Controls should be tied to stable data-source fields and to explicit
@@ -317,10 +317,10 @@ questions:
       options:
         - id: date_range_filter
           label: A predicate on the business-date partition field.
-        - id: title_filter
-          label: A report title that mentions the month.
+        - id: chart_date_filter
+          label: A chart-level date filter applied after the serving query runs.
         - id: no_filter
-          label: No date predicate, because the dashboard chart has a date axis.
+          label: No predicate at all, because the date partition is automatically pruned when the chart axis is a date.
       answer: date_range_filter
       explanation: >
         Partition pruning depends on filters that reference the partition field.
@@ -340,11 +340,11 @@ questions:
         Which BigQuery-style transformation belongs in the serving query?
       options:
         - id: truncate_month
-          label: Truncate the transaction date to month granularity.
-        - id: free_text_month
-          label: Type the month name manually into the chart title.
-        - id: refresh_month
-          label: Use the dashboard refresh month as the transaction month.
+          label: "`DATE_TRUNC(transaction_date, MONTH)` to align rows to the first day of each month."
+        - id: format_string_label
+          label: "`FORMAT_DATE('%B', transaction_date)` to use the month name as the grouping key."
+        - id: extract_month_number
+          label: "`EXTRACT(MONTH FROM transaction_date)` alone, so all transactions in March across years group together."
       answer: truncate_month
       explanation: >
         Period grouping should be derived from the source date at the intended
@@ -461,10 +461,10 @@ questions:
       options:
         - id: dimension_metric
           label: "`branch_region` is a dimension; `ledger_balance` is a metric."
-        - id: metric_dimension
-          label: "`branch_region` is a metric; `ledger_balance` is a dimension."
-        - id: both_controls
-          label: Both fields are only report controls and cannot appear in charts.
+        - id: both_metrics
+          label: Both fields are metrics, because both appear in the chart's metrics shelf.
+        - id: parameter_dimension
+          label: "`branch_region` is a parameter-driven control; `ledger_balance` is a dimension."
       answer: dimension_metric
       explanation: >
         Dimensions group or describe data, while metrics are aggregated. The
@@ -526,11 +526,11 @@ questions:
         best reduces fanout and unnecessary join work?
       options:
         - id: aggregate_first
-          label: Aggregate balances to the required account/date or report grain before joining.
-        - id: join_everything
-          label: Join all raw rows first, then hope the chart aggregation fixes totals.
-        - id: add_columns
-          label: Add more owner columns so the join is easier to inspect visually.
+          label: Aggregate balances to the required account/date grain in a CTE before joining owners.
+        - id: distinct_at_end
+          label: Keep the raw owner join and add `SELECT DISTINCT` at the end to remove duplicates.
+        - id: group_by_owner_account
+          label: Keep the raw owner join and `GROUP BY account_id, customer_id` to collapse it.
       answer: aggregate_first
       explanation: >
         Reducing data before a join limits both cost and grain risk. Joining raw
@@ -550,11 +550,11 @@ questions:
         latest row per account. Which pattern fits?
       options:
         - id: qualify_rank
-          label: "Use `ROW_NUMBER() OVER (...)` and filter the rank with QUALIFY."
-        - id: sum_history
-          label: Sum every historical snapshot and let the chart pick the latest.
-        - id: manual_pick
-          label: Display all rows and choose the latest by sight.
+          label: "`ROW_NUMBER() OVER (PARTITION BY account_id ORDER BY snapshot_date DESC)` with `QUALIFY rn = 1`."
+        - id: max_in_select
+          label: "`SELECT account_id, MAX(snapshot_date), balance ...` so the row with the latest date wins per account."
+        - id: order_limit
+          label: "`SELECT * FROM snapshots ORDER BY snapshot_date DESC LIMIT 1`, scoped by account through the chart filter."
       answer: qualify_rank
       explanation: >
         QUALIFY filters window-function results after ranking, which is a clear
@@ -575,11 +575,11 @@ questions:
         values. Which check belongs in SQL?
       options:
         - id: last_day_check
-          label: Compare `as_of_date` to the last day of its month.
-        - id: string_month
-          label: Keep rows where the date string contains the month name.
-        - id: refresh_time
-          label: Use the report refresh timestamp as the month-end date.
+          label: "`WHERE as_of_date = LAST_DAY(as_of_date)` to keep only true month-end snapshots."
+        - id: day_28_or_later
+          label: "`WHERE EXTRACT(DAY FROM as_of_date) >= 28` to keep rows on or after the 28th of any month."
+        - id: month_diff
+          label: "`WHERE DATE_TRUNC(as_of_date, MONTH) = as_of_date` to keep rows whose date is the first day of the month."
       answer: last_day_check
       explanation: >
         Month-end logic should use date functions and source reference dates,
@@ -626,10 +626,10 @@ questions:
       options:
         - id: dimension_context
           label: The chart dimensions and default aggregation used by the measure.
-        - id: font_size
-          label: Only the table font size.
-        - id: viewer_history
-          label: Each viewer's click history.
+        - id: chart_filter_only
+          label: Only the chart-level filter, since adding a dimension cannot change a SUM total.
+        - id: data_freshness
+          label: Only the data freshness setting, since the underlying source rows are the same.
       answer: dimension_context
       explanation: >
         Looker Studio aggregates metrics in the context of chart dimensions.
@@ -677,11 +677,11 @@ questions:
         credentials. What is the practical access-control question?
       options:
         - id: whose_access
-          label: Whether data is seen through the owner's access or each viewer's access.
-        - id: chart_color
-          label: Which chart color is used for restricted data.
-        - id: file_name
-          label: Whether the report title contains the data-source name.
+          label: Whether the BigQuery query runs as the owner's identity or as each viewer's identity.
+        - id: refresh_interval_only
+          label: Whether the data freshness interval is shorter or longer than 1 hour.
+        - id: data_source_type
+          label: Whether the data source is embedded in the report or reusable across reports.
       answer: whose_access
       explanation: >
         Credential mode affects whose access is used when the report reads data.
@@ -703,10 +703,10 @@ questions:
       options:
         - id: byte_estimate
           label: A query validator or dry-run byte estimate for the serving query.
-        - id: screenshot_only
-          label: Only a screenshot showing that the chart rendered once.
-        - id: title_length
-          label: The number of characters in the report title.
+        - id: cache_hit_only
+          label: Only that the first run returned `cache_hit = TRUE`, so future refreshes will not bill.
+        - id: row_count_proxy
+          label: Only the chart's displayed row count, since bytes processed and rows displayed are equivalent.
       answer: byte_estimate
       explanation: >
         Looker Studio refreshes can trigger BigQuery query costs. Pre-run byte
@@ -775,11 +775,11 @@ questions:
         "latest"?
       options:
         - id: order_and_frame
-          label: The ordering column and window frame.
-        - id: chart_color
-          label: The color used for the balance line.
-        - id: report_title
-          label: The dashboard title.
+          label: "The `ORDER BY` column and the explicit window frame (`ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING`)."
+        - id: partition_only
+          label: "Only the `PARTITION BY` clause; default frame and ordering are enough for `LAST_VALUE`."
+        - id: outer_order_by
+          label: "Only the query's outer `ORDER BY`, since window order is inherited from it."
       answer: order_and_frame
       explanation: >
         LAST_VALUE depends on the current window frame. Latest-balance logic
@@ -851,11 +851,11 @@ questions:
         location. Which deployment issue should be checked first?
       options:
         - id: same_location
-          label: Whether the view and referenced resources are in the same location.
-        - id: chart_font
-          label: Whether the report font matches the source table name.
-        - id: viewer_language
-          label: Whether the report viewer's browser language is English.
+          label: Whether the view and referenced resources are in the same location (EU multi-region vs us multi-region).
+        - id: dataset_naming_only
+          label: Whether the dataset names start with the same prefix so the view can resolve them.
+        - id: same_project
+          label: Whether both the view and the referenced tables sit in the same Google Cloud project.
       answer: same_location
       explanation: >
         BigQuery logical views must reference resources in the same location as
@@ -924,11 +924,11 @@ questions:
         table. In the documented default pattern, why does source order matter?
       options:
         - id: retained_records
-          label: The leftmost source determines the retained records.
-        - id: color_palette
-          label: The leftmost source determines the chart colors.
-        - id: credential_mode
-          label: The leftmost source always changes owner credentials to viewer credentials.
+          label: The leftmost source determines the retained records in a left-outer blend by default.
+        - id: inherit_aggregation
+          label: The leftmost source determines the default aggregation for every metric on the right.
+        - id: refresh_anchor
+          label: The leftmost source sets the data freshness for every right-side source.
       answer: retained_records
       explanation: >
         Blend join configuration includes source order and join keys. In the
@@ -955,8 +955,8 @@ questions:
           label: Remove or separately report rows with an exclusion reason.
         - id: deposit_definition
           label: Confirm the balance represents a deposit or due interest concept.
-        - id: branch_color
-          label: Choose a branch chart color before checking eligibility.
+        - id: branch_grain_substitution
+          label: Aggregate to branch grain first; branch totals can stand in for depositor-bank coverage when account-level data is unavailable.
       answer: [eligible_deposit, exclusion_reason, deposit_definition]
       explanation: >
         Coverage calculations need deposit definition and eligibility logic
@@ -991,6 +991,176 @@ questions:
         Speculative raw-detail fields weaken both privacy and BI contracts.
       self_assessment: >
         If the source has no stated purpose or owner, pause publication.
+    - id: q-medium-weighted-average-ratio
+      type: multiple_choice
+      estimated_seconds: 85
+      recommended_learner_tasks: [LT-DQ-006]
+      source_facts:
+        - FACT-BI-RATIO-SUM-COMPONENTS-FIRST
+        - FACT-LOOKER-STUDIO-DEFAULT-AGGREGATION
+      prompt: >
+        A retail bank reports `Average account balance per active account`
+        on an executive dashboard. Two implementations are proposed:
+        formula A computes `SUM(account_balance) / SUM(active_account_count)`
+        from a daily branch-level serving view; formula B computes
+        `AVG(branch_average_balance)` from the same serving view. Which
+        gives the cert-correct weighted result under a chart filter that
+        drops the smallest branches?
+      options:
+        - id: formula_a_weighted
+          label: Formula A; the numerator and denominator re-aggregate at the filtered grain so each retained branch contributes in proportion to its account count.
+        - id: formula_b_average
+          label: Formula B; averaging an already-averaged column produces a stable cross-branch number that survives any filter.
+        - id: either_match
+          label: Either; for a fixed serving view the two formulas mathematically agree.
+        - id: a_only_if_unfiltered
+          label: Formula A only on the unfiltered total; under any filter, formula B is required to recompute.
+      answer: formula_a_weighted
+      explanation: >
+        Weighted ratios aggregate components first so they recompute
+        correctly at any filter context. Averaging branch averages
+        discards the branch weights and is an average-of-averages
+        antipattern.
+      self_assessment: >
+        If a chart filter changes the ratio's meaning, suspect an
+        average-of-averages formula and replace with `SUM(num) / SUM(den)`.
+    - id: q-medium-sum-count-distinct-trap
+      type: multiple_choice
+      estimated_seconds: 85
+      recommended_learner_tasks: [LT-BI-002]
+      source_facts:
+        - FACT-BIGQUERY-COUNT-DISTINCT-GRAIN
+        - FACT-BI-FANOUT-JOIN-RISK
+      prompt: >
+        A wealth-management dashboard groups account totals by
+        `relationship_manager` and by `service_tier`, then reports
+        `SUM(distinct_customer_count)` across the two groupings as
+        "unique customers served". One customer is served by two
+        relationship managers across two service tiers. How does the
+        reported number compare to the real distinct-customer count?
+      options:
+        - id: overstates
+          label: It overstates the true distinct-customer count because each customer is counted once per group they appear in.
+        - id: understates
+          label: It understates because BigQuery deduplicates across the SUM and skips the customer.
+        - id: matches
+          label: It matches the true distinct-customer count because `COUNT(DISTINCT)` is additive across non-overlapping groups.
+        - id: depends_on_join
+          label: It depends on whether the dashboard uses an `INNER JOIN` or `LEFT JOIN` between customers and accounts.
+      answer: overstates
+      explanation: >
+        `COUNT(DISTINCT)` is not additive across groups when the same
+        entity appears in multiple groups. Summing per-group distinct
+        counts double-counts shared entities. The cert-correct fix is to
+        compute `COUNT(DISTINCT customer_id)` over the same window
+        directly.
+      self_assessment: >
+        Whenever a grouped report sums distinct counts, ask whether the
+        entity can appear in multiple groups; if so, recompute on the
+        full window.
+    - id: q-medium-psd2-sca-evidence
+      type: select_all
+      estimated_seconds: 90
+      recommended_learner_tasks: [LT-DQ-005]
+      source_facts:
+        - FACT-PSD2-STRONG-CUSTOMER-AUTHENTICATION
+        - FACT-GDPR-DATA-MINIMISATION
+      prompt: >
+        A payments BI dashboard tracks strong customer authentication
+        outcomes for electronic transactions. Which fields belong in the
+        governed serving view feeding the aggregate page?
+      options:
+        - id: sca_outcome
+          label: SCA outcome (success / failure / skipped) per transaction reporting date.
+        - id: exemption_reason
+          label: The applied SCA exemption category (when an exemption was used).
+        - id: counterparty_channel
+          label: Counterparty type and acceptance channel categories.
+        - id: raw_customer_id
+          label: The raw customer identifier on every row so support staff can drill into a specific cardholder from the aggregate.
+      answer: [sca_outcome, exemption_reason, counterparty_channel]
+      explanation: >
+        Aggregate SCA dashboards need outcome, exemption, and channel
+        categories. Raw customer identifiers fail PSD2-aware data
+        minimisation when they sit on a broadly shared aggregate page;
+        per-customer investigation belongs on a separately governed
+        detail surface.
+      self_assessment: >
+        If aggregate authentication metrics rely on per-customer fields
+        being present, separate the aggregate page from the
+        access-controlled investigation page.
+    - id: q-medium-aml-cft-alert-page
+      type: multiple_choice
+      estimated_seconds: 85
+      recommended_learner_tasks: [LT-DQ-005]
+      source_facts:
+        - FACT-AML-CFT-SUSPICIOUS-ACTIVITY
+        - FACT-GDPR-DATA-MINIMISATION
+        - FACT-GDPR-SPECIAL-CATEGORIES
+      prompt: >
+        A bank's compliance team needs an internal dashboard summarising
+        AML alert volumes by reporting period. Which serving design fits
+        cert-track expectations for AML / CFT BI?
+      options:
+        - id: aggregate_governed
+          label: A governed aggregate serving view with alert counts and ageing categories; per-alert narratives and KYC fields stay on a separately access-controlled detail page.
+        - id: full_alert_export
+          label: A flat extract that joins every alert with the full KYC record and customer narrative, so compliance can analyse without leaving the report.
+        - id: aggregate_with_customer_ids
+          label: An aggregate page that keeps customer IDs as a chart dimension so investigators can pivot from the totals.
+        - id: blend_kyc_to_marketing
+          label: A blend between AML alerts and the marketing dashboard so account managers can see alert flags in their own page.
+      answer: aggregate_governed
+      explanation: >
+        AML records, KYC narratives, and per-customer suspicion
+        evidence are highly sensitive personal data with strict
+        access-control expectations; specific fields may also reveal
+        GDPR Article 9 special-category data (for example health,
+        political opinion, religious belief) when narrative text
+        captures it. The cert-correct pattern is an aggregate governed
+        view for the broad audience and a separately access-controlled
+        detail page for investigation. Carrying KYC narratives or
+        customer IDs into the aggregate page violates data minimisation
+        and the case-by-case access boundary the AML / CFT regime
+        expects.
+      self_assessment: >
+        If an AML aggregate page exposes investigation-level fields,
+        split the surface into a governed summary and a restricted
+        detail page.
+    - id: q-medium-corep-finrep-versioning
+      type: multiple_choice
+      estimated_seconds: 90
+      recommended_learner_tasks: [LT-DQ-005]
+      source_facts:
+        - FACT-EBA-FRAMEWORK-VERSIONING
+        - FACT-EBA-DPM-VALIDATION-RULES
+        - FACT-CRR-CET1-RATIO
+      prompt: >
+        A bank prepares its COREP / FINREP submission for 2026-Q1. A
+        capital-monitoring dashboard already reports the same CET1
+        numerator and denominator using the prior framework version. The
+        reviewer asks the BI team to align the dashboard with the
+        version used for the submission. Which alignment evidence
+        belongs in the dashboard release record?
+      options:
+        - id: framework_version_per_period
+          label: The reporting framework version, validation rule version, and reference date, recorded next to the CET1 value for each period shown.
+        - id: chart_only_alignment
+          label: Only that the chart appears next to the COREP submission link, since the data source is upstream and is implicitly aligned.
+        - id: relabel_to_match
+          label: A note that the dashboard label is renamed to match the COREP cell coordinate; that proves alignment.
+        - id: latest_version_only
+          label: Only the latest framework version, applied retroactively to all periods so the chart looks consistent.
+      answer: framework_version_per_period
+      explanation: >
+        Validation outcomes and capital ratios can change between
+        framework versions. Period comparisons need the rule and
+        framework version recorded per period before a regulatory-style
+        BI metric can be aligned to the submission template.
+      self_assessment: >
+        If a regulatory-flavoured dashboard does not record the
+        framework version per period, comparisons across periods are
+        not trustworthy.
   hard:
     - id: q-hard-semi-additive-exposure
       type: multiple_choice
@@ -1087,8 +1257,8 @@ questions:
           label: Bytes processed for the dashboard query window.
         - id: job_time_window
           label: Job creation-time evidence for the review window.
-        - id: chart_palette
-          label: The color palette chosen by the report editor.
+        - id: cache_hit_skip
+          label: A claim that all refreshes hit the query results cache so bytes do not matter.
       answer: [refresh_cost_note, job_bytes, job_time_window]
       explanation: >
         Refresh settings can create BigQuery cost. Job bytes and creation-time
@@ -1115,8 +1285,8 @@ questions:
           label: Control fields, allowed values, defaults, and affected charts.
         - id: refresh_cost
           label: Expected cost behavior when the report refreshes.
-        - id: raw_private_rows
-          label: A pasted sample of raw private customer rows.
+        - id: ignore_partition_filter
+          label: A note that the partition filter can be omitted because the date control narrows the result.
       answer: [byte_estimate, control_scope, refresh_cost]
       explanation: >
         The release review should connect controls, query cost evidence, and
@@ -1253,8 +1423,8 @@ questions:
           label: External or platform dependencies that affect the report.
         - id: job_evidence
           label: Warehouse job evidence used to monitor query cost or activity.
-        - id: decorative_theme
-          label: Only the decorative report theme.
+        - id: viewer_count_only
+          label: Only the count of report viewers in the last 24 hours.
       answer: [source_and_owner, external_dependency, job_evidence]
       explanation: >
         Operational BI needs an inventory of important ICT assets and
@@ -1282,8 +1452,8 @@ questions:
           label: Event date, protected-until date, and unavailability date.
         - id: currency_conversion_context
           label: Currency and exchange-rate-date context for compensation reporting.
-        - id: chart_background
-          label: The dashboard background color.
+        - id: depositor_geo_only
+          label: Only the depositor's residence country, since high-balance protection is residence-based.
       answer:
         [event_type, event_and_protected_dates, currency_conversion_context]
       explanation: >
@@ -1311,8 +1481,8 @@ questions:
           label: Backup or restore dependency notes for the data pipeline.
         - id: integrity_confidentiality
           label: Data integrity and confidentiality controls relevant to the report.
-        - id: decorative_layout
-          label: The decorative layout chosen for the incident page.
+        - id: viewer_email_list
+          label: The list of viewer emails who opened the report during the incident window.
       answer:
         [incident_window, backup_restore_dependency, integrity_confidentiality]
       explanation: >
@@ -1340,8 +1510,8 @@ questions:
           label: The reporting framework version and reference date.
         - id: changed_rule_effect
           label: Whether changed rules explain differences in validation results.
-        - id: chart_spacing
-          label: Whether chart spacing is identical in both periods.
+        - id: only_failing_rows
+          label: Only the count of failing rows, without naming the rule version that produced the count.
       answer: [rule_version, framework_version, changed_rule_effect]
       explanation: >
         Validation outcomes can change when framework or rule versions change.
@@ -1397,8 +1567,8 @@ questions:
           label: Remove unused columns from the serving SELECT list.
         - id: refresh_behavior
           label: Review how report refreshes trigger the query.
-        - id: bigger_title
-          label: Increase the report title size.
+        - id: switch_to_legacy_sql
+          label: Switch the serving query to legacy SQL because GoogleSQL scans more data.
       answer: [partition_predicate, narrow_columns, refresh_behavior]
       explanation: >
         Partition filters, narrowed input, and refresh behavior all affect
@@ -1424,8 +1594,8 @@ questions:
           label: Compare freshness settings across all blended sources.
         - id: memory_serving
           label: Check whether report data may still be served from memory.
-        - id: chart_border
-          label: Change the chart border style.
+        - id: lower_freshness_for_all
+          label: Lower freshness on every source to 1 minute so the blend cannot be stale.
       answer: [source_business_dates, source_freshness, memory_serving]
       explanation: >
         Staleness can come from source reference dates, blend freshness
@@ -1540,6 +1710,414 @@ questions:
       self_assessment: >
         If duplicate keys can change a metric, repair the data shape before
         styling the report.
+    - id: q-hard-count-star-vs-column
+      type: multiple_choice
+      estimated_seconds: 90
+      recommended_learner_tasks: [LT-DQ-006]
+      source_facts:
+        - FACT-BIGQUERY-COUNT-STAR-VS-COLUMN
+        - FACT-BIGQUERY-SUM-NULLS
+      prompt: >
+        A balance table has 18 rows; 4 of them have `ledger_balance IS NULL`
+        because the source pipeline dropped values. A quality check runs
+        `COUNT(*)` and `COUNT(ledger_balance)` side by side. What does each
+        return and how should that be interpreted?
+      options:
+        - id: 18_and_14
+          label: "`COUNT(*)` returns 18 and `COUNT(ledger_balance)` returns 14; the gap is the count of NULL balances that the quality check must investigate."
+        - id: 18_and_18
+          label: "Both return 18, because BigQuery treats NULL as a zero balance when counting a numeric column."
+        - id: 14_and_14
+          label: "Both return 14, because BigQuery's `COUNT(*)` skips rows where any column is NULL."
+        - id: error
+          label: "`COUNT(ledger_balance)` errors out at runtime when the column contains NULL, so the contract must use only `COUNT(*)`."
+      answer: 18_and_14
+      explanation: >
+        `COUNT(*)` counts every row including those with NULLs anywhere;
+        `COUNT(column)` skips rows where that column is NULL. The 4-row gap is
+        directly observable evidence of missing values.
+      self_assessment: >
+        If a quality check ever needs to report on missing values, prefer
+        `COUNT(column)` next to `COUNT(*)` rather than treating them as
+        interchangeable.
+    - id: q-hard-clustering-vs-partitioning
+      type: multiple_choice
+      estimated_seconds: 95
+      recommended_learner_tasks: [LT-LOOKER-007]
+      source_facts:
+        - FACT-BIGQUERY-CLUSTERING
+        - FACT-BIGQUERY-PARTITION-FILTERS
+      prompt: >
+        A daily fact table is partitioned by `business_date` and contains tens
+        of millions of rows per partition. A dashboard query reads
+        `business_date = DATE '2026-03-31'` and aggregates by `currency_code`
+        and `branch_id`. Which design best reduces bytes scanned in addition
+        to the partition filter?
+      options:
+        - id: cluster_on_currency_branch
+          label: Cluster the table on `(currency_code, branch_id)` so the partition's rows are sorted by the columns used in the aggregation.
+        - id: cluster_on_business_date
+          label: Cluster the table on `business_date`; clustering on the partition column further narrows the scan.
+        - id: more_partitions
+          label: Re-partition the table hourly so each partition has fewer rows than the daily one.
+        - id: drop_partition
+          label: Remove the date partition and rely on clustering on `business_date` alone for scan reduction.
+      answer: cluster_on_currency_branch
+      explanation: >
+        Clustering sorts rows inside a partition by the cluster columns.
+        Filters or aggregations on those columns scan less data. Clustering on
+        the partition column is redundant; the partition already handles that
+        axis.
+      self_assessment: >
+        If a query is partition-pruned and still scans too much, look at which
+        non-partition columns it filters or groups by and cluster on them.
+    - id: q-hard-row-access-policy
+      type: multiple_choice
+      estimated_seconds: 90
+      recommended_learner_tasks: [LT-LOOKER-004]
+      source_facts:
+        - FACT-BIGQUERY-ROW-ACCESS-POLICY
+        - FACT-BIGQUERY-AUTHORIZED-VIEW-ACCESS-CONTROL
+      prompt: >
+        Branch managers should each see only their own branch's rows from
+        `serve.account_daily_summary`, while the executive team sees every
+        branch. Which BigQuery mechanic is the cert-correct primary control?
+      options:
+        - id: row_access_policy
+          label: "One `CREATE ROW ACCESS POLICY` per branch-manager group with `GRANT TO ('group:branch-NN-managers@example.com')` and `FILTER USING (branch_id = 'BNN')`, so each grantee group sees only its branch's rows."
+        - id: per_branch_views
+          label: Create one logical view per branch and grant each manager access only to their view.
+        - id: scheduled_query_per_branch
+          label: A scheduled query per branch that writes a branch-scoped result table; managers query their table.
+        - id: column_policy_tag
+          label: A column-level policy tag on `branch_id` so only authorised viewers can read the column.
+      answer: row_access_policy
+      explanation: >
+        Row-level security is the cert-correct primary control when one
+        underlying table must return different rows for different identities.
+        Per-branch views and scheduled queries are sustainable for a small
+        number of branches but multiply objects to govern; a column-level
+        policy tag protects column visibility, not row-level scope.
+      self_assessment: >
+        If the design relies on duplicating views or schedules per identity,
+        check whether row-level security would compress the surface area.
+    - id: q-hard-column-policy-tag
+      type: multiple_choice
+      estimated_seconds: 90
+      recommended_learner_tasks: [LT-LOOKER-004]
+      source_facts:
+        - FACT-BIGQUERY-COLUMN-POLICY-TAG
+        - FACT-GDPR-DATA-MINIMISATION
+        - FACT-GDPR-PERSONAL-DATA
+      prompt: >
+        A team needs to expose `account_daily_balances` to a wide audience
+        for aggregate reporting, but `account_id` and `synthetic_iban` must
+        be hidden from anyone without an explicit personal-data role. Which
+        BigQuery mechanic fits?
+      options:
+        - id: policy_tag_on_columns
+          label: Attach a policy tag (e.g. `personal-data`) to `account_id` and `synthetic_iban`; queries that select those columns require the fine-grained reader role.
+        - id: hide_columns_in_view
+          label: Create a view that omits the columns and grant access only to the view; row-level security on the underlying table is unnecessary.
+        - id: drop_columns_from_table
+          label: Drop the columns from the table entirely so no policy is needed.
+        - id: lower_freshness
+          label: Lower Looker Studio freshness to 1 minute so cached personal-data values cannot accumulate.
+      answer: policy_tag_on_columns
+      explanation: >
+        Column-level security via policy tags is the cert-correct way to
+        protect specific columns inside a table that should otherwise stay
+        broadly readable. A view-based hiding pattern is reasonable but still
+        leaves the underlying table column selectable by anyone with table
+        access.
+      self_assessment: >
+        If only specific columns need restriction while the rest of the table
+        stays broadly readable, prefer policy tags over inventing new views.
+    - id: q-hard-results-cache-cost
+      type: multiple_choice
+      estimated_seconds: 85
+      recommended_learner_tasks: [LT-DQ-005]
+      source_facts:
+        - FACT-BIGQUERY-RESULTS-CACHE
+        - FACT-BIGQUERY-JOBS-BYTES
+        - FACT-LOOKER-STUDIO-BIGQUERY-REFRESH-COST
+      prompt: >
+        A BigQuery-backed dashboard runs the same query every hour for 24
+        hours; the underlying table is unchanged. What does the cost evidence
+        look like and what should the cost review record?
+      options:
+        - id: most_refreshes_cache_hit
+          label: Most refreshes hit the query results cache (`cache_hit = TRUE`) and bill 0 bytes; record that cost depends on data stability and cannot be assumed for future days.
+        - id: every_refresh_bills_same
+          label: Every refresh bills the same bytes; the cache only affects user-initiated queries from the UI, not Looker Studio refreshes.
+        - id: cache_persists_indefinitely
+          label: Once a query hits the cache, results are served from the cache indefinitely until the dashboard is reopened in a different region.
+        - id: cache_hit_for_changed_data
+          label: Cache hits occur regardless of whether the underlying table changed, as long as the SQL text is identical.
+      answer: most_refreshes_cache_hit
+      explanation: >
+        Cached query results last about 24 hours and are returned when the
+        query and underlying data are unchanged. Cache hits report
+        `cache_hit = TRUE` and bill zero bytes. Cost reviews should not rely
+        on the cache as a control because cache eligibility depends on data
+        stability.
+      self_assessment: >
+        If a cost report shows zero billed bytes for a refreshing dashboard,
+        confirm whether that is sustained cache-hit behaviour or a single
+        snapshot.
+    - id: q-hard-materialized-view-refresh
+      type: multiple_choice
+      estimated_seconds: 90
+      recommended_learner_tasks: [LT-DQ-005]
+      source_facts:
+        - FACT-BIGQUERY-MATERIALIZED-VIEW-REFRESH
+        - FACT-BIGQUERY-MATERIALIZED-VIEW-CACHE
+        - FACT-LOOKER-STUDIO-DATA-FRESHNESS-TRADEOFF
+      prompt: >
+        A dashboard's logical view is replaced with a materialized view to
+        reduce repeated cost. The freshness target says results should
+        usually be within 30 minutes of the base table. Which refresh
+        consideration belongs in the design record?
+      options:
+        - id: refresh_interval_best_effort
+          label: Configure the materialized view's `max_staleness` / `refresh_interval_minutes` toward the freshness target, with the explicit caveat that BigQuery automatic refresh is best-effort; queries on stale results may either return cached results or trigger a refresh depending on configuration, so the design record names the target plus the staleness fallback.
+        - id: refresh_only_on_query
+          label: Materialized views refresh only when queried, so the dashboard automatically sees current data on every load.
+        - id: refresh_disable_for_perf
+          label: Disable automatic refresh; rely on `cache_hit` in `INFORMATION_SCHEMA.JOBS` to identify when data is stale.
+        - id: refresh_via_ls_freshness
+          label: Set Looker Studio data freshness to 30 minutes so the materialized view automatically refreshes at that interval.
+      answer: refresh_interval_best_effort
+      explanation: >
+        BigQuery materialized-view automatic refresh is best-effort. The
+        refresh interval / `max_staleness` settings express a target, not
+        a hard SLA. A design record should name the target, what
+        configuration was applied, and the documented behaviour when the
+        cached result is older than the target. Looker Studio data
+        freshness is a separate report-side cache threshold and does not
+        configure warehouse refresh.
+      self_assessment: >
+        If a freshness target is treated as a guarantee, restate it as a
+        best-effort target and record the staleness fallback the design
+        accepts.
+    - id: q-hard-blend-join-types
+      type: multiple_choice
+      estimated_seconds: 85
+      recommended_learner_tasks: [LT-LOOKER-004]
+      source_facts:
+        - FACT-LOOKER-STUDIO-BLEND-JOIN-TYPES
+        - FACT-LOOKER-STUDIO-BLEND-LEFTMOST
+        - FACT-LOOKER-STUDIO-BLEND-MORE-ROWS
+      prompt: >
+        A blend joins `account_daily_balances` (left) to a branch dimension
+        (right) where some accounts reference branches that no longer exist
+        in the dimension table. The default blend operator is left outer.
+        What happens in the chart, and which alternative would drop those
+        records on purpose?
+      options:
+        - id: left_outer_keeps_inner_drops
+          label: The default left outer keeps unmatched balance rows (branch fields appear NULL); switching the operator to inner would drop them.
+        - id: inner_default_keeps
+          label: The default operator is inner and already keeps every left row; full outer would drop them.
+        - id: cross_join_default
+          label: Looker Studio uses a cross join by default, so every balance row repeats per branch and the totals overstate.
+        - id: right_outer_drop_left
+          label: Right outer is the default, so unmatched left rows are silently dropped.
+      answer: left_outer_keeps_inner_drops
+      explanation: >
+        The default blend operator is left outer; unmatched left rows are
+        kept with NULL right-side values. Switching to an inner join drops
+        unmatched left rows on purpose. Cross and right outer joins are
+        opt-in operators.
+      self_assessment: >
+        If a blend chart silently drops or duplicates records, inspect the
+        join operator before adjusting the chart.
+    - id: q-hard-freshness-interval-cost
+      type: multiple_choice
+      estimated_seconds: 80
+      recommended_learner_tasks: [LT-DQ-005]
+      source_facts:
+        - FACT-LOOKER-STUDIO-FRESHNESS-INTERVALS
+        - FACT-LOOKER-STUDIO-BIGQUERY-REFRESH-COST
+        - FACT-BIGQUERY-RESULTS-CACHE
+      prompt: >
+        A Looker Studio report sets data freshness to 1 minute on a
+        BigQuery-backed source. The report is opened and a viewer
+        interacts with charts repeatedly over several minutes. What does
+        the data freshness setting actually do, and what belongs in the
+        cost-observability note?
+      options:
+        - id: freshness_is_cache_threshold
+          label: Freshness is a cache-staleness threshold; cached chart data is reused for up to the configured interval, and a subsequent chart interaction after the interval has elapsed (or any cache-invalidating change) sends a fresh query. Cost grows with how often viewers interact after the threshold lapses, not with seconds elapsed.
+        - id: interval_only_first_load
+          label: Freshness affects only the first load; subsequent chart interactions never re-query BigQuery regardless of interval.
+        - id: cache_hits_no_cost
+          label: A 1-minute freshness guarantees every refresh hits the query results cache, so cost is zero regardless of data-change patterns.
+        - id: interval_caps_bytes
+          label: The freshness interval caps the bytes any single refresh can bill, so 1-minute freshness is the cheapest option.
+      answer: freshness_is_cache_threshold
+      explanation: >
+        Looker Studio data freshness is the maximum age the report will
+        reuse a cached result before issuing a new query, not an
+        auto-refresh interval. Shorter freshness raises the chance that a
+        chart interaction triggers a billed BigQuery query, because the
+        cached data expires sooner. The cost-observability note should
+        record the freshness threshold, the expected interaction
+        frequency after threshold lapse, and the change rate of the base
+        table.
+      self_assessment: >
+        If a freshness change is treated as an auto-refresh-frequency
+        change, restate the setting as a cache-staleness threshold and
+        recompute the cost expectation against viewer interaction
+        patterns instead of seconds-on-screen.
+    - id: q-hard-scd-type
+      type: multiple_choice
+      estimated_seconds: 95
+      recommended_learner_tasks: [LT-BI-001]
+      source_facts:
+        - FACT-BI-SCD-TYPES
+        - FACT-BI-SURROGATE-KEY
+        - FACT-BI-REFERENCE-DATE-SEPARATION
+      prompt: >
+        A branch is renamed on 2026-02-15. A trend chart of monthly deposits
+        by branch should report 2026-01 totals under the old name and
+        2026-03 totals under the new name. Which dimension design supports
+        this without rewriting history?
+      options:
+        - id: scd2
+          label: SCD type 2 on `dim_branch` with effective-from / effective-to columns and a surrogate key; facts reference the surrogate valid at the reference date.
+        - id: scd1_overwrite
+          label: SCD type 1; overwrite `branch_name` with the new value, accepting that historical totals will appear under the new name.
+        - id: branch_per_period
+          label: Add a new branch row for every month; facts join on natural `branch_id` + reference month.
+        - id: no_change_needed
+          label: No change needed; `business_date` already separates historical and current reporting.
+      answer: scd2
+      explanation: >
+        SCD type 2 splits the dimension on every change with effective-from
+        and effective-to dates. Facts reference the surrogate key valid at
+        the fact's reference date, so each period's totals stay under the
+        name in force at that time.
+      self_assessment: >
+        If a historical metric must respect period-specific dimension
+        attributes, prefer SCD type 2 over SCD type 1 overwrite.
+    - id: q-hard-conformed-dimensions
+      type: multiple_choice
+      estimated_seconds: 90
+      recommended_learner_tasks: [LT-BI-002]
+      source_facts:
+        - FACT-BI-CONFORMED-DIMENSION
+        - FACT-BI-FANOUT-JOIN-RISK
+      prompt: >
+        A bank's deposits, lending, and fees subject areas each build their
+        own `dim_branch` table from different source pipelines. A new
+        executive page wants to compare deposits vs lending exposure by
+        branch. What is the cert-correct durable fix?
+      options:
+        - id: conformed_dim_branch
+          label: Build one conformed `dim_branch` shared across all subject areas, with the same grain, keys, and attribute semantics; switch fact tables to reference it.
+        - id: blend_per_chart
+          label: Blend deposits and lending in Looker Studio per chart, joining on `branch_id` at the report layer.
+        - id: union_subject_dims
+          label: Union the three `dim_branch` tables into one BI view; deduplicate by `branch_id` at query time.
+        - id: chart_filter_only
+          label: Use a chart filter that aligns the two metrics to a shared branch list at presentation time.
+      answer: conformed_dim_branch
+      explanation: >
+        Conformed dimensions are a documented BI durable fix for cross-mart
+        consistency. Per-chart blends, runtime unions, and chart-level
+        filters do not protect future subject areas added on the same shape.
+      self_assessment: >
+        If two subject areas keep diverging on the same dimension, the right
+        fix is a shared conformed table, not a chart-level workaround.
+    - id: q-hard-crr-cet1-grain
+      type: multiple_choice
+      estimated_seconds: 90
+      recommended_learner_tasks: [LT-DQ-005]
+      source_facts:
+        - FACT-CRR-CET1-RATIO
+        - FACT-BI-REFERENCE-DATE-SEPARATION
+      prompt: >
+        A capital-monitoring dashboard reports a CET1 ratio of 13.7% for
+        2026-03-31. A reviewer asks where the numerator and denominator
+        originate. Which combination of evidence is required for the BI
+        ratio to be cert-trustworthy?
+      options:
+        - id: same_period_numer_denom
+          label: CET1 capital and total risk-weighted exposure (RWA) for the same reporting date, reconciled to the COREP capital adequacy template.
+        - id: ratio_only
+          label: The ratio value from the regulatory submission and the report refresh time; the components are an implementation detail.
+        - id: prior_period_numer
+          label: CET1 capital from the prior month-end (because capital reports lag), with RWA from 2026-03-31.
+        - id: rwa_average
+          label: An average of RWA across the last four month-ends, with CET1 from 2026-03-31 only.
+      answer: same_period_numer_denom
+      explanation: >
+        The CRR CET1 ratio is a same-period numerator-over-denominator
+        construction. Mixing reporting dates or RWA methodologies produces a
+        number that cannot be compared period-over-period or to the COREP
+        template.
+      self_assessment: >
+        If a regulatory-style BI metric reports a ratio with two
+        components, both components must come from the same period and the
+        same approach.
+    - id: q-hard-ifrs9-stage
+      type: multiple_choice
+      estimated_seconds: 95
+      recommended_learner_tasks: [LT-SQL-003]
+      source_facts:
+        - FACT-IFRS9-STAGES
+        - FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT
+      prompt: >
+        A credit-risk dashboard reports a single "ECL total" by month. The
+        risk committee notices a large month-over-month jump but cannot
+        explain it. What is the BI design fix?
+      options:
+        - id: stage_breakdown
+          label: Break the ECL total by IFRS 9 stage (1, 2, 3) per reporting date; stage transitions usually explain large ECL movements.
+        - id: average_ecl
+          label: Replace the monthly ECL total with a 12-month rolling average to dampen the jump.
+        - id: filter_stage_3
+          label: Filter the dashboard to stage 3 only, since stage 1 and 2 ECL are immaterial.
+        - id: cross_period_sum
+          label: Sum ECL across the latest 3 months as the "current" ECL so single-month jumps disappear.
+      answer: stage_breakdown
+      explanation: >
+        IFRS 9 ECL is staged; movements between stages are the main driver
+        of ECL variance. A single total hides the cause. Dampening
+        techniques (rolling averages, cross-period sums) obscure the signal
+        the committee needs.
+      self_assessment: >
+        If a regulatory-flavoured metric is volatile, surface the breakdown
+        that explains the volatility rather than smoothing it.
+    - id: q-hard-bcbs-239-lineage
+      type: select_all
+      estimated_seconds: 95
+      recommended_learner_tasks: [LT-DQ-005]
+      source_facts:
+        - FACT-BCBS-239-RDARR-PRINCIPLES
+        - FACT-BI-RECONCILIATION-WINDOWS
+        - FACT-DORA-DATA-CONFIDENTIALITY-INTEGRITY
+      prompt: >
+        A banking BI dashboard feeds a credit-risk decision body. Which
+        evidence should be available per metric for BCBS 239-style review?
+      options:
+        - id: source_lineage
+          label: Source-to-metric data lineage including the upstream serving views and base tables.
+        - id: named_owner
+          label: A named owner and reviewer responsible for the metric definition.
+        - id: reconciliation_record
+          label: A reconciliation record between the dashboard total and an upstream control total per reporting date.
+        - id: cache_hit_replaces_lineage
+          label: A `cache_hit = TRUE` rate above 95 percent in `INFORMATION_SCHEMA.JOBS`, treated as a substitute for lineage and reconciliation evidence.
+      answer: [source_lineage, named_owner, reconciliation_record]
+      explanation: >
+        BCBS 239 principles require risk-data lineage, accountability, and
+        reconciliation evidence. Visual styling is not in scope.
+      self_assessment: >
+        If a metric is used in a credit-risk decision, its evidence chain
+        (lineage + owner + reconciliation) must be retrievable, not just its
+        last-period value.
 content_type: quiz_bank
 status: published
 version: 0.1.0

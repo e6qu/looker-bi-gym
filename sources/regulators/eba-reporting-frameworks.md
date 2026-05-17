@@ -36,3 +36,15 @@ compliance, or model-risk advice.
   - "integral part of the EBA technical package"
   - "small validation rules package"
 - Notes: Use this source for versioning and validation update questions.
+
+## SRC-EBA-AML-PACKAGE
+
+- Type: official supervisory framework.
+- Publisher: European Banking Authority.
+- URL: https://www.eba.europa.eu/regulation-and-policy/anti-money-laundering-and-countering-the-financing-of-terrorism
+- Accessed: 2026-05-16.
+- Used by facts:
+  - `FACT-AML-CFT-SUSPICIOUS-ACTIVITY`
+- Relevant quotes:
+  - "suspicious"
+- Notes: Use this source for AML / CFT and KYC BI reporting context.

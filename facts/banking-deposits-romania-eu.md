@@ -182,3 +182,73 @@ advice.
   entity fields before a guarantee calculation can be graded.
 - Related facts: [`FACT-FGDB-MEMBER-BANKS`](#fact-fgdb-member-banks),
   [`FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION`](bi-modeling-banking.md#fact-bi-grain-declare-before-aggregation).
+
+### FACT-CRR-CET1-RATIO
+
+- Statement: The CRR (Capital Requirements Regulation, EU 575/2013) defines
+  the Common Equity Tier 1 (CET1) ratio as CET1 capital divided by total
+  risk-weighted exposure amount, with a minimum CET1 ratio of 4.5% before
+  buffers; capital conservation and countercyclical buffers can raise the
+  effective minimum further.
+- Source: [Regulation (EU) No 575/2013 (CRR)](https://eur-lex.europa.eu/eli/reg/2013/575/oj).
+- Source quote: "Common Equity Tier 1 capital ratio".
+- Derived implication: A capital-monitoring BI report needs the CET1
+  numerator and denominator at the same reporting date, with reconciliation
+  to the COREP capital adequacy template; mixing reporting dates or RWA
+  approaches produces a ratio that cannot be compared period-over-period.
+- Related facts: [`FACT-EBA-FRAMEWORK-VERSIONING`](governance-reporting-operations.md#fact-eba-framework-versioning),
+  [`FACT-BI-REFERENCE-DATE-SEPARATION`](bi-modeling-banking.md#fact-bi-reference-date-separation).
+
+### FACT-IFRS9-STAGES
+
+- Statement: IFRS 9 classifies financial assets into three impairment stages
+  for expected credit loss (ECL) measurement - stage 1 (12-month ECL,
+  performing), stage 2 (lifetime ECL, significant increase in credit risk
+  but not credit-impaired), stage 3 (lifetime ECL, credit-impaired).
+- Source: [IFRS Foundation, IFRS 9 Financial Instruments](https://www.ifrs.org/issued-standards/list-of-standards/ifrs-9-financial-instruments/).
+- Source quote: "expected credit losses".
+- Derived implication: A credit-risk dashboard reporting exposure or ECL
+  needs the IFRS 9 stage assignment per loan and per reporting date. Stage
+  transitions explain large ECL movements between periods; mixing stages
+  into a single total obscures the credit-risk trend.
+- Related facts: [`FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT`](bi-modeling-banking.md#fact-bi-semi-additive-balance-snapshot),
+  [`FACT-BI-REFERENCE-DATE-SEPARATION`](bi-modeling-banking.md#fact-bi-reference-date-separation).
+
+### FACT-PSD2-STRONG-CUSTOMER-AUTHENTICATION
+
+- Statement: PSD2 (Directive (EU) 2015/2366) requires strong customer
+  authentication (SCA) for electronic payment transactions, defined as
+  authentication based on the use of two or more independent elements
+  drawn from knowledge, possession, and inherence; payment service
+  providers must apply SCA on remote access and transactions, maintain
+  a framework with mitigation measures and control mechanisms, provide
+  evidence of those measures to competent authorities, and report
+  major operational or security incidents.
+- Source: [`SRC-PSD2-ELI-2015-2366`](../sources/law/eu-crr.md#src-psd2-eli-2015-2366).
+- Source quote: "strong customer authentication", "framework with
+  mitigation measures and control mechanisms", "evidence of those
+  measures", "report major operational or security incidents".
+- Derived implication: A payments BI dashboard reporting authentication
+  failure rates or SCA exemption usage needs to keep SCA outcome,
+  exemption reason, and counterparty / channel context per transaction
+  reporting date. SCA fields are sensitive and should not be exposed at
+  user level on broad dashboards.
+- Related facts: [`FACT-GDPR-PERSONAL-DATA`](privacy-gdpr.md#fact-gdpr-personal-data),
+  [`FACT-GDPR-DATA-MINIMISATION`](privacy-gdpr.md#fact-gdpr-data-minimisation).
+
+### FACT-AML-CFT-SUSPICIOUS-ACTIVITY
+
+- Statement: AML / CFT supervisory expectations require credit
+  institutions to detect, document, and where applicable report
+  suspicious transactions and customer behaviour, including the
+  underlying customer due diligence (CDD / KYC) evidence and the
+  rationale for suspicion; the resulting records are highly sensitive
+  and have strict access controls.
+- Source: [`SRC-EBA-AML-PACKAGE`](../sources/regulators/eba-reporting-frameworks.md#src-eba-aml-package).
+- Source quote: "suspicious".
+- Derived implication: A BI dashboard touching AML alert queues or KYC
+  status should publish counts and aging metrics through governed
+  serving views without exposing alert-level identifiers, narratives,
+  or customer-specific KYC fields to wide audiences.
+- Related facts: [`FACT-GDPR-SPECIAL-CATEGORIES`](privacy-gdpr.md#fact-gdpr-special-categories),
+  [`FACT-GDPR-PERSONAL-DATA`](privacy-gdpr.md#fact-gdpr-personal-data).

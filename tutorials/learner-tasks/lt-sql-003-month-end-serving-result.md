@@ -1,7 +1,7 @@
 ---
 {
   "id": "LT-SQL-003",
-  "title": "LT-SQL-003 - Build A Month-End Serving Result",
+  "title": "Build A Month-End Serving Result",
   "content_type": "learner_task",
   "status": "published",
   "version": "0.1.0",
@@ -17,7 +17,7 @@
 }
 ---
 
-# LT-SQL-003 - Build A Month-End Serving Result
+# Build A Month-End Serving Result
 
 Area: BigQuery and SQL mechanics. Timebox: 15-20 minutes. Dataset:
 `lending-month-end/v0.1.0`.
@@ -38,17 +38,19 @@ Training boundary: use synthetic training data only. This task is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
 
-## Prerequisites
+## Setup
 
-- Complete [LT-BI-001](lt-bi-001-profile-dataset-grain.md).
 - Open the [lending month-end workbench](#/workbench/lending-month-end/v0.1.0).
-- Use the instructions below as the complete practice sequence; the workbench is only
-  where you run the SQL.
+- Comfort with the idea of declaring row grain before aggregation is
+  assumed; semi-additive measures (balances, exposures) cannot be summed
+  across snapshot dates as if they were transaction events.
+- The instructions below are the complete practice sequence; the workbench
+  is only where you run the SQL.
 
 ## Dataset Orientation
 
 This task uses the `lending-month-end` dataset, not the deposits seed used
-in `LT-BI-001` and `LT-BI-002`. The tables you will query are:
+in other BI fundamentals exercises. The tables you will query are:
 
 - `loan_monthly_snapshots`: one row per loan and month-end snapshot date.
   Contains `as_of_date`, `currency_code`, `outstanding_principal`,

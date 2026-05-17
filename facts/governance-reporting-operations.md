@@ -164,3 +164,19 @@ privacy, compliance, or model-risk advice.
   package version, validation rule version, and expected failing rows locally.
 - Related facts: [`FACT-EBA-DPM-VALIDATION-RULES`](#fact-eba-dpm-validation-rules),
   [`FACT-BI-RECONCILIATION-WINDOWS`](bi-modeling-banking.md#fact-bi-reconciliation-windows).
+
+### FACT-BCBS-239-RDARR-PRINCIPLES
+
+- Statement: BCBS 239 (Principles for effective risk data aggregation and risk
+  reporting) sets out 14 principles that supervised banks must apply to risk
+  data, including data accuracy and integrity, completeness, timeliness, and
+  adaptability of risk reporting.
+- Source: [Basel Committee, Principles for effective risk data aggregation and risk reporting](https://www.bis.org/publ/bcbs239.htm).
+- Source quote: "risk data aggregation".
+- Derived implication: A banking BI program touching credit, market, or
+  operational risk reporting needs traceable lineage, named owners, and
+  documented reconciliation evidence per metric. Dashboards used in risk
+  decisions are in scope of BCBS 239 even if they are not the regulatory
+  submission itself.
+- Related facts: [`FACT-BI-RECONCILIATION-WINDOWS`](bi-modeling-banking.md#fact-bi-reconciliation-windows),
+  [`FACT-DORA-ICT-RISK-FRAMEWORK`](#fact-dora-ict-risk-framework).

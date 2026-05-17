@@ -133,10 +133,10 @@ questions:
       - FACT-GDPR-DATA-MINIMISATION
   - id: q_deposit_guarantee_amount
     type: numeric
-    prompt: A dashboard annotation references the standard deposit-guarantee ceiling before any legal review. What EUR amount should the annotation use in this course context?
+    prompt: A dashboard annotation references the standard EU deposit-guarantee ceiling before any legal review. What harmonised EUR amount applies per depositor per credit institution?
     answer: 100000
     tolerance: 0
-    explanation: The standard ceiling used in the later grain exercises is EUR 100,000.
+    explanation: The harmonised EU deposit-guarantee coverage ceiling is EUR 100,000 per depositor per credit institution.
     source_facts:
       - FACT-FGDB-100K-PER-DEPOSITOR-PER-BANK
       - FACT-DGSD-100K-EU

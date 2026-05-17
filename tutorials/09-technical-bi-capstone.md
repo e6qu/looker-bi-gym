@@ -39,15 +39,14 @@ deterministic evidence in this lesson. Do not use real banking data,
 credentials, private report links, customer screenshots, production exports,
 private IAM evidence, user emails, or raw operational logs.
 
-Builds on:
+Prior knowledge expected:
 
-- [02 - Build A BI-Friendly Deposit Model](02-build-a-bi-friendly-model.md)
-- [03 - Build The First Executive Dashboard](03-first-executive-dashboard.md)
-- [04 - Define Governed Metrics And Calculated Fields](04-metrics-and-calculated-fields.md)
-- [05 - Compare Blends With Upstream Joins](05-blending-vs-upstream-joins.md)
-- [06 - Measure Dashboard Performance And Cost Signals](06-performance-and-cost-lab.md)
-- [07 - Govern Dashboard Access, Fields, And Sharing](07-governance-security-and-sharing.md)
-- [08 - Operate Dashboard Freshness, Cost, And Controls](08-observability-and-operations.md)
+- A governed dimensional model, an executive dashboard spec, a metric
+  contract register, a fanout-repair pattern, a cost-monitoring
+  approach, a sharing register, and an operations control record.
+- The cert-track learner is expected to bring outputs from prior
+  practice (their own notes on grain, governance, cost, and operations)
+  into this capstone synthesis.
 
 Required tools:
 
@@ -180,38 +179,45 @@ GROUP BY artifact_status;
 | ready           |              8 |           100 |
 
 > Honest read: the previous query reads 8 hardcoded ready rows. The next
-> step replaces those ready flags with values you carry forward from your
-> own `notes/0X-*.md` outputs. If a prior tutorial was skipped, the score
-> drops and the package status moves to `hold_for_remediation`.
+> step replaces those ready flags with values you derive yourself from
+> the synthetic deposits dataset. If you cannot reproduce the values
+> from the data, the score drops and the package status moves to
+> `hold_for_remediation`.
 
-3a. Carry forward your prior-tutorial evidence values. Open the SQL below
-and replace each `_FILL_FROM_NOTES_` placeholder with the value from
-the corresponding tutorial's notes. The cross-tutorial consistency
-check then either passes the capstone or holds it:
+3a. Derive each capstone evidence value directly from the dataset and
+replace the placeholder. The cross-evidence consistency check then
+either passes the capstone or holds it:
 
 ```sql
-WITH prior_tutorial_outputs AS (
+WITH derived_evidence AS (
   SELECT * FROM (
     VALUES
       (
-        -- replace with the value from notes/02-grain-and-model-contract.md
-        18,                  -- balance_rows
-        -- replace with the value from notes/02 / 03 / 05 / 07 / 09
-        95700,               -- latest_ledger_total
-        -- replace with the value from notes/02
-        1,                   -- missing_branch_mappings
-        -- replace with the value from notes/05
-        164800,              -- naive_owner_join_total
-        -- replace with the value from notes/05
-        69100,               -- fanout_delta
-        -- replace with the value from notes/06
-        1248,                -- serving_estimated_bytes
-        -- replace with the value from notes/07
-        4,                   -- excluded_sensitive_fields
-        -- replace with the value from notes/07
-        0,                   -- sensitive_fields_kept
-        -- replace with the value from notes/08
-        0                    -- reconciliation_delta
+        -- balance_rows: SELECT COUNT(*) FROM account_daily_balances
+        18,
+        -- latest_ledger_total: SUM(ledger_balance) WHERE business_date = '2026-03-31'
+        95700,
+        -- missing_branch_mappings: SUM(CASE WHEN b.branch_id IS NULL THEN 1 ELSE 0 END)
+        --   FROM accounts a LEFT JOIN branches b USING (branch_id)
+        1,
+        -- naive_owner_join_total: SUM(ledger_balance) from the latest-day balances
+        --   INNER JOIN account_owners on account_id (a fanout)
+        164800,
+        -- fanout_delta: naive_owner_join_total - latest_ledger_total
+        69100,
+        -- serving_estimated_bytes: rows_scanned * columns_scanned * 16
+        --   on the safe branch/currency serving query at 2026-03-31
+        1248,
+        -- excluded_sensitive_fields: count of personal-data columns kept
+        --   out of the governed serving source (account_id, customer_id,
+        --   synthetic_iban, masked_account_number)
+        4,
+        -- sensitive_fields_kept: count of personal-data columns that
+        --   accidentally appear in the governed serving source
+        0,
+        -- reconciliation_delta: dashboard_total - source_total on the
+        --   safe serving query (0 if no break)
+        0
       )
   ) AS t(
     balance_rows,
@@ -249,18 +255,17 @@ SELECT
 FROM prior_tutorial_outputs;
 ```
 
-3b. Confirm the consistency output when every prior tutorial value matches
-what the deposit-seed dataset produces:
+3b. Confirm the consistency output when every value matches what the
+deposit-seed dataset produces:
 
 | balance_rows | latest_ledger_total | missing_branch_mappings | fanout_delta | serving_estimated_bytes | excluded_sensitive_fields | reconciliation_delta | capstone_consistency_status |
 | -----------: | ------------------: | ----------------------: | -----------: | ----------------------: | ------------------------: | -------------------: | --------------------------- |
 |           18 |               95700 |                       1 |        69100 |                    1248 |                         4 |                    0 | ready                       |
 
-3c. If you skipped tutorial 02, 05, 06, 07, or 08, the placeholder values
-will not match the expected cross-tutorial chain and the consistency
-status becomes `hold_for_remediation`. Capstones with that status
-cannot be released. Return to the missing tutorial, regenerate its
-notes, and rerun this check.
+3c. If you cannot reproduce any of the placeholder values from the
+dataset, the consistency status becomes `hold_for_remediation`. The
+capstone cannot be released. Rerun the underlying query, derive the
+correct value, and rerun this consistency check.
 
 4. Produce the governed capstone source:
 

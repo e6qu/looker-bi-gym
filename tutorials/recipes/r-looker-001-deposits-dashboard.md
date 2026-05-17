@@ -1,7 +1,7 @@
 ---
 {
   "id": "tutorial-tutorials-recipes-r-looker-001-deposits-dashboard",
-  "title": "R-LOOKER-001 - Deposits Dashboard Recipe",
+  "title": "Deposits Dashboard Recipe",
   "content_type": "tutorial_recipe",
   "status": "published",
   "version": "0.1.0",
@@ -18,10 +18,12 @@
 }
 ---
 
-# R-LOOKER-001 - Deposits Dashboard Recipe
+# Deposits Dashboard Recipe
 
-Recipe area: Looker Studio mechanics. Optional follow-on after
-[LT-LOOKER-004](../learner-tasks/lt-looker-004-report-ready-data-source.md).
+Recipe area: Looker Studio mechanics. Use this once you have a
+report-ready data source (a synthetic deposits dataset exposed through
+either a logical or materialized view, with field types and credentials
+already set up).
 
 Account requirement: this recipe requires a Looker Studio account, a
 BigQuery (or compatible) connector, and a synthetic data source. If you do

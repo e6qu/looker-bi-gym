@@ -12,9 +12,9 @@
 
 # Predefined Synthetic Banking Data Sources
 
-This project uses synthetic banking data only. Do not use real customer,
+These exercises use synthetic banking data only. Do not use real customer,
 account, transaction, employee, complaint, AML, fraud, or regulatory data in
-this learning path.
+any exercise.
 
 Objective: understand which synthetic tables are available in the browser today
 and which warehouse objects are applied-track design targets.

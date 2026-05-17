@@ -1,5 +1,340 @@
 # What We Did
 
+## 2026-05-17 - Task 062 Codex CLI re-review remediation (second pass)
+
+The first remediation pass (commits `cff8f96` and `bb7a5f5`) was
+re-reviewed by `codex exec` on 2026-05-17 (`/tmp/codex-review-2.md`).
+The re-review confirmed the original 10-item punch list is mostly
+closed and surfaced 5 new items (recorded as
+`CODEX-RE-REVIEW-FINDINGS-2026-05-17` in `BUGS.md`). All 5 closed in
+this commit.
+
+Compartmentalization (sub-issue 1)
+
+- `tutorials/learner-tasks/README.md` rewritten as an alphabetical-
+  by-area topic index. No LT-\* prefixes in visible link text, no
+  ordering claim, no "browser-first sequence" framing. The labs are
+  now described as standalone exercises in their own right.
+- The `tutorialAllowlist` in
+  `app/scripts/validate-assessment-compartmentalization.ts:28` is
+  now empty, so the validator actively covers the README rather
+  than skipping it. `validate:compartmentalization` reports
+  130 files scanned and 0 hits.
+
+Exam-pack fixture backing (sub-issue 2)
+
+- `exam-card-ratio-null-contract`: inline 5-row ratio components
+  table with NULL and zero edge cases; expected outputs include
+  per-period ratios, the aggregate sum-of-components ratio, and
+  the antipattern (average of per-period ratios).
+- `exam-card-dashboard-refresh-ops`: inline 8-row
+  `INFORMATION_SCHEMA.JOBS` sample for one hour; expected outputs
+  include extrapolated daily job and byte counts at both the
+  current 5-minute and a proposed 30-minute freshness threshold,
+  plus the explicit cache-staleness-not-auto-refresh modelling
+  claim.
+- `exam-card-rls-cls-design`: explicit named base-table schema
+  with branches B01 / B02 / B03 and named manager groups; expected
+  outputs are concrete policy-tag column lists, three named
+  `FILTER USING` predicates, three named GRANT TO groups, the
+  authorized-view exposed-column list, and the dashboard
+  credential mode.
+- `exam-card-scd2-historical-reporting`: explicit dim_branch and
+  fct_account_daily_balances rows (one branch is renamed mid-year);
+  expected outputs are the historical chart labels per month under
+  SCD type 2, plus the named antipatterns (SCD type 1 overwrite
+  data loss, natural-key-only join).
+- `exam-card-bcbs-239-lineage-walkthrough`: explicit named source /
+  staging / mart tables and owner role; expected outputs are the
+  per-currency control totals (RON = 396000, EUR = 55000 at
+  2026-03-31) that read directly from the committed lending dataset.
+
+Exam-card rendering CSS
+
+- `ExamCardView` now renders `objective` in a
+  `<pre className="examCardObjective">` block. New CSS rules
+  (`.examCardObjective` and `.examCard ul li`) apply
+  `white-space: pre-wrap`, `overflow-wrap: anywhere`, and
+  `overflow-x: auto` so the wider inline tables and long
+  identifiers no longer cause horizontal overflow on the mobile
+  exam route.
+
+Source-card depth (sub-issue 3)
+
+- `SRC-BIGQUERY-MATERIALIZED-VIEW-REFRESH` expanded with quotes for
+  `enable_refresh`, `refresh_interval_minutes`, `max_staleness`,
+  and the explicit best-effort framing; URL updated to the
+  materialized-views-manage page with the create page as
+  companion.
+- `SRC-LOOKER-STUDIO-FRESHNESS-INTERVALS` expanded with the
+  cache-staleness-threshold definition, the query-frequency-and-
+  cost link, and the connector-specific minimum freshness;
+  URL updated to the manage-data-freshness page.
+
+PSD2 fact wording (sub-issue 4)
+
+- `FACT-PSD2-STRONG-CUSTOMER-AUTHENTICATION` rephrased so it
+  matches what `SRC-PSD2-ELI-2015-2366` actually quotes (Articles
+  4(30), 95, 96, 97): SCA application, framework with mitigation
+  measures and control mechanisms, evidence of those measures, and
+  incident reporting. The earlier event-level retention claim was
+  removed.
+
+Continuity docs (sub-issue 5)
+
+- `DO_NEXT.md` rewritten to point at PR #46 on
+  `assessment-quality-and-expansion`, with the Codex review loop
+  recorded as a recurring discipline. Stale 74-quiz / 82-flashcard /
+  9-exam-card tallies replaced with the final post-fix numbers.
+
+Verification
+
+- `bun run check` green: format, content QA, validators, lint,
+  typecheck, datasets, all unit suites, Playwright rendered UI
+  suite (101 passed), vite build, static-link sweep.
+- Codex re-review queued for after the commit + push.
+
+## 2026-05-17 - Task 062 Codex CLI second-opinion remediation (full sweep)
+
+Codex CLI was invoked for a fresh read-only review of PR #46 on
+2026-05-17. The review produced a 10-item punch list (`/tmp/codex-review.md`,
+recorded in `BUGS.md` as `CODEX-REVIEW-FINDINGS-2026-05-17`). All 10
+items plus the low-severity "stale tallies" item are closed in this PR.
+
+Compartmentalization scope
+
+- Extended `validate:compartmentalization` to also scan `tutorials/`
+  and `tutorials/learner-tasks/` (130 files, 0 hits).
+- Stripped `LT-XYZ-NNN` prefix from learner-task H1 lines and the
+  `title` frontmatter field; the canonical ID lives only in
+  frontmatter `id` and in `recommended_learner_tasks` cross-references.
+- Fixed tutorial-N cross-references in tutorials 03/04/05/06/08 and
+  the recipe `r-looker-001`; reworded `tutorials/data-sources.md`
+  "This project ..." to "These exercises ...".
+- Rewrote `tutorials/quiz-bank.md` as a generic banking BI
+  self-assessment lens (no enumeration of specific quiz questions).
+- Rewrote `tutorials/exam-mode.md` as a generic banking BI practical
+  review lens (no enumeration of specific exam cards).
+
+Product-mechanics fixes
+
+- Looker Studio data freshness rewritten as a cache-staleness
+  threshold across the affected quiz question, exam card, fact, and
+  flashcard. Report auto-refresh is documented as a separate setting.
+- BigQuery materialized view refresh softened to a best-effort target
+  (`max_staleness` / `refresh_interval_minutes`), not a hard SLA, in
+  the same surfaces.
+- Row-access-policy distractor replaced the invented pseudo-SQL
+  `SESSION_USER_BRANCH(...)` with the real BigQuery shape:
+  `CREATE ROW ACCESS POLICY ... GRANT TO ('group:branch-NN-managers@...')
+FILTER USING (branch_id = 'BNN')`.
+- AML / KYC "special category" language tightened to reserve GDPR
+  Article 9 framing for narratives that actually reveal Article 9
+  data; the broader confidentiality / minimisation framing carries
+  the AML / CFT context.
+
+Source-card depth
+
+- Expanded `SRC-PSD2-ELI-2015-2366` with article-specific quotes
+  (4(30), 95, 96, 97), `SRC-CRR-ELI-2013-575` with 92(1)(a),
+  92(2)(a), 92(3), and 26, `SRC-IFRS9-STANDARD` with sections 5.5 /
+  5.5.3 / 5.5.5 / 5.5.13, `SRC-BCBS-239-PRINCIPLES` with sections
+  II-V and the 14 named principles.
+
+Validator + coverage refit
+
+- `coverage:cert-track` now parses frontmatter, iterates authored
+  items (quiz questions, flashcard files, exam cards, terminology
+  entries), and counts the number of unique items per topic. The
+  prior whole-file regex approach inflated counts via frontmatter,
+  source_facts lists, and identifier echoes.
+- `validate:quiz-distractors` extended with an invented-SQL-identifier
+  rule set and a semantic-anti-pattern rule set; the scope and
+  limits of the validator are now documented in a leading comment
+  block.
+
+Fixture-backed exam cards
+
+- `exam-card-ifrs9-stage-transition` rewritten. The lending dataset
+  (`datasets/lending-month-end/v0.1.0/loan_monthly_snapshots.csv`)
+  was changed at one cell: L2002 on 2026-02-28 moves from stage 2 /
+  DPD 35 to stage 1 / DPD 12, so the loan now records a real
+  stage 1 -> stage 2 transition between the two committed
+  month-ends. The change does not affect any committed control
+  total or known-trap check (`validate:datasets` and `test:fixtures`
+  pass). The exam card now produces deterministic transition counts
+  and outstanding-principal totals.
+- `exam-card-aml-alert-dashboard-governance` rewritten with an
+  inline synthetic AML alert table (eight rows; pseudonymous customer
+  and account hashes). Expected outputs are deterministic counts by
+  type, ageing bucket, status, and KYC-review flag, plus the named
+  field-exclusion list for the aggregate page and the named
+  access-mechanic (authorized view + IAM grant) for the investigation
+  page.
+
+Stale tallies
+
+- `STATUS.md`, `_development/assessment-audit.md`, and
+  `_development/tasks/062-assessment-quality-and-expansion.md` all
+  refreshed to the post-fix counts (78 quiz / 105 flashcards /
+  16 exam cards / 133 facts / 150 terminology entries).
+
+Verification
+
+- `bun run check` green (format, content QA, validators, lint,
+  typecheck, datasets, all unit suites, Playwright rendered UI
+  suite, vite build, static-link sweep).
+- Codex re-review queued for after the commit + push.
+
+## 2026-05-16 - Task 062 Phase 12 follow-through + compartmentalization
+
+User direction added on the open PR #46: surfaces must not assume each
+other exist; terminology is the only shared spine; the platform itself
+must not be a topic; test data must not be in questions; no
+`looker-bi-gym` self-reference. Phase 12 of `PLAN.md` was also folded
+into the same PR.
+
+- Compartmentalization sweep:
+  - Replaced tutorial `Builds on:` sections (which named other
+    tutorials by file) with `Prior knowledge expected:` sections
+    naming concepts the learner should already understand.
+  - Renamed learner-task `## Prerequisites` to `## Setup` and dropped
+    `Complete LT-XXX` cross-task references, replacing them with
+    concept-level assumptions.
+  - Rewrote the capstone (tutorial 09) cross-tutorial "values from
+    notes/0X.md" placeholder into a self-contained derivation directly
+    from the dataset.
+  - Deleted `tutorials/curriculum.md` (pure platform-meta), rewrote
+    `tutorials/README.md` as a topic index, rewrote
+    `tutorials/quiz-bank.md` as a short pointer to the interactive
+    quiz surface with coverage notes.
+  - Replaced `this course context` phrasing in tutorial 00 and the
+    orientation-quiz prompt with the harmonised EU deposit-guarantee
+    wording.
+  - Fixed tutorial-number references in two flashcards and the BigQuery
+    Cost Triage exam card.
+
+- Authoring scripts (Phase 12.5):
+  - Added `app/scripts/validate-quiz-distractor-quality.ts` and wired
+    it into `bun run check`. Scans every quiz option label for known
+    weak-distractor patterns ("chart color", "font size", "decorative
+    theme", "viewer history", etc.). Caught 4 regressions on the
+    initial PR commit; current state is 78 questions / 268 options
+    scanned with 0 weak hits.
+  - Added `app/scripts/validate-assessment-compartmentalization.ts`
+    and wired it into `bun run check`. Scans quiz / flashcard / exam
+    visible bodies for cross-surface references (`tutorial N`,
+    `LT-X-NNN`), platform self-references (`looker-bi-gym`, "this
+    course"), and "see other surface" phrases. Current state: 107
+    files scanned, 0 hits.
+  - Added `app/scripts/generate-cert-track-coverage.ts` exposed as
+    `bun run coverage:cert-track`. Writes
+    `_development/cert-track-coverage.md` mapping 40 named cert-track
+    topics across quiz / flashcards / exam / terminology hit counts
+    and listing under-served topics per area.
+
+- Quiz expansion (60 -> 78):
+  - 14 hard questions added in the first commit covering CLS, RLS,
+    clustering, MV refresh, results cache, blend join types, freshness
+    intervals, SCD, conformed dim, surrogate key, CRR, IFRS 9, BCBS
+    239, COUNT(\*) vs COUNT(column).
+  - 5 medium questions added in the follow-on commit: weighted average
+    vs avg-of-avgs ratio, SUM(COUNT(DISTINCT)) additive trap, PSD2 SCA
+    evidence, AML / CFT alert page governance, COREP / FINREP framework
+    versioning.
+
+- Flashcard expansion (64 -> 95):
+  - 18 cards across privacy-security, banking-context, bi-fundamentals,
+    controls-governance bringing each formerly-4-card deck to 10.
+  - 7 more cards: PSD2 SCA, AML alert dashboard, COREP / FINREP
+    versioning, BigQuery results cache, clustering impact, conformed
+    dimension, account_owners fanout.
+
+- Exam expansion (5 + 6 divergent surfaces, 9 reconciled, then 17):
+  - First wave reconciled YAML pack with the 4 Phase 11.5 MD cards
+    into a unified 9-card pack.
+  - Second wave added 8 cards covering RLS / CLS design walkthrough,
+    SCD-2 historical reporting, MV refresh interval review, COREP /
+    FINREP CET1 alignment, IFRS 9 stage-transition reporting, BCBS 239
+    lineage walkthrough, AML alert dashboard governance, and the
+    existing Cost Triage / DORA cards.
+
+- Fact corpus expansion (117 -> 133 entries):
+  - 14 new FACT entries on BigQuery (clustering, results cache,
+    COUNT-star vs column, RLS, CLS, MV refresh), Looker Studio (blend
+    join types, freshness intervals), BI modeling (SCD, conformed,
+    surrogate), CRR CET1, IFRS 9, BCBS 239.
+  - 2 more FACT entries: PSD2 SCA, AML / CFT suspicious activity.
+  - 13 new SRC source cards including the EU CRR, IFRS 9 standard,
+    BCBS 239, PSD2 (EUR-Lex 2015/2366), EBA AML package, BigQuery
+    clustered tables, results cache, aggregate COUNT, row-level
+    security, column-level security, MV refresh, Looker Studio blend
+    join types and freshness intervals, Kimball SCD / conformed /
+    surrogate.
+
+- Terminology depth (Phase 12.4):
+  - Replaced 7 Looker Studio landing-page citations with deep links to
+    known-stable help articles (dimensions and metrics, blended data,
+    calculated fields, data credentials, data freshness). 16 entries
+    still cite the landing page; tracked as Phase 12 follow-on.
+
+- Continuity:
+  - Extended `PLAN.md` Phase 12.5 entry to describe the three landed
+    scripts and the compartmentalization rule.
+  - Updated STATUS, WHAT_WE_DID with full tallies.
+
+Verification: bun run format:check, lint, typecheck, content:generate,
+content:check, test:content-qa, test:flashcards, test:quiz,
+test:quiz-facts-db, test:facts-db, validate:terminology,
+validate:quiz-distractors (78 / 268, 0 hits),
+validate:compartmentalization (107 files, 0 hits), and test:e2e all
+pass.
+
+## 2026-05-16 - Task 062 Assessment Quality And Expansion
+
+Branch `assessment-quality-and-expansion` opened after PR #45 merged.
+
+- Wrote `_development/assessment-audit.md` covering all four assessment
+  surfaces (quizzes, flashcards, exams, terminology depth) against a
+  cert-track learner lens. Found 5 `high`, 8 `medium`, 1 `low` defects.
+
+- Quality fixes (commit `6c2116f`):
+  - Sharpened ~20 weak quiz distractors that a cert-track learner could
+    eliminate without knowing the material ("chart color", "font size",
+    "decorative theme", "viewer history", "report title", etc.).
+  - Reconciled two divergent exam surfaces: moved the 4 cards that
+    lived only in `tutorials/exam-mode.md` into the canonical
+    `exams/bi-foundations/bi-foundations-exam.md`; trimmed the Markdown
+    doc to a study guide pointing at the interactive `/exam` route.
+
+- Fact corpus expansion (commit `9584396`):
+  - Added 14 new `FACT-*` entries: BigQuery clustering, results cache,
+    count-star vs count-column, row access policy, column policy tag,
+    materialized view refresh; Looker Studio blend join types and
+    freshness intervals; BI SCD types, conformed dimension, surrogate
+    key; banking CRR CET1 ratio, IFRS 9 stages, BCBS 239 RDARR
+    principles.
+  - Added matching `SRC-*` source cards in
+    `sources/literature/kimball-dimensional-modeling.md`,
+    `sources/platforms/bigquery.md`, `sources/platforms/looker-studio.md`,
+    `sources/law/eu-crr.md`, `sources/law/ifrs9.md`, and
+    `sources/regulators/bcbs-239.md`.
+
+- Quiz expansion (commit `9584396`):
+  - Added 14 new hard quiz questions on the cert-track gap topics
+    above. Quiz bank: 60 -> 74 questions.
+
+- Flashcard expansion (commit pending):
+  - 18 new cards across four under-served decks: privacy-security,
+    banking-context, bi-fundamentals, controls-governance. Each deck
+    went from 4 to 10 cards. Total flashcards: 64 -> 82.
+
+- Continuity (commit pending):
+  - Added Phase 12 to `PLAN.md` staging the remaining work toward the
+    Phase 9 minima (500 / 200 / 30).
+  - Added `_development/tasks/062-assessment-quality-and-expansion.md`
+    and updated the task index.
+
 ## 2026-05-16 - Phase 11.2 CC-4 follow-up: real failure scenarios in 06-08
 
 After the user pointed out that the Phase 11.2 commit had only relabelled

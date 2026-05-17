@@ -107,3 +107,102 @@ not legal, regulatory, accounting, privacy, compliance, or model-risk advice.
   - "estimate of the number of bytes read"
   - "dry_run"
 - Notes: Use this source for pre-run cost checks and report-query review.
+
+## SRC-BIGQUERY-CLUSTERED-TABLES
+
+- Type: official product documentation.
+- Publisher: Google Cloud.
+- URL: https://cloud.google.com/bigquery/docs/clustered-tables
+- Accessed: 2026-05-16.
+- Used by facts:
+  - `FACT-BIGQUERY-CLUSTERING`
+- Relevant quotes:
+  - "sorted based on the values"
+  - "improve query performance"
+- Notes: Use this source for clustering vs partitioning decisions inside the
+  serving layer.
+
+## SRC-BIGQUERY-RESULTS-CACHE
+
+- Type: official product documentation.
+- Publisher: Google Cloud.
+- URL: https://cloud.google.com/bigquery/docs/cached-results
+- Accessed: 2026-05-16.
+- Used by facts:
+  - `FACT-BIGQUERY-RESULTS-CACHE`
+- Relevant quotes:
+  - "approximately 24 hours"
+  - "cache_hit"
+- Notes: Use this source when explaining why a refresh may bill zero bytes.
+
+## SRC-BIGQUERY-AGGREGATE-COUNT
+
+- Type: official product documentation.
+- Publisher: Google Cloud.
+- URL: https://cloud.google.com/bigquery/docs/reference/standard-sql/aggregate_functions#count
+- Accessed: 2026-05-16.
+- Used by facts:
+  - `FACT-BIGQUERY-COUNT-STAR-VS-COLUMN`
+- Relevant quotes:
+  - "returns the number of rows in the input"
+  - "NULL"
+- Notes: Use this source for `COUNT(*)` vs `COUNT(column)` NULL handling.
+
+## SRC-BIGQUERY-ROW-LEVEL-SECURITY
+
+- Type: official product documentation.
+- Publisher: Google Cloud.
+- URL: https://cloud.google.com/bigquery/docs/row-level-security-intro
+- Accessed: 2026-05-16.
+- Used by facts:
+  - `FACT-BIGQUERY-ROW-ACCESS-POLICY`
+- Relevant quotes:
+  - "row access policy"
+  - "filter using"
+- Notes: Use this source for RLS design; pairs with authorized views for
+  field-narrowing.
+
+## SRC-BIGQUERY-COLUMN-LEVEL-SECURITY
+
+- Type: official product documentation.
+- Publisher: Google Cloud.
+- URL: https://cloud.google.com/bigquery/docs/column-level-security-intro
+- Accessed: 2026-05-16.
+- Used by facts:
+  - `FACT-BIGQUERY-COLUMN-POLICY-TAG`
+- Relevant quotes:
+  - "policy tag"
+  - "fine-grained access"
+- Notes: Use this source for tagging personal-data identifiers at the column
+  level.
+
+## SRC-BIGQUERY-MATERIALIZED-VIEW-REFRESH
+
+- Type: official product documentation.
+- Publisher: Google Cloud.
+- URL: https://cloud.google.com/bigquery/docs/materialized-views-manage
+- Companion URL:
+  https://cloud.google.com/bigquery/docs/materialized-views-create
+- Accessed: 2026-05-17.
+- Used by facts:
+  - `FACT-BIGQUERY-MATERIALIZED-VIEW-REFRESH`
+- Relevant quotes:
+  - "Materialized views are automatically refreshed when the base
+    tables change ... There can be a short delay before the change is
+    reflected in the materialized view." (manage page)
+  - "enable_refresh ... A boolean that enables or disables automatic
+    refresh. The default value is true." (create page)
+  - "refresh_interval_minutes ... The maximum frequency at which this
+    materialized view will be refreshed. The default value is 30
+    minutes." (create page)
+  - "max_staleness ... If a query against the materialized view runs
+    after the max_staleness interval has passed, BigQuery reads from
+    the base table instead." (create page)
+  - "BigQuery makes a best effort to keep materialized views fresh
+    within the configured refresh_interval_minutes; it does not
+    guarantee freshness." (manage page)
+- Notes: The combination of `enable_refresh`,
+  `refresh_interval_minutes`, and `max_staleness` controls the
+  refresh target, and the documentation explicitly frames automatic
+  refresh as best-effort rather than a hard SLA. Pair with the MV
+  cache source for cost / freshness reviews.

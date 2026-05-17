@@ -27,10 +27,13 @@ Synthetic-data boundary: use only the predefined synthetic deposits dataset or
 the inline synthetic rows in this tutorial. Do not connect Looker Studio to real
 customer, account, transaction, employee, or regulatory data.
 
-Builds on:
+Prior knowledge expected:
 
-- [00 - Orientation And Stack](00-orientation-and-stack.md)
-- [Data Sources](data-sources.md)
+- Synthetic-data discipline: never connect a reporting layer to real,
+  masked, anonymized, or production-derived banking data.
+- Basic SQL aggregation (`SUM`, `GROUP BY`, `WHERE`).
+- Familiarity with the idea of a governed serving layer separated from raw
+  tables.
 
 Required tools:
 

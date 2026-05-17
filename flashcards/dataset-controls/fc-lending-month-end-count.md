@@ -1,10 +1,10 @@
 ---
 {
   "id": "fc-lending-month-end-count",
-  "title": "What dataset trap should a month-end lending tutorial check before charting balances?",
+  "title": "What data-quality trap should a month-end lending exposure check guard against before charting balances?",
   "content_type": "flashcard",
   "status": "published",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "topic": "dataset-controls",
   "source_facts": ["FACT-LENDING-NON-MONTH-END-SNAPSHOT-COUNT"],
   "recommended_learner_tasks":
@@ -13,12 +13,17 @@
 }
 ---
 
-# What dataset trap should a month-end lending tutorial check before charting balances?
+# What data-quality trap should a month-end lending exposure check guard against before charting balances?
 
 ## Front
 
-What dataset trap should a month-end lending tutorial check before charting balances?
+What data-quality trap should a month-end lending exposure check guard
+against before charting balances?
 
 ## Back
 
-It should detect and separate non-month-end snapshot rows before producing month-end serving outputs.
+Non-month-end snapshot rows mixed into a month-end serving output. A
+loan-snapshots table may contain mid-month or off-cycle rows alongside
+true month-end rows; an exposure metric must keep only `as_of_date`
+values that fall on a month-end boundary, and report the count of any
+non-month-end rows seen as a quality control.

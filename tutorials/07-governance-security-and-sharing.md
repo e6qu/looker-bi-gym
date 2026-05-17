@@ -38,12 +38,13 @@ Do not use real customer fields, real account numbers, production IAM
 screenshots, report sharing links, credentials, tokens, keys, private emails, or
 production policy text.
 
-Builds on:
+Prior knowledge expected:
 
-- [02 - Build A BI-Friendly Model](02-build-a-bi-friendly-model.md)
-- [03 - First Executive Dashboard](03-first-executive-dashboard.md)
-- [05 - Compare Blends With Upstream Joins](05-blending-vs-upstream-joins.md)
-- [06 - Measure Dashboard Performance And Cost Signals](06-performance-and-cost-lab.md)
+- A dimensional model with declared sensitive fields (account-level
+  identifiers, masked numbers, restriction flags).
+- An aggregate executive dashboard spec.
+- Familiarity with the GDPR concepts of personal data, data
+  minimisation, and purpose limitation.
 
 Required tools:
 

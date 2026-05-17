@@ -399,3 +399,116 @@ not legal, regulatory, accounting, privacy, compliance, or model-risk advice.
   allowed parameter values and keep SQL object selection governed upstream.
 - Related facts: [`FACT-BIGQUERY-PARAMETERIZED-QUERY-USER-INPUT`](#fact-bigquery-parameterized-query-user-input),
   [`FACT-BIGQUERY-PARAMETER-NOT-IDENTIFIER`](#fact-bigquery-parameter-not-identifier).
+
+### FACT-BIGQUERY-CLUSTERING
+
+- Statement: BigQuery clustered tables sort rows inside a partition based on
+  the clustering columns, which lets queries with filters or aggregations on
+  those columns scan less data than an equivalent unclustered partition.
+- Source: [`SRC-BIGQUERY-CLUSTERED-TABLES`](../sources/platforms/bigquery.md#src-bigquery-clustered-tables).
+- Source quote: "sorted based on the values".
+- Derived implication: Performance reviews should consider clustering on the
+  most-filtered or grouped columns inside a partition, but the partition
+  filter itself remains the primary scan-reduction control.
+- Related facts: [`FACT-BIGQUERY-PARTITION-FILTERS`](#fact-bigquery-partition-filters),
+  [`FACT-BIGQUERY-JOBS-BYTES`](#fact-bigquery-jobs-bytes).
+
+### FACT-BIGQUERY-RESULTS-CACHE
+
+- Statement: BigQuery caches the results of most queries for approximately 24
+  hours; a repeated identical query against unchanged data can hit the cache
+  and is reported as `cache_hit = TRUE` in job metadata with zero bytes billed.
+- Source: [`SRC-BIGQUERY-RESULTS-CACHE`](../sources/platforms/bigquery.md#src-bigquery-results-cache).
+- Source quote: "approximately 24 hours".
+- Derived implication: Cost reviews should distinguish cache-hit refreshes
+  from billed scans, but operations cannot rely on the cache as a cost
+  control because cache eligibility depends on query and data stability.
+- Related facts: [`FACT-BIGQUERY-JOBS-BYTES`](#fact-bigquery-jobs-bytes),
+  [`FACT-LOOKER-STUDIO-BIGQUERY-REFRESH-COST`](#fact-looker-studio-bigquery-refresh-cost).
+
+### FACT-BIGQUERY-COUNT-STAR-VS-COLUMN
+
+- Statement: `COUNT(*)` counts every row including those with NULL column
+  values, while `COUNT(column)` counts only rows where that column is not
+  NULL; the two can give different totals on the same data.
+- Source: [`SRC-BIGQUERY-AGGREGATE-COUNT`](../sources/platforms/bigquery.md#src-bigquery-aggregate-count).
+- Source quote: "returns the number of rows in the input".
+- Derived implication: Row-count controls should state which form they use;
+  a `COUNT(column)` near a known-nullable field is a quality probe, not a
+  duplicate of `COUNT(*)`.
+- Related facts: [`FACT-BIGQUERY-COUNT-DISTINCT-GRAIN`](#fact-bigquery-count-distinct-grain),
+  [`FACT-BIGQUERY-SUM-NULLS`](#fact-bigquery-sum-nulls).
+
+### FACT-BIGQUERY-ROW-ACCESS-POLICY
+
+- Statement: BigQuery row-level security uses `CREATE ROW ACCESS POLICY ...
+GRANT TO ('user:...', 'group:...') FILTER USING (...)` to restrict which
+  rows a particular grantee can see when querying a table; the policy is
+  enforced inside the table and cannot be bypassed by a view that wraps it.
+- Source: [`SRC-BIGQUERY-ROW-LEVEL-SECURITY`](../sources/platforms/bigquery.md#src-bigquery-row-level-security).
+- Source quote: "filter using".
+- Derived implication: Use row access policies when one query must return
+  different rows for different viewers; review them as part of access
+  governance, not as a query-time concern.
+- Related facts: [`FACT-BIGQUERY-AUTHORIZED-VIEW-ACCESS-CONTROL`](#fact-bigquery-authorized-view-access-control),
+  [`FACT-GDPR-DATA-MINIMISATION`](privacy-gdpr.md#fact-gdpr-data-minimisation).
+
+### FACT-BIGQUERY-COLUMN-POLICY-TAG
+
+- Statement: BigQuery column-level security attaches a policy tag to a column;
+  querying that column requires the policy-tag's fine-grained reader role.
+  Without that role, queries against the table can still run but the tagged
+  column returns access errors when selected.
+- Source: [`SRC-BIGQUERY-COLUMN-LEVEL-SECURITY`](../sources/platforms/bigquery.md#src-bigquery-column-level-security).
+- Source quote: "fine-grained access".
+- Derived implication: Tag personal-data identifiers (`account_id`,
+  `customer_id`, `synthetic_iban`, `masked_account_number` in synthetic
+  exercises) with a policy tag so a dashboard cannot silently expose them
+  even if a query selects them.
+- Related facts: [`FACT-BIGQUERY-ROW-ACCESS-POLICY`](#fact-bigquery-row-access-policy),
+  [`FACT-GDPR-PERSONAL-DATA`](privacy-gdpr.md#fact-gdpr-personal-data).
+
+### FACT-BIGQUERY-MATERIALIZED-VIEW-REFRESH
+
+- Statement: BigQuery materialized views refresh automatically when underlying
+  base-table data changes. The refresh interval and `max_staleness` can be
+  configured per materialized view to target a freshness goal, but the
+  automatic refresh is best-effort - the configured target is not a hard
+  SLA guarantee, and queries can hit the materialized view before the next
+  refresh has completed.
+- Source: [`SRC-BIGQUERY-MATERIALIZED-VIEW-REFRESH`](../sources/platforms/bigquery.md#src-bigquery-materialized-view-refresh).
+- Source quote: "automatically refreshes".
+- Derived implication: Replacing a logical view with a materialized view does
+  not eliminate freshness review; the materialized refresh interval must fit
+  the dashboard SLA, and the base-table partition shape still influences
+  refresh cost.
+- Related facts: [`FACT-BIGQUERY-MATERIALIZED-VIEW-CACHE`](#fact-bigquery-materialized-view-cache),
+  [`FACT-BIGQUERY-MATERIALIZED-VIEW-LIMITATIONS`](#fact-bigquery-materialized-view-limitations).
+
+### FACT-LOOKER-STUDIO-BLEND-JOIN-TYPES
+
+- Statement: Looker Studio blends support several join operators - left outer,
+  right outer, inner, full outer, and cross - chosen in the blend
+  configuration; the default is left outer, which preserves every record from
+  the leftmost source.
+- Source: [`SRC-LOOKER-STUDIO-BLEND-JOIN-TYPES`](../sources/platforms/looker-studio.md#src-looker-studio-blend-join-types).
+- Source quote: "left outer".
+- Derived implication: A blend that loses or duplicates rows can usually be
+  diagnosed by inspecting the join operator and key fields, not by adjusting
+  chart styling; the choice of join type is a metric-meaning decision.
+- Related facts: [`FACT-LOOKER-STUDIO-BLEND-JOIN-CONFIG`](#fact-looker-studio-blend-join-config),
+  [`FACT-LOOKER-STUDIO-BLEND-LEFTMOST`](#fact-looker-studio-blend-leftmost).
+
+### FACT-LOOKER-STUDIO-FRESHNESS-INTERVALS
+
+- Statement: Looker Studio data freshness for BigQuery sources is configurable
+  per data source; common interval choices include 1 minute, 15 minutes, 1
+  hour, 4 hours, and 12 hours, with manual refresh available regardless of
+  the chosen interval.
+- Source: [`SRC-LOOKER-STUDIO-FRESHNESS-INTERVALS`](../sources/platforms/looker-studio.md#src-looker-studio-freshness-intervals).
+- Source quote: "data freshness".
+- Derived implication: A shorter interval increases responsiveness and
+  BigQuery refresh cost; cost reviews should document both the selected
+  interval and the expected manual-refresh frequency.
+- Related facts: [`FACT-LOOKER-STUDIO-DATA-FRESHNESS-TRADEOFF`](#fact-looker-studio-data-freshness-tradeoff),
+  [`FACT-LOOKER-STUDIO-FRESHNESS-MEMORY`](#fact-looker-studio-freshness-memory).

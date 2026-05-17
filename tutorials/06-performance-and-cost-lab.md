@@ -36,11 +36,14 @@ synthetic deposits dataset. Do not inspect, export, paste, or screenshot private
 billing data, job metadata, user emails, customer data, credentials, tokens, or
 private report links.
 
-Builds on:
+Prior knowledge expected:
 
-- [03 - Build The First Executive Dashboard](03-first-executive-dashboard.md)
-- [04 - Define Governed Metrics And Calculated Fields](04-metrics-and-calculated-fields.md)
-- [05 - Compare Blends With Upstream Joins](05-blending-vs-upstream-joins.md)
+- A governed serving view, an executive dashboard spec, and an
+  understanding that owner-joined raw rows can fanout balances.
+- Awareness that a BigQuery logical view re-runs its SQL every time it is
+  queried.
+- Basic comfort with reading job metadata fields (bytes processed,
+  bytes billed).
 
 Required tools:
 
@@ -128,8 +131,9 @@ ORDER BY table_name;
 | branches               |         5 |                8 |               40 |
 | products               |         4 |                8 |               32 |
 
-4. Run the safe serving-source profile. This uses the branch/currency source
-   from tutorial 05 and keeps the unmapped branch visible:
+4. Run the safe serving-source profile. This uses the branch/currency serving
+   source pattern (latest snapshot per account, joined to a single owner share)
+   and keeps the unmapped branch visible:
 
 ```sql
 WITH latest_balances AS (
@@ -581,7 +585,8 @@ Use this section only if the optional Looker Studio report exists.
 
 ## Recovery Checks
 
-- If the serving total is not `95700`, rerun the tutorial 05 safe source and
+- If the serving total is not `95700`, rebuild the safe serving source
+  (latest snapshot per account, single owner share, left join to branches) and
   keep the branch join as a left join.
 - If the browser simulation returns a different reduction, check that
   `estimated_bytes_processed` uses `rows * columns * 16` for every synthetic

@@ -184,3 +184,45 @@ advice.
   - "pass parameters back"
 - Notes: Use this source for dashboard interaction, filter-field, and parameter
   handoff lessons.
+
+## SRC-LOOKER-STUDIO-BLEND-JOIN-TYPES
+
+- Type: official product documentation.
+- Publisher: Google Cloud.
+- URL: https://support.google.com/looker-studio/answer/9061204
+- Accessed: 2026-05-16.
+- Used by facts:
+  - `FACT-LOOKER-STUDIO-BLEND-JOIN-TYPES`
+- Relevant quotes:
+  - "left outer"
+  - "inner"
+- Notes: Use this source when a blend over- or under-counts vs the upstream
+  serving view.
+
+## SRC-LOOKER-STUDIO-FRESHNESS-INTERVALS
+
+- Type: official product documentation.
+- Publisher: Google Cloud.
+- URL: https://cloud.google.com/looker/docs/studio/manage-data-freshness
+- Companion URL: https://support.google.com/looker-studio/answer/7020039
+- Accessed: 2026-05-17.
+- Used by facts:
+  - `FACT-LOOKER-STUDIO-FRESHNESS-INTERVALS`
+- Relevant quotes:
+  - "Data freshness determines how long Looker Studio will cache data
+    before fetching new data from the source." (manage data freshness)
+  - "When the freshness time is up, Looker Studio fetches data again
+    from the source the next time a query is issued." (manage data
+    freshness)
+  - "Increasing the data freshness time reduces the frequency of
+    queries against the underlying data source, which can reduce the
+    cost of queries." (manage data freshness)
+  - "The default freshness time and the minimum freshness time you can
+    select depend on the connector type." (manage data freshness)
+- Notes: Looker Studio data freshness is a **cache-staleness
+  threshold** that determines when the next viewer query reaches the
+  source, not a periodic auto-refresh interval. Increasing the
+  threshold reduces query frequency and therefore BigQuery cost on
+  warehouse-backed reports. The minimum allowed freshness is
+  connector-specific and is documented on the manage-data-freshness
+  page.

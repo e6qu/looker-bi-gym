@@ -1,7 +1,7 @@
 ---
 {
   "id": "LT-DQ-006",
-  "title": "LT-DQ-006 - Define A Ratio Null Contract",
+  "title": "Define A Ratio Null Contract",
   "content_type": "learner_task",
   "status": "published",
   "version": "0.1.0",
@@ -17,7 +17,7 @@
 }
 ---
 
-# LT-DQ-006 - Define A Ratio Null Contract
+# Define A Ratio Null Contract
 
 Area: data quality and metric contracts. Timebox: 15-20 minutes. Dataset:
 `deposits-seed/v0.1.0`.
@@ -36,12 +36,14 @@ Training boundary: use synthetic training data only. This task is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
 
-## Prerequisites
+## Setup
 
-- Complete [LT-DQ-005](lt-dq-005-reconcile-dashboard-controls.md).
 - Open the [deposits seed workbench](#/workbench/deposits-seed/v0.1.0).
-- Use the instructions below as the complete practice sequence; the workbench is only
-  where you run the SQL.
+- Familiarity with reconciliation controls (counting how many rows
+  satisfy a quality predicate, comparing dashboard totals to upstream
+  totals) is assumed.
+- The instructions below are the complete practice sequence; the workbench
+  is only where you run the SQL.
 
 ## Steps
 

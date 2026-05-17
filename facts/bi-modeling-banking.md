@@ -304,3 +304,48 @@ model-risk advice.
   dimensions or metrics before building banking dashboard charts.
 - Related facts: [`FACT-LOOKER-STUDIO-DATA-SOURCE`](bi-platforms-bigquery-looker-studio.md#fact-looker-studio-data-source),
   [`FACT-LOOKER-STUDIO-DIMENSION-CONTEXT`](#fact-looker-studio-dimension-context).
+
+### FACT-BI-SCD-TYPES
+
+- Statement: Slowly Changing Dimension (SCD) types describe how dimensional
+  attribute changes are recorded - type 1 overwrites the prior value, type 2
+  inserts a new row per change with effective-from / effective-to dates,
+  type 3 keeps current and previous values as separate columns.
+- Source: [`SRC-KIMBALL-SCD`](../sources/literature/kimball-dimensional-modeling.md#src-kimball-scd).
+- Source quote: "slowly changing dimensions".
+- Derived implication: A dashboard that reports historical metrics by
+  attribute must declare the SCD type of that attribute. A type-1 overwrite
+  silently rewrites history; a type-2 split preserves it. The choice
+  affects every time-series comparison.
+- Related facts: [`FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION`](#fact-bi-grain-declare-before-aggregation),
+  [`FACT-BI-REFERENCE-DATE-SEPARATION`](#fact-bi-reference-date-separation).
+
+### FACT-BI-CONFORMED-DIMENSION
+
+- Statement: A conformed dimension is a dimension table used consistently
+  across multiple fact tables, with the same grain, keys, and attribute
+  semantics, so metrics from those fact tables can be combined or compared on
+  the conformed dimension.
+- Source: [`SRC-KIMBALL-CONFORMED-DIMENSIONS`](../sources/literature/kimball-dimensional-modeling.md#src-kimball-conformed-dimensions).
+- Source quote: "conformed dimensions".
+- Derived implication: A banking BI program that produces multiple subject
+  marts (deposits, lending, fees) should share a conformed `dim_date`,
+  `dim_branch`, `dim_customer_masked`, and `dim_product`. Without conformance,
+  cross-mart joins re-create the same fanout patterns at a larger scale.
+- Related facts: [`FACT-BI-GRAIN-DECLARE-BEFORE-AGGREGATION`](#fact-bi-grain-declare-before-aggregation),
+  [`FACT-BI-FANOUT-JOIN-RISK`](#fact-bi-fanout-join-risk).
+
+### FACT-BI-SURROGATE-KEY
+
+- Statement: A surrogate key is a system-generated identifier used as the
+  primary key of a dimension table, independent of the natural source-system
+  key, so that natural-key changes (renames, merges, type-2 history) do not
+  break fact-table joins.
+- Source: [`SRC-KIMBALL-SURROGATE-KEYS`](../sources/literature/kimball-dimensional-modeling.md#src-kimball-surrogate-keys).
+- Source quote: "surrogate keys".
+- Derived implication: When `dim_branch` carries SCD-2 history, fact rows
+  must reference the branch surrogate key valid at the fact's reference
+  date. Joining on the natural `branch_id` would silently associate
+  pre-rename activity with post-rename geography.
+- Related facts: [`FACT-BI-SCD-TYPES`](#fact-bi-scd-types),
+  [`FACT-BI-CONFORMED-DIMENSION`](#fact-bi-conformed-dimension).

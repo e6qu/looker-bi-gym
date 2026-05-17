@@ -1,7 +1,7 @@
 ---
 {
   "id": "LT-LOOKER-004",
-  "title": "LT-LOOKER-004 - Prepare A Report-Ready Data Source",
+  "title": "Prepare A Report-Ready Data Source",
   "content_type": "learner_task",
   "status": "published",
   "version": "0.1.0",
@@ -18,7 +18,7 @@
 }
 ---
 
-# LT-LOOKER-004 - Prepare A Report-Ready Data Source
+# Prepare A Report-Ready Data Source
 
 Area: Looker Studio mechanics. Timebox: 15-20 minutes. Dataset:
 `deposits-seed/v0.1.0`.
@@ -40,15 +40,15 @@ Training boundary: use synthetic training data only. This task is technical
 learning material, not legal, regulatory, accounting, privacy, compliance, or
 model-risk advice.
 
-## Prerequisites
+## Setup
 
-- Complete [LT-BI-001](lt-bi-001-profile-dataset-grain.md) and
-  [LT-BI-002](lt-bi-002-detect-fanout.md).
 - Open the [deposits seed workbench](#/workbench/deposits-seed/v0.1.0).
+- Comfort with row grain, fanout risk on owner-side joins, and basic
+  aggregate SQL is assumed.
 - Treat this as a local evidence-pattern design exercise unless you also
   complete the optional Looker Studio recipe.
-- Use the instructions below as the complete practice sequence; the workbench is only
-  where you validate the SQL shape.
+- The instructions below are the complete practice sequence; the workbench
+  is only where you validate the SQL shape.
 
 ## Steps
 

@@ -38,11 +38,13 @@ operations examples. Do not copy production incident records, job logs, user
 emails, reconciliation breaks, report links, credentials, keys, screenshots of
 access settings, or customer data into evidence notes.
 
-Builds on:
+Prior knowledge expected:
 
-- [03 - Build The First Executive Dashboard](03-first-executive-dashboard.md)
-- [06 - Measure Dashboard Performance And Cost Signals](06-performance-and-cost-lab.md)
-- [07 - Govern Dashboard Access, Fields, And Sharing](07-governance-security-and-sharing.md)
+- A governed serving view feeding an executive dashboard with named
+  control totals.
+- Awareness that report refresh time and source business reference date
+  are separate concepts.
+- Familiarity with BigQuery job metadata as a cost-evidence source.
 
 Required tools:
 
@@ -565,8 +567,9 @@ CROSS JOIN fanout_dashboard fd;
     queries running against the actual `deposits-seed/v0.1.0` dataset.
     The `all-dates sum` reconciliation delta is the sum of the
     2026-03-29 and 2026-03-30 daily totals (`95190 + 95680 = 190870`),
-    and the `owner-join fanout` delta matches the fanout proof from
-    tutorial 05 (`164800 - 95700 = 69100`):
+    and the `owner-join fanout` delta is the difference between the
+    unsafe owner-join total and the safe single-share total
+    (`164800 - 95700 = 69100`):
 
 | broken_query_shape | source_ledger_total | dashboard_ledger_total | reconciliation_delta | operations_status        |
 | ------------------ | ------------------: | ---------------------: | -------------------: | ------------------------ |

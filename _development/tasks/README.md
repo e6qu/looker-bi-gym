@@ -70,6 +70,7 @@ Task order:
 - [059 - Terminology Grounding Glossary](059-terminology-grounding-glossary.md)
 - [060 - Terminology Integrity Checks](060-terminology-integrity-checks.md)
 - [061 - Tutorial Audit Remediation](061-tutorial-audit-remediation.md)
+- [062 - Assessment Quality And Expansion](062-assessment-quality-and-expansion.md)
 
 Completion rule:
 

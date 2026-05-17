@@ -1,98 +1,96 @@
 # Status
 
-Last updated: 2026-05-16
+Last updated: 2026-05-17
 
 ## Current Branch And PR
 
-- Current branch: `terminology-integrity-checks`, based on verified `main` at
-  `d88acc7`.
-- Current PR: #45,
-  `https://github.com/e6qu/looker-bi-gym/pull/45`. Phase 10.1 landed in the
-  opening commit; Phase 10.2 through 10.5 plus the Phase 10.6 reconciliation
-  followed on the same branch by user direction.
-- PR #44, `https://github.com/e6qu/looker-bi-gym/pull/44`, is squash-merged
-  at `d88acc7` (2026-05-12).
+- Current branch: `assessment-quality-and-expansion`, based on verified
+  `main` at `4e26667`.
+- Current PR: #46,
+  `https://github.com/e6qu/looker-bi-gym/pull/46`.
 
 ## Active Task
 
-Tasks 060 (Terminology Grounding Follow-Through) and 061 (Tutorial Audit
-Remediation), both carried in PR #45 by user direction.
+Task 062 - Assessment Quality And Expansion. Covers all of Phase 12 from
+`PLAN.md`, plus the compartmentalization rule from user direction, plus
+the Codex CLI second-opinion review remediation
+(`CODEX-REVIEW-FINDINGS-2026-05-17` in `BUGS.md`).
 
 Current state:
 
-- Phase 11 (Tutorial Audit Remediation) - All six sub-phases delivered.
-  See `_development/tasks/061-tutorial-audit-remediation.md` and
-  `_development/tutorial-audit.md` for details. Highlights:
-  - 11.1: rewrote `tutorials/curriculum.md` to match what the tutorials
-    actually build; wrapped every End Challenge expected-answer block in
-    `<details>` in tutorials 00-09; replaced DuckDB-only `VARCHAR` with
-    `STRING` in BigQuery-shaped SQL; fixed tutorial 03 freshness label
-    semicolon collision.
-  - 11.2: added failure scenarios to tutorials 06-09 so the checks no
-    longer pass by construction. Capstone (09) now requires cross-
-    tutorial values from the learner's own notes.
-  - 11.3: added Aggregation Notes (data-source vs chart-level, COUNT
-    DISTINCT non-additivity), BigQuery Cost Mechanics, BigQuery Access
-    Mechanics, and Looker Studio Credential Modes sections.
-  - 11.4: numeric depositor-bank worked example in tutorial 00;
-    ownership-share normalization assumption note in tutorial 05.
-  - 11.5: README separates practice and tutorial paths; exam mode
-    expanded from 2 to 6 cards; missing interactive exam link added.
-  - 11.6: per-task polish for LT-BI-001, LT-SQL-003, LT-LOOKER-004,
-    LT-LOOKER-007 and the deposits dashboard recipe.
+- Audit recorded in `_development/assessment-audit.md` against a
+  certification-track learner lens (pre- and post-fix counts both
+  recorded).
+- Compartmentalization rule applied: tutorials, learner-tasks, quizzes,
+  flashcards, and exams do not assume each other exist. Terminology is
+  the only shared spine. The platform itself is not a topic. The
+  validator now scans tutorials/ and learner-tasks/ as well (130 files,
+  0 hits).
+- Codex CLI second-opinion review of 2026-05-17 surfaced 10 punch-list
+  items; all addressed in this PR. Key remediation:
+  - Looker Studio freshness rewritten as cache-staleness threshold
+    (not auto-refresh interval).
+  - BigQuery materialized view refresh wording softened to best-effort
+    target with `max_staleness` / `refresh_interval_minutes` naming.
+  - Row-access-policy distractor replaced invented
+    `SESSION_USER_BRANCH(...)` with real BigQuery
+    `ROW ACCESS POLICY ... FILTER USING (branch_id = 'BNN')`.
+  - AML / KYC privacy wording reserves GDPR Article 9 "special
+    category" for narratives that actually reveal Article 9 data.
+  - PSD2, CRR, IFRS 9, BCBS 239 source cards expanded with
+    article / section quotes that support the FACT claims.
+  - IFRS 9 and AML exam cards are now fixture-backed with deterministic
+    expected outputs (IFRS 9 uses the existing lending dataset with one
+    cell flipped to create a real stage-1-to-stage-2 transition for
+    L2002; AML uses an inline synthetic alert table inside the card).
+  - `tutorials/quiz-bank.md` and `tutorials/exam-mode.md` rewritten as
+    generic study-lens pages that do not enumerate or mirror any
+    specific quiz question or exam card.
+- Authoring scripts in place:
+  - `bun run validate:quiz-distractors` flags weak distractor patterns
+    plus invented BigQuery identifiers and known semantic
+    anti-patterns (LS freshness as auto-refresh, MV refresh as hard
+    SLA).
+  - `bun run validate:compartmentalization` flags cross-surface
+    references and platform-meta in quiz, flashcard, exam, AND
+    tutorial / learner-task visible bodies (130 files scanned, 0 hits).
+  - `bun run coverage:cert-track` parses frontmatter and counts
+    unique authored items per topic (questions, flashcards, exam
+    cards, terminology entries) into
+    `_development/cert-track-coverage.md`.
+- Surface tallies after this PR (final post-fix counts):
+  - Quiz bank: **78** scenario-driven questions (was 60).
+  - Flashcards: **105** cards across the 10 decks (was 64). All
+    formerly under-served decks (banking-context, bi-fundamentals,
+    privacy-security, controls-governance, performance-operations,
+    metric-contracts) brought up; only real-estate-collateral remains
+    at 4 cards.
+  - Exam: **16** unified cards in
+    `exams/bi-foundations/bi-foundations-exam.md` (was 5 YAML + 6 MD
+    duplicated, only 2 overlapping). All cards now fixture-backed
+    with deterministic expected outputs.
+  - Facts: **133** `FACT-*` entries (was 117).
+  - Terminology: **150** entries (was 148).
+  - Sources: 40+ `SRC-*` cards, including new BigQuery
+    (clustering, results cache, count semantics, RLS, CLS, MV refresh),
+    Looker Studio (blend join types, freshness intervals), Kimball
+    (SCD, conformed dims, surrogate keys), CRR, IFRS 9, BCBS 239, PSD2,
+    AML/CFT.
 
-Earlier in the PR:
+## Phase 12 Follow-On
 
-- Phase 10.1 - Integrity checks. `app/scripts/validate-terminology.ts` fails
-  on duplicate heading slugs, broken `class="termRef"` anchors, unknown
-  target files, missing `#anchor`, missing or mismatched `<sup>HINT</sup>`.
-  Wired into `bun run check`. 148 decorative leading `<span class="termBadge">`
-  blocks removed. `terminology/README.md` rewritten.
-- Phase 10.2 - Sourcing and FACT linkage. Sources block convention added.
-  75 vendor and regulatory entries backfilled with official-source URLs.
-  30 entries linked to existing `FACT-*` IDs, validated against `facts/`.
-- Phase 10.3 - Term-level search. Terminology sidebar surfaces matching
-  `## term` headings, not only pages. Hash routing now keeps an inner
-  `#anchor` fragment so `#/terminology/<file>#<slug>` deep links work, with
-  scroll-on-mount and hashchange behaviour added to `MarkdownArticle`.
-- Phase 10.4 - Inline grounding rollout. Validator extended to scan
-  `tutorials/`, `quizzes/`, `flashcards/`, `exams/`, `facts/`,
-  `regulations/`, and `challenges/` for `class="termRef"` links. 27 inline
-  references added to a representative slice of tutorials and regulations.
-  YAML-bound surfaces (quiz, flashcards, exams, fact statements, challenge
-  manifests) still need renderer changes to honour inline HTML; documented
-  as Phase 10.4 follow-on.
-- Phase 10.5 - Reverse coverage matrix. `app/scripts/generate-terminology-coverage.ts`
-  (`bun run coverage:terminology`) writes
-  `_development/terminology-coverage.md`. Today's snapshot: 148 entries
-  total, 93 mentioned in curriculum prose, 21 inline-grounded, 53 entirely
-  uncovered.
-- Phase 10.6 - Continuity reconciliation. Task 059 marked merged, this
-  file, `DO_NEXT.md`, `BUGS.md`, `WHAT_WE_DID.md`, and the task index
-  updated. Stale local `terminology-grounding-glossary` branch already
-  deleted at branch-creation time.
+Phase 12 of `PLAN.md` is now largely landed; remaining items are
+follow-on improvements:
 
-## Phase 10 Follow-On Backlog
-
-After PR #45 merges, Phase 10 remaining work:
-
-- Renderer support so quiz prompts/explanations, flashcard front/back, exam
-  card statements, fact statements, and challenge instructions can honour
-  inline HTML `class="termRef"` markers.
-- Continued inline grounding for the tutorials, regulations, and other
-  Markdown surfaces flagged in the coverage matrix's "Mentioned In Prose
-  But Not Inline-Grounded" section.
-- Decide per uncovered entry (the 53 dark terms) whether to ground inline
-  or retire.
+- Continued quiz / flashcard / exam expansion toward Phase 9 minima
+  (200 / 500 / 30).
+- Deeper Looker Studio terminology citations (16 of 23 entries still
+  cite the landing page).
+- Decisions on the 53 zero-coverage terminology entries in
+  `_development/terminology-coverage.md`.
 
 ## Blockers And Gaps
 
-- Claude CLI formal review remains blocked by authentication or prior
-  hangs; Task 060 does not mark any phase complete.
-- Curriculum completeness, external verification, and full assessment
-  coverage remain Phase 9 gaps. Phase 10.2 backfilled named-domain
-  citations but Phase 9 still requires the competency / coverage / gap /
-  source matrices and a recorded formal review.
-- Some Phase 10.2 citations point to vendor or regulator landing pages
-  rather than deep-linked specific pages; deepening those citations is
-  follow-on work.
+- Claude CLI formal review remains blocked by authentication; Task 062
+  does not mark any phase complete.
+- Phase 9 completeness gates remain open.
