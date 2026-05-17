@@ -3786,137 +3786,440 @@ questions:
   hard:
     - id: q-hard-semi-additive-exposure
       type: multiple_choice
-      estimated_seconds: 95
+      estimated_seconds: 110
       recommended_learner_tasks: [LT-SQL-003]
       source_facts:
         - FACT-BI-SEMI-ADDITIVE-BALANCE-SNAPSHOT
         - FACT-BI-REFERENCE-DATE-SEPARATION
         - FACT-REAL-ESTATE-VALUATION-DATE-SEPARATION
-      prompt: >
-        A March exposure page has February and March loan snapshots plus
-        collateral valuation dates. Which result should be the KPI?
+      prompt: |
+        The March exposure dashboard reads from two committed
+        month-end snapshots in `loan_monthly_snapshots`
+        (2026-02-28 and 2026-03-31) plus collateral
+        `property_valuations` rows that have a separate
+        `valuation_date`. A teammate's first cut publishes:
+
+            principal_kpi = SUM(outstanding_principal)
+              FROM loan_monthly_snapshots
+              -- no date filter
+            collateral_kpi = SUM(market_value_eur)
+              FROM property_valuations
+              -- joined to loan on loan_id, but valuation_date
+              -- not constrained
+
+        With 5 loans × 2 snapshots = 10 fact rows and per-loan
+        valuations going back 12 quarters, the principal_kpi
+        reads RON 915,000 and the collateral_kpi reads ~EUR 11.8M.
+        Reviewers see the dashboard and the principal looks way
+        too high. What is the cert-correct KPI shape?
       options:
         - id: latest_period_by_currency
-          label: Latest-period principal by currency, with cross-date sums kept as controls.
+          label: |
+            **Latest-period principal by currency**, with
+            cross-date sums kept only as a control number for
+            reconciliation. The principal KPI reads
+            `SUM(outstanding_principal) WHERE as_of_date =
+            DATE '2026-03-31' GROUP BY currency_code`. The
+            collateral metric uses
+            `valuation_date = (latest applicable date per
+            property)` filtered separately; collateral value
+            and outstanding principal are different metrics
+            on different reference dates and don't sum
+            together.
         - id: all_snapshots_sum
-          label: February and March principal summed together.
+          label: |
+            **February and March principal summed**. The two
+            month-ends together give a better picture of
+            quarterly exposure than either alone. The headline
+            number for Q1 2026 is the sum across both months,
+            keeping each loan represented at both reporting
+            dates.
         - id: valuation_as_principal
-          label: Collateral market value used as loan principal.
+          label: |
+            **Collateral market value used as principal**. If
+            collateral is more current than the loan snapshots
+            (most recent valuation is later than the most recent
+            month-end), the dashboard should prefer collateral
+            market value as the headline exposure number.
       answer: latest_period_by_currency
-      explanation: >
-        Balance and exposure snapshots are semi-additive: they can be summed
-        across entities for one reference date, not blindly across time.
-        Collateral valuation date is a separate concept.
-      self_assessment: >
-        If every date field is interchangeable, rebuild the exposure and
-        valuation controls.
+      explanation: |
+        Two grain rules collide on an exposure page; both
+        need to hold:
+
+        - **Outstanding principal is semi-additive**.
+          Balance / exposure / position metrics are
+          snapshots, not flows. Summing the same loan's
+          February balance and March balance is the same
+          mistake as summing an account's daily balance
+          across three days - it triple-counts the same
+          money. The grain-correct shape: pick one
+          reporting reference date (latest month-end) and
+          sum across loans, not across time.
+        - **Collateral valuation date is separate from
+          loan reporting date**. The most recent valuation
+          might be from a prior quarter (real estate isn't
+          re-appraised daily); using it as the headline
+          principal would conflate two different concepts.
+          Keep them as two named KPIs with explicit
+          reference dates.
+
+        Both wrong paths read like reasonable shortcuts and
+        produce dashboards that overstate by 2-3x. Reviewers
+        catch the principal one quickly; the collateral one
+        only surfaces when someone asks "what date is this
+        as of?".
+      self_assessment: |
+        On exposure pages, every KPI carries an explicit
+        reference date. Two KPIs on the same page can have
+        two different reference dates - that's fine, label
+        each. Cross-date sums belong in a "reconciliation"
+        sidebar, never as the headline.
     - id: q-hard-fanout-metric-ownership
       type: multiple_choice
-      estimated_seconds: 90
+      estimated_seconds: 95
       recommended_learner_tasks: [LT-BI-002, LT-LOOKER-004]
       source_facts:
         - FACT-BI-FANOUT-JOIN-RISK
         - FACT-BIGQUERY-REDUCE-BEFORE-JOIN
         - FACT-LOOKER-STUDIO-CALCULATED-FIELD-SCOPE
-      prompt: >
-        A shared executive dashboard needs fanout-safe `ledger_total`. Where
-        should the repair live?
+      prompt: |
+        The exec dashboard's `ledger_total` was originally
+        wrong: a developer joined `account_owners` to the
+        balance fact and got `RON 164,800` instead of
+        `RON 95,700` (the fanout problem). A teammate fixed it
+        for that one scorecard by adding a `DISTINCT
+        account_id` step inside the **chart-level calculated
+        field**. The number now matches. Two more charts on
+        the same page (a trend line and a per-branch bar)
+        need the same metric. Where should the repair live so
+        the fix doesn't have to be repeated three times - or
+        worse, get out of sync?
       options:
         - id: shared_serving_logic
-          label: In upstream serving SQL or a reusable data-source field.
+          label: |
+            **In the upstream serving SQL** (e.g. a
+            `serving_deposit_dashboard` view that aggregates
+            balances at account-day grain before any owner
+            join). Every chart that reads from the view
+            inherits the correct grain. Backup: a
+            data-source-level calculated field that any chart
+            on the data source picks up.
         - id: single_chart_formula
-          label: In a one-off formula hidden inside one chart.
+          label: |
+            **In a chart-level calculated field on each
+            chart**, copied carefully. Schedule a quarterly
+            sync to keep the three copies aligned. The fix
+            stays close to where the bug originally appeared.
         - id: raw_owner_join
-          label: In the raw owner join before balance grain is restored.
+          label: |
+            **In the raw owner-join itself**, before the
+            balance-grain reduction. Allocate balances pro-rata
+            across owners on the join; the chart-level total
+            then sums correctly because the underlying rows
+            already encode the shares.
       answer: shared_serving_logic
-      explanation: >
-        The raw owner join can duplicate balances. A shared metric should be
-        repaired before charts reuse it, or later charts can reintroduce the
-        same error.
-      self_assessment: >
-        If the fix exists only in one chart, move it to a shared layer before
-        signoff.
+      explanation: |
+        Where you put the fix determines who maintains it:
+
+        - **Upstream serving SQL** is owned by the
+          warehouse team and reviewed in version control.
+          The fix is one place; every consumer benefits.
+          Adding a fourth chart later doesn't require
+          re-discovering the fanout problem.
+        - **Chart-level fix** lives in the report config,
+          which has no version control, no diff history,
+          and no review process beyond "click around in
+          Looker Studio". Three chart-level copies of the
+          same fix is three places drift can happen.
+        - **Pre-join allocation** (option C) is sometimes
+          the right answer when the question is genuinely
+          "how is this split across owners?", but it's
+          structurally different from the original
+          question ("what is the account-grain total?")
+          and quietly changes the metric's meaning. It's
+          not a "fix"; it's a "different metric".
+
+        The cert-correct rule of thumb: metric repairs
+        belong **upstream of the consumer**. The further
+        upstream, the more consumers benefit; the further
+        downstream, the more places the same fix has to be
+        re-implemented and reviewed.
+      self_assessment: |
+        Whenever you find a bug in a metric on a chart, ask
+        "if I add a fourth chart that uses the same metric,
+        does my fix automatically apply?". If the answer is
+        no, the fix is in the wrong layer.
     - id: q-hard-blend-freshness-signoff
       type: multiple_choice
-      estimated_seconds: 90
+      estimated_seconds: 100
       recommended_learner_tasks: [LT-LOOKER-004, LT-DQ-005]
       source_facts:
         - FACT-LOOKER-STUDIO-BLEND-FRESHNESS-MINIMUM
         - FACT-LOOKER-STUDIO-BLEND-JOIN-CONFIG
         - FACT-LOOKER-STUDIO-DATA-FRESHNESS-TRADEOFF
-      prompt: >
-        A report blends a BigQuery serving view with a branch mapping source.
-        What must be checked before signing off freshness?
+      prompt: |
+        The deposits dashboard blends two sources:
+
+        - **Source L**: BigQuery view
+          `serving_deposit_branch_daily` (data source freshness
+          = 15 minutes; daily ingest at 14:00).
+        - **Source R**: Google Sheet `branch_enrichment` (data
+          source freshness = 12 hours; updated manually
+          weekly).
+
+        A reviewer asks: "what does the blended chart actually
+        show in terms of freshness?". Two real failure modes
+        worry her: (a) the chart reads from an old cached
+        Sheet result while the BigQuery side updates, and (b)
+        the blend's effective freshness isn't what either
+        source's freshness setting promises. Before sign-off,
+        what does the BI author need to check?
       options:
         - id: each_source_refresh
-          label: Each source's freshness setting and how the blend uses the minimum refresh time.
+          label: |
+            **Each source's freshness setting separately, plus
+            the blend's effective refresh behaviour**. A blend
+            queries each underlying source according to that
+            source's freshness window and combines results;
+            the blend's effective freshness is therefore
+            governed by the slower side - the chart can be
+            up to 12 hours stale on the Sheet side even when
+            BigQuery refreshes every 15 minutes. Document the
+            blend's effective freshness floor and decide
+            whether 12 hours is acceptable for the audience.
         - id: bigquery_only
-          label: Only the BigQuery source, because blends always inherit its freshness.
+          label: |
+            **Only the BigQuery source**. Blends always
+            inherit the leftmost source's freshness setting;
+            since BigQuery is on the left, the chart refreshes
+            every 15 minutes regardless of the Sheet's
+            12-hour setting.
         - id: chart_order
-          label: Only the order of charts on the page.
+          label: |
+            **The order of charts on the dashboard page**.
+            Charts higher on the page refresh first;
+            re-ordering the page so the blended chart is
+            first ensures the freshest possible data.
       answer: each_source_refresh
-      explanation: >
-        A blended source depends on the included sources and their join
-        configuration. Freshness review should cover every included source.
-      self_assessment: >
-        If a blend has more than one source, freshness and join setup both need
-        explicit review.
+      explanation: |
+        Blends in Looker Studio query each underlying data
+        source separately, then combine the results in the
+        chart. Each side honours its own freshness setting -
+        the blend doesn't override them. Practical
+        consequences:
+
+        - **Effective freshness floor is the slowest
+          source**. The chart can show fresh BigQuery rows
+          joined to a stale Sheet snapshot. Stakeholders
+          looking at the chart can't tell which side is
+          stale without separate metadata.
+        - **Edit-after-cache windows are confusing**. If a
+          team member updates the Sheet at 11:00 and the
+          chart was last queried at 10:55, the cached
+          Sheet result is served until 22:55 (12 hours
+          later). BigQuery refreshes do not invalidate the
+          Sheet cache.
+        - **Practical fix**: align the freshness settings
+          on both sources to the minimum the audience
+          actually needs, OR add a small "data as of"
+          per-source indicator on the dashboard so viewers
+          can see when each side last refreshed.
+
+        Wrong distractor 1 (leftmost-inherits) confuses the
+        blend's *row-retention* rule (leftmost source is the
+        outer side, which is the medium-question
+        `q-medium-leftmost-blend-source`) with the freshness
+        behaviour (each source independently). Wrong
+        distractor 2 (chart order) confuses page layout with
+        data-loading order; there is no "first refresh" effect
+        based on chart position.
+      self_assessment: |
+        For any blended chart, the dashboard sign-off should
+        document each source's freshness setting separately
+        and name the slowest source as the effective floor.
+        "The chart is fresh" is meaningless without that
+        per-source breakdown.
     - id: q-hard-refresh-cost-evidence
       type: select_all
-      estimated_seconds: 95
+      estimated_seconds: 110
       recommended_learner_tasks: [LT-LOOKER-004, LT-DQ-005]
       source_facts:
         - FACT-LOOKER-STUDIO-BIGQUERY-REFRESH-COST
         - FACT-BIGQUERY-JOBS-BYTES
         - FACT-BIGQUERY-JOBS-CREATION-TIME
-      prompt: >
-        A BigQuery-backed Looker Studio report refreshes automatically. Which
-        evidence belongs in the operations review?
+      prompt: |
+        Finance asks for the monthly cost of the deposits
+        dashboard. The dashboard auto-refreshes every 15
+        minutes, ~10 viewers open it daily, and the underlying
+        BigQuery query reads from a partitioned 18-month fact
+        table.
+
+        For the operations review, you query
+        `INFORMATION_SCHEMA.JOBS_BY_PROJECT` to find every job
+        that ran against the relevant dataset in the last 30
+        days. Which evidence rows belong in the review pack?
+        (Select all that apply.)
       options:
         - id: refresh_cost_note
-          label: A note that report refreshes can trigger BigQuery query costs.
+          label: |
+            A short note in the review pack: "Looker Studio
+            auto-refresh on this report can trigger BigQuery
+            jobs whose cost is billed to project `proj-A`.
+            Cost rises linearly with refresh frequency and
+            number of viewers; cache hits do not bill but
+            cannot be assumed."
         - id: job_bytes
-          label: Bytes processed for the dashboard query window.
+          label: |
+            **`SUM(total_bytes_processed)`** for jobs whose
+            `user_email` matches the dashboard's service
+            account, broken down by job creation hour.
+            Bytes processed × current rate = the actual
+            charge.
         - id: job_time_window
-          label: Job creation-time evidence for the review window.
+          label: |
+            **`creation_time`** distribution of the same jobs,
+            so the review can show the auto-refresh pattern
+            (one job every 15 minutes per active viewer) vs
+            ad-hoc query bursts. Outliers in the
+            distribution often reveal a stuck refresh loop
+            or a viewer leaving the tab open over a holiday.
         - id: cache_hit_skip
-          label: A claim that all refreshes hit the query results cache so bytes do not matter.
+          label: |
+            A claim that "all refreshes hit the BigQuery
+            query results cache, so `total_bytes_processed`
+            is effectively zero for repeat queries". The
+            review can skip the bytes column.
       answer: [refresh_cost_note, job_bytes, job_time_window]
-      explanation: >
-        Refresh settings can create BigQuery cost. Job bytes and creation-time
-        evidence connect report behavior to observable warehouse activity.
-      self_assessment: >
-        If refresh behavior cannot be tied to job evidence, the operations note
-        is incomplete.
+      explanation: |
+        BigQuery bills on bytes processed; cost evidence has
+        to tie back to job-level facts the warehouse already
+        records.
+
+        The three correct rows give a reviewer the full
+        picture:
+
+        - **What costs are possible** (refresh-cost note).
+        - **What costs actually happened** (bytes
+          processed, summed and broken down).
+        - **When they happened** (creation_time
+          distribution) - which often reveals whether the
+          cost is from the intended dashboard pattern or
+          from something else.
+
+        Why "cache hits" is the wrong row to put in the
+        review:
+
+        - The BigQuery query results cache is **invalidated
+          when the underlying table changes**. Daily ingest
+          invalidates it daily. The cache helps when many
+          viewers fire identical queries in the same
+          window before the next ingest; it does not help
+          across days.
+        - Even when the cache hits, that's reported on the
+          job (`cache_hit = TRUE`, `total_bytes_processed
+          = 0`). The bytes column already reflects cache
+          behaviour - it isn't bypassed by it. Skipping the
+          bytes column hides the cost evidence.
+
+        Production tip: the same JOBS query can be used to
+        identify expensive auto-refresh patterns. If
+        `count(*)` of jobs from the dashboard's service
+        account is suspiciously stable around N × hours-per-
+        day, you have an open-tab refresh loop running
+        overnight that nobody is reading.
+      self_assessment: |
+        For any BigQuery-backed report, the operations
+        review needs job-level bytes + creation_time
+        evidence. "It mostly hits the cache" is a vibe, not
+        an evidence row.
     - id: q-hard-control-publication-review
       type: select_all
-      estimated_seconds: 95
+      estimated_seconds: 110
       recommended_learner_tasks: [LT-LOOKER-007, LT-DQ-005]
       source_facts:
         - FACT-BIGQUERY-DRY-RUN-BYTES
         - FACT-BIGQUERY-QUERY-VALIDATOR-BYTES
         - FACT-LOOKER-STUDIO-BIGQUERY-REFRESH-COST
         - FACT-LOOKER-STUDIO-CONTROLS-FILTER-DATA
-      prompt: >
-        Before publishing a dashboard page with date and currency controls over
-        BigQuery data, which checks belong in the release review?
+      prompt: |
+        You're publishing a new deposits page with two
+        controls: a `Currency` drop-down (RON / EUR / All)
+        and a `Date range` picker (default: latest day). The
+        underlying query reads from a partitioned 18-month
+        table. Review board asks for evidence the page is
+        production-ready. Which evidence belongs in the
+        release review? (Select all that apply.)
       options:
         - id: byte_estimate
-          label: Pre-run byte estimate or dry-run evidence for the serving query.
+          label: |
+            **A dry-run / query-validator byte estimate** for
+            the underlying SQL with default control values,
+            plus a second estimate for the worst-case control
+            combination ("All currencies + 18-month range")
+            so reviewers can see the cost ceiling.
         - id: control_scope
-          label: Control fields, allowed values, defaults, and affected charts.
+          label: |
+            **A documented control contract** per control:
+            bound field, allowed values, default value, and
+            affected charts. For the Currency control:
+            bound to `currency_code`, allowed `{RON, EUR,
+            All}`, default `RON`, affects scorecards 1-3
+            and the bar chart; does not affect the FX
+            reference chart.
         - id: refresh_cost
-          label: Expected cost behavior when the report refreshes.
+          label: |
+            **Expected cost behaviour at refresh**: the
+            dashboard auto-refreshes every 15 minutes per
+            open tab. With ~10 daily viewers and a
+            partition-pruned default query at ~50 MB per
+            refresh, expected monthly bytes processed and
+            the projected cost at current rates.
         - id: ignore_partition_filter
-          label: A note that the partition filter can be omitted because the date control narrows the result.
+          label: |
+            **A note** that the partition filter on
+            `business_date` can be omitted from the
+            underlying SQL because the Date-range control
+            narrows the result on the chart side; the
+            BigQuery scan is already limited to the
+            displayed range.
       answer: [byte_estimate, control_scope, refresh_cost]
-      explanation: >
-        The release review should connect controls, query cost evidence, and
-        report refresh behavior. Raw private rows are not needed to validate
-        that contract.
-      self_assessment: >
-        If controls and query cost are not reviewed together, the page is not
-        ready for repeated use.
+      explanation: |
+        Three checks gate a real release for a
+        controls-driven, BigQuery-backed dashboard:
+
+        - **Byte estimate (dry-run)**. The default control
+          state is what 95% of viewers see; the worst-case
+          combination is what one of them will pick after
+          someone in management says "show me everything".
+          Both numbers should be in the review.
+        - **Control contract**. Controls in Looker Studio
+          are easy to add and surprisingly easy to misuse
+          (silently break with a field rename, "All" option
+          accidentally matching everything because of a
+          NULL pass-through, etc.). The contract makes the
+          control debuggable later.
+        - **Refresh-cost projection**. The 15-minute
+          auto-refresh × N viewers is the cost shape that
+          surprises finance after launch. Compute it before
+          launch, not after the first month's bill.
+
+        The wrong row (ignore partition filter) is a
+        repeat of the easy-question trap from `q-easy-
+        partition-date-filter`: chart-side controls do
+        **not** prune partitions on the warehouse. BigQuery
+        only prunes when the partition column is in the
+        SQL's `WHERE` clause; the Date-range control passes
+        the range into the chart but does not rewrite the
+        SQL to add a partition predicate. Omitting the
+        explicit predicate causes a full-table scan on
+        every refresh regardless of what the date picker
+        is showing.
+      self_assessment: |
+        Three things on every controls page: byte estimate
+        (default + worst-case), per-control contract, and
+        refresh-cost projection. The partition filter
+        always belongs in the SQL; controls cannot replace
+        it.
     - id: q-hard-authorized-view-access
       type: select_all
       estimated_seconds: 95
