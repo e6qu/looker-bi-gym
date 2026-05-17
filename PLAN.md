@@ -606,6 +606,104 @@ Phase 12 does not graduate Phase 9. Phase 9 still requires the full
 competency / coverage / gap / source matrices and a recorded formal
 review before any "complete" claim.
 
+## Phase 13 - Learner-Perspective Remediation
+
+A walk-through of the deployed site
+(https://e6qu.github.io/looker-bi-gym/) from a fresh-learner stance
+surfaced structural confusion that the validators cannot see. Tracked
+as `LEARNER-PERSPECTIVE-AUDIT-2026-05-17` in `BUGS.md`. Each track is
+its own PR; deliver in order of learner impact.
+
+### Phase 13.A - Onboarding and navigation
+
+- Replace the home hero CTAs with a single "Start here" entry that
+  routes to the first tutorial, plus a smaller secondary "Browse
+  reference docs" link.
+- Rewrite the home lead paragraph in learner-outcome terms ("After
+  this course you will ...") instead of platform-implementation terms
+  ("A static React app ...").
+- Hide or restructure the principles row so platform-meta does not
+  appear on the home page.
+- Add an on-site reading-order map: a one-line description per nav
+  surface stating when a learner should use it. Either as a "Site
+  map" landing block on home, or as inline tooltips / sub-text on the
+  nav links.
+- Demote the docs entry from a top-level CTA. Make tutorials the
+  primary entry point; keep docs accessible from the home page only
+  as a secondary "reference background reading" link.
+
+### Phase 13.B - Tutorial sequence quality
+
+- Renumber tutorials so numbers and Areas agree, or drop the Area
+  grouping in favour of strict numbered order with a one-line area
+  tag on each tutorial header.
+- Replace "Prior knowledge expected" sections that name earlier-
+  tutorial outputs with concrete prerequisite SQL or vocabulary the
+  learner can recognise without having done a specific other
+  tutorial. (Equivalent to the existing rule, but enforced in
+  authoring.)
+- Rebuild tutorial 00 as an executable orientation: one short SQL
+  result against the deposits seed, one short Looker Studio data
+  source check (or a self-contained equivalent), and one concrete
+  artifact the learner can save. Drop the "write four headings"
+  step.
+- Introduce dataset schema (column names + business meaning) at the
+  top of any tutorial that runs SQL against that dataset, before the
+  first query.
+- Reduce `<a class="termRef">...<sup>...</sup></a>` density: cap one
+  superscripted termRef per concept per section. The first use of a
+  term gets the link, subsequent uses are plain text.
+- Either give the platform a "notes" surface (a Settings-level
+  scratch area persisted in browser storage) so deliverables have a
+  real place to live, or rewrite "Deliverables" so they reference
+  on-platform artefacts only (e.g., a SQL result the workbench just
+  showed) and drop external `notes/*.md` paths.
+- Replace `<details>`-revealed End Challenge answers with either a
+  delay-gated reveal, a self-quiz against a written-down learner
+  response, or removal of the reveal-button shape entirely.
+
+### Phase 13.C - Compartmentalization loophole closures
+
+- Extend `validate:compartmentalization` to scan tutorial body links
+  that target `#/challenges/...-quiz` and `#/challenges/...-exam`,
+  not just visible text patterns. The current rule covers free text
+  but not link hrefs.
+- Decide on `recommended_learner_tasks` in flashcard frontmatter:
+  either surface it in the renderer as a "next step" link, or remove
+  it from the schema. No silent coupling.
+
+### Phase 13.D - Assessment shape upgrade
+
+- Bring quiz prompts toward application shape (predict the SQL
+  output, find the bug, fill in the missing predicate) using the
+  IFRS 9 stage-transition exam card pattern. Target: at least one
+  application question per cert-track topic family.
+- Reshape orientation quiz so answers are derived from a worked
+  scenario rather than picked from a list mapped to a hidden string
+  ID.
+- Refit flashcard backs that paraphrase terminology into
+  contrast / trap / misconception framings.
+
+### Phase 13.E - Surface justification
+
+- Add a learner-facing rationale paragraph at the top of `#/facts`,
+  `#/challenges`, and the docs index explaining when to use each
+  surface and how it relates to the tutorial path.
+- Either retire one of `docs` or `tutorials` as a parallel
+  curriculum, or rewrite `docs/README.md` to explicitly frame docs
+  as research / synthesis background, not a learning path.
+
+### Phase 13.F - Polish & cruft
+
+- Remove the per-tutorial "Do not use Google Cloud CLI / Docker /
+  ..." line; replace with a single repository-level note in
+  `tutorials/README.md`.
+- Collapse the triple synthetic-data-boundary repetition per
+  tutorial into a single line at the top of the tutorial body.
+- Move dataset version pinning out of learner-facing setup lines
+  into a separate "dataset reference" footer where the version label
+  is informational, not instructional.
+
 ## Split Plans
 
 - [PLAN_BI_TUTORIAL_APP.md](PLAN_BI_TUTORIAL_APP.md): app skeleton, runtime,

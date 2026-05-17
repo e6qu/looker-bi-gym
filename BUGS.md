@@ -1,9 +1,186 @@
 # Bugs And Known Gaps
 
-Last updated: 2026-05-17 (Codex re-review and tight verdict run both
-remediated; last residual "Order is alphabetical" wording fixed)
+Last updated: 2026-05-17 (learner-perspective site audit recorded)
 
 ## Open Issues
+
+- ID: LEARNER-PERSPECTIVE-AUDIT-2026-05-17.
+  - Area: home onboarding, tutorial sequence, surface justification,
+    cross-surface coupling, prose polish.
+  - Severity: high (the curriculum is still confusing to a fresh
+    learner; substantial parts read as platform self-description or
+    vocabulary scaffolding rather than learning material).
+  - Description: Walk-through of the live site
+    (https://e6qu.github.io/looker-bi-gym/) and underlying source
+    files from a fresh-learner stance. The previous remediation
+    rounds (`CODEX-*-2026-05-17`) closed every codex finding the
+    static validators could measure, but the learner-experience
+    confusion that surfaced is structural and not yet covered by any
+    validator. Findings grouped into separable tracks below; each
+    track can ship as its own PR.
+
+  ### Track A - Onboarding & navigation
+  - A1 `block` Home page has no "Start here" path. The hero offers
+    two equal CTAs (Read Docs / Browse Tutorials) and a fresh
+    learner cannot tell which to click first. See
+    `app/src/App.tsx:2728-2731`.
+  - A2 `high` Home page describes platform implementation rather
+    than learner outcomes. Lines like "A static React app for
+    technical BI practice ... deterministic browser checks ... local
+    learner progress" answer "what is this" instead of "what will I
+    be able to do". See `app/src/App.tsx:2723-2727`.
+  - A3 `medium` The principles row on home is platform-meta
+    (`principles` constant). Learners reading the home page see
+    architectural constraints, not learning value.
+  - A4 `medium` Top-nav has 12 sections (Home, Docs, Regulations,
+    Terminology, Tutorials, Workbench, Quiz, Exam, Facts,
+    Flashcards, Challenges, Settings) with no learning-loop coupling
+    between them. A learner cannot tell which to use when. There is
+    no on-site map that says "first do this, then that".
+  - A5 `high` Two parallel curricula confuse the learner. The
+    `docs/00-17` set is research / synthesis material, and
+    `tutorials/00-09` is the practical curriculum. Both are numbered
+    starting at 00 inside `docs/README.md:5-12` and
+    `tutorials/README.md:25-66`. No surface tells the learner which
+    to read in which order. The docs index even says "Start here" at
+    `docs/README.md:3`, which competes with the tutorials index. The
+    home page links to `#/docs/README.md` as one of two primary CTAs,
+    suggesting docs are the entry point - but docs are not the
+    learning path.
+
+  ### Track B - Tutorial sequence quality
+  - B1 `high` Tutorial numbering does not match Area ordering. Area
+    B contains tutorials 02 / 04 / 05; Area C contains 03 / 06. A
+    learner reading by number jumps Areas; a learner reading by Area
+    jumps numbers. Neither is a coherent sequence. See
+    `tutorials/README.md:25-66`.
+  - B2 `high` "Each tutorial stands alone" claim is false in
+    practice. Tutorial 04 lists "A dimensional model with declared
+    grain and a governed serving layer" as Prior knowledge expected
+    (`tutorials/04-metrics-and-calculated-fields.md:30`), which is
+    exactly tutorial 02's output. Tutorial 04 also lists
+    "Weighted-average reasoning: why `SUM(a) / SUM(b)` differs from
+    `AVG(row_ratio)`" as Prior knowledge expected, but
+    weighted-average reasoning is the central content tutorial 04
+    teaches. Inverted.
+  - B3 `block` Tutorial 00 (Orientation And Stack) is a vocabulary
+    primer with no executable artifact. The seven Steps in
+    `tutorials/00-orientation-and-stack.md:56-88` instruct the
+    learner to write four headings (`Serving layer`, `Reporting
+layer`, `Sensitive fields`, `Banking grain`) in their own notes
+    and fill in pre-determined sentences. No SQL is run, no data is
+    loaded, nothing is verified by the platform. A first-time
+    learner reads this and reasonably wonders "did I actually do
+    anything? what skill did I just build?".
+  - B4 `high` Tutorial 01 references `account_daily_balances`
+    without first introducing the schema or business meaning of its
+    columns. The learner is asked to run
+    `SUM(ledger_balance) GROUP BY business_date, currency_code` at
+    `tutorials/01-connect-public-data.md:89-100` before knowing what
+    a `ledger_balance` is, whether it differs from `available_balance`,
+    or why `business_date` (not `as_of_date` or some other name)
+    is the reference date.
+  - B5 `medium` Excessive `<a class="termRef">...<sup>BQ</sup></a>`
+    superscripts in tutorial bodies break readability. Tutorial 04
+    has 12+ termRef links in the first 30 lines of body
+    (`tutorials/04-metrics-and-calculated-fields.md:47-65`). Each
+    domain phrase becomes a footnoted reference; the eye stutters,
+    and the prose reads like a textbook footnote dump rather than a
+    teaching narrative.
+  - B6 `medium` Tutorials produce "notes" / "decision logs" /
+    "metric contracts" as deliverables but the platform has no
+    note-saving mechanism. Tutorial 01 produces
+    `notes/01-serving-view-check.md` at
+    `tutorials/01-connect-public-data.md:66` - a path the platform
+    will never create, never validate, and never resurface.
+  - B7 `medium` "End Challenge" sections defeat their own purpose.
+    Tutorial 00's End Challenge at
+    `tutorials/00-orientation-and-stack.md:123-137` presents a
+    scenario and reveals the expected answer immediately below in a
+    `<details>` block. The friction is one click; the challenge is
+    cosmetic.
+
+  ### Track C - Compartmentalization loopholes
+  - C1 `high` `tutorials/00-orientation-and-stack.md:142` links to
+    `#/challenges/orientation-quiz`. The compartmentalization
+    validator scans `quizzes/`, `flashcards/`, `exams/`,
+    `tutorials/`, and `learner-tasks/`, but does not scan
+    `challenges/` and does not flag tutorial body links that target
+    the challenges surface. The rule "tutorials must not assume the
+    quiz/exam surface" is silently bypassed by routing the
+    orientation check through `#/challenges/orientation-quiz`
+    instead of `#/quiz`. Fix: extend the validator's
+    `see-other-surface` pattern set to flag `#/challenges/...-quiz`
+    targets, or convert the orientation quiz into a self-contained
+    in-tutorial self-check.
+  - C2 `medium` Flashcards' `recommended_learner_tasks` metadata
+    (e.g. `flashcards/bi-fundamentals/fc-bi-grain.md:11-12`) names a
+    specific LT path. This is invisible to the learner (the
+    flashcard renderer does not show it) but the cross-surface
+    coupling is real in the data model. Either surface it as a
+    "next step" link in the flashcard renderer, or remove the field
+    entirely. Today it is dead weight that re-introduces coupling on
+    the authoring side.
+
+  ### Track D - Assessment quality
+  - D1 `medium` Most quiz questions remain abstract "which
+    describes X" / "which is correct" prompts. The audit in
+    `_development/assessment-audit.md` (Q-4) flagged this; the
+    expansion since then added more questions but the prompt shape
+    is still concept-recall heavy. Application questions (predict
+    the output, find the bug, name the missing predicate) are still
+    rare. The IFRS 9 stage-transition exam card is the right shape;
+    the quiz has not reached that shape.
+  - D2 `medium` Orientation quiz answers are encoded as literal
+    string IDs (`sql_defined_virtual_table`, `conduit_schema`,
+    integer `100000`) at
+    `challenges/manifests/orientation-quiz.yaml:35-58`. The learner
+    picks the option that maps to one of these codes; the platform
+    never asks the learner to defend the choice or derive the
+    answer.
+  - D3 `medium` Flashcard backs often paraphrase the terminology
+    entry. `fc-bi-grain` back at
+    `flashcards/bi-fundamentals/fc-bi-grain.md:24-26` says "Declare
+    the row grain first; then choose measures and joins that
+    preserve that grain", which is the terminology definition
+    nearly verbatim. Spaced-repetition value comes from contrast /
+    trap / misconception framing, not from definition recall.
+
+  ### Track E - Surface justification
+  - E1 `medium` Facts page (`#/facts`) has no learner-facing
+    justification. A fresh learner clicking it sees a fact graph but
+    is given no reason to use it. Either name the pedagogical
+    purpose on the page (e.g., "use this to trace the source behind
+    any claim") or hide the surface from the primary nav.
+  - E2 `medium` Challenges page (`#/challenges`) conceptually
+    overlaps with quiz / exam. Three different assessment surfaces
+    (challenges, quiz, exam) with overlapping shapes and no learner-
+    facing rationale for which to attempt when.
+  - E3 `medium` `docs/` and `tutorials/` overlap conceptually.
+    `docs/01-business-intelligence-foundations.md` covers grain,
+    facts, dimensions, metrics; tutorial 02 teaches the same. No
+    surface signals the difference between them.
+
+  ### Track F - Polish & cruft
+  - F1 `low` "Required tools" / "Do not use ..." disclaimers
+    repeat across every tutorial:
+    `tutorials/00-orientation-and-stack.md:32`,
+    `tutorials/01-connect-public-data.md:38-43`, etc. Beginners
+    have not heard of Google Cloud CLI / service account keys /
+    Docker, so the warning is noise; experienced learners do not
+    need it.
+  - F2 `low` Synthetic-data boundary line appears in three places
+    per tutorial: frontmatter `tags`, body paragraph, and
+    Deliverable section. Reading time loss with no value.
+  - F3 `low` Dataset version pinning (`deposits-seed/v0.1.0`) is
+    exposed to the learner in tutorial setup lines. Internal
+    versioning leaking into learner copy.
+
+  - Fix plan: open one PR per track. Track A and Track B carry the
+    bulk of the user impact; ship them first. Tracks C and D extend
+    validator scope. Tracks E and F are polish; can ship together as
+    a small PR.
+  - Status: open. Codex external review of this audit queued.
 
 - ID: CODEX-VERDICT-RUN-2026-05-17.
   - Area: tutorials/learner-tasks/README ordering wording.
