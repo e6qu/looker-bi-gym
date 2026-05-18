@@ -29,48 +29,63 @@
 
 # 06 - Measure Dashboard Performance And Cost Signals
 
-Synthetic-data boundary: measure and simulate query behavior only with the
-synthetic deposits dataset. Do not inspect, export, paste, or screenshot private
-billing data, job metadata, user emails, customer data, credentials, tokens, or
-private report links.
+## The Moment
 
-Prior knowledge expected:
+Finance asks for the monthly cost of the deposits dashboard. You
+realize you don't know - the dashboard "just refreshes" and nobody
+has correlated its refresh pattern to BigQuery job evidence yet.
+Reviewing the same dashboard you've been building, two design
+choices visibly drive cost up:
 
-- A governed serving view, an executive dashboard spec, and an
-  understanding that owner-joined raw rows can fanout balances.
-- Awareness that a BigQuery logical view re-runs its SQL every time it is
-  queried.
-- Basic comfort with reading job metadata fields (bytes processed,
-  bytes billed).
+- It reads from a **broad raw source** (the full
+  `account_daily_balances` table) when a **narrow serving view**
+  (with `business_date`, `currency_code`, and `SUM(ledger_balance)`
+  only) would do.
+- The Looker Studio data-source freshness is set to 15 minutes; the
+  underlying ingest only runs daily. The dashboard hits BigQuery
+  far more often than the data changes.
 
-Required tools:
+This lesson connects each design choice to **observable query
+work**: bytes processed per refresh, refresh cadence, freshness
+window, and the resulting monthly cost. You produce a small
+operations control table that names the report, owner, source
+pattern, query count, bytes, freshness, and control total - the kind
+of artefact a finance reviewer or a DORA-aligned operations team
+can read.
 
-- Browser-first path: browser SQL workbench for the synthetic datasets.
-- Optional applied path: browser UI access to BigQuery and Looker Studio.
+## Prior Knowledge
 
-Objective: connect dashboard design choices to observable query work, then
-produce a cost/freshness control record that can be reviewed without exposing
-private operational metadata.
+`SUM`, `GROUP BY`, basic familiarity with `INFORMATION_SCHEMA.JOBS`
+or its DuckDB equivalent. The vocabulary of logical view vs
+materialized view (you'll define both more carefully in this lesson).
+
+Objective: connect dashboard design choices (source breadth,
+freshness setting, refresh cadence) to observable query work,
+producing a cost / freshness control record that can be reviewed
+without exposing private operational metadata.
 
 After this tutorial, you will be able to:
 
-- Compare a broad raw source with a narrow serving source.
-- Explain why
-  <a class="termRef" href="#/terminology/bigquery.md#bigquery-logical-view">logical views<sup>BQ</sup></a>
-  still run their SQL when queried, and when to prefer a
-  <a class="termRef" href="#/terminology/bigquery.md#bigquery-materialized-view">materialized view<sup>BQ</sup></a>.
-- Read BigQuery job fields that matter for BI cost review.
-- Draft a daily report operations control that records source, owner, query
-  count, bytes, freshness, and control totals.
-- Separate browser-local simulated evidence from optional live BigQuery job
-  evidence.
+- Compare a broad raw source against a narrow serving source on
+  bytes processed.
+- Explain why logical views still run their SQL each time queried,
+  and when to reach for a materialized view.
+- Read BigQuery job-metadata fields (bytes processed, creation
+  time) that matter for cost review.
+- Draft a daily operations-control row that names source, owner,
+  query count, bytes, freshness, and control total.
+- Keep simulated browser-local evidence separate from optional
+  live BigQuery job evidence.
 
 Produces:
 
-- Browser-first source-profile and cost-signal outputs.
-- A draft `serve.bi_ops_cost_daily` design.
-- Optional BigQuery job metadata query notes.
-- A short personal note (kept in whichever editor you prefer; the platform does not store it).
+- Browser-first source-profile and cost-signal outputs (with the
+  11,232 vs 1,248 bytes contrast).
+- A draft `serve.bi_ops_cost_daily` design row.
+- Optional BigQuery `INFORMATION_SCHEMA.JOBS` query notes for the
+  live-environment path.
+- A short personal note (kept in your own editor) with the
+  before / after refresh numbers.
 
 ## Goal
 

@@ -32,46 +32,78 @@
 
 # 09 - Assemble The Banking BI Capstone Package
 
-Synthetic-data boundary: use only the predefined synthetic datasets and
-deterministic evidence in this lesson. Do not use real banking data,
-credentials, private report links, customer screenshots, production exports,
-private IAM evidence, user emails, or raw operational logs.
+## The Moment
 
-Prior knowledge expected:
+A new BI engineer is joining the team next month. Their first task
+will be to take over the deposits dashboard you've built across
+lessons 01-08, and the senior reviewer wants confidence that the
+handover can happen without three weeks of "what did the original
+author mean here?". The reviewer asks for a **capstone package** -
+a single set of artefacts that, taken together, let a new engineer
+understand the dashboard's design without having to read every old
+commit.
 
-- A governed dimensional model, an executive dashboard spec, a metric
-  contract register, a fanout-repair pattern, a cost-monitoring
-  approach, a sharing register, and an operations control record.
-- The cert-track learner is expected to bring outputs from prior
-  practice (their own notes on grain, governance, cost, and operations)
-  into this capstone synthesis.
+The capstone is not new work; it's a checklist of artefacts you've
+already produced across the earlier lessons, assembled into one
+reviewable package:
 
-Required tools:
+- **Source-to-metric numbers**: source row count, model row count,
+  serving row count, dashboard control total - all reconciling to
+  the same number (95,700) for the same `business_date`
+  (2026-03-31).
+- **Metric contracts**: each KPI on the dashboard described as a
+  formal contract (grain, formula, owner, allowed dimensions,
+  expected value, release status).
+- **Dashboard page specifications**: chart-by-chart spec naming
+  data source, dimensions, metric, filters, expected values, and
+  controls.
+- **Governance and credential evidence**: the field-classification
+  table, the authorised view / credential-mode decision, the
+  sharing register row.
+- **Operations evidence**: the dependency register row, the
+  freshness / reconciliation / cost-evidence numbers, the
+  incident-status taxonomy.
 
-- Browser-first path: browser SQL workbench for the synthetic datasets.
-- Optional applied path: browser UI access to BigQuery and Looker Studio.
+The capstone gets a **rubric score**. If all eight artefacts are
+present and reconcilable, the package is ready to hand over. If
+any are missing, the rubric points at the specific lesson whose
+deliverable wasn't completed.
 
-Objective: assemble a reviewer-ready banking BI capstone package with governed
-serving outputs, metric contracts, dashboard page specifications, privacy and
-credential controls, operations evidence, and a scored review rubric.
+## Prior Knowledge
+
+The deliverables from lessons 01-08. If you skipped any earlier
+lesson, the corresponding artefact in the capstone will be missing
+and the rubric will say so explicitly - which is the design.
+
+Objective: assemble a reviewer-ready banking BI capstone package
+with governed serving outputs, metric contracts, dashboard page
+specifications, privacy and credential controls, operations
+evidence, and a scored review rubric. By the end of this lesson the
+new-engineer handover is one document, not a folder of scattered
+notes.
 
 After this tutorial, you will be able to:
 
-- Build a capstone artifact checklist from concrete BI deliverables.
-- Produce deterministic source totals, model totals, and dashboard controls.
-- State metric contracts with grain, formula, owner, allowed dimensions, and
-  release status.
-- Attach governance, credential, and sensitive-field controls to each page.
-- Score a capstone package with an explicit rubric and remediation rule.
+- Build a capstone artefact checklist from concrete BI
+  deliverables.
+- Produce deterministic source totals, model totals, and dashboard
+  controls that all reconcile to the same number.
+- State metric contracts with grain, formula, owner, allowed
+  dimensions, expected value, and release status.
+- Attach governance, credential, and sensitive-field controls to
+  each page.
+- Score a capstone package with an explicit rubric and remediation
+  rule.
 
 Produces:
 
-- Browser-first capstone package checklist.
-- Metric contract register.
-- Dashboard page specification.
-- Governance and operations evidence summary.
-- Rubric score and review workflow.
-- A short personal note (kept in whichever editor you prefer; the platform does not store it).
+- A browser-first capstone package checklist (8 named artefacts).
+- A metric contract register.
+- A dashboard page specification.
+- A governance and operations evidence summary.
+- A rubric score and review workflow.
+- A short personal note (kept in your own editor) with the
+  reviewer-ready package summary.
 
 ## Goal
 

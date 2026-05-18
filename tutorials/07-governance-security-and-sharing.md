@@ -31,48 +31,69 @@
 
 # 07 - Govern Dashboard Access, Fields, And Sharing
 
-Synthetic-data boundary: use only the predefined synthetic deposits dataset.
-Do not use real customer fields, real account numbers, production IAM
-screenshots, report sharing links, credentials, tokens, keys, private emails, or
-production policy text.
+## The Moment
 
-Prior knowledge expected:
+The deposits dashboard is ready to share with the branch-management
+audience (~40 people across regional teams). Compliance asks for a
+release record: which fields are exposed, who owns the data source,
+what's the access boundary, which credential mode is in use, and
+what review evidence backs the choice.
 
-- A dimensional model with declared sensitive fields (account-level
-  identifiers, masked numbers, restriction flags).
-- An aggregate executive dashboard spec.
-- Familiarity with the GDPR concepts of personal data, data
-  minimisation, and purpose limitation.
+That's a real list of decisions that the previous lessons haven't
+made explicit. This lesson turns the safe aggregate from lesson 03
+into a **governed release**:
 
-Required tools:
+- **Field classification**: each column in the serving view is
+  labelled as purpose-aligned (stays), sensitive (excluded), or
+  needs-justification (escalate). The classification table is the
+  evidence behind the minimisation decision.
+- **Access boundary**: the audience reads through an authorized
+  view, not the raw table. Their IAM grant is on the view; the view
+  reads the underlying table with the data-source owner's identity.
+- **Credential mode**: Looker Studio owner-credentials vs
+  viewer-credentials, picked deliberately based on what BigQuery
+  IAM should enforce per viewer.
+- **Sharing register**: a small per-report record (page URL, source
+  view, owner role, controls, review date) so a future reviewer can
+  reconstruct the design without needing the original author.
 
-- Browser-first path: browser SQL workbench for the synthetic datasets.
-- Optional applied path: browser UI access to BigQuery and Looker Studio.
+This is the lesson where minimisation and audience-boundary work
+stops being implicit and becomes a published artefact.
 
-Objective: turn a safe aggregate dashboard source into a governed release plan
-with field minimisation, access boundaries, credential-mode decisions, and
-review evidence.
+## Prior Knowledge
+
+`SELECT`, view DDL, IAM vocabulary (grant, role, principal). The
+GDPR principles named in earlier quiz questions and lessons (data
+minimisation, purpose limitation, personal data, pseudonymous
+identifiers are still personal data).
+
+Objective: turn a safe aggregate dashboard source into a governed
+release plan with field minimisation, access boundaries,
+credential-mode decisions, and review evidence the reviewer can
+verify against the warehouse.
 
 After this tutorial, you will be able to:
 
 - Classify candidate dashboard fields by purpose and privacy risk.
-- Exclude raw and masked identifiers from an aggregate executive dashboard.
-- Build a governed branch/currency serving result with exact controls.
-- Choose a Looker Studio credential mode for an internal BI report.
-- Draft a sharing register that links report pages, source views, owners,
-  controls, and review dates without collecting secrets.
+- Exclude raw and masked identifiers from an aggregate executive
+  dashboard with the warehouse enforcing the choice.
+- Build a governed branch / currency serving result with exact
+  controls.
+- Pick a Looker Studio credential mode (owner vs viewer) for an
+  internal BI report with the trade-offs named.
+- Draft a sharing register that links report pages, source views,
+  owners, controls, and review dates - without collecting any
+  credentials, tokens, or private links.
 
 Produces:
 
 - Browser-first field-classification and governed-source outputs.
 - A draft `serve.safe_governed_deposit_summary` design.
 - A draft `serve.bi_report_sharing_register` design.
-- Optional BigQuery
-  <a class="termRef" href="#/terminology/bigquery.md#authorized-view">authorized view<sup>BQ</sup></a>
-  and Looker Studio
-  <a class="termRef" href="#/terminology/looker-studio.md#viewer-credentials">credential-mode<sup>LS</sup></a>
-  notes.
-- A short personal note (kept in whichever editor you prefer; the platform does not store it).
+- Optionally a BigQuery authorized view DDL and a Looker Studio
+  credential-mode note.
+- A short personal note (kept in your own editor) with the
+  release-record artefacts.
 
 ## Goal
 

@@ -24,46 +24,76 @@
 
 # 05 - Compare Blends With Upstream Joins
 
-Synthetic-data boundary: use only the predefined synthetic deposits dataset.
-Do not use real account-owner tables, production customer attributes, private
-Looker Studio reports, screenshots with private account details, credentials,
-or real regulatory outputs.
+## The Moment
 
-Prior knowledge expected:
+A teammate's "deposits by owner" chart on the executive dashboard
+reads `RON 164,800` for 2026-03-31. The branch finance lead's
+reconciliation report says the same day's balance total is `95,700`.
+That's a 72% overstatement on a tile that an executive is about to
+quote in a meeting.
 
-- Account-day balance grain and dimensional-model basics.
-- Governed metric contract concept (formula + grain + owner).
-- Difference between an `INNER JOIN` to a many-to-many side and a
-  pre-aggregated join.
+You open the chart's underlying SQL and find this shape:
 
-Required tools:
+```sql
+SELECT
+  o.customer_id,
+  SUM(b.ledger_balance) AS total_balance
+FROM account_daily_balances b
+INNER JOIN account_owners o USING (account_id)
+WHERE b.business_date = '2026-03-31'
+GROUP BY o.customer_id;
+```
 
-- Browser-first path: browser SQL workbench for the synthetic datasets.
-- Optional applied path: browser UI access to BigQuery and Looker Studio.
+`account_owners` has 9 rows for 6 accounts - three accounts are
+jointly owned. The `INNER JOIN` duplicates the balance row for each
+co-owner before the SUM, so each jointly-owned account contributes
+its balance twice to the total. The SQL is producing a real-shaped
+number that isn't real money.
 
-Objective: prove a many-to-many fanout with exact numbers, then decide which
-logic belongs upstream before a dashboard or blend can repeat the mistake.
+This lesson does two things on the same data:
+
+- **Proves the fanout numerically**: shows the 95,700 source total
+  and the 164,800 wrong total side by side, and computes the
+  exact 69,100 overstatement.
+- **Walks the two repair shapes**: (1) keep the balance metric at
+  account-day grain and don't join owners to it at all (use a
+  separate display); (2) when ownership analysis is genuinely
+  needed, allocate each balance by `1 / owner_count` before the
+  SUM so the per-customer totals add back to 95,700.
+
+It also explains where blends in Looker Studio fit (and don't fit)
+relative to upstream warehouse modelling.
+
+## Prior Knowledge
+
+`SELECT`, `JOIN`, `GROUP BY`, `SUM`. The vocabulary of fact vs
+dimension and the rule that joining a fact to a many-to-many table
+without aggregating first multiplies the measure.
+
+Objective: prove the fanout with exact numbers (95,700 vs 164,800),
+build the two correct repair shapes in the warehouse, and document
+the blend-side guardrails so a chart cannot quietly re-introduce
+the same trap.
 
 After this tutorial, you will be able to:
 
-- Reproduce a wrong owner-joined balance total and its overstatement.
-- Build a safe upstream branch/currency serving result for current-balance
-  charts.
-- Build a separate depositor allocation result when owner-level analysis is
-  genuinely needed.
-- Specify
-  <a class="termRef" href="#/terminology/looker-studio.md#looker-studio-blend">Looker Studio blend<sup>LS</sup></a>
-  guardrails without treating a chart blend as a governed metric layer.
+- Reproduce the owner-joined fanout and quantify it (69,100).
+- Build a safe upstream branch / currency serving result for
+  current-balance KPIs.
+- Build a separate per-owner allocation result for ownership
+  analysis using `1 / owner_count` shares.
+- Name the blend guardrails (join-key 1:N proof, narrow field set,
+  reconcile against upstream total) before publishing.
 
 Produces:
 
-- Browser-first
-  <a class="termRef" href="#/terminology/bi.md#fanout">fanout<sup>BI</sup></a>
-  proof.
-- Safe upstream serving outputs for current-balance and owner-allocation use
-  cases.
-- Optional Looker Studio blend comparison notes.
-- A short personal note (kept in whichever editor you prefer; the platform does not store it).
+- A browser-first fanout proof with the 95,700 / 164,800 / 69,100
+  numbers.
+- Safe upstream serving outputs for current-balance and
+  owner-allocation use cases.
+- Optionally a Looker Studio blend comparison note.
+- A short personal note (kept in your own editor) with the two
+  repair-shape SQL snippets you wrote.
 
 ## Goal
 

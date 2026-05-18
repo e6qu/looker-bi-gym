@@ -21,50 +21,71 @@
 
 # 04 - Define Governed Metrics And Calculated Fields
 
-Synthetic-data boundary: use only the predefined synthetic deposits dataset.
-Do not use real balances, real customer attributes, screenshots from private
-reports, credentials, or production regulatory outputs.
+## The Moment
 
-Prior knowledge expected:
+A senior analyst opens the executive deposits dashboard, sees the
+new "Average account balance" tile, and asks: "is this weighted, or
+are you averaging branch averages?" You look at the chart-level
+formula and it reads `AVG(row_average_balance)` - an average of
+averages. That's the wrong answer for a stakeholder who's about
+to make a decision based on this number.
 
-- `SUM`, `GROUP BY`, and basic `JOIN` SQL.
-- The vocabulary of grain (one row per X) and a serving result that
-  exposes only the fields a dashboard needs.
+The fix is structural, not cosmetic. Two things need to be true for
+a published metric to survive review:
 
-The weighted-average distinction (why `SUM(a) / SUM(b)` differs from
-`AVG(row_ratio)`) is the central thing this lesson teaches; it is not
-prior knowledge.
+- **There is one definition of the metric, in one layer**. Today,
+  the formula is on this one chart; tomorrow it appears (slightly
+  different) on three more. The number diverges. The cert-correct
+  fix is a **metric contract** spelling out the formula's owner,
+  grain, allowed dimensions, expected values - and one upstream
+  implementation everything reads from.
+- **Ratio metrics are weighted, not averaged.** `SUM(numerator) /
+SUM(denominator)` recomputes correctly under any filter or
+  re-grouping. `AVG(per-row-ratio)` discards the weights and gives
+  the wrong answer the moment the chart filter changes.
 
-Required tools:
+This lesson defines the metric contract for "Average account balance
+per active account" on the deposits dataset, walks the weighted vs
+average-of-averages comparison on actual numbers, and shows where
+the formula belongs (warehouse view, data-source calculated field,
+chart) for each piece of dashboard logic.
 
-- Browser-first path: browser SQL workbench for the synthetic datasets.
-- Optional applied path: browser UI access to BigQuery and Looker Studio.
+## Prior Knowledge
 
-Objective: decide which
-<a class="termRef" href="#/terminology/bi.md#metric">metric<sup>BI</sup></a>
-logic belongs upstream, which reusable
-<a class="termRef" href="#/terminology/looker-studio.md#looker-studio-calculated-field">calculated fields<sup>LS</sup></a>
-belong in a Looker Studio data source, and which calculations are
-only chart formatting.
+`SUM`, `GROUP BY`, basic `JOIN`. The vocabulary of grain ("one row
+per X") and the idea that a serving view exposes only the fields a
+dashboard needs.
+
+The weighted-average distinction (why `SUM(a) / SUM(b)` differs
+from `AVG(row_ratio)`) is the central thing this lesson teaches; it
+is not prior knowledge.
+
+Objective: decide which metric logic belongs upstream, which
+reusable Looker Studio calculated fields belong on the data source,
+and which calculations are only chart formatting. Write the metric
+contract for "Average account balance per active account" and prove
+the weighted shape recomputes correctly against the synthetic
+dataset.
 
 After this tutorial, you will be able to:
 
-- Write a
-  <a class="termRef" href="#/terminology/bi.md#metric-contract">metric contract<sup>BI</sup></a>
-  with owner, grain, formula, allowed dimensions, and expected values.
-- Use weighted formulas for ratio metrics instead of averaging displayed
-  averages.
-- Configure reusable Looker Studio calculated fields with explicit aggregation
-  settings.
-- Keep deposit-guarantee context at depositor-bank grain rather than account or
-  chart grain.
+- Write a metric contract with owner, grain, formula, allowed
+  dimensions, and expected values.
+- Use weighted formulas for ratio metrics instead of averaging
+  displayed averages.
+- Configure reusable Looker Studio calculated fields with explicit
+  aggregation settings.
+- Keep deposit-guarantee context at depositor-bank grain rather
+  than account or chart grain.
 
 Produces:
 
-- Browser-first metric-source result.
-- Reusable calculated-field specification for Looker Studio.
-- Chart settings and expected values for a metric QA page.
-- A short personal note (kept in whichever editor you prefer; the platform does not store it).
+- A browser-first metric-source result (one row per branch-city +
+  currency for the latest day).
+- A reusable calculated-field specification for Looker Studio.
+- Chart settings and expected values for a metric-QA page.
+- A short personal note (kept in your own editor) with the
+  weighted-average vs average-of-averages numeric comparison.
 
 ## Goal
 

@@ -19,40 +19,57 @@
 
 # 03 - Build A First Executive Dashboard Spec
 
-Synthetic-data boundary: dashboard pages must use synthetic serving results
-only. Do not paste real production screenshots, URLs, credentials, customer
-data, account data, or regulatory data into notes.
+## The Moment
 
-Prior knowledge expected:
+The serving view from lesson 01 (or its equivalent) is in place; the
+exec team wants a dashboard page on top of it. Specifically: a
+latest-day total, a daily trend, a currency split, and a small
+"freshness" line that tells the audience what date they're looking
+at and when the data was last refreshed.
 
-- A governed serving view that exposes one row per business date and
-  currency (or equivalent grain) with no row-identifier columns.
-- BI dimension vs metric vocabulary.
-- Synthetic-data discipline.
+The instinct on a first pass is to "just build the charts" and ship.
+Two things go wrong that way:
 
-Required tools:
+- **The KPI gets computed in different places**. If the latest total
+  is a chart-level formula, the next chart needing the same number
+  invents its own version; the two drift. The fix is a single
+  pre-aggregated serving result that every chart on the page reads.
+- **The freshness story disappears**. Executive viewers see "RON
+  79,300" with no surrounding context and assume it's right now. Six
+  hours later, the same view still says "RON 79,300" - is that
+  because nothing changed, or because the data is stale? Without a
+  freshness label, the audience can't tell.
 
-- Browser-first path: browser SQL workbench for the synthetic datasets.
-- Optional applied path: browser UI access to BigQuery and Looker Studio.
+This lesson produces a **dashboard specification** - a small
+contract listing exact KPI values, chart definitions, the freshness
+label, and the excluded field list - before any chart is built.
 
-Objective: build an executive-dashboard specification from a curated synthetic
-serving result, with exact KPI values, chart fields, freshness text, and
-sensitive-field exclusions.
+## Prior Knowledge
+
+`SELECT`, `GROUP BY`, `SUM`, `COUNT(DISTINCT)`, `MAX`. The vocabulary
+of dimension vs metric on a chart.
+
+Objective: build an executive-dashboard specification from a curated
+synthetic serving result, with exact KPI values, chart fields,
+freshness text, and sensitive-field exclusions.
 
 After this tutorial, you will be able to:
 
 - Produce a dashboard-ready result with one row per date and currency.
-- Specify executive KPI, trend, and currency-breakdown charts from that result.
-- Record freshness and sensitive-field evidence before building charts.
-- Keep reusable metric logic in the serving result or shared data-source layer,
-  not in one-off chart formulas.
+- Specify executive KPI, trend, and currency-breakdown charts from
+  that result.
+- Record freshness and sensitive-field evidence before building
+  charts.
+- Keep reusable metric logic in the serving result or shared
+  data-source layer, not in one-off chart formulas.
 
 Produces:
 
-- Browser-first dashboard source result.
-- Executive dashboard chart specification.
-- Optional Looker Studio report page.
-- A short personal note (kept in whichever editor you prefer; the platform does not store it).
+- A 6-row browser-SQL dashboard source.
+- An executive dashboard chart specification (the contract below).
+- Optionally a Looker Studio report page bound to the same view.
+- A short personal note (kept in your own editor) with the
+  exposed-field and excluded-field lists.
 
 ## Goal
 
@@ -298,23 +315,20 @@ Use this section only after the optional BigQuery view exists.
 - If a chart uses a different formula from the SQL checks, move the reusable
   metric definition back to the serving result or shared data-source layer.
 
-## End Challenge
+## What You Have Now
 
-Write a handoff note in this form. Each `;` separates a field; the
-`freshness` value uses `/` internally so the outer separator stays
-unambiguous.
+A 6-row dashboard source, three KPI / trend / breakdown queries that
+agree with each other, and a freshness label that ties what the
+audience sees to when the data was refreshed and what business_date
+it actually represents.
 
-`latest_total=<total>; latest_accounts=<count>; trend=<date1:total1,date2:total2,date3:total3>; latest_breakdown=<currency1:total1,currency2:total2>; freshness=<label>; excluded_fields=<field_list>`
-
-Fill it in from your own browser SQL output before opening the expected
-answer.
-
-<details>
-<summary>Reveal expected answer</summary>
-
-`latest_total=95700; latest_accounts=6; trend=2026-03-29:95190,2026-03-30:95680,2026-03-31:95700; latest_breakdown=EUR:16400,RON:79300; freshness=Latest balance date 2026-03-31 / source cutoff 2026-03-31T20:15:00Z; excluded_fields=account_id,customer_id,synthetic_iban`
-
-</details>
+Lesson 04 takes this further by defining the metric contract for
+`Average account balance per active account` and shows why
+`SUM(ledger_total) / SUM(account_count)` is the cert-correct
+weighted shape (and `AVG(branch_average)` is the textbook anti-
+pattern). Lesson 07 adds the governance evidence to the freshness
+label and explains how authorized views enforce the excluded-fields
+list on the warehouse side.
 
 ## Deliverable
 
